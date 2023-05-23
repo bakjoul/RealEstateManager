@@ -1,7 +1,9 @@
 package com.bakjoul.realestatemanager.ui.main
 
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.databinding.MainActivityBinding
 import com.bakjoul.realestatemanager.ui.list.ListFragment
 import dagger.hilt.android.AndroidEntryPoint
@@ -11,6 +13,7 @@ class MainActivity : AppCompatActivity() {
 
     private var _binding: MainActivityBinding? = null
     private val binding get() = _binding!!
+    private val viewModel by viewModels<MainViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,5 +25,11 @@ class MainActivity : AppCompatActivity() {
                 .replace(binding.mainFrameLayoutContainerList.id, ListFragment())
                 .commitNow()
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        viewModel.onResume(resources.getBoolean(R.bool.isTablet))
     }
 }
