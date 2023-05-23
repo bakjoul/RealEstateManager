@@ -5,9 +5,10 @@
     android:layout_height="match_parent">
 
     <FrameLayout
-        android:id="@+id/main_FrameLayout_container_items"
+        android:id="@+id/main_FrameLayout_container_list"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:background="@color/teal_700"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@id/main_guideline"
         app:layout_constraintStart_toStartOf="parent"
@@ -21,12 +22,13 @@
         app:layout_constraintGuide_begin="200dp" />
 
     <FrameLayout
-        android:id="@+id/main_FrameLayout_container_item_details"
+        android:id="@+id/main_FrameLayout_container_details"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:background="@color/purple_200"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/main_FrameLayout_container_items"
+        app:layout_constraintStart_toEndOf="@id/main_FrameLayout_container_list"
         app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
