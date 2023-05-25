@@ -5,6 +5,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.databinding.MainActivityBinding
+import com.bakjoul.realestatemanager.ui.details.DetailsFragment
 import com.bakjoul.realestatemanager.ui.list.ListFragment
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -23,6 +24,13 @@ class MainActivity : AppCompatActivity() {
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
                 .replace(binding.mainFrameLayoutContainerList.id, ListFragment())
+                .commitNow()
+        }
+
+        val containerDetailsId = binding.mainFrameLayoutContainerDetails?.id
+        if (containerDetailsId != null && supportFragmentManager.findFragmentById(containerDetailsId) == null) {
+            supportFragmentManager.beginTransaction()
+                .replace(containerDetailsId, DetailsFragment())
                 .commitNow()
         }
     }
