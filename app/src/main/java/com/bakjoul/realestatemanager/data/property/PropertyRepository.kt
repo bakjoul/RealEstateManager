@@ -10,7 +10,8 @@ import javax.inject.Singleton
 
 @Singleton
 class PropertyRepository @Inject constructor() {
-    private val propertiesMutableStateFlow: MutableStateFlow<List<PropertyEntity>> = MutableStateFlow(
+    private val propertiesMutableStateFlow: MutableStateFlow<List<PropertyEntity>> =
+        MutableStateFlow(
             listOf(
                 PropertyEntity(
                     id = 0,
@@ -22,6 +23,7 @@ class PropertyRepository @Inject constructor() {
                     bathrooms = 2,
                     description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec euismod, nisl eget ultricies ultrices, nisl nisl aliquam",
                     address = "1 rue de la paix",
+                    appartment = "1",
                     zipcode = 75000,
                     city = "Paris",
                     state = "Ile de France",
@@ -50,6 +52,7 @@ class PropertyRepository @Inject constructor() {
                     bathrooms = 3,
                     description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec euismod, nisl eget ultricies ultrices, nisl nisl aliquam",
                     address = "2 rue de la paix",
+                    appartment = "2",
                     zipcode = 75000,
                     city = "Paris",
                     state = "Ile de France",
@@ -71,7 +74,9 @@ class PropertyRepository @Inject constructor() {
             )
         )
 
-    val properttiesStateFlow: StateFlow<List<PropertyEntity>> = propertiesMutableStateFlow.asStateFlow()
+    val propertiesStateFlow: StateFlow<List<PropertyEntity>> =
+        propertiesMutableStateFlow.asStateFlow()
 
-    fun getPropertyById(id: Long): PropertyEntity? = propertiesMutableStateFlow.value.find { it.id == id }
+    fun getPropertyById(id: Long): PropertyEntity? =
+        propertiesMutableStateFlow.value.find { it.id == id }
 }

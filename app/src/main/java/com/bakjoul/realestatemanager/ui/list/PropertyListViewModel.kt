@@ -16,7 +16,7 @@ class PropertyListViewModel @Inject constructor(
 ) : ViewModel() {
 
     val propertiesLiveData: LiveData<List<PropertyItemViewState>> = liveData(Dispatchers.IO) {
-        propertyRepository.properttiesStateFlow.collect { properties ->
+        propertyRepository.propertiesStateFlow.collect { properties ->
             emit(
                 properties.map {
                     PropertyItemViewState(
