@@ -11,7 +11,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PropertyListViewModel @Inject constructor(
-    val propertyRepository: PropertyRepository,
+    private val propertyRepository: PropertyRepository,
     private val currentPropertyIdRepository: CurrentPropertyIdRepository
 ) : ViewModel() {
 
