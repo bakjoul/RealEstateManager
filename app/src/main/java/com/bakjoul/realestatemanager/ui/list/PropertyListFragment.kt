@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.bakjoul.realestatemanager.databinding.FragmentListBinding
 
-class ListFragment : Fragment() {
+class PropertyListFragment : Fragment() {
 
     private var _binding: FragmentListBinding? = null
     private val binding get() = _binding!!
