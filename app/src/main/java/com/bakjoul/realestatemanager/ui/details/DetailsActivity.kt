@@ -38,6 +38,7 @@ class DetailsActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
         android.R.id.home -> {
+            viewModel.resetPropertyId()
             supportFinishAfterTransition()
             true
         }
