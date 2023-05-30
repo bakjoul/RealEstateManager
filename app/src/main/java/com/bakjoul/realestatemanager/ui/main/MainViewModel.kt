@@ -2,6 +2,7 @@ package com.bakjoul.realestatemanager.ui.main
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.liveData
 import com.bakjoul.realestatemanager.domain.CoroutineDispatcherProvider
 import com.bakjoul.realestatemanager.domain.property.GetCurrentPropertyIdUseCase
@@ -47,6 +48,9 @@ class MainViewModel @Inject constructor(
                 emit(it)
             }
         }
+
+    // TODO demander pour le dispatcher
+    fun getCurrentPropertyIdLiveData() = getCurrentPropertyIdUseCase.invoke().asLiveData()
 
     fun onResume() {
         refreshOrientationUseCase.invoke()

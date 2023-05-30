@@ -29,21 +29,18 @@ class MainActivity : AppCompatActivity() {
         }
 
         val containerDetailsId = binding.mainFrameLayoutContainerDetails?.id
-        if (containerDetailsId != null && supportFragmentManager.findFragmentById(containerDetailsId) == null) {
-            supportFragmentManager.beginTransaction()
-                .replace(containerDetailsId, DetailsFragment())
-                .commitNow()
+        viewModel.getCurrentPropertyIdLiveData().observe(this) { propertyId ->
+            if (propertyId != null && containerDetailsId != null && supportFragmentManager.findFragmentById(containerDetailsId) == null) {
+                supportFragmentManager.beginTransaction()
+                    .replace(containerDetailsId, DetailsFragment())
+                    .commitNow()
+            }
         }
 
         viewModel.mainViewActionLiveData.observe(this) { event ->
             event?.handleContent {
                 when (it) {
-                    MainViewAction.NavigateToDetails -> startActivity(
-                        Intent(
-                            this,
-                            DetailsActivity::class.java
-                        )
-                    )
+                    MainViewAction.NavigateToDetails -> startActivity(Intent(this, DetailsActivity::class.java))
                 }
             }
         }
