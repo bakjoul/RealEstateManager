@@ -27,7 +27,11 @@ class DetailsFragment : Fragment() {
 
         setDescriptionItems()
         viewModel.detailsLiveData.observe(viewLifecycleOwner) { details ->
+            binding.detailsDescriptionText.text = details.description
             binding.detailsItemSurface.detailsItemText.text = details.surface
+            binding.detailsItemRooms.detailsItemText.text = details.rooms
+            binding.detailsItemBedrooms.detailsItemText.text = details.bedrooms
+            binding.detailsItemBathrooms.detailsItemText.text = details.bathrooms
         }
     }
 
