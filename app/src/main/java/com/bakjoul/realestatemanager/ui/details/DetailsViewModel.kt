@@ -26,7 +26,7 @@ class DetailsViewModel @Inject constructor(
     val isTabletLiveData: LiveData<Boolean> =
         isTabletUseCase.invoke().asLiveData(coroutineDispatcherProvider.io)
 
-    val detailsLiveData: LiveData<DetailsViewState> = liveData(coroutineDispatcherProvider.io) {
+    val detailsLiveData: LiveData<DetailsViewState> = liveData {
         getCurrentPropertyIdUseCase.invoke().collect { propertyId ->
             if (propertyId != null) {
                 val propertyEntity = getPropertyByIdUseCase.invoke(propertyId)

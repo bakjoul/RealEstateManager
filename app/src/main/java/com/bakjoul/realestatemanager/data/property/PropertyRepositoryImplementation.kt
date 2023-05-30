@@ -1,10 +1,12 @@
 package com.bakjoul.realestatemanager.data.property
 
-import com.bakjoul.realestatemanager.domain.property.PropertyEntity
+import com.bakjoul.realestatemanager.domain.property.model.PropertyEntity
 import com.bakjoul.realestatemanager.domain.property.PropertyRepository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.withContext
 import java.time.LocalDate
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -75,9 +77,9 @@ class PropertyRepositoryImplementation @Inject constructor() : PropertyRepositor
             )
         )
 
-    override fun getPropertiesStateFlow(): StateFlow<List<PropertyEntity>> =
-        propertiesMutableStateFlow.asStateFlow()
+    override fun getPropertiesStateFlow(): Flow<List<PropertyEntity>> = propertiesMutableStateFlow.asStateFlow()
 
-    override fun getPropertyById(id: Long): PropertyEntity? =
+    override suspend fun getPropertyById(id: Long): PropertyEntity? = withContext(Dispatchers.IO) {
         propertiesMutableStateFlow.value.find { it.id == id }
+    }
 }

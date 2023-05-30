@@ -10,6 +10,7 @@ import com.bakjoul.realestatemanager.domain.resources.IsTabletUseCase
 import com.bakjoul.realestatemanager.domain.resources.RefreshOrientationUseCase
 import com.bakjoul.realestatemanager.ui.utils.Event
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import javax.inject.Inject
 
@@ -18,39 +19,20 @@ class MainViewModel @Inject constructor(
     private val getCurrentPropertyIdUseCase: GetCurrentPropertyIdUseCase,
     private val isTabletUseCase: IsTabletUseCase,
     private val refreshOrientationUseCase: RefreshOrientationUseCase,
-    coroutineDispatcherProvider: CoroutineDispatcherProvider
 ) : ViewModel() {
 
-    // TODO What is the difference between the two implementations below?
-
-    /*    val mainViewActionLiveData: LiveData<Event<MainViewAction>?> = combine(
-            currentPropertyRepository.getCurrentPropertyId(),
-            resourcesRepository.isTabletFlow()
+    val mainViewActionLiveData: LiveData<Event<MainViewAction>> = liveData {
+        combine(
+            getCurrentPropertyIdUseCase.invoke(),
+            isTabletUseCase.invoke()
         ) { currentPropertyId, isTablet ->
             if (currentPropertyId != null && !isTablet) {
-                Event<MainViewAction>(MainViewAction.NavigateToDetails)
-            } else {
-                null
+                emit(Event(MainViewAction.NavigateToDetails))
             }
-        }.asLiveData(Dispatchers.IO)*/
+        }.collect()
+    }
 
-    val mainViewActionLiveData: LiveData<Event<MainViewAction>?> = liveData(coroutineDispatcherProvider.io) {
-            combine(
-                getCurrentPropertyIdUseCase.invoke(),
-                isTabletUseCase.invoke()
-            ) { currentPropertyId, isTablet ->
-                if (currentPropertyId != null && !isTablet) {
-                    Event<MainViewAction>(MainViewAction.NavigateToDetails)
-                } else {
-                    null
-                }
-            }.collect {
-                emit(it)
-            }
-        }
-
-    // TODO demander pour le dispatcher
-    fun getCurrentPropertyIdLiveData() = getCurrentPropertyIdUseCase.invoke().asLiveData()
+    fun getCurrentPropertyIdLiveData(): LiveData<Long?> = getCurrentPropertyIdUseCase.invoke().asLiveData()
 
     fun onResume() {
         refreshOrientationUseCase.invoke()

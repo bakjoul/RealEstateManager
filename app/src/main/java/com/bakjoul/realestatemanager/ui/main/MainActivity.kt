@@ -8,18 +8,18 @@ import com.bakjoul.realestatemanager.databinding.MainActivityBinding
 import com.bakjoul.realestatemanager.ui.details.DetailsActivity
 import com.bakjoul.realestatemanager.ui.details.DetailsFragment
 import com.bakjoul.realestatemanager.ui.list.PropertyListFragment
+import com.bakjoul.realestatemanager.ui.utils.Event.Companion.observeEvent
+import com.bakjoul.realestatemanager.ui.utils.viewBinding
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
-    private var _binding: MainActivityBinding? = null
-    private val binding get() = _binding!!
+    private val binding by viewBinding { MainActivityBinding.inflate(it) }
     private val viewModel by viewModels<MainViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        _binding = MainActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         if (savedInstanceState == null) {
@@ -37,11 +37,9 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        viewModel.mainViewActionLiveData.observe(this) { event ->
-            event?.handleContent {
-                when (it) {
-                    MainViewAction.NavigateToDetails -> startActivity(Intent(this, DetailsActivity::class.java))
-                }
+        viewModel.mainViewActionLiveData.observeEvent(this) {
+            when (it) {
+                MainViewAction.NavigateToDetails -> startActivity(Intent(this, DetailsActivity::class.java))
             }
         }
     }

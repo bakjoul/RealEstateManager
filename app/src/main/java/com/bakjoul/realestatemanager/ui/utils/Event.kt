@@ -1,42 +1,32 @@
 package com.bakjoul.realestatemanager.ui.utils
 
-import androidx.annotation.MainThread
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.liveData
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.receiveAsFlow
-import kotlin.coroutines.CoroutineContext
-import kotlin.coroutines.EmptyCoroutineContext
 
-class Event<T>(private val content: T) {
+data class Event<out T>(private val content: T) {
 
-    private var hasBeenHandled = false
+    private var handled = false
 
-    @MainThread
-    fun handleContent(block: (T) -> Unit) {
-        if (!hasBeenHandled) {
-            hasBeenHandled = true
-            block(content)
+    // Keep this function private to force the use of the observeEvent extension
+    private fun getContentIfNotHandled(): T? = if (handled) {
+        null
+    } else {
+        handled = true
+        content
+    }
+
+    companion object {
+        /**
+         * An extension for [Event]s, simplifying the pattern of checking if the [Event]'s content has already been handled.
+         *
+         * [onEventUnhandledContent] is *only* called if the [Event]'s contents has not been handled.
+         */
+        fun <T> LiveData<Event<T>>.observeEvent(owner: LifecycleOwner, onEventUnhandledContent: (T) -> Unit) {
+            observe(owner) { event ->
+                event.getContentIfNotHandled()?.let {
+                    onEventUnhandledContent(it)
+                }
+            }
         }
     }
-}
-
-fun <C, E> Channel<C>.asLiveDataEvent(
-    coroutineContext: CoroutineContext = EmptyCoroutineContext,
-    block: suspend EventScope<E>.(C) -> Unit
-): LiveData<Event<E>> = liveData(coroutineContext) {
-    receiveAsFlow().collect {
-        block.invoke(
-            object : EventScope<E> {
-                override suspend fun emit(event: E) {
-                    emit(Event(event))
-                }
-            },
-            it
-        )
-    }
-}
-
-interface EventScope<E> {
-    suspend fun emit(event: E)
 }

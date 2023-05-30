@@ -58,14 +58,14 @@
 
         <include
             android:id="@+id/details_item_surface"
-            layout="@layout/fragment_details_item"
+            layout="@layout/fragment_details_properties_include"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.25" />
 
         <include
             android:id="@+id/details_item_bedrooms"
-            layout="@layout/fragment_details_item"
+            layout="@layout/fragment_details_properties_include"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.25" />
@@ -85,14 +85,14 @@
 
         <include
             android:id="@+id/details_item_rooms"
-            layout="@layout/fragment_details_item"
+            layout="@layout/fragment_details_properties_include"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.25" />
 
         <include
             android:id="@+id/details_item_bathrooms"
-            layout="@layout/fragment_details_item"
+            layout="@layout/fragment_details_properties_include"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.25" />
@@ -100,7 +100,7 @@
 
     <include
         android:id="@+id/details_item_location"
-        layout="@layout/fragment_details_item"
+        layout="@layout/fragment_details_properties_include"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginVertical="8dp"

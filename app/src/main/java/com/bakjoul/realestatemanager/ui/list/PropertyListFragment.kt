@@ -10,19 +10,14 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.databinding.FragmentListBinding
+import com.bakjoul.realestatemanager.ui.utils.viewBinding
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class PropertyListFragment : Fragment() {
+class PropertyListFragment : Fragment(R.layout.fragment_list) {
 
-    private var _binding: FragmentListBinding? = null
-    private val binding get() = _binding!!
+    private val binding by viewBinding { FragmentListBinding.bind(it) }
     private val viewModel by viewModels<PropertyListViewModel>()
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        _binding = FragmentListBinding.inflate(inflater, container, false)
-        return binding.root
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -36,11 +31,5 @@ class PropertyListFragment : Fragment() {
         viewModel.propertiesLiveData.observe(viewLifecycleOwner) {
             adapter.submitList(it)
         }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-
-        _binding = null
     }
 }

@@ -6,5 +6,5 @@ interface ResourcesRepository {
 
     fun isTabletFlow(): Flow<Boolean>
 
-    fun refreshOrientation()
+    fun setOrientation(isTablet: Boolean)
 }

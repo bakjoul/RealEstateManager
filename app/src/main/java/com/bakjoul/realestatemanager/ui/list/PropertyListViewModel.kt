@@ -3,8 +3,7 @@ package com.bakjoul.realestatemanager.ui.list
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
-import com.bakjoul.realestatemanager.domain.CoroutineDispatcherProvider
-import com.bakjoul.realestatemanager.domain.property.GetPropertiesStateFlowUseCase
+import com.bakjoul.realestatemanager.domain.property.GetPropertiesFlowUseCase
 import com.bakjoul.realestatemanager.domain.property.SetPropertyIdUseCase
 import com.bakjoul.realestatemanager.ui.utils.EquatableCallback
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -12,13 +11,12 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PropertyListViewModel @Inject constructor(
-    private val getPropertiesStateFlowUseCase: GetPropertiesStateFlowUseCase,
+    private val getPropertiesFlowUseCase: GetPropertiesFlowUseCase,
     private val setPropertyIdUseCase: SetPropertyIdUseCase,
-    coroutineDispatcherProvider: CoroutineDispatcherProvider
 ) : ViewModel() {
 
-    val propertiesLiveData: LiveData<List<PropertyItemViewState>> = liveData(coroutineDispatcherProvider.io) {
-            getPropertiesStateFlowUseCase.invoke().collect { properties ->
+    val propertiesLiveData: LiveData<List<PropertyItemViewState>> = liveData {
+            getPropertiesFlowUseCase.invoke().collect { properties ->
                 emit(
                     properties.map {
                         PropertyItemViewState(

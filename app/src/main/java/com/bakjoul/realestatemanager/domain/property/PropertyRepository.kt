@@ -1,10 +1,11 @@
 package com.bakjoul.realestatemanager.domain.property
 
-import kotlinx.coroutines.flow.StateFlow
+import com.bakjoul.realestatemanager.domain.property.model.PropertyEntity
+import kotlinx.coroutines.flow.Flow
 
 interface PropertyRepository {
 
-    fun getPropertiesStateFlow(): StateFlow<List<PropertyEntity>>
+    fun getPropertiesStateFlow(): Flow<List<PropertyEntity>>
 
-    fun getPropertyById(id: Long): PropertyEntity?
+    suspend fun getPropertyById(id: Long): PropertyEntity?
 }

@@ -1,24 +1,20 @@
 package com.bakjoul.realestatemanager.data.resources
 
-import android.content.Context
-import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.domain.resources.ResourcesRepository
-import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.MutableSharedFlow
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class ResourcesRepositoryImplementation @Inject constructor(@ApplicationContext private val context: Context) :
-    ResourcesRepository {
+class ResourcesRepositoryImplementation @Inject constructor() : ResourcesRepository {
 
-    private val isTabletMutableStateFlow = MutableStateFlow<Boolean?>(null)
+    private val isTabletMutableStateFlow = MutableSharedFlow<Boolean>(replay = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
 
-    override fun isTabletFlow(): Flow<Boolean> = isTabletMutableStateFlow.filterNotNull()
+    override fun isTabletFlow(): Flow<Boolean> = isTabletMutableStateFlow
 
-    override fun refreshOrientation() {
-        isTabletMutableStateFlow.value = context.resources.getBoolean(R.bool.isTablet)
+    override fun setOrientation(isTablet: Boolean) {
+        isTabletMutableStateFlow.tryEmit(isTablet)
     }
 }
