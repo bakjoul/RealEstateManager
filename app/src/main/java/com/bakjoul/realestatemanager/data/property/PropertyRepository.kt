@@ -15,7 +15,7 @@ class PropertyRepository @Inject constructor() {
             listOf(
                 PropertyEntity(
                     id = 0,
-                    type = PropertyType.FLAT.name,
+                    type = PropertyType.Flat.name,
                     price = 100000,
                     surface = 100,
                     rooms = 5,
@@ -44,7 +44,7 @@ class PropertyRepository @Inject constructor() {
                 ),
                 PropertyEntity(
                     id = 1,
-                    type = PropertyType.HOUSE.name,
+                    type = PropertyType.House.name,
                     price = 200000,
                     surface = 200,
                     rooms = 10,

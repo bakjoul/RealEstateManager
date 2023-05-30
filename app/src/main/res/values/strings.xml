@@ -1,3 +1,17 @@
 <resources>
     <string name="app_name">Real Estate Manager</string>
+    <string name="details_label_media">Media</string>
+    <string name="details_label_description">Description</string>
+    <string name="details_label_surface">Surface</string>
+    <string name="details_label_rooms">Nb. of rooms</string>
+    <string name="details_label_bathrooms">Nb. of bathrooms</string>
+    <string name="details_label_bedrooms">Nb. of bedrooms</string>
+    <string name="details_label_rooms_tablet">Number of rooms</string>
+    <string name="details_label_bathrooms_tablet">Number of bathrooms</string>
+    <string name="details_label_bedrooms_tablet">Number of bedrooms</string>
+    <string name="details_label_location">Location</string>
+    <string name="property_type_flat">Flat</string>
+    <string name="property_type_house">House</string>
+    <string name="property_type_duplex">Duplex</string>
+    <string name="property_type_penthouse">Penthouse</string>
 </resources>

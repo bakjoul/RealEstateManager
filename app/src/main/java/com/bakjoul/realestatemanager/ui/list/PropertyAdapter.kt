@@ -7,7 +7,8 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bakjoul.realestatemanager.databinding.FragmentListItemBinding
 
-class PropertyAdapter : ListAdapter<PropertyItemViewState, PropertyAdapter.ViewHolder>(PropertyDiffCallback) {
+class PropertyAdapter :
+    ListAdapter<PropertyItemViewState, PropertyAdapter.ViewHolder>(PropertyDiffCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder = ViewHolder(
         FragmentListItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -24,12 +25,21 @@ class PropertyAdapter : ListAdapter<PropertyItemViewState, PropertyAdapter.ViewH
             binding.listItemType.text = item.type
             binding.listItemCity.text = item.city
             binding.listItemPrice.text = item.price
+            binding.listItemLayout.setOnClickListener {
+                item.onPropertyClicked.invoke()
+            }
         }
     }
 
     object PropertyDiffCallback : DiffUtil.ItemCallback<PropertyItemViewState>() {
-        override fun areItemsTheSame(oldItem: PropertyItemViewState, newItem: PropertyItemViewState): Boolean = oldItem.id == newItem.id
+        override fun areItemsTheSame(
+            oldItem: PropertyItemViewState,
+            newItem: PropertyItemViewState
+        ): Boolean = oldItem.id == newItem.id
 
-        override fun areContentsTheSame(oldItem: PropertyItemViewState, newItem: PropertyItemViewState): Boolean = oldItem == newItem
+        override fun areContentsTheSame(
+            oldItem: PropertyItemViewState,
+            newItem: PropertyItemViewState
+        ): Boolean = oldItem == newItem
     }
 }

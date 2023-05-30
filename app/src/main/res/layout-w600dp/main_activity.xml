@@ -20,6 +20,15 @@
         android:orientation="vertical"
         app:layout_constraintGuide_begin="200dp" />
 
+    <View
+        android:id="@+id/main_separator"
+        android:layout_width="1dp"
+        android:layout_height="0dp"
+        android:background="#FFE7E7E7"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@id/main_guideline"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <FrameLayout
         android:id="@+id/main_FrameLayout_container_details"
         android:layout_width="0dp"
