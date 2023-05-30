@@ -6,6 +6,7 @@ import androidx.lifecycle.liveData
 import com.bakjoul.realestatemanager.domain.CoroutineDispatcherProvider
 import com.bakjoul.realestatemanager.domain.property.GetPropertiesStateFlowUseCase
 import com.bakjoul.realestatemanager.domain.property.SetPropertyIdUseCase
+import com.bakjoul.realestatemanager.ui.utils.EquatableCallback
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -25,7 +26,7 @@ class PropertyListViewModel @Inject constructor(
                             type = it.type,
                             city = it.city,
                             price = it.price.toString(),
-                            onPropertyClicked = {
+                            onPropertyClicked = EquatableCallback {
                                 setPropertyIdUseCase.invoke(it.id)
                             }
                         )
