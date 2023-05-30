@@ -1,6 +1,7 @@
 package com.bakjoul.realestatemanager.data.property
 
 import com.bakjoul.realestatemanager.domain.property.PropertyEntity
+import com.bakjoul.realestatemanager.domain.property.PropertyRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -9,7 +10,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class PropertyRepository @Inject constructor() {
+class PropertyRepositoryImplementation @Inject constructor() : PropertyRepository {
     private val propertiesMutableStateFlow: MutableStateFlow<List<PropertyEntity>> =
         MutableStateFlow(
             listOf(
@@ -74,9 +75,9 @@ class PropertyRepository @Inject constructor() {
             )
         )
 
-    val propertiesStateFlow: StateFlow<List<PropertyEntity>> =
+    override fun getPropertiesStateFlow(): StateFlow<List<PropertyEntity>> =
         propertiesMutableStateFlow.asStateFlow()
 
-    fun getPropertyById(id: Long): PropertyEntity? =
+    override fun getPropertyById(id: Long): PropertyEntity? =
         propertiesMutableStateFlow.value.find { it.id == id }
 }

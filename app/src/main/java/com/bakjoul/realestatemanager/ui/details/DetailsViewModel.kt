@@ -4,9 +4,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.liveData
-import com.bakjoul.realestatemanager.data.ResourcesRepository
-import com.bakjoul.realestatemanager.data.property.CurrentPropertyRepository
-import com.bakjoul.realestatemanager.data.property.PropertyRepository
+import com.bakjoul.realestatemanager.domain.ResourcesRepository
+import com.bakjoul.realestatemanager.domain.property.CurrentPropertyRepository
+import com.bakjoul.realestatemanager.domain.property.PropertyRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import javax.inject.Inject

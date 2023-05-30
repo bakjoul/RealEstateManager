@@ -4,8 +4,8 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
-import com.bakjoul.realestatemanager.data.property.CurrentPropertyRepository
-import com.bakjoul.realestatemanager.data.property.PropertyRepository
+import com.bakjoul.realestatemanager.domain.property.CurrentPropertyRepository
+import com.bakjoul.realestatemanager.domain.property.PropertyRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import javax.inject.Inject
@@ -17,7 +17,7 @@ class PropertyListViewModel @Inject constructor(
 ) : ViewModel() {
 
     val propertiesLiveData: LiveData<List<PropertyItemViewState>> = liveData(Dispatchers.IO) {
-        propertyRepository.propertiesStateFlow.collect { properties ->
+        propertyRepository.getPropertiesStateFlow().collect { properties ->
             emit(
                 properties.map {
                     PropertyItemViewState(

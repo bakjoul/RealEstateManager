@@ -3,8 +3,8 @@ package com.bakjoul.realestatemanager.ui.main
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
-import com.bakjoul.realestatemanager.data.ResourcesRepository
-import com.bakjoul.realestatemanager.data.property.CurrentPropertyRepository
+import com.bakjoul.realestatemanager.domain.ResourcesRepository
+import com.bakjoul.realestatemanager.domain.property.CurrentPropertyRepository
 import com.bakjoul.realestatemanager.ui.utils.Event
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
