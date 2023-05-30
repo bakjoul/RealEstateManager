@@ -1,8 +1,8 @@
-package com.bakjoul.realestatemanager.data
+package com.bakjoul.realestatemanager.data.resources
 
 import android.content.Context
 import com.bakjoul.realestatemanager.R
-import com.bakjoul.realestatemanager.domain.ResourcesRepository
+import com.bakjoul.realestatemanager.domain.resources.ResourcesRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow

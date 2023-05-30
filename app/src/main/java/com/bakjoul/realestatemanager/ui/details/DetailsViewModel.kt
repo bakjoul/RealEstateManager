@@ -4,26 +4,30 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.liveData
-import com.bakjoul.realestatemanager.domain.ResourcesRepository
-import com.bakjoul.realestatemanager.domain.property.CurrentPropertyRepository
-import com.bakjoul.realestatemanager.domain.property.PropertyRepository
+import com.bakjoul.realestatemanager.domain.CoroutineDispatcherProvider
+import com.bakjoul.realestatemanager.domain.property.GetCurrentPropertyIdUseCase
+import com.bakjoul.realestatemanager.domain.property.GetPropertyByIdUseCase
+import com.bakjoul.realestatemanager.domain.resources.IsTabletUseCase
+import com.bakjoul.realestatemanager.domain.resources.RefreshOrientationUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import javax.inject.Inject
 
 @HiltViewModel
 class DetailsViewModel @Inject constructor(
-    private val currentPropertyRepository: CurrentPropertyRepository,
-    private val propertyRepository: PropertyRepository,
-    private val resourcesRepository: ResourcesRepository
+    private val getCurrentPropertyIdUseCase: GetCurrentPropertyIdUseCase,
+    private val getPropertyByIdUseCase: GetPropertyByIdUseCase,
+    private val refreshOrientationUseCase: RefreshOrientationUseCase,
+    isTabletUseCase: IsTabletUseCase,
+    coroutineDispatcherProvider: CoroutineDispatcherProvider
 ) : ViewModel() {
 
-    val isTabletLiveData: LiveData<Boolean> = resourcesRepository.isTabletFlow().asLiveData()
+    val isTabletLiveData: LiveData<Boolean> =
+        isTabletUseCase.invoke().asLiveData(coroutineDispatcherProvider.io)
 
-    val detailsLiveData: LiveData<DetailsViewState> = liveData(Dispatchers.IO) {
-        currentPropertyRepository.getCurrentPropertyId().collect { propertyId ->
+    val detailsLiveData: LiveData<DetailsViewState> = liveData(coroutineDispatcherProvider.io) {
+        getCurrentPropertyIdUseCase.invoke().collect { propertyId ->
             if (propertyId != null) {
-                val propertyEntity = propertyRepository.getPropertyById(propertyId)
+                val propertyEntity = getPropertyByIdUseCase.invoke(propertyId)
                 if (propertyEntity != null) {
                     emit(
                         DetailsViewState(
@@ -45,6 +49,6 @@ class DetailsViewModel @Inject constructor(
     }
 
     fun onResume() {
-        resourcesRepository.refreshOrientation()
+        refreshOrientationUseCase.invoke()
     }
 }

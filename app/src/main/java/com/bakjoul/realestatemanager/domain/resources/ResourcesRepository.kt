@@ -1,4 +1,4 @@
-package com.bakjoul.realestatemanager.domain
+package com.bakjoul.realestatemanager.domain.resources
 
 import kotlinx.coroutines.flow.Flow
 
