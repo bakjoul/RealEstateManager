@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface PropertyRepository {
 
-    fun getPropertiesStateFlow(): Flow<List<PropertyEntity>>
+    fun getPropertiesFlow(): Flow<List<PropertyEntity>>
 
     suspend fun getPropertyById(id: Long): PropertyEntity?
 }

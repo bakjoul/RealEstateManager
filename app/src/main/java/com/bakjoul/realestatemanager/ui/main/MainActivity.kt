@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.databinding.MainActivityBinding
 import com.bakjoul.realestatemanager.ui.details.DetailsActivity
 import com.bakjoul.realestatemanager.ui.details.DetailsFragment
@@ -29,7 +30,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         val containerDetailsId = binding.mainFrameLayoutContainerDetails?.id
-        viewModel.getCurrentPropertyIdLiveData().observe(this) { propertyId ->
+        viewModel.getCurrentPropertyIdChannelLiveData().observe(this) { propertyId ->
             if (propertyId != null && containerDetailsId != null && supportFragmentManager.findFragmentById(containerDetailsId) == null) {
                 supportFragmentManager.beginTransaction()
                     .replace(containerDetailsId, DetailsFragment())
@@ -47,6 +48,6 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
 
-        viewModel.onResume()
+        viewModel.onResume(resources.getBoolean(R.bool.isTablet))
     }
 }

@@ -32,14 +32,10 @@ class PropertyAdapter :
     }
 
     object PropertyDiffCallback : DiffUtil.ItemCallback<PropertyItemViewState>() {
-        override fun areItemsTheSame(
-            oldItem: PropertyItemViewState,
-            newItem: PropertyItemViewState
-        ): Boolean = oldItem.id == newItem.id
+        override fun areItemsTheSame(oldItem: PropertyItemViewState, newItem: PropertyItemViewState): Boolean =
+            oldItem.id == newItem.id
 
-        override fun areContentsTheSame(
-            oldItem: PropertyItemViewState,
-            newItem: PropertyItemViewState
-        ): Boolean = oldItem == newItem
+        override fun areContentsTheSame(oldItem: PropertyItemViewState, newItem: PropertyItemViewState): Boolean =
+            oldItem == newItem
     }
 }

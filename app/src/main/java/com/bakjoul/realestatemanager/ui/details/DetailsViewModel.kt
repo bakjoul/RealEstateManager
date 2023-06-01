@@ -5,9 +5,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.liveData
 import com.bakjoul.realestatemanager.domain.CoroutineDispatcherProvider
-import com.bakjoul.realestatemanager.domain.property.GetCurrentPropertyIdUseCase
+import com.bakjoul.realestatemanager.domain.current_property.GetCurrentPropertyIdUseCase
+import com.bakjoul.realestatemanager.domain.current_property.SetCurrentPropertyIdUseCase
 import com.bakjoul.realestatemanager.domain.property.GetPropertyByIdUseCase
-import com.bakjoul.realestatemanager.domain.property.SetPropertyIdUseCase
 import com.bakjoul.realestatemanager.domain.resources.IsTabletUseCase
 import com.bakjoul.realestatemanager.domain.resources.RefreshOrientationUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,7 +18,7 @@ class DetailsViewModel @Inject constructor(
     private val getCurrentPropertyIdUseCase: GetCurrentPropertyIdUseCase,
     private val getPropertyByIdUseCase: GetPropertyByIdUseCase,
     private val refreshOrientationUseCase: RefreshOrientationUseCase,
-    private val setPropertyIdUseCase: SetPropertyIdUseCase,
+    private val setCurrentPropertyIdUseCase: SetCurrentPropertyIdUseCase,
     isTabletUseCase: IsTabletUseCase,
     coroutineDispatcherProvider: CoroutineDispatcherProvider
 ) : ViewModel() {
@@ -50,11 +50,12 @@ class DetailsViewModel @Inject constructor(
         }
     }
 
+    // TODO Ask Nino if this is the right way to do it
     fun resetPropertyId() {
-        setPropertyIdUseCase.invoke(null)
+        setCurrentPropertyIdUseCase.invoke(null)
     }
 
-    fun onResume() {
-        refreshOrientationUseCase.invoke()
+    fun onResume(isTablet: Boolean) {
+        refreshOrientationUseCase.invoke(isTablet)
     }
 }

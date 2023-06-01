@@ -5,5 +5,5 @@ import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class GetPropertiesFlowUseCase @Inject constructor(private val propertyRepository: PropertyRepository) {
-    fun invoke(): Flow<List<PropertyEntity>> = propertyRepository.getPropertiesStateFlow()
+    fun invoke(): Flow<List<PropertyEntity>> = propertyRepository.getPropertiesFlow()
 }

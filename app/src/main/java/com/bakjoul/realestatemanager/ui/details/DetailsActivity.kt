@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.MenuItem
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.databinding.DetailsActivityBinding
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -49,6 +50,6 @@ class DetailsActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
 
-        viewModel.onResume()
+        viewModel.onResume(resources.getBoolean(R.bool.isTablet))
     }
 }
