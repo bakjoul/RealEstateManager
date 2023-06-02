@@ -56,19 +56,21 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/details_description_text">
 
-        <include
+        <com.bakjoul.realestatemanager.ui.details.DetailsFieldView
             android:id="@+id/details_item_surface"
-            layout="@layout/fragment_details_properties_include"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="0.25" />
+            android:layout_weight="0.25"
+            app:imageSrc="@drawable/baseline_settings_overscan_24"
+            app:label="@string/details_label_surface" />
 
-        <include
+        <com.bakjoul.realestatemanager.ui.details.DetailsFieldView
             android:id="@+id/details_item_bedrooms"
-            layout="@layout/fragment_details_properties_include"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="0.25" />
+            android:layout_weight="0.25"
+            app:imageSrc="@drawable/bed_24"
+            app:label="@string/details_label_bedrooms" />
     </LinearLayout>
 
     <LinearLayout
@@ -83,27 +85,31 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/details_surface_LinearLayout">
 
-        <include
+        <com.bakjoul.realestatemanager.ui.details.DetailsFieldView
             android:id="@+id/details_item_rooms"
-            layout="@layout/fragment_details_properties_include"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="0.25" />
+            android:layout_weight="0.25"
+            app:imageSrc="@drawable/baseline_home_24"
+            app:label="@string/details_label_rooms" />
 
-        <include
+        <com.bakjoul.realestatemanager.ui.details.DetailsFieldView
             android:id="@+id/details_item_bathrooms"
-            layout="@layout/fragment_details_properties_include"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="0.25" />
+            android:layout_weight="0.25"
+            app:imageSrc="@drawable/hot_tub_24"
+            app:label="@string/details_label_bathrooms" />
     </LinearLayout>
 
-    <include
+    <com.bakjoul.realestatemanager.ui.details.DetailsFieldView
         android:id="@+id/details_item_location"
-        layout="@layout/fragment_details_properties_include"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginVertical="8dp"
+        android:layout_weight="0.25"
+        app:imageSrc="@drawable/hot_tub_24"
+        app:label="@string/details_label_location"
         app:layout_constraintStart_toStartOf="@id/details_rooms_LinearLayout"
         app:layout_constraintTop_toBottomOf="@id/details_rooms_LinearLayout" />
 

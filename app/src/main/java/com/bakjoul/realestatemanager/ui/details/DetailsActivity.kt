@@ -6,13 +6,13 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.databinding.DetailsActivityBinding
+import com.bakjoul.realestatemanager.ui.utils.viewBinding
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class DetailsActivity : AppCompatActivity() {
 
-    private var _binding: DetailsActivityBinding? = null
-    private val binding get() = _binding!!
+    private val binding by viewBinding { DetailsActivityBinding.inflate(it) }
     private val viewModel by viewModels<DetailsViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -24,7 +24,6 @@ class DetailsActivity : AppCompatActivity() {
             }
         }
 
-        _binding = DetailsActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)

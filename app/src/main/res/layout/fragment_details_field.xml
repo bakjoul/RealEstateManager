@@ -6,7 +6,7 @@
     android:layout_height="wrap_content">
 
     <ImageView
-        android:id="@+id/details_item_icon"
+        android:id="@+id/details_field_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:importantForAccessibility="no"
@@ -15,25 +15,25 @@
         tools:src="@drawable/baseline_settings_overscan_24" />
 
     <TextView
-        android:id="@+id/details_item_label"
+        android:id="@+id/details_field_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
         android:textColor="@color/grey_label"
         android:textSize="14sp"
         android:textStyle="bold"
-        app:layout_constraintStart_toEndOf="@id/details_item_icon"
-        app:layout_constraintTop_toTopOf="@id/details_item_icon"
+        app:layout_constraintStart_toEndOf="@id/details_field_icon"
+        app:layout_constraintTop_toTopOf="@id/details_field_icon"
         tools:text="@string/details_label_surface" />
 
     <TextView
-        android:id="@+id/details_item_text"
+        android:id="@+id/details_field_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/grey_text"
         android:textSize="14sp"
-        app:layout_constraintStart_toStartOf="@id/details_item_label"
-        app:layout_constraintTop_toBottomOf="@id/details_item_label"
+        app:layout_constraintStart_toStartOf="@id/details_field_label"
+        app:layout_constraintTop_toBottomOf="@id/details_field_label"
         tools:text="750 sq m" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
