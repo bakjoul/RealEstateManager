@@ -34,15 +34,17 @@ class DetailsViewModel @Inject constructor(
                     emit(
                         DetailsViewState(
                             description = propertyEntity.description,
-                            surface = propertyEntity.surface.toString(),
+                            surface = formatSurface(propertyEntity.surface),
                             rooms = propertyEntity.rooms.toString(),
                             bedrooms = propertyEntity.bedrooms.toString(),
                             bathrooms = propertyEntity.bathrooms.toString(),
-                            address = propertyEntity.address,
-                            appartment = propertyEntity.appartment,
-                            city = propertyEntity.city,
-                            zipcode = propertyEntity.zipcode.toString(),
-                            country = propertyEntity.country
+                            location = formatLocation(
+                                propertyEntity.address,
+                                formatApartment(propertyEntity.apartment),
+                                propertyEntity.city,
+                                propertyEntity.zipcode,
+                                propertyEntity.country
+                            )
                         )
                     )
                 }
@@ -57,5 +59,28 @@ class DetailsViewModel @Inject constructor(
 
     fun onResume(isTablet: Boolean) {
         refreshOrientationUseCase.invoke(isTablet)
+    }
+
+    private fun formatSurface(surface: Int): String {
+        return "$surface m²"
+    }
+
+    private fun formatLocation(address: String, apartment: String, city: String, zipcode: Int, country: String): String {
+        val location = buildString {
+            append(address)
+            if (apartment.isNotEmpty()) {
+                append("\n$apartment")
+            }
+            append("\n$city $zipcode\n$country")
+        }
+        return location
+    }
+
+    private fun formatApartment(apartment: String): String {
+        return if (apartment.isNotEmpty()) {
+            "Apt $apartment"
+        } else {
+            ""
+        }
     }
 }

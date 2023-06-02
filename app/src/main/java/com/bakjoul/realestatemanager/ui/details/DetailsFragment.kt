@@ -24,6 +24,7 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
             binding.detailsItemRooms.setText(details.rooms)
             binding.detailsItemBedrooms.setText(details.bedrooms)
             binding.detailsItemBathrooms.setText(details.bathrooms)
+            binding.detailsItemLocation.setText(details.location)
         }
     }
 }

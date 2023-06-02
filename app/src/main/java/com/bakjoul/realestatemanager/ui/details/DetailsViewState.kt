@@ -6,9 +6,5 @@ data class DetailsViewState(
     val rooms: String,
     val bedrooms: String,
     val bathrooms: String,
-    val address: String,
-    val appartment: String,
-    val city: String,
-    val zipcode: String,
-    val country: String
+    val location: String
 )

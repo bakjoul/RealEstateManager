@@ -16,7 +16,7 @@ data class PropertyEntity(
     @ColumnInfo(name = "bathrooms") val bathrooms: Int,
     @ColumnInfo(name = "description") val description: String,
     @ColumnInfo(name = "address") val address: String,
-    @ColumnInfo(name = "appartment") val appartment: String,
+    @ColumnInfo(name = "appartment") val apartment: String,
     @ColumnInfo(name = "zipcode") val zipcode: Int,
     @ColumnInfo(name = "city") val city: String,
     @ColumnInfo(name = "state") val state: String,
