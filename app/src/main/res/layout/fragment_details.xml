@@ -7,19 +7,6 @@
     tools:context=".ui.details.DetailsFragment">
 
     <TextView
-        android:id="@+id/details_media_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="12dp"
-        android:layout_marginVertical="8dp"
-        android:text="@string/details_label_media"
-        android:textColor="@color/grey_label"
-        android:textSize="17sp"
-        android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
         android:id="@+id/details_description_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -30,7 +17,7 @@
         android:textSize="17sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/details_media_label" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/details_description_text"
@@ -45,6 +32,19 @@
         app:layout_constraintTop_toBottomOf="@id/details_description_label"
         tools:text="Anchored by a vast marble gallery with sweeping staircase, the entertaining floor includes a baronial living room facing Park Avenue, handsome library with original paneling, and tremendous dining room; all of which enjoy fireplaces. The state-of-the-art St. Charles designed kitchen includes a sunny breakfast room and staff quarters. Upstairs, the expansive master suite overlooks Park Avenue and includes two marble baths, two dressing rooms, and two offices. Additionally there are three large bedrooms with en-suite baths and a media room." />
 
+    <TextView
+        android:id="@+id/details_media_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="12dp"
+        android:layout_marginVertical="8dp"
+        android:text="@string/details_label_media"
+        android:textColor="@color/grey_label"
+        android:textSize="17sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/details_description_text" />
+
     <LinearLayout
         android:id="@+id/details_surface_LinearLayout"
         android:layout_width="match_parent"
@@ -54,7 +54,7 @@
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/details_description_text">
+        app:layout_constraintTop_toBottomOf="@id/details_media_label">
 
         <com.bakjoul.realestatemanager.ui.details.DetailsFieldView
             android:id="@+id/details_item_surface"
@@ -108,7 +108,7 @@
         android:layout_height="wrap_content"
         android:layout_marginVertical="12dp"
         android:layout_weight="0.25"
-        app:imageSrc="@drawable/hot_tub_24"
+        app:imageSrc="@drawable/baseline_location_on_24"
         app:label="@string/details_label_location"
         app:layout_constraintStart_toStartOf="@id/details_rooms_LinearLayout"
         app:layout_constraintTop_toBottomOf="@id/details_rooms_LinearLayout" />
