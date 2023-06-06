@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/details_media_item"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginEnd="5dp">
+
+    <ImageView
+        android:id="@+id/details_media_item_photo"
+        android:layout_width="110dp"
+        android:layout_height="110dp"
+        android:importantForAccessibility="no"
+        android:scaleType="centerCrop"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:src="@drawable/penthouse_upper_east_side" />
+
+    <TextView
+        android:id="@+id/details_media_item_description"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="#75000000"
+        android:lines="1"
+        android:padding="10dp"
+        android:textColor="@color/white"
+        android:textSize="15sp"
+        app:layout_constraintBottom_toBottomOf="@id/details_media_item_photo"
+        app:layout_constraintEnd_toEndOf="@+id/details_media_item_photo"
+        app:layout_constraintStart_toStartOf="@id/details_media_item_photo"
+        tools:text="Facade" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

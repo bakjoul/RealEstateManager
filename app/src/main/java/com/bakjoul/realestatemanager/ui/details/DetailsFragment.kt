@@ -18,6 +18,9 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val adapter = DetailsAdapter()
+        binding.detailsMediaRecyclerView.adapter = adapter
+
         viewModel.detailsLiveData.observe(viewLifecycleOwner) { details ->
             binding.detailsDescriptionText.text = details.description
             binding.detailsItemSurface.setText(details.surface)
@@ -25,6 +28,7 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
             binding.detailsItemBedrooms.setText(details.bedrooms)
             binding.detailsItemBathrooms.setText(details.bathrooms)
             binding.detailsItemLocation.setText(details.location)
+            adapter.submitList(details.media)
         }
     }
 }

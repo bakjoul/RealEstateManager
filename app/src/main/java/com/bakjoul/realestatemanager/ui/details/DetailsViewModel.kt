@@ -8,8 +8,10 @@ import com.bakjoul.realestatemanager.domain.CoroutineDispatcherProvider
 import com.bakjoul.realestatemanager.domain.current_property.GetCurrentPropertyIdUseCase
 import com.bakjoul.realestatemanager.domain.current_property.SetCurrentPropertyIdUseCase
 import com.bakjoul.realestatemanager.domain.property.GetPropertyByIdUseCase
+import com.bakjoul.realestatemanager.domain.property.model.PhotoEntity
 import com.bakjoul.realestatemanager.domain.resources.IsTabletUseCase
 import com.bakjoul.realestatemanager.domain.resources.RefreshOrientationUseCase
+import com.bakjoul.realestatemanager.ui.utils.EquatableCallback
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -44,11 +46,23 @@ class DetailsViewModel @Inject constructor(
                                 propertyEntity.city,
                                 propertyEntity.zipcode,
                                 propertyEntity.country
-                            )
+                            ),
+                            media = mapPhotoEntities(propertyEntity.photos)
                         )
                     )
                 }
             }
+        }
+    }
+
+    private fun mapPhotoEntities(photoEntities: List<PhotoEntity>): List<DetailsMediaItemViewState> {
+        return photoEntities.map { photoEntity ->
+            DetailsMediaItemViewState(
+                id = photoEntity.id,
+                url = photoEntity.url,
+                description = photoEntity.description,
+                onPhotoClicked = EquatableCallback { }
+            )
         }
     }
 
@@ -65,13 +79,13 @@ class DetailsViewModel @Inject constructor(
         return "$surface m²"
     }
 
-    private fun formatLocation(address: String, apartment: String, city: String, zipcode: Int, country: String): String {
+    private fun formatLocation(address: String, apartment: String, city: String, zipcode: String, country: String): String {
         val location = buildString {
             append(address)
             if (apartment.isNotEmpty()) {
                 append("\n$apartment")
             }
-            append("\n$city $zipcode\n$country")
+            append("\n$city\n$zipcode\n$country")
         }
         return location
     }
