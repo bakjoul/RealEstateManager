@@ -7,5 +7,6 @@ data class DetailsViewState(
     val bedrooms: String,
     val bathrooms: String,
     val location: String,
-    val media: List<DetailsMediaItemViewState>
+    val media: List<DetailsMediaItemViewState>,
+    val map: String
 )

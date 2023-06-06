@@ -47,7 +47,8 @@ class DetailsViewModel @Inject constructor(
                                 propertyEntity.zipcode,
                                 propertyEntity.country
                             ),
-                            media = mapPhotoEntities(propertyEntity.photos)
+                            media = mapPhotoEntities(propertyEntity.photos),
+                            map = ""
                         )
                     )
                 }
