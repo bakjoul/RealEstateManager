@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bakjoul.realestatemanager.databinding.FragmentListItemBinding
+import com.bumptech.glide.Glide
 
 class PropertyAdapter :
     ListAdapter<PropertyItemViewState, PropertyAdapter.ViewHolder>(PropertyDiffCallback) {
@@ -21,7 +22,9 @@ class PropertyAdapter :
     class ViewHolder(private val binding: FragmentListItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(item: PropertyItemViewState) {
-            // TODO photo
+            Glide.with(binding.listItemPhoto.context)
+                .load(item.photoUrl)
+                .into(binding.listItemPhoto)
             binding.listItemType.text = item.type
             binding.listItemCity.text = item.city
             binding.listItemPrice.text = item.price
