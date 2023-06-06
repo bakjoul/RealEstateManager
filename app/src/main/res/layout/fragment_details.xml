@@ -62,7 +62,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.25"
             app:imageSrc="@drawable/baseline_settings_overscan_24"
-            app:label="@string/details_label_surface" />
+            app:label="@string/details_label_surface"
+            app:textPreview="750 m²" />
 
         <com.bakjoul.realestatemanager.ui.details.DetailsFieldView
             android:id="@+id/details_item_bedrooms"
@@ -70,7 +71,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.25"
             app:imageSrc="@drawable/bed_24"
-            app:label="@string/details_label_bedrooms" />
+            app:label="@string/details_label_bedrooms"
+            app:textPreview="4" />
     </LinearLayout>
 
     <LinearLayout
@@ -91,7 +93,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.25"
             app:imageSrc="@drawable/baseline_home_24"
-            app:label="@string/details_label_rooms" />
+            app:label="@string/details_label_rooms"
+            app:textPreview="8" />
 
         <com.bakjoul.realestatemanager.ui.details.DetailsFieldView
             android:id="@+id/details_item_bathrooms"
@@ -99,7 +102,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.25"
             app:imageSrc="@drawable/hot_tub_24"
-            app:label="@string/details_label_bathrooms" />
+            app:label="@string/details_label_bathrooms"
+            app:textPreview="2" />
     </LinearLayout>
 
     <com.bakjoul.realestatemanager.ui.details.DetailsFieldView
@@ -111,6 +115,7 @@
         app:imageSrc="@drawable/baseline_location_on_24"
         app:label="@string/details_label_location"
         app:layout_constraintStart_toStartOf="@id/details_rooms_LinearLayout"
-        app:layout_constraintTop_toBottomOf="@id/details_rooms_LinearLayout" />
+        app:layout_constraintTop_toBottomOf="@id/details_rooms_LinearLayout"
+        app:textPreview="740 Park Avenue\nApt 6/7A\nNew YOrk\nNY 10021\nUnited States" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

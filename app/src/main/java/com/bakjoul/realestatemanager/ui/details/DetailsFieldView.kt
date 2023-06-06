@@ -15,6 +15,7 @@ class DetailsFieldView : ConstraintLayout {
     private lateinit var tvText: TextView
     private var imageResId = 0
     private var label = ""
+    private var textPreview = ""
 
     constructor(context: Context) : super(context) {
         initDetailsField(context)
@@ -42,6 +43,9 @@ class DetailsFieldView : ConstraintLayout {
         if (label.isNotEmpty()) {
             tvLabel.text = label
         }
+        if (textPreview.isNotEmpty()) {
+            tvText.text = textPreview
+        }
     }
 
     private fun getStuffFromXml(context: Context, attrs: AttributeSet?) {
@@ -49,6 +53,7 @@ class DetailsFieldView : ConstraintLayout {
 
         imageResId = data.getResourceId(R.styleable.DetailsFieldView_imageSrc, 0)
         label = data.getString(R.styleable.DetailsFieldView_label).toString()
+        textPreview = data.getString(R.styleable.DetailsFieldView_textPreview).toString()
 
         data.recycle()
     }

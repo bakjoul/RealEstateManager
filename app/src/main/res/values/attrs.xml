@@ -3,5 +3,6 @@
     <declare-styleable name="DetailsFieldView">
         <attr name="imageSrc" format="reference" />
         <attr name="label" format="string" />
+        <attr name="textPreview" format="string" />
     </declare-styleable>
 </resources>
