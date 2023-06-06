@@ -21,7 +21,7 @@ class PropertyListViewModel @Inject constructor(
                 properties.map {
                     PropertyItemViewState(
                         id = it.id,
-                        photoUrl = it.photoUrl.first(),
+                        photoUrl = it.photos.firstOrNull()?.url ?: "",
                         type = it.type,
                         city = it.city,
                         price = it.price.toString(),

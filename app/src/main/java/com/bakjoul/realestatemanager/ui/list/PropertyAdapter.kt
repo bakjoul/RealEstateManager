@@ -8,8 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bakjoul.realestatemanager.databinding.FragmentListItemBinding
 import com.bumptech.glide.Glide
 
-class PropertyAdapter :
-    ListAdapter<PropertyItemViewState, PropertyAdapter.ViewHolder>(PropertyDiffCallback) {
+class PropertyAdapter : ListAdapter<PropertyItemViewState, PropertyAdapter.ViewHolder>(PropertyDiffCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder = ViewHolder(
         FragmentListItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)

@@ -1,6 +1,7 @@
 package com.bakjoul.realestatemanager.data.property
 
 import com.bakjoul.realestatemanager.domain.property.PropertyRepository
+import com.bakjoul.realestatemanager.domain.property.model.PhotoEntity
 import com.bakjoul.realestatemanager.domain.property.model.PropertyEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -24,16 +25,29 @@ class PropertyRepositoryImplementation @Inject constructor() : PropertyRepositor
                     rooms = 5,
                     bedrooms = 3,
                     bathrooms = 2,
-                    description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec euismod, nisl eget ultricies ultrices, nisl nisl aliquam",
-                    address = "1 rue de la paix",
-                    apartment = "1",
-                    zipcode = 75000,
-                    city = "Paris",
-                    state = "Ile de France",
-                    country = "France",
+                    description = "Anchored by a vast marble gallery with sweeping staircase, the entertaining floor includes a baronial living room facing Park Avenue, handsome library with original paneling, and tremendous dining room; all of which enjoy fireplaces. The state-of-the-art St. Charles designed kitchen includes a sunny breakfast room and staff quarters. Upstairs, the expansive master suite overlooks Park Avenue and includes two marble baths, two dressing rooms, and two offices. Additionally there are three large bedrooms with en-suite baths and a media room.",
+                    address = "740 Park Avenue",
+                    apartment = "6/7A",
+                    zipcode = "NY 10021",
+                    city = "New York",
+                    state = "New York",
+                    country = "United States",
                     latitude = 48.856614,
                     longitude = 2.3522219,
-                    photoUrl = listOf("android.resource://com.bakjoul.realestatemanager/drawable/penthouse_upper_east_side"),
+                    photos = listOf(
+                        PhotoEntity(
+                            0,
+                            0,
+                            "android.resource://com.bakjoul.realestatemanager/drawable/penthouse_upper_east_side",
+                            "Lounge"
+                        ),
+                        PhotoEntity(
+                            1,
+                            0,
+                            "android.resource://com.bakjoul.realestatemanager/drawable/penthouse_upper_east_side",
+                            "Lounge 2"
+                        )
+                    ),
                     poiSchool = true,
                     poiStore = true,
                     poiPark = true,
@@ -57,13 +71,20 @@ class PropertyRepositoryImplementation @Inject constructor() : PropertyRepositor
                     description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec euismod, nisl eget ultricies ultrices, nisl nisl aliquam",
                     address = "2 rue de la paix",
                     apartment = "2",
-                    zipcode = 75000,
+                    zipcode = "75000",
                     city = "Paris",
                     state = "Ile de France",
                     country = "France",
                     latitude = 48.856614,
                     longitude = 2.3522219,
-                    photoUrl = listOf("android.resource://com.bakjoul.realestatemanager/drawable/penthouse_upper_east_side"),
+                    photos = listOf(
+                        PhotoEntity(
+                            0,
+                            0,
+                            "android.resource://com.bakjoul.realestatemanager/drawable/penthouse_upper_east_side",
+                            "Lounge"
+                        )
+                    ),
                     poiSchool = true,
                     poiStore = true,
                     poiPark = true,
