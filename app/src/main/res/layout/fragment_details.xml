@@ -116,19 +116,37 @@
         app:layout_constraintEnd_toEndOf="@id/details_description_text"
         app:layout_constraintStart_toStartOf="@id/details_description_text"
         app:layout_constraintTop_toBottomOf="@id/details_media_label"
-        tools:listitem="@layout/fragment_details_media_item"
-        tools:itemCount="5"/>
+        tools:itemCount="5"
+        tools:listitem="@layout/fragment_details_media_item" />
 
-    <com.bakjoul.realestatemanager.ui.details.DetailsFieldView
-        android:id="@+id/details_item_location"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
+    <LinearLayout
+        android:id="@+id/details_location_LinearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginHorizontal="24dp"
         android:layout_marginVertical="24dp"
-        android:layout_weight="0.25"
-        app:imageSrc="@drawable/baseline_location_on_24"
-        app:label="@string/details_label_location"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/details_media_recyclerView"
         app:layout_constraintStart_toStartOf="@id/details_rooms_LinearLayout"
-        app:layout_constraintTop_toBottomOf="@id/details_media_recyclerView"
-        app:textPreview="740 Park Avenue\nApt 6/7A\nNew YOrk\nNY 10021\nUnited States" />
+        app:layout_constraintTop_toBottomOf="@id/details_media_recyclerView">
+
+        <com.bakjoul.realestatemanager.ui.details.DetailsFieldView
+            android:id="@+id/details_item_location"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.25"
+            app:imageSrc="@drawable/baseline_location_on_24"
+            app:label="@string/details_label_location"
+            app:textPreview="740 Park Avenue\nApt 6/7A\nNew YOrk\nNY 10021\nUnited States" />
+
+        <ImageView
+            android:id="@+id/details_static_map"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.25"
+            android:importantForAccessibility="no"
+            tools:src="@drawable/penthouse_static_map" />
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
