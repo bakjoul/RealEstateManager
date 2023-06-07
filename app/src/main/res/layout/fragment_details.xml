@@ -43,7 +43,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/details_description_text">
 
-        <com.bakjoul.realestatemanager.ui.details.DetailsFieldView
+        <com.bakjoul.realestatemanager.designsystem.atome.DetailsFieldView
             android:id="@+id/details_item_surface"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -52,7 +52,7 @@
             app:label="@string/details_label_surface"
             app:textPreview="750 m²" />
 
-        <com.bakjoul.realestatemanager.ui.details.DetailsFieldView
+        <com.bakjoul.realestatemanager.designsystem.atome.DetailsFieldView
             android:id="@+id/details_item_bedrooms"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -74,7 +74,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/details_surface_LinearLayout">
 
-        <com.bakjoul.realestatemanager.ui.details.DetailsFieldView
+        <com.bakjoul.realestatemanager.designsystem.atome.DetailsFieldView
             android:id="@+id/details_item_rooms"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -83,7 +83,7 @@
             app:label="@string/details_label_rooms"
             app:textPreview="8" />
 
-        <com.bakjoul.realestatemanager.ui.details.DetailsFieldView
+        <com.bakjoul.realestatemanager.designsystem.atome.DetailsFieldView
             android:id="@+id/details_item_bathrooms"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -131,7 +131,7 @@
         app:layout_constraintStart_toStartOf="@id/details_rooms_LinearLayout"
         app:layout_constraintTop_toBottomOf="@id/details_media_recyclerView">
 
-        <com.bakjoul.realestatemanager.ui.details.DetailsFieldView
+        <com.bakjoul.realestatemanager.designsystem.atome.DetailsFieldView
             android:id="@+id/details_item_location"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
