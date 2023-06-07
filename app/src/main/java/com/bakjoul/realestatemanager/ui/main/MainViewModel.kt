@@ -24,8 +24,8 @@ class MainViewModel @Inject constructor(
         combine(
             getCurrentPropertyIdChannelUseCase.invoke(),
             isTabletUseCase.invoke()
-        ) { currentPropertyId, isTablet ->
-            if (currentPropertyId != null && !isTablet) {
+        ) { _, isTablet ->
+            if (!isTablet) {
                 emit(Event(MainViewAction.NavigateToDetails))
             }
         }.collect()

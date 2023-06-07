@@ -4,8 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.liveData
-import com.bakjoul.realestatemanager.domain.CoroutineDispatcherProvider
-import com.bakjoul.realestatemanager.domain.current_property.SetCurrentPropertyIdUseCase
 import com.bakjoul.realestatemanager.domain.property.GetCurrentPropertyUseCase
 import com.bakjoul.realestatemanager.domain.property.model.PhotoEntity
 import com.bakjoul.realestatemanager.domain.resources.IsTabletUseCase
@@ -18,9 +16,7 @@ import javax.inject.Inject
 class DetailsViewModel @Inject constructor(
     private val getCurrentPropertyUseCase: GetCurrentPropertyUseCase,
     private val refreshOrientationUseCase: RefreshOrientationUseCase,
-    private val setCurrentPropertyIdUseCase: SetCurrentPropertyIdUseCase,
-    isTabletUseCase: IsTabletUseCase,
-    coroutineDispatcherProvider: CoroutineDispatcherProvider
+    isTabletUseCase: IsTabletUseCase
 ) : ViewModel() {
 
     val isTabletLiveData: LiveData<Boolean> = isTabletUseCase.invoke().asLiveData()
@@ -57,11 +53,6 @@ class DetailsViewModel @Inject constructor(
                 onPhotoClicked = EquatableCallback { }
             )
         }
-    }
-
-    // TODO Ask Nino if this is the right way to do it
-    fun resetPropertyId() {
-        setCurrentPropertyIdUseCase.invoke(null)
     }
 
     fun onResume(isTablet: Boolean) {
