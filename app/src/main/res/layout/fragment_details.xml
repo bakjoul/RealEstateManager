@@ -138,7 +138,7 @@
             android:layout_weight="0.25"
             app:imageSrc="@drawable/baseline_location_on_24"
             app:label="@string/details_label_location"
-            app:textPreview="740 Park Avenue\nApt 6/7A\nNew YOrk\nNY 10021\nUnited States" />
+            app:textPreview="740 Park Avenue\nApt 6/7A\nNew York\nNY 10021\nUnited States" />
 
         <ImageView
             android:id="@+id/details_static_map"
