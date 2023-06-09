@@ -1,5 +1,6 @@
 package com.bakjoul.realestatemanager.ui.main
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
@@ -15,24 +16,25 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val getCurrentPropertyIdChannelUseCase: GetCurrentPropertyIdUseCase,
+    private val getCurrentPropertyIdUseCase: GetCurrentPropertyIdUseCase,
     private val isTabletUseCase: IsTabletUseCase,
     private val refreshOrientationUseCase: RefreshOrientationUseCase,
 ) : ViewModel() {
 
     val mainViewActionLiveData: LiveData<Event<MainViewAction>> = liveData {
         combine(
-            getCurrentPropertyIdChannelUseCase.invoke(),
+            getCurrentPropertyIdUseCase.invoke(),
             isTabletUseCase.invoke()
-        ) { _, isTablet ->
-            if (!isTablet) {
+        ) { propertyId, isTablet ->
+            if (propertyId >= 0 && !isTablet) {
+                Log.d("test", "we are in combine: propertyId: $propertyId")
                 emit(Event(MainViewAction.NavigateToDetails))
             }
         }.collect()
     }
 
     fun getCurrentPropertyIdChannelLiveData(): LiveData<Long?> =
-        getCurrentPropertyIdChannelUseCase.invoke().asLiveData()
+        getCurrentPropertyIdUseCase.invoke().asLiveData()
 
     fun onResume(isTablet: Boolean) {
         refreshOrientationUseCase.invoke(isTablet)

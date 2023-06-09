@@ -1,5 +1,6 @@
 package com.bakjoul.realestatemanager.ui.details
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
@@ -23,6 +24,7 @@ class DetailsViewModel @Inject constructor(
 
     val detailsLiveData: LiveData<DetailsViewState> = liveData {
         getCurrentPropertyUseCase.invoke().collect { propertyEntity ->
+            Log.d("test", "details property: $propertyEntity")
             emit(
                 DetailsViewState(
                     description = propertyEntity.description,
