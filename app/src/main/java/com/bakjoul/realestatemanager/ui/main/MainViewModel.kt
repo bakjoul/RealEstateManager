@@ -26,15 +26,16 @@ class MainViewModel @Inject constructor(
             getCurrentPropertyIdUseCase.invoke(),
             isTabletUseCase.invoke()
         ) { propertyId, isTablet ->
-            if (propertyId >= 0 && !isTablet) {
+            if (propertyId >= 0) {
                 Log.d("test", "we are in combine: propertyId: $propertyId")
-                emit(Event(MainViewAction.NavigateToDetails))
+                if (!isTablet) {
+                    emit(Event(MainViewAction.NavigateToDetails))
+                } else {
+                    emit(Event(MainViewAction.LoadDetailsFragment))
+                }
             }
         }.collect()
     }
-
-    fun getCurrentPropertyIdChannelLiveData(): LiveData<Long?> =
-        getCurrentPropertyIdUseCase.invoke().asLiveData()
 
     fun onResume(isTablet: Boolean) {
         refreshOrientationUseCase.invoke(isTablet)
