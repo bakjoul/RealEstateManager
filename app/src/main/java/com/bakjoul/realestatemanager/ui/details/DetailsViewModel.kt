@@ -1,6 +1,5 @@
 package com.bakjoul.realestatemanager.ui.details
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
@@ -24,7 +23,6 @@ class DetailsViewModel @Inject constructor(
 
     val detailsLiveData: LiveData<DetailsViewState> = liveData {
         getCurrentPropertyUseCase.invoke().collect { propertyEntity ->
-            Log.d("test", "details property: $propertyEntity")
             emit(
                 DetailsViewState(
                     description = propertyEntity.description,
@@ -65,7 +63,13 @@ class DetailsViewModel @Inject constructor(
         return "$surface m²"
     }
 
-    private fun formatLocation(address: String, apartment: String, city: String, zipcode: String, country: String): String {
+    private fun formatLocation(
+        address: String,
+        apartment: String,
+        city: String,
+        zipcode: String,
+        country: String
+    ): String {
         val location = buildString {
             append(address)
             if (apartment.isNotEmpty()) {

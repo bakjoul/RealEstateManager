@@ -1,41 +1,45 @@
 package com.bakjoul.realestatemanager.ui.main
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
-import androidx.lifecycle.liveData
-import com.bakjoul.realestatemanager.domain.current_property.GetCurrentPropertyIdUseCase
+import com.bakjoul.realestatemanager.domain.current_property.GetCurrentPropertyIdChannelUseCase
 import com.bakjoul.realestatemanager.domain.resources.IsTabletUseCase
 import com.bakjoul.realestatemanager.domain.resources.RefreshOrientationUseCase
 import com.bakjoul.realestatemanager.ui.utils.Event
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.receiveAsFlow
 import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val getCurrentPropertyIdUseCase: GetCurrentPropertyIdUseCase,
-    private val isTabletUseCase: IsTabletUseCase,
+    getCurrentPropertyIdChannelUseCase: GetCurrentPropertyIdChannelUseCase,
+    isTabletUseCase: IsTabletUseCase,
     private val refreshOrientationUseCase: RefreshOrientationUseCase,
 ) : ViewModel() {
 
-    val mainViewActionLiveData: LiveData<Event<MainViewAction>> = liveData {
+
+    val mainViewActionLiveData: LiveData<Event<MainViewAction>> =
         combine(
-            getCurrentPropertyIdUseCase.invoke(),
+            getCurrentPropertyIdChannelUseCase.invoke().receiveAsFlow(),
             isTabletUseCase.invoke()
-        ) { propertyId, isTablet ->
-            if (propertyId >= 0) {
-                Log.d("test", "we are in combine: propertyId: $propertyId")
-                if (!isTablet) {
-                    emit(Event(MainViewAction.NavigateToDetails))
+        ) { id, isTablet ->
+            if (id >= 0) {
+                if (isTablet) {
+                    MainViewAction.DisplayDetailsFragment
                 } else {
-                    emit(Event(MainViewAction.LoadDetailsFragment))
+                    MainViewAction.NavigateToDetails
                 }
+            } else {
+                null
             }
-        }.collect()
-    }
+        }.map { action ->
+            action?.let { Event(it) }
+        }.filterNotNull().asLiveData()
+
 
     fun onResume(isTablet: Boolean) {
         refreshOrientationUseCase.invoke(isTablet)

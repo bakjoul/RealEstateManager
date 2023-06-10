@@ -1,6 +1,5 @@
 package com.bakjoul.realestatemanager.ui.list
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -30,7 +29,6 @@ class PropertyAdapter : ListAdapter<PropertyItemViewState, PropertyAdapter.ViewH
             binding.listItemPrice.text = item.price
             binding.listItemLayout.setOnClickListener {
                 item.onPropertyClicked.invoke()
-                Log.d("test", "item ${item.id} clicked")
             }
         }
     }

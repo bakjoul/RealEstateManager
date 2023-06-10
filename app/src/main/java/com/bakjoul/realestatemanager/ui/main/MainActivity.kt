@@ -30,18 +30,10 @@ class MainActivity : AppCompatActivity() {
         }
 
         val containerDetailsId = binding.mainFrameLayoutContainerDetails?.id
-/*        viewModel.getCurrentPropertyIdLiveData().observe(this) { propertyId ->
-            if (propertyId != null && containerDetailsId != null && supportFragmentManager.findFragmentById(containerDetailsId) == null) {
-                supportFragmentManager.beginTransaction()
-                    .replace(containerDetailsId, DetailsFragment())
-                    .commitNow()
-            }
-        }*/
-
         viewModel.mainViewActionLiveData.observeEvent(this) {
             when (it) {
                 MainViewAction.NavigateToDetails -> startActivity(Intent(this, DetailsActivity::class.java))
-                MainViewAction.LoadDetailsFragment -> {
+                MainViewAction.DisplayDetailsFragment -> {
                     if (containerDetailsId != null && supportFragmentManager.findFragmentById(containerDetailsId) == null) {
                         supportFragmentManager.beginTransaction()
                             .replace(containerDetailsId, DetailsFragment())
