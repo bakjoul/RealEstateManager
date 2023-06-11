@@ -20,7 +20,7 @@ class DetailsFieldView @JvmOverloads constructor(
         context.withStyledAttributes(attrs, R.styleable.DetailsFieldView) {
             binding.detailsFieldIcon.setImageResource(getResourceId(R.styleable.DetailsFieldView_imageSrc, 0))
             getString(R.styleable.DetailsFieldView_label)?.let { binding.detailsFieldLabel.text = it }
-            getString(R.styleable.DetailsFieldView_textPreview)?.let { binding.detailsFieldText.text }
+            getString(R.styleable.DetailsFieldView_textPreview)?.let { binding.detailsFieldText.text = it }
         }
     }
 

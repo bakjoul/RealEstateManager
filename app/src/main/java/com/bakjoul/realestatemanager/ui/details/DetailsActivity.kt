@@ -5,14 +5,14 @@ import android.view.MenuItem
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.bakjoul.realestatemanager.R
-import com.bakjoul.realestatemanager.databinding.DetailsActivityBinding
+import com.bakjoul.realestatemanager.databinding.ActivityDetailsBinding
 import com.bakjoul.realestatemanager.ui.utils.viewBinding
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class DetailsActivity : AppCompatActivity() {
 
-    private val binding by viewBinding { DetailsActivityBinding.inflate(it) }
+    private val binding by viewBinding { ActivityDetailsBinding.inflate(it) }
     private val viewModel by viewModels<DetailsViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {

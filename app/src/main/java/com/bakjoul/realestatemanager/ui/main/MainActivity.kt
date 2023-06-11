@@ -5,7 +5,7 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.bakjoul.realestatemanager.R
-import com.bakjoul.realestatemanager.databinding.MainActivityBinding
+import com.bakjoul.realestatemanager.databinding.ActivityMainBinding
 import com.bakjoul.realestatemanager.ui.details.DetailsActivity
 import com.bakjoul.realestatemanager.ui.details.DetailsFragment
 import com.bakjoul.realestatemanager.ui.list.PropertyListFragment
@@ -16,7 +16,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
-    private val binding by viewBinding { MainActivityBinding.inflate(it) }
+    private val binding by viewBinding { ActivityMainBinding.inflate(it) }
     private val viewModel by viewModels<MainViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {

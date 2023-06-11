@@ -57,7 +57,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.25"
-            app:imageSrc="@drawable/bed_24"
+            app:imageSrc="@drawable/hotel_black_24dp"
             app:label="@string/details_label_bedrooms"
             app:textPreview="4" />
     </LinearLayout>
@@ -88,7 +88,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.25"
-            app:imageSrc="@drawable/hot_tub_24"
+            app:imageSrc="@drawable/hot_tub_black_24dp"
             app:label="@string/details_label_bathrooms"
             app:textPreview="2" />
     </LinearLayout>
