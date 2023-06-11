@@ -14,4 +14,16 @@
     <string name="property_type_house">House</string>
     <string name="property_type_duplex">Duplex</string>
     <string name="property_type_penthouse">Penthouse</string>
+    <string name="details_label_amenities">Amenities</string>
+    <string name="details_label_transportation">Transportation</string>
+    <string name="details_poi_desc_school">School</string>
+    <string name="details_poi_desc_store">Store</string>
+    <string name="details_poi_desc_park">Park</string>
+    <string name="details_poi_desc_restaurant">Restaurant</string>
+    <string name="details_poi_desc_bus">Bus</string>
+    <string name="details_poi_desc_subway">Subway</string>
+    <string name="details_poi_desc_tramway">Tramway</string>
+    <string name="details_poi_desc_train">Train</string>
+    <string name="details_poi_desc_airport">Airport</string>
+    <string name="details_poi_desc_hospital">Hospital</string>
 </resources>

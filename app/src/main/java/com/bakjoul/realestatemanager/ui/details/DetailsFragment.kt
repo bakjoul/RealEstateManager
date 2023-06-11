@@ -27,6 +27,16 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
             binding.detailsItemRooms.setText(details.rooms)
             binding.detailsItemBedrooms.setText(details.bedrooms)
             binding.detailsItemBathrooms.setText(details.bathrooms)
+            binding.detailsPoiSchool.visibility = if (details.poiSchool) View.VISIBLE else View.GONE
+            binding.detailsPoiStore.visibility = if (details.poiStore) View.VISIBLE else View.GONE
+            binding.detailsPoiPark.visibility = if (details.poiPark) View.VISIBLE else View.GONE
+            binding.detailsPoiRestaurant.visibility = if (details.poiRestaurant) View.VISIBLE else View.GONE
+            binding.detailsPoiHospital.visibility = if (details.poiHospital) View.VISIBLE else View.GONE
+            binding.detailsPoiBus.visibility = if (details.poiBus) View.VISIBLE else View.GONE
+            binding.detailsPoiSubway.visibility = if (details.poiSubway) View.VISIBLE else View.GONE
+            binding.detailsPoiTramway.visibility = if (details.poiTramway) View.VISIBLE else View.GONE
+            binding.detailsPoiTrain.visibility = if (details.poiTrain) View.VISIBLE else View.GONE
+            binding.detailsPoiAirport.visibility = if (details.poiAirport) View.VISIBLE else View.GONE
             binding.detailsItemLocation.setText(details.location)
             adapter.submitList(details.media)
         }
