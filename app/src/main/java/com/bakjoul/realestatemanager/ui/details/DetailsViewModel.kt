@@ -25,6 +25,10 @@ class DetailsViewModel @Inject constructor(
         getCurrentPropertyUseCase.invoke().collect { propertyEntity ->
             emit(
                 DetailsViewState(
+                    photoUrl = propertyEntity.photos.first().url,
+                    type = propertyEntity.type,
+                    price = propertyEntity.price.toString(),
+                    city = propertyEntity.city,
                     description = propertyEntity.description,
                     surface = formatSurface(propertyEntity.surface),
                     rooms = propertyEntity.rooms.toString(),

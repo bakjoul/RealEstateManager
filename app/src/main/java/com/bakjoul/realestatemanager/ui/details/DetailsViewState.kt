@@ -1,6 +1,10 @@
 package com.bakjoul.realestatemanager.ui.details
 
 data class DetailsViewState(
+    val photoUrl: String,
+    val type: String,
+    val price: String,
+    val city: String,
     val description: String,
     val surface: String,
     val rooms: String,

@@ -1,7 +1,6 @@
 package com.bakjoul.realestatemanager.ui.details
 
 import android.os.Bundle
-import android.view.MenuItem
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.bakjoul.realestatemanager.R
@@ -26,8 +25,8 @@ class DetailsActivity : AppCompatActivity() {
 
         setContentView(binding.root)
 
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.setDisplayShowHomeEnabled(true)
+        /*supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setDisplayShowHomeEnabled(true)*/
 
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
@@ -36,14 +35,14 @@ class DetailsActivity : AppCompatActivity() {
         }
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
+/*    override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
         android.R.id.home -> {
             supportFinishAfterTransition()
             true
         }
 
         else -> super.onOptionsItemSelected(item)
-    }
+    }*/
 
     override fun onResume() {
         super.onResume()

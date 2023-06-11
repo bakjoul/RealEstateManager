@@ -1,13 +1,18 @@
 package com.bakjoul.realestatemanager.ui.details
 
+import android.animation.ValueAnimator
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.databinding.FragmentDetailsBinding
+import com.bakjoul.realestatemanager.ui.utils.DensityUtil
 import com.bakjoul.realestatemanager.ui.utils.viewBinding
+import com.bumptech.glide.Glide
+import com.google.android.material.appbar.AppBarLayout
 import dagger.hilt.android.AndroidEntryPoint
+import kotlin.math.abs
 
 @AndroidEntryPoint
 class DetailsFragment : Fragment(R.layout.fragment_details) {
@@ -21,7 +26,17 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
         val adapter = DetailsAdapter()
         binding.detailsMediaRecyclerView.adapter = adapter
 
+        setInfoPadding()
+        binding.detailsFabBack.setOnClickListener { requireActivity().onBackPressedDispatcher.onBackPressed() }
+
         viewModel.detailsLiveData.observe(viewLifecycleOwner) { details ->
+            Glide.with(binding.detailsToolbarPhoto)
+                .load(details.photoUrl)
+                .into(binding.detailsToolbarPhoto)
+            binding.detailsToolbarType.text = details.type
+            binding.detailsToolbarPrice.text = details.price
+            binding.detailsToolbarCity.text = details.city
+            binding.detailsToolbarSurface.text = details.surface
             binding.detailsDescriptionText.text = details.description
             binding.detailsItemSurface.setText(details.surface)
             binding.detailsItemRooms.setText(details.rooms)
@@ -40,5 +55,29 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
             binding.detailsItemLocation.setText(details.location)
             adapter.submitList(details.media)
         }
+    }
+
+    private fun setInfoPadding() {
+        val startPadding = DensityUtil.dip2px(requireContext(), 0f)
+        val endPadding = DensityUtil.dip2px(requireContext(), 30f)
+        val paddingAnimation = ValueAnimator.ofInt(startPadding, endPadding).apply {
+            duration = 250
+            addUpdateListener { animator -> binding.detailsToolbarTypeAndPrice.setPadding(animator.animatedValue as Int, 0, 0, 0) }
+        }
+
+        binding.detailsAppbar.addOnOffsetChangedListener(object :
+            AppBarLayout.OnOffsetChangedListener {
+            var isInfoAlignedLeft = true
+
+            override fun onOffsetChanged(appBarLayout: AppBarLayout?, verticalOffset: Int) {
+                if (abs(verticalOffset) >= appBarLayout!!.totalScrollRange - binding.detailsFabBack.height && isInfoAlignedLeft) {
+                    paddingAnimation.start()
+                    isInfoAlignedLeft = false
+                } else if (abs(verticalOffset) < appBarLayout.totalScrollRange - binding.detailsFabBack.height && !isInfoAlignedLeft) {
+                    paddingAnimation.reverse()
+                    isInfoAlignedLeft = true
+                }
+            }
+        })
     }
 }

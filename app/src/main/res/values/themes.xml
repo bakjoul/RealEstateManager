@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Theme.RealEstateManager" parent="Theme.Material3.DayNight" />
+    <style name="Theme.RealEstateManager" parent="Theme.Material3.DayNight.NoActionBar" />
 
     <style name="PointOfInterest">
         <item name="android:layout_width">28dp</item>
