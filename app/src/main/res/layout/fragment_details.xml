@@ -121,279 +121,313 @@
         android:layout_height="match_parent"
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="1.5dp"
+            android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/details_description_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="12dp"
-                android:layout_marginVertical="16dp"
-                android:text="@string/details_label_description"
-                android:textColor="@color/grey_label"
-                android:textSize="17sp"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+            <androidx.cardview.widget.CardView
+                android:id="@+id/details_card_description"
+                style="@style/CustomCardView">
 
-            <TextView
-                android:id="@+id/details_description_text"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="12dp"
-                android:layout_marginVertical="8dp"
-                android:textColor="@color/grey_text"
-                android:textSize="14sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/details_description_label"
-                tools:text="Anchored by a vast marble gallery with sweeping staircase, the entertaining floor includes a baronial living room facing Park Avenue, handsome library with original paneling, and tremendous dining room; all of which enjoy fireplaces. The state-of-the-art St. Charles designed kitchen includes a sunny breakfast room and staff quarters. Upstairs, the expansive master suite overlooks Park Avenue and includes two marble baths, two dressing rooms, and two offices. Additionally there are three large bedrooms with en-suite baths and a media room." />
-
-            <LinearLayout
-                android:id="@+id/details_surface_LinearLayout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="24dp"
-                android:layout_marginVertical="16dp"
-                android:orientation="horizontal"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/details_description_text">
-
-                <com.bakjoul.realestatemanager.designsystem.atome.DetailsFieldView
-                    android:id="@+id/details_item_surface"
-                    android:layout_width="0dp"
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.25"
-                    app:imageSrc="@drawable/baseline_settings_overscan_24"
-                    app:label="@string/details_label_surface"
-                    app:textPreview="750 m²" />
+                    android:layout_marginHorizontal="12dp"
+                    android:layout_marginVertical="8dp">
 
-                <com.bakjoul.realestatemanager.designsystem.atome.DetailsFieldView
-                    android:id="@+id/details_item_bedrooms"
-                    android:layout_width="0dp"
+                    <TextView
+                        android:id="@+id/details_description_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/details_label_description"
+                        android:textColor="@color/grey_label"
+                        android:textSize="17sp"
+                        android:textStyle="bold"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/details_description_text"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginVertical="4dp"
+                        android:textColor="@color/grey_text"
+                        android:textSize="14sp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/details_description_label"
+                        tools:text="Anchored by a vast marble gallery with sweeping staircase, the entertaining floor includes a baronial living room facing Park Avenue, handsome library with original paneling, and tremendous dining room; all of which enjoy fireplaces. The state-of-the-art St. Charles designed kitchen includes a sunny breakfast room and staff quarters. Upstairs, the expansive master suite overlooks Park Avenue and includes two marble baths, two dressing rooms, and two offices. Additionally there are three large bedrooms with en-suite baths and a media room." />
+
+                    <LinearLayout
+                        android:id="@+id/details_surface_LinearLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="12dp"
+                        android:layout_marginVertical="16dp"
+                        android:orientation="horizontal"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/details_description_text">
+
+                        <com.bakjoul.realestatemanager.designsystem.atome.DetailsFieldView
+                            android:id="@+id/details_item_surface"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.25"
+                            app:imageSrc="@drawable/baseline_settings_overscan_24"
+                            app:label="@string/details_label_surface"
+                            app:textPreview="750 m²" />
+
+                        <com.bakjoul.realestatemanager.designsystem.atome.DetailsFieldView
+                            android:id="@+id/details_item_bedrooms"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.25"
+                            app:imageSrc="@drawable/hotel_black_24dp"
+                            app:label="@string/details_label_bedrooms"
+                            app:textPreview="4" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/details_rooms_LinearLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="12dp"
+                        android:orientation="horizontal"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/details_surface_LinearLayout">
+
+                        <com.bakjoul.realestatemanager.designsystem.atome.DetailsFieldView
+                            android:id="@+id/details_item_rooms"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.25"
+                            app:imageSrc="@drawable/baseline_home_24"
+                            app:label="@string/details_label_rooms"
+                            app:textPreview="8" />
+
+                        <com.bakjoul.realestatemanager.designsystem.atome.DetailsFieldView
+                            android:id="@+id/details_item_bathrooms"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.25"
+                            app:imageSrc="@drawable/hot_tub_black_24dp"
+                            app:label="@string/details_label_bathrooms"
+                            app:textPreview="2" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/details_amenities_label_LinearLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="12dp"
+                        android:layout_marginTop="12dp"
+                        android:orientation="horizontal"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/details_rooms_LinearLayout">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.5"
+                            android:text="@string/details_label_amenities"
+                            android:textColor="@color/grey_label"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.5"
+                            android:text="@string/details_label_transportation"
+                            android:textColor="@color/grey_label"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/details_amenities_LinearLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="12dp"
+                        android:layout_marginTop="8dp"
+                        android:baselineAligned="false"
+                        android:orientation="horizontal"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/details_amenities_label_LinearLayout">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.5"
+                            android:orientation="horizontal">
+
+                            <ImageView
+                                android:id="@+id/details_poi_school"
+                                style="@style/PointOfInterest"
+                                android:contentDescription="@string/details_poi_desc_school"
+                                android:src="@drawable/baseline_school_24"
+                                tools:visibility="visible" />
+
+                            <ImageView
+                                android:id="@+id/details_poi_store"
+                                style="@style/PointOfInterest"
+                                android:contentDescription="@string/details_poi_desc_store"
+                                android:src="@drawable/baseline_store_24"
+                                tools:visibility="visible" />
+
+                            <ImageView
+                                android:id="@+id/details_poi_park"
+                                style="@style/PointOfInterest"
+                                android:contentDescription="@string/details_poi_desc_park"
+                                android:src="@drawable/baseline_park_24"
+                                tools:visibility="visible" />
+
+                            <ImageView
+                                android:id="@+id/details_poi_restaurant"
+                                style="@style/PointOfInterest"
+                                android:contentDescription="@string/details_poi_desc_restaurant"
+                                android:src="@drawable/baseline_restaurant_24"
+                                tools:visibility="visible" />
+
+                            <ImageView
+                                android:id="@+id/details_poi_hospital"
+                                style="@style/PointOfInterest"
+                                android:contentDescription="@string/details_poi_desc_hospital"
+                                android:src="@drawable/baseline_local_hospital_24"
+                                tools:visibility="visible" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.5"
+                            android:orientation="horizontal">
+
+                            <ImageView
+                                android:id="@+id/details_poi_bus"
+                                style="@style/PointOfInterest"
+                                android:contentDescription="@string/details_poi_desc_bus"
+                                android:src="@drawable/baseline_directions_bus_24"
+                                tools:visibility="visible" />
+
+                            <ImageView
+                                android:id="@+id/details_poi_subway"
+                                style="@style/PointOfInterest"
+                                android:contentDescription="@string/details_poi_desc_subway"
+                                android:src="@drawable/baseline_subway_24"
+                                tools:visibility="visible" />
+
+                            <ImageView
+                                android:id="@+id/details_poi_tramway"
+                                style="@style/PointOfInterest"
+                                android:contentDescription="@string/details_poi_desc_tramway"
+                                android:src="@drawable/baseline_tram_24"
+                                tools:visibility="visible" />
+
+                            <ImageView
+                                android:id="@+id/details_poi_train"
+                                style="@style/PointOfInterest"
+                                android:contentDescription="@string/details_poi_desc_train"
+                                android:src="@drawable/baseline_train_24"
+                                tools:visibility="visible" />
+
+                            <ImageView
+                                android:id="@+id/details_poi_airport"
+                                style="@style/PointOfInterest"
+                                android:contentDescription="@string/details_poi_desc_airport"
+                                android:src="@drawable/baseline_local_airport_24"
+                                tools:visibility="visible" />
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/details_card_media"
+                style="@style/CustomCardView">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.25"
-                    app:imageSrc="@drawable/hotel_black_24dp"
-                    app:label="@string/details_label_bedrooms"
-                    app:textPreview="4" />
-            </LinearLayout>
+                    android:layout_marginHorizontal="12dp"
+                    android:layout_marginVertical="8dp">
 
-            <LinearLayout
-                android:id="@+id/details_rooms_LinearLayout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="24dp"
-                android:layout_marginVertical="12dp"
-                android:orientation="horizontal"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/details_surface_LinearLayout">
+                    <TextView
+                        android:id="@+id/details_media_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/details_label_media"
+                        android:textColor="@color/grey_label"
+                        android:textSize="17sp"
+                        android:textStyle="bold"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
 
-                <com.bakjoul.realestatemanager.designsystem.atome.DetailsFieldView
-                    android:id="@+id/details_item_rooms"
-                    android:layout_width="0dp"
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/details_media_recyclerView"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginVertical="12dp"
+                        android:orientation="horizontal"
+                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/details_media_label"
+                        tools:itemCount="5"
+                        tools:listitem="@layout/fragment_details_media_item" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/details_card_location"
+                style="@style/CustomCardView">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.25"
-                    app:imageSrc="@drawable/baseline_home_24"
-                    app:label="@string/details_label_rooms"
-                    app:textPreview="8" />
+                    android:layout_marginHorizontal="24dp"
+                    android:layout_marginVertical="12dp">
 
-                <com.bakjoul.realestatemanager.designsystem.atome.DetailsFieldView
-                    android:id="@+id/details_item_bathrooms"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.25"
-                    app:imageSrc="@drawable/hot_tub_black_24dp"
-                    app:label="@string/details_label_bathrooms"
-                    app:textPreview="2" />
-            </LinearLayout>
+                    <LinearLayout
+                        android:id="@+id/details_location_LinearLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
 
-            <LinearLayout
-                android:id="@+id/details_amenities_label_LinearLayout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="24dp"
-                android:layout_marginTop="12dp"
-                android:orientation="horizontal"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/details_rooms_LinearLayout">
+                        <com.bakjoul.realestatemanager.designsystem.atome.DetailsFieldView
+                            android:id="@+id/details_item_location"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.25"
+                            app:imageSrc="@drawable/baseline_location_on_24"
+                            app:label="@string/details_label_location"
+                            app:textPreview="740 Park Avenue\nApt 6/7A\nNew York\nNY 10021\nUnited States" />
 
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.5"
-                    android:text="@string/details_label_amenities"
-                    android:textColor="@color/grey_label"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
+                        <ImageView
+                            android:id="@+id/details_static_map"
+                            android:layout_width="0dp"
+                            android:layout_height="160dp"
+                            android:layout_weight="0.25"
+                            android:importantForAccessibility="no"
+                            tools:src="@drawable/penthouse_static_map" />
+                    </LinearLayout>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.cardview.widget.CardView>
 
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.5"
-                    android:text="@string/details_label_transportation"
-                    android:textColor="@color/grey_label"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/details_amenities_LinearLayout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="24dp"
-                android:layout_marginTop="8dp"
-                android:baselineAligned="false"
-                android:orientation="horizontal"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/details_amenities_label_LinearLayout">
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.5"
-                    android:orientation="horizontal">
-
-                    <ImageView
-                        android:id="@+id/details_poi_school"
-                        style="@style/PointOfInterest"
-                        android:contentDescription="@string/details_poi_desc_school"
-                        android:src="@drawable/baseline_school_24"
-                        tools:visibility="visible" />
-
-                    <ImageView
-                        android:id="@+id/details_poi_store"
-                        style="@style/PointOfInterest"
-                        android:contentDescription="@string/details_poi_desc_store"
-                        android:src="@drawable/baseline_store_24"
-                        tools:visibility="visible" />
-
-                    <ImageView
-                        android:id="@+id/details_poi_park"
-                        style="@style/PointOfInterest"
-                        android:contentDescription="@string/details_poi_desc_park"
-                        android:src="@drawable/baseline_park_24"
-                        tools:visibility="visible" />
-
-                    <ImageView
-                        android:id="@+id/details_poi_restaurant"
-                        style="@style/PointOfInterest"
-                        android:contentDescription="@string/details_poi_desc_restaurant"
-                        android:src="@drawable/baseline_restaurant_24"
-                        tools:visibility="visible" />
-
-                    <ImageView
-                        android:id="@+id/details_poi_hospital"
-                        style="@style/PointOfInterest"
-                        android:contentDescription="@string/details_poi_desc_hospital"
-                        android:src="@drawable/baseline_local_hospital_24"
-                        tools:visibility="visible" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.5"
-                    android:orientation="horizontal">
-
-                    <ImageView
-                        android:id="@+id/details_poi_bus"
-                        style="@style/PointOfInterest"
-                        android:contentDescription="@string/details_poi_desc_bus"
-                        android:src="@drawable/baseline_directions_bus_24"
-                        tools:visibility="visible" />
-
-                    <ImageView
-                        android:id="@+id/details_poi_subway"
-                        style="@style/PointOfInterest"
-                        android:contentDescription="@string/details_poi_desc_subway"
-                        android:src="@drawable/baseline_subway_24"
-                        tools:visibility="visible" />
-
-                    <ImageView
-                        android:id="@+id/details_poi_tramway"
-                        style="@style/PointOfInterest"
-                        android:contentDescription="@string/details_poi_desc_tramway"
-                        android:src="@drawable/baseline_tram_24"
-                        tools:visibility="visible" />
-
-                    <ImageView
-                        android:id="@+id/details_poi_train"
-                        style="@style/PointOfInterest"
-                        android:contentDescription="@string/details_poi_desc_train"
-                        android:src="@drawable/baseline_train_24"
-                        tools:visibility="visible" />
-
-                    <ImageView
-                        android:id="@+id/details_poi_airport"
-                        style="@style/PointOfInterest"
-                        android:contentDescription="@string/details_poi_desc_airport"
-                        android:src="@drawable/baseline_local_airport_24"
-                        tools:visibility="visible" />
-                </LinearLayout>
-
-            </LinearLayout>
-
-            <TextView
-                android:id="@+id/details_media_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="12dp"
-                android:layout_marginVertical="24dp"
-                android:text="@string/details_label_media"
-                android:textColor="@color/grey_label"
-                android:textSize="17sp"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/details_amenities_LinearLayout" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/details_media_recyclerView"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginVertical="12dp"
-                android:orientation="horizontal"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                app:layout_constraintEnd_toEndOf="@id/details_description_text"
-                app:layout_constraintStart_toStartOf="@id/details_description_text"
-                app:layout_constraintTop_toBottomOf="@id/details_media_label"
-                tools:itemCount="5"
-                tools:listitem="@layout/fragment_details_media_item" />
-
-            <LinearLayout
-                android:id="@+id/details_location_LinearLayout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="24dp"
-                android:layout_marginVertical="24dp"
-                android:orientation="horizontal"
-                app:layout_constraintEnd_toEndOf="@id/details_media_recyclerView"
-                app:layout_constraintStart_toStartOf="@id/details_rooms_LinearLayout"
-                app:layout_constraintTop_toBottomOf="@id/details_media_recyclerView">
-
-                <com.bakjoul.realestatemanager.designsystem.atome.DetailsFieldView
-                    android:id="@+id/details_item_location"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.25"
-                    app:imageSrc="@drawable/baseline_location_on_24"
-                    app:label="@string/details_label_location"
-                    app:textPreview="740 Park Avenue\nApt 6/7A\nNew York\nNY 10021\nUnited States" />
-
-                <ImageView
-                    android:id="@+id/details_static_map"
-                    android:layout_width="0dp"
-                    android:layout_height="160dp"
-                    android:layout_weight="0.25"
-                    android:importantForAccessibility="no"
-                    tools:src="@drawable/penthouse_static_map" />
-            </LinearLayout>
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

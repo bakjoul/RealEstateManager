@@ -10,4 +10,14 @@
         <item name="android:background">@drawable/poi_border</item>
         <item name="android:visibility">gone</item>
     </style>
+    
+    <style name="CustomCardView">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">1dp</item>
+        <item name="android:layout_marginEnd">1dp</item>
+        <item name="android:layout_marginBottom">-1dp</item>
+        <item name="cardCornerRadius">1dp</item>
+        <item name="cardBackgroundColor">#75E8EAF8</item>
+    </style>
 </resources>
