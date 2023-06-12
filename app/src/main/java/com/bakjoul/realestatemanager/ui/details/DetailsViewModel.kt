@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.liveData
+import com.bakjoul.realestatemanager.BuildConfig
 import com.bakjoul.realestatemanager.domain.property.GetCurrentPropertyUseCase
 import com.bakjoul.realestatemanager.domain.property.model.PhotoEntity
 import com.bakjoul.realestatemanager.domain.resources.IsTabletUseCase
@@ -52,7 +53,7 @@ class DetailsViewModel @Inject constructor(
                         propertyEntity.country
                     ),
                     media = mapPhotoEntities(propertyEntity.photos),
-                    map = ""
+                    staticMapUrl = getMapUrl(propertyEntity.address, propertyEntity.city, propertyEntity.country)
                 )
             )
         }
@@ -101,4 +102,11 @@ class DetailsViewModel @Inject constructor(
             ""
         }
     }
+
+    private fun getMapUrl(address: String, city: String, country: String): String {
+        val formattedAddress = formatAddress("$address,$city,$country")
+        return "https://maps.googleapis.com/maps/api/staticmap?&size=160x160&zoom=17&markers=$formattedAddress&key=${BuildConfig.MAPS_API_KEY}"
+    }
+
+    private fun formatAddress(address: String) = address.replace(" ", "%20")
 }

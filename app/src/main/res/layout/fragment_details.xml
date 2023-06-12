@@ -412,7 +412,7 @@
                             android:id="@+id/details_item_location"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_weight="0.25"
+                            android:layout_weight="0.5"
                             app:imageSrc="@drawable/baseline_location_on_24"
                             app:label="@string/details_label_location"
                             app:textPreview="740 Park Avenue\nApt 6/7A\nNew York\nNY 10021\nUnited States" />
@@ -421,7 +421,7 @@
                             android:id="@+id/details_static_map"
                             android:layout_width="0dp"
                             android:layout_height="160dp"
-                            android:layout_weight="0.25"
+                            android:layout_weight="0.5"
                             android:importantForAccessibility="no"
                             tools:src="@drawable/penthouse_static_map" />
                     </LinearLayout>

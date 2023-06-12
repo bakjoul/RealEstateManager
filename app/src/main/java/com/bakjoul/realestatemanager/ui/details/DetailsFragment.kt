@@ -53,7 +53,12 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
             binding.detailsPoiTrain.visibility = if (details.poiTrain) View.VISIBLE else View.GONE
             binding.detailsPoiAirport.visibility = if (details.poiAirport) View.VISIBLE else View.GONE
             binding.detailsItemLocation.setText(details.location)
+
             adapter.submitList(details.media)
+
+            Glide.with(binding.detailsStaticMap)
+                .load(details.staticMapUrl)
+                .into(binding.detailsStaticMap)
         }
     }
 
