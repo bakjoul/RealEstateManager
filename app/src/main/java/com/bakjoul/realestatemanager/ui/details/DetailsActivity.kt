@@ -25,24 +25,12 @@ class DetailsActivity : AppCompatActivity() {
 
         setContentView(binding.root)
 
-        /*supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.setDisplayShowHomeEnabled(true)*/
-
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
                 .replace(binding.detailsFrameLayoutContainer.id, DetailsFragment())
                 .commitNow()
         }
     }
-
-/*    override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
-        android.R.id.home -> {
-            supportFinishAfterTransition()
-            true
-        }
-
-        else -> super.onOptionsItemSelected(item)
-    }*/
 
     override fun onResume() {
         super.onResume()
