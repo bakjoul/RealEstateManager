@@ -17,7 +17,8 @@
         <item name="android:layout_marginStart">4dp</item>
         <item name="android:layout_marginEnd">4dp</item>
         <item name="android:layout_marginTop">2dp</item>
-        <item name="cardCornerRadius">2dp</item>
-        <item name="cardBackgroundColor">#60E8EAF8</item>
+        <item name="android:layout_marginBottom">2dp</item>
+        <item name="cardCornerRadius">4dp</item>
+        <item name="cardBackgroundColor">#FFF9F9F9</item>
     </style>
 </resources>

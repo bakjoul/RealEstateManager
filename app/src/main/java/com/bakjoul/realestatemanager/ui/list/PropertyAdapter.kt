@@ -26,6 +26,7 @@ class PropertyAdapter : ListAdapter<PropertyItemViewState, PropertyAdapter.ViewH
                 .into(binding.listItemPhoto)
             binding.listItemType.text = item.type
             binding.listItemCity.text = item.city
+            binding.listItemFeatures?.text = item.features
             binding.listItemPrice.text = item.price
             binding.listItemLayout.setOnClickListener {
                 item.onPropertyClicked.invoke()

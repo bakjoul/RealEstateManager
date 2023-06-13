@@ -8,5 +8,6 @@ data class PropertyItemViewState(
     val type: String,
     val city: String,
     val price: String,
+    val features: String,
     val onPropertyClicked: EquatableCallback
 )

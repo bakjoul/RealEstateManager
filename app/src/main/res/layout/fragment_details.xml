@@ -14,7 +14,7 @@
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:contentScrim="#903944BC"
+            app:contentScrim="@color/blue_toolbar"
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
             <ImageView

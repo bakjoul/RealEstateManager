@@ -24,6 +24,7 @@ class PropertyListViewModel @Inject constructor(
                         photoUrl = it.photos.firstOrNull()?.url ?: "",
                         type = it.type,
                         city = it.city,
+                        features = formatFeatures(it.bedrooms, it.bathrooms, it.surface),
                         price = it.price.toString(),
                         onPropertyClicked = EquatableCallback {
                             setCurrentPropertyIdUseCase.invoke(it.id)
@@ -33,4 +34,10 @@ class PropertyListViewModel @Inject constructor(
             )
         }
     }
+
+    private fun formatFeatures(bedrooms: Int, bathrooms: Int, surface: Int): String {
+        return "$bedrooms bed. - $bathrooms bath. - $surface sqm"
+    }
+
+
 }

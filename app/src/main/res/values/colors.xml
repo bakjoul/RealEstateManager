@@ -12,5 +12,7 @@
     <color name="grey_label">#FF494949</color>
     <color name="pink">#FFFF568F</color>
     <color name="transparent_grey">#50808080</color>
+    <color name="purple">#FF9370DB</color>
+    <color name="blue_toolbar">#903944BC</color>
 
 </resources>
