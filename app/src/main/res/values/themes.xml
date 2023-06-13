@@ -20,5 +20,6 @@
         <item name="android:layout_marginBottom">2dp</item>
         <item name="cardCornerRadius">4dp</item>
         <item name="cardBackgroundColor">#FFF9F9F9</item>
+        <item name="cardElevation">4dp</item>
     </style>
 </resources>
