@@ -27,4 +27,5 @@
     <string name="details_poi_desc_airport">Airport</string>
     <string name="details_poi_desc_hospital">Hospital</string>
     <string name="details_back_button_desc">Back button</string>
+    <string name="toolbar_sold">SOLD</string>
 </resources>

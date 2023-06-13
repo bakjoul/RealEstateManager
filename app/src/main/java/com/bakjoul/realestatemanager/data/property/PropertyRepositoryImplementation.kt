@@ -58,9 +58,8 @@ class PropertyRepositoryImplementation @Inject constructor() : PropertyRepositor
                     poiSubway = false,
                     poiTramway = false,
                     poiTrain = true,
-                    isSold = false,
                     entryDate = LocalDate.parse("2023-01-01"),
-                    soldDate = null,
+                    soldDate = LocalDate.parse("2023-01-02"),
                     agent = "John Doe"
                 ),
                 PropertyEntity(
@@ -98,7 +97,6 @@ class PropertyRepositoryImplementation @Inject constructor() : PropertyRepositor
                     poiSubway = true,
                     poiTramway = true,
                     poiTrain = true,
-                    isSold = false,
                     entryDate = LocalDate.parse("2023-02-01"),
                     soldDate = null,
                     agent = "Jane Doe"

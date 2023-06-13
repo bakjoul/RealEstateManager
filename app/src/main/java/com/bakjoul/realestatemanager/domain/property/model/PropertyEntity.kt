@@ -35,7 +35,6 @@ data class PropertyEntity(
     @ColumnInfo(name = "poi_tramway") val poiTramway: Boolean,
     @ColumnInfo(name = "poi_train") val poiTrain: Boolean,
     @ColumnInfo(name = "on_sale_since") val entryDate: LocalDate,
-    @ColumnInfo(name = "is_sold") val isSold: Boolean,
     @ColumnInfo(name = "date_of_sale") val soldDate: LocalDate?,
     val agent: String,
 )

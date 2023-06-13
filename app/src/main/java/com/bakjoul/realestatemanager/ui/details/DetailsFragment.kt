@@ -1,6 +1,7 @@
 package com.bakjoul.realestatemanager.ui.details
 
 import android.animation.ValueAnimator
+import android.graphics.Paint
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
@@ -35,8 +36,11 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
                 .into(binding.detailsToolbarPhoto)
             binding.detailsToolbarType.text = details.type
             binding.detailsToolbarPrice.text = details.price
+            binding.detailsToolbarPrice.paintFlags = if (details.isSold) binding.detailsToolbarPrice.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG else 0
+            binding.detailsToolbarSold.visibility = if (details.isSold) View.VISIBLE else View.GONE
             binding.detailsToolbarCity.text = details.city
             binding.detailsToolbarSurface.text = details.surface
+            binding.detailsToolbarSaleStatus.text = details.sale_status
             binding.detailsDescriptionText.text = details.description
             binding.detailsItemSurface.setText(details.surface)
             binding.detailsItemRooms.setText(details.rooms)

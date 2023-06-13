@@ -11,6 +11,9 @@ import com.bakjoul.realestatemanager.domain.resources.IsTabletUseCase
 import com.bakjoul.realestatemanager.domain.resources.RefreshOrientationUseCase
 import com.bakjoul.realestatemanager.ui.utils.EquatableCallback
 import dagger.hilt.android.lifecycle.HiltViewModel
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
@@ -29,7 +32,9 @@ class DetailsViewModel @Inject constructor(
                     photoUrl = propertyEntity.photos.first().url,
                     type = propertyEntity.type,
                     price = propertyEntity.price.toString(),
+                    isSold = propertyEntity.soldDate != null,
                     city = propertyEntity.city,
+                    sale_status = getSaleStatus(propertyEntity.soldDate, propertyEntity.entryDate),
                     description = propertyEntity.description,
                     surface = formatSurface(propertyEntity.surface),
                     rooms = propertyEntity.rooms.toString(),
@@ -56,6 +61,21 @@ class DetailsViewModel @Inject constructor(
                     staticMapUrl = getMapUrl(propertyEntity.address, propertyEntity.city, propertyEntity.country)
                 )
             )
+        }
+    }
+
+    private val locale = Locale.getDefault()
+    private val formatter: DateTimeFormatter = if (locale.language == "fr") {
+        DateTimeFormatter.ofPattern("d/MM/yy", locale)
+    } else {
+        DateTimeFormatter.ofPattern("M/d/yy", locale)
+    }
+
+    private fun getSaleStatus(soldDate: LocalDate?, entryDate: LocalDate): String {
+        return if (soldDate != null) {
+            "Sold on ${soldDate.format(formatter)}"
+        } else {
+            "For sale since ${entryDate.format(formatter)}"
         }
     }
 
