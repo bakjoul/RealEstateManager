@@ -20,7 +20,7 @@ class PropertyRepositoryImplementation @Inject constructor() : PropertyRepositor
                 PropertyEntity(
                     id = 0,
                     type = PropertyType.Flat.name,
-                    price = 100000,
+                    price = 100000.toDouble(),
                     surface = 100,
                     rooms = 5,
                     bedrooms = 3,
@@ -65,7 +65,7 @@ class PropertyRepositoryImplementation @Inject constructor() : PropertyRepositor
                 PropertyEntity(
                     id = 1,
                     type = PropertyType.House.name,
-                    price = 200000,
+                    price = 200000.toDouble(),
                     surface = 200,
                     rooms = 10,
                     bedrooms = 5,
