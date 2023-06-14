@@ -1,10 +1,13 @@
 package com.bakjoul.realestatemanager.data
 
 import android.content.Context
-import android.content.SharedPreferences
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.preferencesDataStore
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
@@ -13,11 +16,12 @@ import javax.inject.Singleton
 class DataModule {
 
     companion object {
-        val PREFERENCES_FILENAME = "com.bakjoul.realestatemanager_settings"
+        const val PREFERENCES_FILENAME = "com.bakjoul.realestatemanager_settings"
     }
+
+    private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = PREFERENCES_FILENAME)
 
     @Singleton
     @Provides
-    fun provideSharedPreferences(context: Context): SharedPreferences =
-        context.getSharedPreferences(PREFERENCES_FILENAME, Context.MODE_PRIVATE)
+    fun provideDataStore(@ApplicationContext context: Context): DataStore<Preferences> = context.dataStore
 }

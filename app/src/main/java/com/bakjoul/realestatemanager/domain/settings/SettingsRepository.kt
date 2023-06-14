@@ -1,10 +1,8 @@
 package com.bakjoul.realestatemanager.domain.settings
 
-import androidx.lifecycle.LiveData
-
 interface SettingsRepository {
 
-    fun setCurrency(currency: String)
+    suspend fun setCurrency(currency: String)
 
-    fun getCurrencyLiveData(): LiveData<String>
+    suspend fun getCurrencyLiveData(): Result<String>
 }
