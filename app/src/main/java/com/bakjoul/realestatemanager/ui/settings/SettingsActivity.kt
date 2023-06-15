@@ -6,13 +6,10 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.lifecycleScope
 import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.databinding.ActivitySettingsBinding
 import com.bakjoul.realestatemanager.ui.utils.viewBinding
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class SettingsActivity : AppCompatActivity() {
@@ -33,9 +30,9 @@ class SettingsActivity : AppCompatActivity() {
         currencySpinner.adapter = adapter
 
         var isFirstSelection = true
-        lifecycleScope.launch {
-            val initialCurrency = viewModel.getCurrentCurrencyFlow().first()
-            currencySpinner.setSelection(currencyOptions.indexOf(initialCurrency))
+
+        viewModel.getCurrentCurrencyLiveData().observe(this) { initialCurrency ->
+            currencySpinner.setSelection(currencyOptions.indexOf(initialCurrency.nameWithSymbol))
         }
 
         currencySpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -47,9 +44,7 @@ class SettingsActivity : AppCompatActivity() {
 
                 val selectedCurrency = currencyOptions[position]
 
-                lifecycleScope.launch {
-                    viewModel.onCurrencySelected(selectedCurrency)
-                }
+                viewModel.onCurrencySelected(selectedCurrency)
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {}
