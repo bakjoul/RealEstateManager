@@ -71,7 +71,7 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
         val endPadding = DensityUtil.dip2px(requireContext(), 30f)
         val paddingAnimation = ValueAnimator.ofInt(startPadding, endPadding).apply {
             duration = 250
-            addUpdateListener { animator -> binding.detailsToolbarTypeAndPrice.setPadding(animator.animatedValue as Int, 0, 0, 0) }
+            addUpdateListener { animator -> binding.detailsToolbarTypePriceStatusContainer.setPadding(animator.animatedValue as Int, 0, 0, 0) }
         }
 
         binding.detailsAppbar.addOnOffsetChangedListener(object :
