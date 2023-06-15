@@ -31,7 +31,9 @@ class MainActivity : AppCompatActivity() {
 
         val containerDetailsId = binding.mainFrameLayoutContainerDetails?.id
         viewModel.getCurrentPropertyIdChannelLiveData().observe(this) { propertyId ->
-            if (propertyId != null && containerDetailsId != null && supportFragmentManager.findFragmentById(containerDetailsId) == null) {
+            if (propertyId != null
+                && containerDetailsId != null
+                && supportFragmentManager.findFragmentById(containerDetailsId) == null) {
                 supportFragmentManager.beginTransaction()
                     .replace(containerDetailsId, DetailsFragment())
                     .commitNow()

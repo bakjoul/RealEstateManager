@@ -26,6 +26,7 @@ class PropertyListViewModel @Inject constructor(
                         city = it.city,
                         price = it.price.toString(),
                         onPropertyClicked = EquatableCallback {
+                            android.util.Log.d("Nino", "PropertyListViewModel.onPropertyClicked() called ${it.id}")
                             setCurrentPropertyIdUseCase.invoke(it.id)
                         }
                     )

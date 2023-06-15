@@ -11,6 +11,7 @@ import com.bakjoul.realestatemanager.ui.utils.Event
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
 @HiltViewModel
@@ -22,8 +23,12 @@ class MainViewModel @Inject constructor(
 
     val mainViewActionLiveData: LiveData<Event<MainViewAction>> = liveData {
         combine(
-            getCurrentPropertyIdChannelUseCase.invoke(),
-            isTabletUseCase.invoke()
+            getCurrentPropertyIdChannelUseCase.invoke().onEach {
+                android.util.Log.d("Nino", "MainViewModel.getCurrentPropertyIdChannelUseCase() emitted $it")
+            },
+            isTabletUseCase.invoke().onEach {
+                android.util.Log.d("Nino", "MainViewModel.isTabletUseCase() emitted $it")
+            }
         ) { _, isTablet ->
             if (!isTablet) {
                 emit(Event(MainViewAction.NavigateToDetails))
