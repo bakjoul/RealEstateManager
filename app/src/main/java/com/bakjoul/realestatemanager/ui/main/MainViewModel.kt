@@ -3,7 +3,7 @@ package com.bakjoul.realestatemanager.ui.main
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
-import com.bakjoul.realestatemanager.domain.current_property.GetCurrentPropertyIdUseCase
+import com.bakjoul.realestatemanager.domain.current_property.GetCurrentPropertyIdChannelUseCase
 import com.bakjoul.realestatemanager.domain.resources.IsTabletUseCase
 import com.bakjoul.realestatemanager.domain.resources.RefreshOrientationUseCase
 import com.bakjoul.realestatemanager.ui.utils.Event
@@ -11,11 +11,12 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.receiveAsFlow
 import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    getCurrentPropertyIdUseCase: GetCurrentPropertyIdUseCase,
+    getCurrentPropertyIdChannelUseCase: GetCurrentPropertyIdChannelUseCase,
     isTabletUseCase: IsTabletUseCase,
     private val refreshOrientationUseCase: RefreshOrientationUseCase,
 ) : ViewModel() {
@@ -23,7 +24,7 @@ class MainViewModel @Inject constructor(
 
     val mainViewActionLiveData: LiveData<Event<MainViewAction>> =
         combine(
-            getCurrentPropertyIdUseCase.invoke(),
+            getCurrentPropertyIdChannelUseCase.invoke().receiveAsFlow(),
             isTabletUseCase.invoke()
         ) { id, isTablet ->
             if (id >= 0) {
