@@ -18,9 +18,9 @@ class DetailsFieldView @JvmOverloads constructor(
 
     init {
         context.withStyledAttributes(attrs, R.styleable.DetailsFieldView) {
-            binding.detailsFieldIcon.setImageResource(getResourceId(R.styleable.DetailsFieldView_imageSrc, 0))
-            getString(R.styleable.DetailsFieldView_label)?.let { binding.detailsFieldLabel.text = it }
-            getString(R.styleable.DetailsFieldView_textPreview)?.let { binding.detailsFieldText.text = it }
+            binding.detailsFieldIcon.setImageResource(getResourceId(R.styleable.DetailsFieldView_detailsImageSrc, 0))
+            getString(R.styleable.DetailsFieldView_detailsLabel)?.let { binding.detailsFieldLabel.text = it }
+            getString(R.styleable.DetailsFieldView_detailsTextPreview)?.let { binding.detailsFieldText.text = it }
         }
     }
 

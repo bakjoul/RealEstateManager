@@ -22,69 +22,16 @@
             app:titleTextColor="@color/white" />
     </com.google.android.material.appbar.AppBarLayout>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/settings_currency_ConstraintLayout"
+    <com.bakjoul.realestatemanager.designsystem.atome.SettingsSpinnerView
+        android:id="@+id/settings_currency_spinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingVertical="12dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/settings_appbar">
-
-        <ImageView
-            android:id="@+id/settings_currency_icon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:importantForAccessibility="no"
-            android:src="@drawable/euro_dollar"
-            app:layout_constraintBottom_toBottomOf="@id/settings_currency_desc"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/settings_currency_label" />
-
-        <TextView
-            android:id="@+id/settings_currency_label"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginEnd="12dp"
-            android:lines="1"
-            android:text="@string/settings_currency_label"
-            android:textColor="@color/black"
-            android:textSize="17sp"
-            app:layout_constraintEnd_toStartOf="@id/settings_currency_Dropdown"
-            app:layout_constraintStart_toEndOf="@id/settings_currency_icon"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/settings_currency_desc"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:maxLines="2"
-            android:text="@string/settings_currency_desc"
-            android:textColor="@color/grey_text"
-            android:textSize="15sp"
-            app:layout_constraintEnd_toEndOf="@id/settings_currency_label"
-            app:layout_constraintStart_toStartOf="@id/settings_currency_label"
-            app:layout_constraintTop_toBottomOf="@id/settings_currency_label" />
-
-        <Spinner
-            android:id="@+id/settings_currency_Dropdown"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="12dp"
-            android:entries="@array/currency_options"
-            android:textSize="17sp"
-            app:layout_constraintBottom_toBottomOf="@id/settings_currency_icon"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/settings_currency_icon" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:background="@drawable/divider"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/settings_currency_ConstraintLayout" />
+        app:layout_constraintTop_toBottomOf="@id/settings_appbar"
+        app:spinnerDescription="@string/settings_currency_desc"
+        app:spinnerEntries="@array/currency_options"
+        app:spinnerImageSrc="@drawable/euro_dollar"
+        app:spinnerLabel="@string/settings_currency_label" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

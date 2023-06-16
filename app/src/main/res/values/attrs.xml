@@ -1,8 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="DetailsFieldView">
-        <attr name="imageSrc" format="reference" />
-        <attr name="label" format="string" />
-        <attr name="textPreview" format="string" />
+        <attr name="detailsImageSrc" format="reference" />
+        <attr name="detailsLabel" format="string" />
+        <attr name="detailsTextPreview" format="string" />
+    </declare-styleable>
+
+    <declare-styleable name="SettingsSpinnerView">
+        <attr name="spinnerImageSrc" format="reference" />
+        <attr name="spinnerLabel" format="string" />
+        <attr name="spinnerDescription" format="string" />
+        <attr name="spinnerEntries" format="reference" />
     </declare-styleable>
 </resources>

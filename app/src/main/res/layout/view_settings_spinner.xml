@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/settings_spinner_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:importantForAccessibility="no"
+        app:layout_constraintBottom_toBottomOf="@id/settings_spinner_desc"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/settings_spinner_label"
+        tools:src="@drawable/euro_dollar" />
+
+    <TextView
+        android:id="@+id/settings_spinner_label"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="12dp"
+        android:lines="1"
+        android:textColor="@color/black"
+        android:textSize="17sp"
+        app:layout_constraintEnd_toStartOf="@id/settings_spinner"
+        app:layout_constraintStart_toEndOf="@id/settings_spinner_icon"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="@string/settings_currency_label" />
+
+    <TextView
+        android:id="@+id/settings_spinner_desc"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:maxLines="2"
+        android:textColor="@color/grey_text"
+        android:textSize="15sp"
+        app:layout_constraintEnd_toEndOf="@id/settings_spinner_label"
+        app:layout_constraintStart_toStartOf="@id/settings_spinner_label"
+        app:layout_constraintTop_toBottomOf="@id/settings_spinner_label"
+        tools:text="@string/settings_currency_desc" />
+
+    <Spinner
+        android:id="@+id/settings_spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="12dp"
+        android:textSize="17sp"
+        app:layout_constraintBottom_toBottomOf="@id/settings_spinner_icon"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/settings_spinner_icon" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/divider"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/settings_spinner_desc" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

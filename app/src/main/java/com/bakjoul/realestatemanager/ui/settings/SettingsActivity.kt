@@ -3,7 +3,6 @@ package com.bakjoul.realestatemanager.ui.settings
 import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
-import android.widget.ArrayAdapter
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.bakjoul.realestatemanager.R
@@ -23,11 +22,8 @@ class SettingsActivity : AppCompatActivity() {
 
         setToolbar()
 
-        val currencySpinner = binding.settingsCurrencyDropdown
-        val currencyOptions = resources.getStringArray(R.array.currency_options)
-        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, currencyOptions)
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        currencySpinner.adapter = adapter
+        val currencySpinner = binding.settingsCurrencySpinner.getSpinner()
+        val currencyOptions = binding.settingsCurrencySpinner.getEntries()
 
         var isFirstSelection = true
         viewModel.getCurrencyLiveData().observe(this) { initialCurrency ->
