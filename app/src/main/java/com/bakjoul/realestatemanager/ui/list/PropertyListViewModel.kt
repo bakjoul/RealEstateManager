@@ -49,21 +49,21 @@ class PropertyListViewModel @Inject constructor(
         return "$bedrooms bed. - $bathrooms bath. - $surface sqm"
     }
 
-    private fun formatPrice(price: Double, currency: String): String {
+    private fun formatPrice(price: Double, currency: AppCurrency): String {
         val numberFormat = NumberFormat.getNumberInstance()
 
         val formattedPrice = when (currency) {
-            AppCurrency.USD.nameWithSymbol -> {
+            AppCurrency.USD -> {
                 numberFormat.currency = Currency.getInstance(Locale.US)
                 numberFormat.maximumFractionDigits = 0
                 "$" + numberFormat.format(price)
             }
-            AppCurrency.EUR.nameWithSymbol -> {
+
+            AppCurrency.EUR -> {
                 numberFormat.currency = Currency.getInstance(Locale.FRANCE)
                 numberFormat.maximumFractionDigits = 0
                 numberFormat.format(price).replace(",", ".") + " €"
             }
-            else -> numberFormat.format(price)
         }
 
         return formattedPrice
