@@ -1,6 +1,5 @@
 package com.bakjoul.realestatemanager.ui.details
 
-import android.animation.ValueAnimator
 import android.graphics.Paint
 import android.os.Bundle
 import android.view.View
@@ -12,7 +11,6 @@ import com.bakjoul.realestatemanager.databinding.FragmentDetailsBinding
 import com.bakjoul.realestatemanager.ui.utils.DensityUtil
 import com.bakjoul.realestatemanager.ui.utils.viewBinding
 import com.bumptech.glide.Glide
-import com.google.android.material.appbar.AppBarLayout
 import dagger.hilt.android.AndroidEntryPoint
 import kotlin.math.abs
 
@@ -29,7 +27,6 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
         binding.detailsMediaRecyclerView.adapter = adapter
 
         binding.detailsFabBack.setOnClickListener { requireActivity().onBackPressedDispatcher.onBackPressed() }
-        //setInfoPadding()
         setToolbarInfoAnimation()
 
         viewModel.detailsLiveData.observe(viewLifecycleOwner) { details ->
@@ -77,50 +74,31 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
         layoutParams.marginStart = initialMargin
 
         var previousVerticalOffset = 0
-        binding.detailsAppbar.addOnOffsetChangedListener { appBarLayout, verticalOffset ->
-            // TODO fix listener being triggered infinitely because of layoutParams change
-            val totalScrollRange = appBarLayout.totalScrollRange
-            val animatedMargin =
-                (maximumMargin * (previousVerticalOffset - verticalOffset) / fabHeight)
+        var previousMargin = initialMargin // Avoids unnecessary updates
 
-            if (abs(verticalOffset) >= (totalScrollRange - fabHeight)) {
+        binding.detailsAppbar.addOnOffsetChangedListener { appBarLayout, verticalOffset ->
+            val totalScrollRange = appBarLayout.totalScrollRange
+            val animatedMargin = (maximumMargin * (previousVerticalOffset - verticalOffset) / fabHeight)
+
+            val newMargin = if (abs(verticalOffset) >= (totalScrollRange - fabHeight)) {
                 if (previousVerticalOffset == 0) {
                     previousVerticalOffset = verticalOffset
                 }
-                layoutParams.marginStart = initialMargin + animatedMargin
+                initialMargin + animatedMargin
             } else {
                 previousVerticalOffset = 0
-                layoutParams.marginStart = initialMargin
+                initialMargin
             }
 
-            toolbarInfo.layoutParams = layoutParams
-            toolbarInfo.requestLayout()
-        }
-    }
+            // Checks if the new margin is different from the previous one
+            if (previousMargin != newMargin) {
+                layoutParams.marginStart = newMargin
+                toolbarInfo.layoutParams = layoutParams
+                toolbarInfo.requestLayout()
 
-    private fun setInfoPadding() {
-        val startPadding = DensityUtil.dip2px(requireContext(), 0f)
-        val endPadding = DensityUtil.dip2px(requireContext(), 30f)
-        val paddingAnimation = ValueAnimator.ofInt(startPadding, endPadding).apply {
-            duration = 250
-            addUpdateListener { animator ->
-                binding.detailsToolbarTypePriceStatusContainer.setPadding(animator.animatedValue as Int, 0, 0, 0)
+                // Updates previous margin
+                previousMargin = newMargin
             }
         }
-
-        binding.detailsAppbar.addOnOffsetChangedListener(object :
-            AppBarLayout.OnOffsetChangedListener {
-            var isInfoAlignedLeft = true
-
-            override fun onOffsetChanged(appBarLayout: AppBarLayout?, verticalOffset: Int) {
-                if (abs(verticalOffset) >= appBarLayout!!.totalScrollRange - binding.detailsFabBack.height && isInfoAlignedLeft) {
-                    paddingAnimation.start()
-                    isInfoAlignedLeft = false
-                } else if (abs(verticalOffset) < appBarLayout.totalScrollRange - binding.detailsFabBack.height && !isInfoAlignedLeft) {
-                    paddingAnimation.reverse()
-                    isInfoAlignedLeft = true
-                }
-            }
-        })
     }
 }
