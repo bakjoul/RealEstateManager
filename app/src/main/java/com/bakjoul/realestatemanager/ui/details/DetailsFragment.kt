@@ -4,6 +4,7 @@ import android.animation.ValueAnimator
 import android.graphics.Paint
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.bakjoul.realestatemanager.R
@@ -27,8 +28,9 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
         val adapter = DetailsAdapter()
         binding.detailsMediaRecyclerView.adapter = adapter
 
-        setInfoPadding()
         binding.detailsFabBack.setOnClickListener { requireActivity().onBackPressedDispatcher.onBackPressed() }
+        //setInfoPadding()
+        setToolbarInfoAnimation()
 
         viewModel.detailsLiveData.observe(viewLifecycleOwner) { details ->
             Glide.with(binding.detailsToolbarPhoto)
@@ -66,12 +68,44 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
         }
     }
 
+    private fun setToolbarInfoAnimation() {
+        val toolbarInfo = binding.detailsToolbarTypePriceStatusContainer
+        val initialMargin = DensityUtil.dip2px(requireContext(), 0f)
+        val maximumMargin = DensityUtil.dip2px(requireContext(), 30f)
+        val fabHeight = DensityUtil.dip2px(requireContext(), 48f)
+        val layoutParams = toolbarInfo.layoutParams as ViewGroup.MarginLayoutParams
+        layoutParams.marginStart = initialMargin
+
+        var previousVerticalOffset = 0
+        binding.detailsAppbar.addOnOffsetChangedListener { appBarLayout, verticalOffset ->
+            // TODO fix listener being triggered infinitely because of layoutParams change
+            val totalScrollRange = appBarLayout.totalScrollRange
+            val animatedMargin =
+                (maximumMargin * (previousVerticalOffset - verticalOffset) / fabHeight)
+
+            if (abs(verticalOffset) >= (totalScrollRange - fabHeight)) {
+                if (previousVerticalOffset == 0) {
+                    previousVerticalOffset = verticalOffset
+                }
+                layoutParams.marginStart = initialMargin + animatedMargin
+            } else {
+                previousVerticalOffset = 0
+                layoutParams.marginStart = initialMargin
+            }
+
+            toolbarInfo.layoutParams = layoutParams
+            toolbarInfo.requestLayout()
+        }
+    }
+
     private fun setInfoPadding() {
         val startPadding = DensityUtil.dip2px(requireContext(), 0f)
         val endPadding = DensityUtil.dip2px(requireContext(), 30f)
         val paddingAnimation = ValueAnimator.ofInt(startPadding, endPadding).apply {
             duration = 250
-            addUpdateListener { animator -> binding.detailsToolbarTypePriceStatusContainer.setPadding(animator.animatedValue as Int, 0, 0, 0) }
+            addUpdateListener { animator ->
+                binding.detailsToolbarTypePriceStatusContainer.setPadding(animator.animatedValue as Int, 0, 0, 0)
+            }
         }
 
         binding.detailsAppbar.addOnOffsetChangedListener(object :
