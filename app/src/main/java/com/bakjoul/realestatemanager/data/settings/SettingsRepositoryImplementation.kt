@@ -20,7 +20,7 @@ class SettingsRepositoryImplementation @Inject constructor(
 ) : SettingsRepository {
 
     private companion object {
-        val KEY_CURRENCY = stringPreferencesKey("currency")
+        private val KEY_CURRENCY = stringPreferencesKey("currency")
     }
 
     override suspend fun setCurrency(currency: AppCurrency) {

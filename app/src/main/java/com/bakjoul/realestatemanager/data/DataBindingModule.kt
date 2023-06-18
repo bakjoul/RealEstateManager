@@ -1,9 +1,11 @@
 package com.bakjoul.realestatemanager.data
 
+import com.bakjoul.realestatemanager.data.currency_rate.model.CurrencyRateRepositoryImplementation
 import com.bakjoul.realestatemanager.data.current_property.CurrentPropertyIdRepositoryImplementation
 import com.bakjoul.realestatemanager.data.property.PropertyRepositoryImplementation
 import com.bakjoul.realestatemanager.data.resources.ResourcesRepositoryImplementation
 import com.bakjoul.realestatemanager.data.settings.SettingsRepositoryImplementation
+import com.bakjoul.realestatemanager.domain.currency_rate.CurrencyRateRepository
 import com.bakjoul.realestatemanager.domain.current_property.CurrentPropertyIdRepository
 import com.bakjoul.realestatemanager.domain.property.PropertyRepository
 import com.bakjoul.realestatemanager.domain.resources.ResourcesRepository
@@ -33,4 +35,8 @@ abstract class DataBindingModule {
     @Singleton
     @Binds
     abstract fun bindSettingsRepository(settingsRepositoryImplementation: SettingsRepositoryImplementation): SettingsRepository
+
+    @Singleton
+    @Binds
+    abstract fun bindCurrencyRateRepository(currencyRateRepositoryImplementation: CurrencyRateRepositoryImplementation): CurrencyRateRepository
 }

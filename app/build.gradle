@@ -25,6 +25,7 @@ android {
         Properties properties = new Properties()
         properties.load(project.rootProject.file('local.properties').newDataInputStream())
         buildConfigField 'String', 'MAPS_API_KEY', "\"${properties.getProperty('MAPS_API_KEY')}\""
+        buildConfigField 'String', 'CURRENCY_API_KEY', "\"${properties.getProperty('CURRENCY_API_KEY')}\""
     }
 
     buildTypes {
