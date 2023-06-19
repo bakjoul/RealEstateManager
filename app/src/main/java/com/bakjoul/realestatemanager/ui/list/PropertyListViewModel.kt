@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import com.bakjoul.realestatemanager.data.settings.model.AppCurrency
+import com.bakjoul.realestatemanager.domain.currency_rate.GetCurrentEuroRateUseCase
 import com.bakjoul.realestatemanager.domain.current_property.SetCurrentPropertyIdUseCase
 import com.bakjoul.realestatemanager.domain.property.GetPropertiesFlowUseCase
 import com.bakjoul.realestatemanager.domain.settings.currency.GetCurrencyUseCase
@@ -19,14 +20,16 @@ import javax.inject.Inject
 class PropertyListViewModel @Inject constructor(
     private val getPropertiesFlowUseCase: GetPropertiesFlowUseCase,
     private val setCurrentPropertyIdUseCase: SetCurrentPropertyIdUseCase,
-    private val getCurrencyUseCase: GetCurrencyUseCase
+    private val getCurrencyUseCase: GetCurrencyUseCase,
+    private val getCurrentEuroRateUseCase: GetCurrentEuroRateUseCase
 ) : ViewModel() {
 
     val propertiesLiveData: LiveData<List<PropertyItemViewState>> = liveData {
         combine(
             getPropertiesFlowUseCase.invoke(),
-            getCurrencyUseCase.invoke()
-        ) { properties, currency ->
+            getCurrencyUseCase.invoke(),
+            getCurrentEuroRateUseCase.invoke()
+        ) { properties, currency, euroRate ->
             properties.map {
                 PropertyItemViewState(
                     id = it.id,
@@ -34,7 +37,7 @@ class PropertyListViewModel @Inject constructor(
                     type = it.type,
                     city = it.city,
                     features = formatFeatures(it.bedrooms, it.bathrooms, it.surface),
-                    price = formatPrice(it.price, currency),
+                    price = formatPrice(it.price, currency, euroRate),
                     onPropertyClicked = EquatableCallback {
                         setCurrentPropertyIdUseCase.invoke(it.id)
                     }
@@ -49,7 +52,7 @@ class PropertyListViewModel @Inject constructor(
         return "$bedrooms bed. - $bathrooms bath. - $surface sqm"
     }
 
-    private fun formatPrice(price: Double, currency: AppCurrency): String {
+    private fun formatPrice(price: Double, currency: AppCurrency, euroRate: Double): String {
         val numberFormat = NumberFormat.getNumberInstance()
 
         val formattedPrice = when (currency) {
@@ -60,9 +63,10 @@ class PropertyListViewModel @Inject constructor(
             }
 
             AppCurrency.EUR -> {
+                val convertedPrice = price * euroRate
                 numberFormat.currency = Currency.getInstance(Locale.FRANCE)
                 numberFormat.maximumFractionDigits = 0
-                numberFormat.format(price).replace(",", ".") + " €"
+                numberFormat.format(convertedPrice).replace(",", ".") + " €"
             }
         }
 
