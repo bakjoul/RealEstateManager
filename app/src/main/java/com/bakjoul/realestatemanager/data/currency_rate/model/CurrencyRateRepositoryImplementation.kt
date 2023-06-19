@@ -1,6 +1,5 @@
 package com.bakjoul.realestatemanager.data.currency_rate.model
 
-import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
@@ -12,7 +11,6 @@ import com.bakjoul.realestatemanager.domain.currency_rate.CurrencyRateRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -24,7 +22,7 @@ import javax.inject.Singleton
 @Singleton
 class CurrencyRateRepositoryImplementation @Inject constructor(
     private val currencyApi: CurrencyApi,
-    private val dataStorePreferences: DataStore<Preferences>
+    private val dataStorePreferences: DataStore<Preferences>,
 ) :
     CurrencyRateRepository {
 
@@ -56,7 +54,7 @@ class CurrencyRateRepositoryImplementation @Inject constructor(
             preferences[KEY_EUR_RATE_LAST_UPDATE]
         }
 
-    override fun getEuroRateFlow(): Flow<CurrencyRateResponseWrapper> = flow {
+    override suspend fun getEuroRate(): CurrencyRateResponseWrapper {
         val lastUpdateDate = getEuroRateLastUpdate().firstOrNull()
         val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
 
@@ -70,22 +68,18 @@ class CurrencyRateRepositoryImplementation @Inject constructor(
                     BuildConfig.CURRENCY_API_KEY
                 )
 
-
-                Log.d("test", "getEuroRateFlow: $response")
-
                 if (response.status == "success") {
                     setEuroRateLastUpdate(currentDate)
                     setCachedEuroRate(response.rates.eurResponse.rate)
-                    emit(CurrencyRateResponseWrapper.Success(response))
+                    return CurrencyRateResponseWrapper.Success(response)
                 } else {
-                    emit(CurrencyRateResponseWrapper.Failure("Failed to get currency rate"))
+                    return CurrencyRateResponseWrapper.Failure("Failed to get currency rate")
                 }
 
             } catch (e: Exception) {
-                emit(CurrencyRateResponseWrapper.Error(e))
+                return CurrencyRateResponseWrapper.Error(e)
             }
         } else {
-            Log.d("test", "getEuroRateFlow: cached !!!")
             val cachedRate = getCachedEuroRate().firstOrNull()
             if (cachedRate != null) {
                 val cachedResponse = CurrencyRateResponse(
@@ -99,9 +93,9 @@ class CurrencyRateRepositoryImplementation @Inject constructor(
                     ),
                     status = "success"
                 )
-                emit(CurrencyRateResponseWrapper.Success(cachedResponse))
+                return CurrencyRateResponseWrapper.Success(cachedResponse)
             } else {
-                emit(CurrencyRateResponseWrapper.Failure("Failed to get currency rate"))
+                return CurrencyRateResponseWrapper.Failure("Failed to get currency rate")
             }
         }
 

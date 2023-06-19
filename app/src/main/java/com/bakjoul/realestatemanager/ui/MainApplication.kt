@@ -3,8 +3,7 @@ package com.bakjoul.realestatemanager.ui
 import android.app.Application
 import com.bakjoul.realestatemanager.domain.currency_rate.UpdateEuroRateUseCase
 import dagger.hilt.android.HiltAndroidApp
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -17,7 +16,7 @@ class MainApplication : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        CoroutineScope(Dispatchers.Default).launch {
+        GlobalScope.launch {
             updateEuroRateUseCase.invoke()
         }
     }

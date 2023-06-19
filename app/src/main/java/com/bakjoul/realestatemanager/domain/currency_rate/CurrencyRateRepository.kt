@@ -9,5 +9,5 @@ interface CurrencyRateRepository {
 
     fun getEuroRateLastUpdate(): Flow<String?>
 
-    fun getEuroRateFlow(): Flow<CurrencyRateResponseWrapper>
+    suspend fun getEuroRate(): CurrencyRateResponseWrapper
 }

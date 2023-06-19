@@ -7,21 +7,20 @@ import javax.inject.Inject
 class UpdateEuroRateUseCase @Inject constructor(private val currencyRateRepository: CurrencyRateRepository) {
 
     suspend fun invoke() {
-        currencyRateRepository.getEuroRateFlow().collect { result ->
-            when (result) {
-                is CurrencyRateResponseWrapper.Success -> {
-                    Log.d("test", "success")
-                    Log.d("test", "${result.currencyRateResponse.rates.eurResponse.rate} ")
-                }
+        when (val result = currencyRateRepository.getEuroRate()) {
+            is CurrencyRateResponseWrapper.Success -> {
+                Log.d("test", "currency rate success")
+                Log.d("test", "euro rate: ${result.currencyRateResponse.rates.eurResponse.rate} ")
+            }
 
-                is CurrencyRateResponseWrapper.Error -> {
-                    Log.d("test", "error")
-                }
+            is CurrencyRateResponseWrapper.Error -> {
+                Log.d("test", "currency rate error")
+            }
 
-                is CurrencyRateResponseWrapper.Failure -> {
-                    Log.d("test", "failure")
-                }
+            is CurrencyRateResponseWrapper.Failure -> {
+                Log.d("test", "currency rate failure")
             }
         }
+
     }
 }
