@@ -2,6 +2,7 @@ package com.bakjoul.realestatemanager.data.currency_rate.model
 
 import android.app.Application
 import android.content.Context
+import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
@@ -28,9 +29,15 @@ class CurrencyRateRepositoryImplementation @Inject constructor(
     private val application: Application,
 ) : CurrencyRateRepository {
 
+
+
     companion object {
+        private const val TAG = "CurrencyRateRepoImpl"
+
         private const val CURRENCY_RATE_DATA_STORE_NAME = "currency_rate_data_store"
         const val BASE_URL = "https://api.getgeoapi.com/v2/currency/convert/"
+        private const val DEFAULT_EURO_RATE = "1.0666"  // Source ECB Eurostat 01/13/2023
+
         private val KEY_EUR_RATE_LAST_UPDATE = stringPreferencesKey("eur_rate_last_update")
         private val KEY_EUR_RATE = stringPreferencesKey("eur_rate")
     }
@@ -78,10 +85,13 @@ class CurrencyRateRepositoryImplementation @Inject constructor(
                     setCachedEuroRate(response.rates.eurResponse.rate)
                     CurrencyRateResponseWrapper.Success(response)
                 } else {
-                    CurrencyRateResponseWrapper.Failure("Failed to get currency rate")
+                    setCachedEuroRate(DEFAULT_EURO_RATE)
+                    CurrencyRateResponseWrapper.Failure("Failed to get currency rate. Default rate will be used.")
                 }
 
             } catch (e: Exception) {
+                setCachedEuroRate(DEFAULT_EURO_RATE)
+                Log.e(TAG, "An error occured. Default rate will be used.")
                 return CurrencyRateResponseWrapper.Error(e)
             }
         } else {
