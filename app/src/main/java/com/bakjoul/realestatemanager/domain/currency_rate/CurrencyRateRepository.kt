@@ -7,7 +7,9 @@ interface CurrencyRateRepository {
 
     suspend fun setEuroRateLastUpdate(date: String)
 
-    fun getEuroRateLastUpdate(): Flow<String?>
+    fun getEuroRateLastUpdateFlow(): Flow<String?>
 
     suspend fun getEuroRate(): CurrencyRateResponseWrapper
+
+    fun getCachedEuroRateFlow(): Flow<String?>
 }

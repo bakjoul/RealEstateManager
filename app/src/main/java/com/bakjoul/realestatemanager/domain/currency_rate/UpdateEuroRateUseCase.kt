@@ -6,11 +6,14 @@ import javax.inject.Inject
 
 class UpdateEuroRateUseCase @Inject constructor(private val currencyRateRepository: CurrencyRateRepository) {
 
+    private companion object {
+        private const val TAG = "UpdateEuroRateUseCase"
+    }
+
     suspend fun invoke() {
         when (val result = currencyRateRepository.getEuroRate()) {
             is CurrencyRateResponseWrapper.Success -> {
-                Log.d("test", "currency rate success")
-                Log.d("test", "euro rate: ${result.currencyRateResponse.rates.eurResponse.rate} ")
+                Log.i(TAG, "Euro rate at ${result.currencyRateResponse.rates.eurResponse.rate} on ${result.currencyRateResponse.updatedDate}")
             }
 
             is CurrencyRateResponseWrapper.Error -> {
