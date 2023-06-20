@@ -74,5 +74,20 @@
             app:layout_constraintTop_toBottomOf="@id/list_item_features"
             tools:text="$17,870,000" />
 
+        <TextView
+            android:id="@+id/list_item_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="2dp"
+            android:background="@drawable/info_border"
+            android:paddingHorizontal="4.5dp"
+            android:text="@string/info_icon"
+            android:textSize="8sp"
+            android:textStyle="bold|italic"
+            app:layout_constraintStart_toEndOf="@id/list_item_price"
+            app:layout_constraintTop_toTopOf="@id/list_item_price"
+            tools:ignore="SmallSp" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

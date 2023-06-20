@@ -32,4 +32,6 @@
     <string name="title_activity_settings">SettingsActivity</string>
     <string name="settings_currency_label">Currency</string>
     <string name="settings_currency_desc">Changes the currency used throughout the app</string>
+    <string name="info_icon_desc">Info icon</string>
+    <string name="info_icon">i</string>
 </resources>
