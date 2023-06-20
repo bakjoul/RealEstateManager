@@ -1,7 +1,8 @@
 package com.bakjoul.realestatemanager.data
 
 import com.bakjoul.realestatemanager.data.api.CurrencyApi
-import com.bakjoul.realestatemanager.data.currency_rate.model.CurrencyRateRepositoryImplementation.Companion.BASE_URL
+import com.bakjoul.realestatemanager.data.currency_rate.CurrencyRateRepositoryImplementation.Companion.BASE_URL
+import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import dagger.Module
 import dagger.Provides
@@ -45,4 +46,8 @@ class DataModule {
     @Singleton
     @Provides
     fun provideCurrencyApi(retrofit: Retrofit): CurrencyApi = retrofit.create(CurrencyApi::class.java)
+
+    @Singleton
+    @Provides
+    fun provideGson(): Gson = GsonBuilder().create()
 }

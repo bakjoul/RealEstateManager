@@ -1,6 +1,6 @@
 package com.bakjoul.realestatemanager.data
 
-import com.bakjoul.realestatemanager.data.currency_rate.model.CurrencyRateRepositoryImplementation
+import com.bakjoul.realestatemanager.data.currency_rate.CurrencyRateRepositoryImplementation
 import com.bakjoul.realestatemanager.data.current_property.CurrentPropertyIdRepositoryImplementation
 import com.bakjoul.realestatemanager.data.property.PropertyRepositoryImplementation
 import com.bakjoul.realestatemanager.data.resources.ResourcesRepositoryImplementation
