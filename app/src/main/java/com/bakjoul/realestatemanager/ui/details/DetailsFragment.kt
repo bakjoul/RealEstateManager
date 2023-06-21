@@ -84,12 +84,16 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
                 if (previousVerticalOffset == 0) {
                     previousVerticalOffset = verticalOffset
                 }
-                initialMargin + animatedMargin
+                val tempMargin = initialMargin + animatedMargin // Prevents the margin from going below the initial one
+                if (tempMargin < initialMargin) {
+                    initialMargin
+                } else {
+                    tempMargin
+                }
             } else {
                 previousVerticalOffset = 0
                 initialMargin
             }
-
             // Checks if the new margin is different from the previous one
             if (previousMargin != newMargin) {
                 layoutParams.marginStart = newMargin
