@@ -1,9 +1,13 @@
 package com.bakjoul.realestatemanager.ui.details
 
+import android.content.Context
 import android.graphics.Paint
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.PopupWindow
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.bakjoul.realestatemanager.R
@@ -45,16 +49,16 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
             binding.detailsItemRooms.setText(details.rooms)
             binding.detailsItemBedrooms.setText(details.bedrooms)
             binding.detailsItemBathrooms.setText(details.bathrooms)
-            binding.detailsPoiSchool.visibility = if (details.poiSchool) View.VISIBLE else View.GONE
-            binding.detailsPoiStore.visibility = if (details.poiStore) View.VISIBLE else View.GONE
-            binding.detailsPoiPark.visibility = if (details.poiPark) View.VISIBLE else View.GONE
-            binding.detailsPoiRestaurant.visibility = if (details.poiRestaurant) View.VISIBLE else View.GONE
-            binding.detailsPoiHospital.visibility = if (details.poiHospital) View.VISIBLE else View.GONE
-            binding.detailsPoiBus.visibility = if (details.poiBus) View.VISIBLE else View.GONE
-            binding.detailsPoiSubway.visibility = if (details.poiSubway) View.VISIBLE else View.GONE
-            binding.detailsPoiTramway.visibility = if (details.poiTramway) View.VISIBLE else View.GONE
-            binding.detailsPoiTrain.visibility = if (details.poiTrain) View.VISIBLE else View.GONE
-            binding.detailsPoiAirport.visibility = if (details.poiAirport) View.VISIBLE else View.GONE
+            setTooltip(details.poiSchool, binding.detailsPoiSchool, "School nearby")
+            setTooltip(details.poiStore, binding.detailsPoiStore, "Store nearby")
+            setTooltip(details.poiPark, binding.detailsPoiPark, "Park nearby")
+            setTooltip(details.poiRestaurant, binding.detailsPoiRestaurant, "Restaurant nearby")
+            setTooltip(details.poiHospital, binding.detailsPoiHospital, "Hospital nearby")
+            setTooltip(details.poiBus, binding.detailsPoiBus, "Bus nearby")
+            setTooltip(details.poiSubway, binding.detailsPoiSubway, "Subway nearby")
+            setTooltip(details.poiTramway, binding.detailsPoiTramway, "Tramway nearby")
+            setTooltip(details.poiTrain, binding.detailsPoiTrain, "Train nearby")
+            setTooltip(details.poiAirport, binding.detailsPoiAirport, "Airport nearby")
             binding.detailsItemLocation.setText(details.location)
 
             adapter.submitList(details.media)
@@ -103,6 +107,31 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
                 // Updates previous margin
                 previousMargin = newMargin
             }
+        }
+    }
+
+    private fun setTooltip(isNearby: Boolean, poi: View, text: String) {
+        if (isNearby) {
+            poi.visibility = View.VISIBLE
+            val tooltip = createPopupWindow(poi.context, text)
+            poi.setOnClickListener {
+                tooltip.showAsDropDown(poi, DensityUtil.dip2px(poi.context, 24f), 0)
+            }
+        } else {
+            poi.visibility = View.GONE
+        }
+    }
+
+    private fun createPopupWindow(context: Context, text: String): PopupWindow {
+        val tooltipView = LayoutInflater.from(context).inflate(R.layout.tooltip_layout, null)
+        val tooltipTextView = tooltipView.findViewById<TextView>(R.id.tooltip_text)
+        tooltipTextView.text = text
+
+        return PopupWindow(context).apply {
+            contentView = tooltipView
+            width = ViewGroup.LayoutParams.WRAP_CONTENT
+            height = ViewGroup.LayoutParams.WRAP_CONTENT
+            isOutsideTouchable = true
         }
     }
 }

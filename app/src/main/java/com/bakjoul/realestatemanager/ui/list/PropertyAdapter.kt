@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.databinding.FragmentListItemBinding
+import com.bakjoul.realestatemanager.ui.utils.DensityUtil
 import com.bumptech.glide.Glide
 
 class PropertyAdapter : ListAdapter<PropertyItemViewState, PropertyAdapter.ViewHolder>(ViewHolder.PropertyDiffCallback) {
@@ -38,7 +39,7 @@ class PropertyAdapter : ListAdapter<PropertyItemViewState, PropertyAdapter.ViewH
             } else {
                 binding.listItemInfo?.visibility = View.VISIBLE
                 binding.listItemInfo?.setOnClickListener {
-                    val tooltipView = LayoutInflater.from(binding.root.context).inflate(R.layout.tooltip_info, null)
+                    val tooltipView = LayoutInflater.from(binding.root.context).inflate(R.layout.tooltip_layout, null)
                     val tooltipTextView = tooltipView.findViewById<TextView>(R.id.tooltip_text)
 
                     tooltipTextView.text = SpannableString.valueOf(item.currencyRate)
@@ -47,7 +48,7 @@ class PropertyAdapter : ListAdapter<PropertyItemViewState, PropertyAdapter.ViewH
                         width = ViewGroup.LayoutParams.WRAP_CONTENT
                         height = ViewGroup.LayoutParams.WRAP_CONTENT
                         isOutsideTouchable = true
-                        showAsDropDown(binding.listItemInfo, 24, 0)
+                        showAsDropDown(binding.listItemInfo, DensityUtil.dip2px(binding.root.context, 12f), 0)
                     }
                 }
             }
