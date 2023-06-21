@@ -76,9 +76,9 @@
 
         <ImageView
             android:id="@+id/list_item_info"
-            android:layout_width="12dp"
-            android:layout_height="12dp"
-            android:layout_marginStart="2dp"
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:layout_marginStart="4dp"
             android:src="@drawable/baseline_info_24"
             android:layout_marginTop="2dp"
             app:layout_constraintStart_toEndOf="@id/list_item_price"
