@@ -12,7 +12,7 @@ import com.bakjoul.realestatemanager.BuildConfig
 import com.bakjoul.realestatemanager.data.api.CurrencyApi
 import com.bakjoul.realestatemanager.data.currency_rate.model.CurrencyRateResponse
 import com.bakjoul.realestatemanager.data.currency_rate.model.CurrencyRateResponseWrapper
-import com.bakjoul.realestatemanager.data.currency_rate.model.EurResponse
+import com.bakjoul.realestatemanager.data.currency_rate.model.CurrencyResponse
 import com.bakjoul.realestatemanager.data.currency_rate.model.RatesResponse
 import com.bakjoul.realestatemanager.data.settings.model.AppCurrency
 import com.bakjoul.realestatemanager.domain.currency_rate.CurrencyRateRepository
@@ -41,7 +41,7 @@ class CurrencyRateRepositoryImplementation @Inject constructor(
         const val BASE_URL = "https://api.getgeoapi.com/v2/currency/convert/"
 
         private const val DEFAULT_EURO_RATE = 1.0666
-        private val DEFAULT_EURO_RATE_DATE = LocalDate.of(2023,1,13) // Source ECB Eurostat
+        private val DEFAULT_EURO_RATE_DATE = LocalDate.of(2023, 1, 13) // Source ECB Eurostat
 
         private val KEY_EUR_RATE = stringPreferencesKey("eur_rate")
     }
@@ -60,61 +60,61 @@ class CurrencyRateRepositoryImplementation @Inject constructor(
                     BASE_URL,
                     "EUR",
                     "USD",
-                    "json",
                     BuildConfig.CURRENCY_API_KEY
                 )
 
-                return if (response.status == "success") {
+                return if (response.status == "success" && response.rates?.usdResponse?.rate != null) {
                     val currencyRate = CurrencyRateEntity(
                         currency = AppCurrency.EUR,
-                        rate = response.rates.eurResponse.rate.toDouble(),
+                        rate = response.rates.usdResponse.rate.toDouble(),
                         updateDate = LocalDate.now(),
                     )
                     saveEuroRate(currencyRate)
                     CurrencyRateResponseWrapper.Success(response)
                 } else {
-                    CurrencyRateResponseWrapper.Failure("Failed to get currency rate.")
+                    CurrencyRateResponseWrapper.Failure("getEuroRate(): failure")
                 }
 
             } catch (e: Exception) {
                 return CurrencyRateResponseWrapper.Error(e)
             }
         } else {
-                val cachedResponse = CurrencyRateResponse(
-                    updatedDate = formattedCachedRateUpdate ?: "",
-                    rates = RatesResponse(
-                        eurResponse = EurResponse(
-                            currencyName = "EUR",
-                            rate = cachedEuroRate.rate.toString(),
-                            rateForAmount = "1"
-                        )
+            val cachedResponse = CurrencyRateResponse(
+                updatedDate = formattedCachedRateUpdate ?: "",
+                rates = RatesResponse(
+                    usdResponse = CurrencyResponse(
+                        currencyName = "USD",
+                        rate = cachedEuroRate.rate.toString(),
+                        rateForAmount = "1"
                     ),
-                    status = "success"
-                )
-                return CurrencyRateResponseWrapper.Success(cachedResponse)
+                    eurResponse = null
+                ),
+                status = "success"
+            )
+            return CurrencyRateResponseWrapper.Success(cachedResponse)
         }
     }
 
     override fun getCachedEuroRateFlow(): Flow<CurrencyRateEntity> = application.currencyRateDataStore.data
-        .catch { exception ->
-            if (exception is IOException) {
-                emit(emptyPreferences())
-            } else {
-                throw exception
+            .catch { exception ->
+                if (exception is IOException) {
+                    emit(emptyPreferences())
+                } else {
+                    throw exception
+                }
             }
-        }
-        .map { preferences ->
-            val currencyRateJson = preferences[KEY_EUR_RATE]
-            if (currencyRateJson != null) {
-                gson.fromJson(currencyRateJson, currencyRateType)
-            } else {
-                CurrencyRateEntity(
-                    currency = AppCurrency.EUR,
-                    rate = DEFAULT_EURO_RATE,
-                    updateDate = DEFAULT_EURO_RATE_DATE,
-                )
+            .map { preferences ->
+                val currencyRateJson = preferences[KEY_EUR_RATE]
+                if (currencyRateJson != null) {
+                    gson.fromJson(currencyRateJson, currencyRateType)
+                } else {
+                    CurrencyRateEntity(
+                        currency = AppCurrency.EUR,
+                        rate = DEFAULT_EURO_RATE,
+                        updateDate = DEFAULT_EURO_RATE_DATE,
+                    )
+                }
             }
-        }
 
     private suspend fun saveEuroRate(currencyRate: CurrencyRateEntity) {
         try {
@@ -127,4 +127,3 @@ class CurrencyRateRepositoryImplementation @Inject constructor(
         }
     }
 }
-

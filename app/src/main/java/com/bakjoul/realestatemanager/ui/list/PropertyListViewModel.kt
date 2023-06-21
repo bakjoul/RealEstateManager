@@ -42,9 +42,7 @@ class PropertyListViewModel @Inject constructor(
                     features = formatFeatures(it.bedrooms, it.bathrooms, it.surface),
                     price = formatPrice(it.price, currency, euroRate.rate),
                     currencyRate = formatRate(currency, euroRate.rate, euroRate.updateDate.format(dateFormatter)),
-                    onPropertyClicked = EquatableCallback {
-                        setCurrentPropertyIdUseCase.invoke(it.id)
-                    }
+                    onPropertyClicked = EquatableCallback { setCurrentPropertyIdUseCase.invoke(it.id) }
                 )
             }
         }.collect { transformedProperties ->

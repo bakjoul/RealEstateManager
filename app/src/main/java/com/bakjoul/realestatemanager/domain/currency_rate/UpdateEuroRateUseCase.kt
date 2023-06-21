@@ -13,17 +13,16 @@ class UpdateEuroRateUseCase @Inject constructor(private val currencyRateReposito
     suspend fun invoke() {
         when (val result = currencyRateRepository.getEuroRate()) {
             is CurrencyRateResponseWrapper.Success -> {
-                Log.i(TAG, "Euro rate at ${result.currencyRateResponse.rates.eurResponse.rate} on ${result.currencyRateResponse.updatedDate}")
+                Log.i(TAG, "Euro rate at ${result.currencyRateResponse.rates?.usdResponse?.rate} on ${result.currencyRateResponse.updatedDate}")
             }
 
             is CurrencyRateResponseWrapper.Error -> {
-                Log.d("test", "currency rate error")
+                Log.d(TAG, "Error while updating Euro rate: ${result.throwable.message}")
             }
 
             is CurrencyRateResponseWrapper.Failure -> {
-                Log.d("test", "currency rate failure")
+                Log.d(TAG, "Failed to update Euro rate")
             }
         }
-
     }
 }

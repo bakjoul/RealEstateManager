@@ -12,7 +12,6 @@ interface CurrencyApi {
         @Url url: String,
         @Query("from") from: String,
         @Query("to") to: String,
-        @Query("format") format: String,
         @Query("api_key") key: String
     ): CurrencyRateResponse
 }
