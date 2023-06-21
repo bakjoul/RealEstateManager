@@ -1,5 +1,9 @@
 package com.bakjoul.realestatemanager.ui.list
 
+import android.graphics.Typeface
+import android.text.SpannableString
+import android.text.SpannableStringBuilder
+import android.text.style.StyleSpan
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
@@ -12,8 +16,11 @@ import com.bakjoul.realestatemanager.ui.utils.EquatableCallback
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.combine
 import java.text.NumberFormat
+import java.text.ParseException
+import java.text.SimpleDateFormat
 import java.time.format.DateTimeFormatter
 import java.util.Currency
+import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
 
@@ -75,10 +82,35 @@ class PropertyListViewModel @Inject constructor(
         return formattedPrice
     }
 
-    private fun formatRate(currency: AppCurrency, euroRate: Double, updateDate: String): String {
-        return when (currency) {
-            AppCurrency.EUR -> "Euro value: $$euroRate ($updateDate)"
+    private fun formatRate(currency: AppCurrency, euroRate: Double, updateDate: String): SpannableString  {
+        val rateText = "\$$euroRate"
+        val formattedDate = formatDateString(updateDate)
+        val fullText = when (currency) {
+            AppCurrency.EUR -> "Exchange rate: $rateText\nUpdated on $formattedDate"
             else -> ""
         }
+
+        val spannableBuilder = SpannableStringBuilder(fullText)
+
+        if (rateText.isNotEmpty() && fullText.contains(rateText)) {
+            val startEuroRate = fullText.indexOf(rateText)
+            val endEuroRate = startEuroRate + rateText.length
+            spannableBuilder.setSpan(StyleSpan(Typeface.BOLD), startEuroRate, endEuroRate, SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE)
+        }
+
+        return SpannableString.valueOf(spannableBuilder)
+    }
+
+    private fun formatDateString(dateString: String): String? {
+        val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val date: Date? = try {
+            inputFormat.parse(dateString)
+        } catch (e: ParseException) {
+            null
+        }
+
+        val outputFormat = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
+
+        return date?.let { outputFormat.format(it) }
     }
 }

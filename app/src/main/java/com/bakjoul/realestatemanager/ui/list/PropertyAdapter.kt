@@ -1,5 +1,6 @@
 package com.bakjoul.realestatemanager.ui.list
 
+import android.text.SpannableString
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -40,7 +41,7 @@ class PropertyAdapter : ListAdapter<PropertyItemViewState, PropertyAdapter.ViewH
                     val tooltipView = LayoutInflater.from(binding.root.context).inflate(R.layout.tooltip_info, null)
                     val tooltipTextView = tooltipView.findViewById<TextView>(R.id.tooltip_text)
 
-                    tooltipTextView.text = item.currencyRate
+                    tooltipTextView.text = SpannableString.valueOf(item.currencyRate)
                     PopupWindow(binding.root.context).apply {
                         contentView = tooltipView
                         width = ViewGroup.LayoutParams.WRAP_CONTENT
