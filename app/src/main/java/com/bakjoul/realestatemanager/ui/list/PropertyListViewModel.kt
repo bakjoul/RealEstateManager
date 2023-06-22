@@ -11,7 +11,7 @@ import com.bakjoul.realestatemanager.data.settings.model.AppCurrency
 import com.bakjoul.realestatemanager.domain.currency_rate.GetCachedEuroRateUseCase
 import com.bakjoul.realestatemanager.domain.current_property.SetCurrentPropertyIdUseCase
 import com.bakjoul.realestatemanager.domain.property.GetPropertiesFlowUseCase
-import com.bakjoul.realestatemanager.domain.settings.currency.GetCurrencyUseCase
+import com.bakjoul.realestatemanager.domain.settings.currency.GetCurrentCurrencyUseCase
 import com.bakjoul.realestatemanager.ui.utils.EquatableCallback
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.combine
@@ -28,7 +28,7 @@ import javax.inject.Inject
 class PropertyListViewModel @Inject constructor(
     private val getPropertiesFlowUseCase: GetPropertiesFlowUseCase,
     private val setCurrentPropertyIdUseCase: SetCurrentPropertyIdUseCase,
-    private val getCurrencyUseCase: GetCurrencyUseCase,
+    private val getCurrentCurrencyUseCase: GetCurrentCurrencyUseCase,
     private val getCachedEuroRateUseCase: GetCachedEuroRateUseCase
 ) : ViewModel() {
 
@@ -37,7 +37,7 @@ class PropertyListViewModel @Inject constructor(
     val propertiesLiveData: LiveData<List<PropertyItemViewState>> = liveData {
         combine(
             getPropertiesFlowUseCase.invoke(),
-            getCurrencyUseCase.invoke(),
+            getCurrentCurrencyUseCase.invoke(),
             getCachedEuroRateUseCase.invoke()
         ) { properties, currency, euroRate ->
             properties.map {
@@ -52,8 +52,8 @@ class PropertyListViewModel @Inject constructor(
                     onPropertyClicked = EquatableCallback { setCurrentPropertyIdUseCase.invoke(it.id) }
                 )
             }
-        }.collect { transformedProperties ->
-            emit(transformedProperties)
+        }.collect { propertiesItemViewStates ->
+            emit(propertiesItemViewStates)
         }
     }
 

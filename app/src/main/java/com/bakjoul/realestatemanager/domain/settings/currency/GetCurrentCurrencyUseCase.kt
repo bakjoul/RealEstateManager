@@ -6,7 +6,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-class GetCurrencyUseCase @Inject constructor(private val settingsRepository: SettingsRepository) {
-    fun invoke(): Flow<AppCurrency> =
-        settingsRepository.getCurrencyFlow().map { it ?: AppCurrency.USD }
+class GetCurrentCurrencyUseCase @Inject constructor(private val settingsRepository: SettingsRepository) {
+    fun invoke(): Flow<AppCurrency> = settingsRepository.getCurrencyFlow().map { it ?: AppCurrency.USD }
 }
