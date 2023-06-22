@@ -34,4 +34,16 @@
     <string name="settings_currency_desc">Changes the currency used throughout the app</string>
     <string name="info_icon_desc">Info icon</string>
     <string name="info_icon">i</string>
+    <string name="tooltip_school">School</string>
+    <string name="tooltip_store">Store</string>
+    <string name="tooltip_park">Park</string>
+    <string name="tooltip_restaurant">Restaurant</string>
+    <string name="tooltip_hospital">Hospital</string>
+    <string name="tooltip_bus">Bus</string>
+    <string name="tooltip_subway">Subway</string>
+    <string name="tooltip_tramway">Tramway</string>
+    <string name="tooltip_train">Train</string>
+    <string name="tooltip_airport">Airport</string>
+    <string name="details_sold_on">"Sold on "</string>
+    <string name="details_for_sale_since">"For sale since "</string>
 </resources>

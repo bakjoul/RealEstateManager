@@ -1,10 +1,12 @@
 package com.bakjoul.realestatemanager.ui.details
 
+import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.liveData
 import com.bakjoul.realestatemanager.BuildConfig
+import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.domain.property.GetCurrentPropertyUseCase
 import com.bakjoul.realestatemanager.domain.property.model.PhotoEntity
 import com.bakjoul.realestatemanager.domain.resources.IsTabletUseCase
@@ -18,6 +20,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DetailsViewModel @Inject constructor(
+    private val application: Application,
     private val getCurrentPropertyUseCase: GetCurrentPropertyUseCase,
     private val refreshOrientationUseCase: RefreshOrientationUseCase,
     isTabletUseCase: IsTabletUseCase
@@ -73,9 +76,9 @@ class DetailsViewModel @Inject constructor(
 
     private fun getSaleStatus(soldDate: LocalDate?, entryDate: LocalDate): String {
         return if (soldDate != null) {
-            "Sold on ${soldDate.format(formatter)}"
+            application.getString(R.string.details_sold_on) + soldDate.format(formatter)
         } else {
-            "For sale since ${entryDate.format(formatter)}"
+            application.getString(R.string.details_for_sale_since) + entryDate.format(formatter)
         }
     }
 
