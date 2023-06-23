@@ -34,6 +34,11 @@ class DetailsViewModel @Inject constructor(
     isTabletUseCase: IsTabletUseCase
 ) : ViewModel() {
 
+    private companion object {
+        private const val STATIC_MAP_SIZE = "160x160"
+        private const val STATIC_MAP_ZOOM = "17"
+    }
+
     private val locale = Locale.getDefault()
     private val formatter: DateTimeFormatter = if (locale.language == "fr") {
         DateTimeFormatter.ofPattern("d/MM/yy", locale)
@@ -162,7 +167,7 @@ class DetailsViewModel @Inject constructor(
 
     private fun getMapUrl(address: String, city: String, country: String): String {
         val formattedAddress = formatAddress("$address,$city,$country")
-        return "https://maps.googleapis.com/maps/api/staticmap?&size=160x160&zoom=17&markers=$formattedAddress&key=${BuildConfig.MAPS_API_KEY}"
+        return "https://maps.googleapis.com/maps/api/staticmap?&size=$STATIC_MAP_SIZE&zoom=$STATIC_MAP_ZOOM&markers=$formattedAddress&key=${BuildConfig.MAPS_API_KEY}"
     }
 
     private fun formatAddress(address: String) = address.replace(" ", "%20")
