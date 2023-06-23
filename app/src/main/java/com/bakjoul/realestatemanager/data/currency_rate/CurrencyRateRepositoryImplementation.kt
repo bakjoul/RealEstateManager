@@ -38,7 +38,7 @@ class CurrencyRateRepositoryImplementation @Inject constructor(
 
     companion object {
         private const val CURRENCY_RATE_DATA_STORE_NAME = "currency_rate_data_store"
-        const val BASE_URL = "https://api.getgeoapi.com/v2/currency/convert/"
+        const val CURRENCY_API_URL = "https://api.getgeoapi.com/v2/currency/convert/"
 
         private const val DEFAULT_EURO_RATE = 1.0666
         private val DEFAULT_EURO_RATE_DATE = LocalDate.of(2023, 1, 13) // Source ECB Eurostat
@@ -57,7 +57,7 @@ class CurrencyRateRepositoryImplementation @Inject constructor(
         if (cachedEuroRate == null || cachedEuroRate.updateDate != LocalDate.now()) {
             try {
                 val response = currencyApi.getCurrencyRate(
-                    BASE_URL,
+                    CURRENCY_API_URL,
                     "EUR",
                     "USD",
                     BuildConfig.CURRENCY_API_KEY

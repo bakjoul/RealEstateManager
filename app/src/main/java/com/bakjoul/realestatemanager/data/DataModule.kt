@@ -1,7 +1,6 @@
 package com.bakjoul.realestatemanager.data
 
 import com.bakjoul.realestatemanager.data.api.CurrencyApi
-import com.bakjoul.realestatemanager.data.currency_rate.CurrencyRateRepositoryImplementation.Companion.BASE_URL
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import dagger.Module
@@ -37,7 +36,7 @@ class DataModule {
             .build()
 
         return Retrofit.Builder()
-            .baseUrl(BASE_URL)
+            .baseUrl("https://r.mtdv.me/currencyapi/")
             .addConverterFactory(GsonConverterFactory.create(gson))
             .client(httpClient)
             .build()
