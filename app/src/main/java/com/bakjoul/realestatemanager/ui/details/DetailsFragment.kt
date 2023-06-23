@@ -115,7 +115,7 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
             poi.visibility = View.VISIBLE
             val tooltip = createPopupWindow(poi.context, text)
             poi.setOnClickListener {
-                tooltip.showAsDropDown(poi, DensityUtil.dip2px(poi.context, 24f), 0)
+                tooltip.showAsDropDown(poi, DensityUtil.dip2px(poi.context, 20f), 0)
             }
         } else {
             poi.visibility = View.GONE
