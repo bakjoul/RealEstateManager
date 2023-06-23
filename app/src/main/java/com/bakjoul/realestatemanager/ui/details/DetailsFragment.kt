@@ -1,7 +1,9 @@
 package com.bakjoul.realestatemanager.ui.details
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Paint
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -66,6 +68,11 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
             Glide.with(binding.detailsStaticMap)
                 .load(details.staticMapUrl)
                 .into(binding.detailsStaticMap)
+            binding.detailsStaticMap.setOnClickListener {
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("geo:0,0?q=${details.formattedAddress}"))
+                intent.setPackage("com.google.android.apps.maps")
+                startActivity(intent)
+            }
         }
     }
 

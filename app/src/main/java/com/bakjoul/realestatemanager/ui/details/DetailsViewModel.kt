@@ -84,7 +84,8 @@ class DetailsViewModel @Inject constructor(
                     property.country
                 ),
                 media = mapPhotoEntities(property.photos),
-                staticMapUrl = getMapUrl(property.address, property.city, property.country)
+                staticMapUrl = getMapUrl(property.address, property.city, property.country),
+                formattedAddress = getAddress(property.address, property.city, property.country)
             )
 
         }.collect { viewState ->
@@ -168,6 +169,10 @@ class DetailsViewModel @Inject constructor(
     private fun getMapUrl(address: String, city: String, country: String): String {
         val formattedAddress = formatAddress("$address,$city,$country")
         return "https://maps.googleapis.com/maps/api/staticmap?&size=$STATIC_MAP_SIZE&zoom=$STATIC_MAP_ZOOM&markers=$formattedAddress&key=${BuildConfig.MAPS_API_KEY}"
+    }
+
+    private fun getAddress(address: String, city: String, country: String): String {
+        return formatAddress("$address $city $country")
     }
 
     private fun formatAddress(address: String) = address.replace(" ", "%20")
