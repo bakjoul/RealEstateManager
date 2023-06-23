@@ -1,5 +1,7 @@
 package com.bakjoul.realestatemanager.ui.details
 
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.graphics.Paint
@@ -10,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupWindow
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.bakjoul.realestatemanager.R
@@ -65,11 +68,18 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
 
             adapter.submitList(details.media)
 
+            binding.detailsItemLocation.setOnLongClickListener {
+                val clipboardManager = requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                val clipData = ClipData.newPlainText("address", details.clipboardAddress)
+                clipboardManager.setPrimaryClip(clipData)
+                Toast.makeText(requireContext(), getString(R.string.details_address_clipboard), Toast.LENGTH_SHORT).show()
+                true
+            }
             Glide.with(binding.detailsStaticMap)
                 .load(details.staticMapUrl)
                 .into(binding.detailsStaticMap)
             binding.detailsStaticMap.setOnClickListener {
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("geo:0,0?q=${details.formattedAddress}"))
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("geo:0,0?q=${details.mapsAddress}"))
                 intent.setPackage("com.google.android.apps.maps")
                 startActivity(intent)
             }

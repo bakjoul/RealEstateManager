@@ -46,4 +46,5 @@
     <string name="tooltip_airport">Airport</string>
     <string name="details_sold_on">"Sold on "</string>
     <string name="details_for_sale_since">"For sale since "</string>
+    <string name="details_address_clipboard">Address copied to clipboard</string>
 </resources>

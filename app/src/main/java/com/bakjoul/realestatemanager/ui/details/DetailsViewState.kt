@@ -24,6 +24,7 @@ data class DetailsViewState(
     val poiAirport: Boolean,
     val location: String,
     val media: List<DetailsMediaItemViewState>,
+    val clipboardAddress: String,
     val staticMapUrl: String,
-    val formattedAddress: String
+    val mapsAddress: String
 )

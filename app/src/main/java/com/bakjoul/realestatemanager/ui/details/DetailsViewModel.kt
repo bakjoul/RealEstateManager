@@ -76,18 +76,12 @@ class DetailsViewModel @Inject constructor(
                 poiTramway = property.poiTramway,
                 poiTrain = property.poiTrain,
                 poiAirport = property.poiAirport,
-                location = formatLocation(
-                    property.address,
-                    formatApartment(property.apartment),
-                    property.city,
-                    property.zipcode,
-                    property.country
-                ),
+                location = formatLocation(property.address, formatApartment(property.apartment), property.city, property.zipcode, property.country),
                 media = mapPhotoEntities(property.photos),
+                clipboardAddress = getClipboardAddress(property.address, property.city, property.country),
                 staticMapUrl = getMapUrl(property.address, property.city, property.country),
-                formattedAddress = getAddress(property.address, property.city, property.country)
+                mapsAddress = getAddress(property.address, property.city, property.country)
             )
-
         }.collect { viewState ->
             emit(viewState)
         }
@@ -141,13 +135,7 @@ class DetailsViewModel @Inject constructor(
         return "$surface m²"
     }
 
-    private fun formatLocation(
-        address: String,
-        apartment: String,
-        city: String,
-        zipcode: String,
-        country: String
-    ): String {
+    private fun formatLocation(address: String, apartment: String, city: String, zipcode: String, country: String): String {
         val location = buildString {
             append(address)
             if (apartment.isNotEmpty()) {
@@ -165,6 +153,9 @@ class DetailsViewModel @Inject constructor(
             ""
         }
     }
+
+    private fun getClipboardAddress(address: String, city: String, country: String): String =
+        "$address $city $country"
 
     private fun getMapUrl(address: String, city: String, country: String): String {
         val formattedAddress = formatAddress("$address,$city,$country")
