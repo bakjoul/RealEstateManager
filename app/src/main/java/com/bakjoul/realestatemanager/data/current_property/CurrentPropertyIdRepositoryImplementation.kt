@@ -12,8 +12,8 @@ import javax.inject.Singleton
 class CurrentPropertyIdRepositoryImplementation @Inject constructor() :
     CurrentPropertyIdRepository {
 
-    private val currentPropertyIdMutableStateFlow = MutableStateFlow<Long>(-1)
-    private val currentPropertyIdChannel = Channel<Long>()
+    private val currentPropertyIdMutableStateFlow: MutableStateFlow<Long> = MutableStateFlow(-1)
+    private val currentPropertyIdChannel: Channel<Long> = Channel()
 
     override fun getCurrentPropertyIdFlow(): Flow<Long> = currentPropertyIdMutableStateFlow.asStateFlow()
 
