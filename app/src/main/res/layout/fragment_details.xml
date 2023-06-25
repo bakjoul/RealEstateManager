@@ -377,7 +377,7 @@
                     android:padding="12dp"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     tools:itemCount="5"
-                    tools:listitem="@layout/fragment_details_media_item" />
+                    tools:listitem="@layout/fragment_details_photo_item" />
             </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView

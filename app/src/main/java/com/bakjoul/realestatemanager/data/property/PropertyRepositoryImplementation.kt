@@ -46,6 +46,24 @@ class PropertyRepositoryImplementation @Inject constructor() : PropertyRepositor
                             0,
                             "android.resource://com.bakjoul.realestatemanager/drawable/penthouse_upper_east_side",
                             "Lounge 2"
+                        ),
+                        PhotoEntity(
+                            2,
+                            0,
+                            "android.resource://com.bakjoul.realestatemanager/drawable/penthouse_upper_east_side",
+                            "Lounge 3"
+                        ),
+                        PhotoEntity(
+                            3,
+                            0,
+                            "android.resource://com.bakjoul.realestatemanager/drawable/penthouse_upper_east_side",
+                            "Lounge 4"
+                        ),
+                        PhotoEntity(
+                            4,
+                            0,
+                            "android.resource://com.bakjoul.realestatemanager/drawable/penthouse_upper_east_side",
+                            "Lounge 5"
                         )
                     ),
                     poiPark = true,

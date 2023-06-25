@@ -17,17 +17,24 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.databinding.FragmentDetailsBinding
+import com.bakjoul.realestatemanager.domain.property.model.PhotoEntity
+import com.bakjoul.realestatemanager.ui.photos.OnDialogDismissListener
+import com.bakjoul.realestatemanager.ui.photos.PhotosFragment
 import com.bakjoul.realestatemanager.ui.utils.DensityUtil
+import com.bakjoul.realestatemanager.ui.utils.Event.Companion.observeEvent
 import com.bakjoul.realestatemanager.ui.utils.viewBinding
 import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
 import kotlin.math.abs
 
 @AndroidEntryPoint
-class DetailsFragment : Fragment(R.layout.fragment_details) {
+class DetailsFragment : Fragment(R.layout.fragment_details), OnDialogDismissListener {
 
     private val binding by viewBinding { FragmentDetailsBinding.bind(it) }
     private val viewModel by viewModels<DetailsViewModel>()
+
+    private lateinit var photos: List<PhotoEntity>
+    private var lastPhotoViewedId: Long = 0
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -66,7 +73,8 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
             setTooltip(details.poiAirport, binding.detailsPoiAirport, getString(R.string.tooltip_airport))
             binding.detailsItemLocation.setText(details.location)
 
-            adapter.submitList(details.media)
+            adapter.submitList(details.medias)
+            photos = details.photos
 
             binding.detailsItemLocation.setOnLongClickListener {
                 val clipboardManager = requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
@@ -84,6 +92,21 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
                 startActivity(intent)
             }
         }
+
+        viewModel.detailsViewActionLiveData.observeEvent(viewLifecycleOwner) { event ->
+            when (event) {
+                is DetailsViewAction.OpenPhoto -> {
+                    val dialogFragment = PhotosFragment.newInstance(photos, event.photoId, this@DetailsFragment)
+                    //dialogFragment.setStyle(DialogFragment.STYLE_NORMAL, R.style.DialogTheme)
+                    dialogFragment.show(childFragmentManager, "photos_dialog")
+                }
+            }
+        }
+    }
+
+    override fun onDialogDismissed(lastPhotoViewedId: Long) {
+        this.lastPhotoViewedId = lastPhotoViewedId
+        binding.detailsMediaRecyclerView.smoothScrollToPosition(lastPhotoViewedId.toInt())
     }
 
     private fun setToolbarInfoAnimation() {

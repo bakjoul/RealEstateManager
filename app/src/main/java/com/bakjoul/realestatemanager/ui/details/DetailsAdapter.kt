@@ -1,40 +1,36 @@
 package com.bakjoul.realestatemanager.ui.details
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.bakjoul.realestatemanager.databinding.FragmentDetailsMediaItemBinding
+import com.bakjoul.realestatemanager.databinding.FragmentDetailsPhotoItemBinding
 import com.bumptech.glide.Glide
 
 class DetailsAdapter : ListAdapter<DetailsMediaItemViewState, DetailsAdapter.ViewHolder>(DetailsDiffCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder = ViewHolder(
-        FragmentDetailsMediaItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        FragmentDetailsPhotoItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
     )
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(getItem(position))
     }
 
-    class ViewHolder(private val binding: FragmentDetailsMediaItemBinding) :
-        RecyclerView.ViewHolder(binding.root) {
+    class ViewHolder(private val binding: FragmentDetailsPhotoItemBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(item: DetailsMediaItemViewState) {
-            Glide.with(binding.detailsMediaItemPhoto.context)
+            Glide.with(binding.detailsPhotoItemImageView.context)
                 .load(item.url)
-                .into(binding.detailsMediaItemPhoto)
-            binding.detailsMediaItemDescription.text = item.description
-            binding.detailsMediaItem.setOnClickListener { Log.d("test", "photo ${item.id} clicked") }
+                .into(binding.detailsPhotoItemImageView)
+            binding.detailsPhotoItemDescription.text = item.description
+            binding.detailsPhotoItem.setOnClickListener { item.onPhotoClicked() }
         }
     }
 
     object DetailsDiffCallback : DiffUtil.ItemCallback<DetailsMediaItemViewState>() {
-        override fun areItemsTheSame(oldItem: DetailsMediaItemViewState, newItem: DetailsMediaItemViewState): Boolean =
-            oldItem.id == newItem.id
+        override fun areItemsTheSame(oldItem: DetailsMediaItemViewState, newItem: DetailsMediaItemViewState): Boolean = oldItem.id == newItem.id
 
-        override fun areContentsTheSame(oldItem: DetailsMediaItemViewState, newItem: DetailsMediaItemViewState): Boolean =
-            oldItem == newItem
+        override fun areContentsTheSame(oldItem: DetailsMediaItemViewState, newItem: DetailsMediaItemViewState): Boolean = oldItem == newItem
     }
 }

@@ -15,8 +15,13 @@ import com.bakjoul.realestatemanager.domain.resources.IsTabletUseCase
 import com.bakjoul.realestatemanager.domain.resources.RefreshOrientationUseCase
 import com.bakjoul.realestatemanager.domain.settings.currency.GetCurrentCurrencyUseCase
 import com.bakjoul.realestatemanager.ui.utils.EquatableCallback
+import com.bakjoul.realestatemanager.ui.utils.Event
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.receiveAsFlow
 import java.text.NumberFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -39,12 +44,7 @@ class DetailsViewModel @Inject constructor(
         private const val STATIC_MAP_ZOOM = "17"
     }
 
-    private val locale = Locale.getDefault()
-    private val formatter: DateTimeFormatter = if (locale.language == "fr") {
-        DateTimeFormatter.ofPattern("d/MM/yy", locale)
-    } else {
-        DateTimeFormatter.ofPattern("M/d/yy", locale)
-    }
+    private val selectedPhotoIdChannel: Channel<Long> = Channel()
 
     val isTabletLiveData: LiveData<Boolean> = isTabletUseCase.invoke().asLiveData()
 
@@ -77,7 +77,8 @@ class DetailsViewModel @Inject constructor(
                 poiTrain = property.poiTrain,
                 poiAirport = property.poiAirport,
                 location = formatLocation(property.address, formatApartment(property.apartment), property.city, property.zipcode, property.country),
-                media = mapPhotoEntities(property.photos),
+                medias = mapPhotoEntities(property.photos),
+                photos = property.photos,
                 clipboardAddress = getClipboardAddress(property.address, property.city, property.country),
                 staticMapUrl = getMapUrl(property.address, property.city, property.country),
                 mapsAddress = getAddress(property.address, property.city, property.country)
@@ -85,6 +86,31 @@ class DetailsViewModel @Inject constructor(
         }.collect { viewState ->
             emit(viewState)
         }
+    }
+
+    val detailsViewActionLiveData: LiveData<Event<DetailsViewAction>> =
+        combine(
+            selectedPhotoIdChannel.receiveAsFlow(),
+            isTabletUseCase.invoke()
+        ) { selectedPhoto, isTablet ->
+            if (selectedPhoto >= 0) {
+                if (isTablet) {
+                    DetailsViewAction.OpenPhoto(selectedPhoto)
+                } else {
+                    DetailsViewAction.OpenPhoto(selectedPhoto)
+                }
+            } else {
+                null
+            }
+        }.map { action ->
+            action?.let { Event(it) }
+        }.filterNotNull().asLiveData()
+
+    private val locale = Locale.getDefault()
+    private val formatter: DateTimeFormatter = if (locale.language == "fr") {
+        DateTimeFormatter.ofPattern("d/MM/yy", locale)
+    } else {
+        DateTimeFormatter.ofPattern("M/d/yy", locale)
     }
 
     private fun formatPrice(price: Double, currency: AppCurrency, euroRate: Double): String {
@@ -122,7 +148,9 @@ class DetailsViewModel @Inject constructor(
                 id = photoEntity.id,
                 url = photoEntity.url,
                 description = photoEntity.description,
-                onPhotoClicked = EquatableCallback { }
+                onPhotoClicked = EquatableCallback {
+                    selectedPhotoIdChannel.trySend(photoEntity.id)
+                }
             )
         }
     }
