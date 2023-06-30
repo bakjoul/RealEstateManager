@@ -47,4 +47,7 @@
     <string name="details_sold_on">"Sold on "</string>
     <string name="details_for_sale_since">"For sale since "</string>
     <string name="details_address_clipboard">Address copied to clipboard</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="details_close_button_desc">Close button</string>
 </resources>

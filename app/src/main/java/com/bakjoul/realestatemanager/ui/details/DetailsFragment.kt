@@ -15,39 +15,52 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.viewpager2.widget.ViewPager2
 import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.databinding.FragmentDetailsBinding
-import com.bakjoul.realestatemanager.domain.property.model.PhotoEntity
-import com.bakjoul.realestatemanager.ui.photos.OnDialogDismissListener
-import com.bakjoul.realestatemanager.ui.photos.PhotosFragment
 import com.bakjoul.realestatemanager.ui.utils.DensityUtil
-import com.bakjoul.realestatemanager.ui.utils.Event.Companion.observeEvent
 import com.bakjoul.realestatemanager.ui.utils.viewBinding
 import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
 import kotlin.math.abs
 
 @AndroidEntryPoint
-class DetailsFragment : Fragment(R.layout.fragment_details), OnDialogDismissListener {
+class DetailsFragment : Fragment(R.layout.fragment_details) {
 
     private val binding by viewBinding { FragmentDetailsBinding.bind(it) }
     private val viewModel by viewModels<DetailsViewModel>()
 
-    private lateinit var photos: List<PhotoEntity>
-    private var lastPhotoViewedId: Long = 0
+    private var isViewPagerFirstOpening: Boolean = true
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val adapter = DetailsAdapter()
-        binding.detailsMediaRecyclerView.adapter = adapter
+        val recyclerViewAdapter = DetailsAdapter()
+        binding.detailsMediaRecyclerView.adapter = recyclerViewAdapter
 
-        binding.detailsFabBack.setOnClickListener { requireActivity().onBackPressedDispatcher.onBackPressed() }
+        val viewPagerAdapter = DetailsPagerAdapter()
+        binding.detailsViewPager.adapter = viewPagerAdapter
+        binding.detailsViewPager.orientation = ViewPager2.ORIENTATION_HORIZONTAL
+        binding.photosDotsIndicator.attachTo(binding.detailsViewPager)
+        binding.detailsViewPagerCloseButton.setOnClickListener { closeViewPager() }
+        binding.detailsViewPagerConstraintLayout.setOnClickListener { closeViewPager() }
+        binding.detailsViewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                if (!isViewPagerFirstOpening) {
+                    viewModel.updateCurrentPhotoId(position)
+                }
+            }
+        })
+
+        binding.detailsFabBack.setOnClickListener {
+            viewModel.resetCurrentPropertyId()
+            requireActivity().onBackPressedDispatcher.onBackPressed()
+        }
         setToolbarInfoAnimation()
 
         viewModel.detailsLiveData.observe(viewLifecycleOwner) { details ->
             Glide.with(binding.detailsToolbarPhoto)
-                .load(details.photoUrl)
+                .load(details.mainPhotoUrl)
                 .into(binding.detailsToolbarPhoto)
             binding.detailsToolbarType.text = details.type
             binding.detailsToolbarPrice.text = details.price
@@ -73,8 +86,18 @@ class DetailsFragment : Fragment(R.layout.fragment_details), OnDialogDismissList
             setTooltip(details.poiAirport, binding.detailsPoiAirport, getString(R.string.tooltip_airport))
             binding.detailsItemLocation.setText(details.location)
 
-            adapter.submitList(details.medias)
-            photos = details.photos
+            recyclerViewAdapter.submitList(details.medias)
+
+            viewPagerAdapter.updateData(details.photoUrls)
+            if (details.clickedPhotoId != -1 && isViewPagerFirstOpening) {
+                binding.detailsViewPager.setCurrentItem(details.clickedPhotoId, false)
+                isViewPagerFirstOpening = false
+            }
+            if (details.clickedPhotoId == -1) {
+                binding.detailsViewPagerConstraintLayout.visibility = View.INVISIBLE
+            } else {
+                binding.detailsViewPagerConstraintLayout.visibility = View.VISIBLE
+            }
 
             binding.detailsItemLocation.setOnLongClickListener {
                 val clipboardManager = requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
@@ -92,21 +115,12 @@ class DetailsFragment : Fragment(R.layout.fragment_details), OnDialogDismissList
                 startActivity(intent)
             }
         }
-
-        viewModel.detailsViewActionLiveData.observeEvent(viewLifecycleOwner) { event ->
-            when (event) {
-                is DetailsViewAction.OpenPhoto -> {
-                    val dialogFragment = PhotosFragment.newInstance(photos, event.photoId, this@DetailsFragment)
-                    //dialogFragment.setStyle(DialogFragment.STYLE_NORMAL, R.style.DialogTheme)
-                    dialogFragment.show(childFragmentManager, "photos_dialog")
-                }
-            }
-        }
     }
 
-    override fun onDialogDismissed(lastPhotoViewedId: Long) {
-        this.lastPhotoViewedId = lastPhotoViewedId
-        binding.detailsMediaRecyclerView.smoothScrollToPosition(lastPhotoViewedId.toInt())
+    private fun closeViewPager() {
+        binding.detailsViewPagerConstraintLayout.visibility = View.INVISIBLE
+        viewModel.resetCurrentPhotoId()
+        isViewPagerFirstOpening = true
     }
 
     private fun setToolbarInfoAnimation() {

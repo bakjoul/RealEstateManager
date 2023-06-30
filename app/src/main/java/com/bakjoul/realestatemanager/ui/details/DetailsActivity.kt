@@ -17,10 +17,8 @@ class DetailsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        viewModel.isTabletLiveData.observe(this) { isTablet ->
-            if (isTablet) {
-                finish()
-            }
+        if (resources.getBoolean(R.bool.isTablet)) {
+            finish()
         }
 
         setContentView(binding.root)

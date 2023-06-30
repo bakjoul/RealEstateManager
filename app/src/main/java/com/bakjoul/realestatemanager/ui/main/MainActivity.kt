@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.MenuProvider
 import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.databinding.ActivityMainBinding
+import com.bakjoul.realestatemanager.ui.EmptyFragment
 import com.bakjoul.realestatemanager.ui.details.DetailsActivity
 import com.bakjoul.realestatemanager.ui.details.DetailsFragment
 import com.bakjoul.realestatemanager.ui.list.PropertyListFragment
@@ -31,21 +32,44 @@ class MainActivity : AppCompatActivity() {
         setToolbar()
         setMenu()
 
+        // List of properties
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
                 .replace(binding.mainFrameLayoutContainerList.id, PropertyListFragment())
                 .commitNow()
         }
 
+        // Empty fragment if in tablet mode
         val containerDetailsId = binding.mainFrameLayoutContainerDetails?.id
+        if (containerDetailsId != null) {
+            supportFragmentManager.beginTransaction()
+                .replace(containerDetailsId, EmptyFragment())
+                .commitNow()
+        }
+
         viewModel.mainViewActionLiveData.observeEvent(this) {
             when (it) {
                 MainViewAction.NavigateToDetails -> startActivity(Intent(this, DetailsActivity::class.java))
+
                 MainViewAction.DisplayDetailsFragment -> {
-                    if (containerDetailsId != null && supportFragmentManager.findFragmentById(containerDetailsId) == null) {
-                        supportFragmentManager.beginTransaction()
-                            .replace(containerDetailsId, DetailsFragment())
-                            .commitNow()
+                    if (containerDetailsId != null) {
+                        val existingFragment = supportFragmentManager.findFragmentById(containerDetailsId)
+                        if (existingFragment == null || existingFragment is EmptyFragment) {
+                            supportFragmentManager.beginTransaction()
+                                .replace(containerDetailsId, DetailsFragment())
+                                .commitNow()
+                        }
+                    }
+                }
+
+                MainViewAction.DisplayEmptyFragment -> {
+                    if (containerDetailsId != null) {
+                        val existingFragment = supportFragmentManager.findFragmentById(containerDetailsId)
+                        if (existingFragment == null || existingFragment is DetailsFragment) {
+                            supportFragmentManager.beginTransaction()
+                                .replace(containerDetailsId, EmptyFragment())
+                                .commitNow()
+                        }
                     }
                 }
             }

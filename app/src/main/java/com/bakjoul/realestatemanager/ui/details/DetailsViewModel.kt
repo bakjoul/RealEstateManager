@@ -3,25 +3,22 @@ package com.bakjoul.realestatemanager.ui.details
 import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
 import androidx.lifecycle.liveData
 import com.bakjoul.realestatemanager.BuildConfig
 import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.data.settings.model.AppCurrency
 import com.bakjoul.realestatemanager.domain.currency_rate.GetCachedEuroRateUseCase
+import com.bakjoul.realestatemanager.domain.current_photo.GetCurrentPhotoIdUseCase
+import com.bakjoul.realestatemanager.domain.current_photo.ResetCurrentPhotoIdUseCase
+import com.bakjoul.realestatemanager.domain.current_photo.SetCurrentPhotoIdUseCase
+import com.bakjoul.realestatemanager.domain.current_property.ResetCurrentPropertyIdUseCase
 import com.bakjoul.realestatemanager.domain.property.GetCurrentPropertyUseCase
 import com.bakjoul.realestatemanager.domain.property.model.PhotoEntity
-import com.bakjoul.realestatemanager.domain.resources.IsTabletUseCase
 import com.bakjoul.realestatemanager.domain.resources.RefreshOrientationUseCase
 import com.bakjoul.realestatemanager.domain.settings.currency.GetCurrentCurrencyUseCase
 import com.bakjoul.realestatemanager.ui.utils.EquatableCallback
-import com.bakjoul.realestatemanager.ui.utils.Event
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.receiveAsFlow
 import java.text.NumberFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -36,7 +33,10 @@ class DetailsViewModel @Inject constructor(
     private val refreshOrientationUseCase: RefreshOrientationUseCase,
     private val getCurrentCurrencyUseCase: GetCurrentCurrencyUseCase,
     private val getCachedEuroRateUseCase: GetCachedEuroRateUseCase,
-    isTabletUseCase: IsTabletUseCase
+    private val setCurrentPhotoIdUseCase: SetCurrentPhotoIdUseCase,
+    private val resetCurrentPropertyIdUseCase: ResetCurrentPropertyIdUseCase,
+    private val resetCurrentPhotoIdUseCase: ResetCurrentPhotoIdUseCase,
+    getCurrentPhotoIdUseCase: GetCurrentPhotoIdUseCase
 ) : ViewModel() {
 
     private companion object {
@@ -44,18 +44,15 @@ class DetailsViewModel @Inject constructor(
         private const val STATIC_MAP_ZOOM = "17"
     }
 
-    private val selectedPhotoIdChannel: Channel<Long> = Channel()
-
-    val isTabletLiveData: LiveData<Boolean> = isTabletUseCase.invoke().asLiveData()
-
     val detailsLiveData: LiveData<DetailsViewState> = liveData {
         combine(
             getCurrentPropertyUseCase.invoke(),
             getCurrentCurrencyUseCase.invoke(),
-            getCachedEuroRateUseCase.invoke()
-        ) { property, currency, euroRate ->
+            getCachedEuroRateUseCase.invoke(),
+            getCurrentPhotoIdUseCase.invoke(),
+        ) { property, currency, euroRate, photoId ->
             DetailsViewState(
-                photoUrl = property.photos.first().url,
+                mainPhotoUrl = property.photos.first().url,
                 type = property.type,
                 price = formatPrice(property.price, currency, euroRate.rate),
                 isSold = property.soldDate != null,
@@ -77,8 +74,9 @@ class DetailsViewModel @Inject constructor(
                 poiTrain = property.poiTrain,
                 poiAirport = property.poiAirport,
                 location = formatLocation(property.address, formatApartment(property.apartment), property.city, property.zipcode, property.country),
-                medias = mapPhotoEntities(property.photos),
-                photos = property.photos,
+                medias = mapPhotosToItemViewStates(property.photos),
+                photoUrls = mapPhotosToUrls(property.photos),
+                clickedPhotoId = photoId,
                 clipboardAddress = getClipboardAddress(property.address, property.city, property.country),
                 staticMapUrl = getMapUrl(property.address, property.city, property.country),
                 mapsAddress = getAddress(property.address, property.city, property.country)
@@ -87,24 +85,6 @@ class DetailsViewModel @Inject constructor(
             emit(viewState)
         }
     }
-
-    val detailsViewActionLiveData: LiveData<Event<DetailsViewAction>> =
-        combine(
-            selectedPhotoIdChannel.receiveAsFlow(),
-            isTabletUseCase.invoke()
-        ) { selectedPhoto, isTablet ->
-            if (selectedPhoto >= 0) {
-                if (isTablet) {
-                    DetailsViewAction.OpenPhoto(selectedPhoto)
-                } else {
-                    DetailsViewAction.OpenPhoto(selectedPhoto)
-                }
-            } else {
-                null
-            }
-        }.map { action ->
-            action?.let { Event(it) }
-        }.filterNotNull().asLiveData()
 
     private val locale = Locale.getDefault()
     private val formatter: DateTimeFormatter = if (locale.language == "fr") {
@@ -142,21 +122,15 @@ class DetailsViewModel @Inject constructor(
         }
     }
 
-    private fun mapPhotoEntities(photoEntities: List<PhotoEntity>): List<DetailsMediaItemViewState> {
+    private fun mapPhotosToItemViewStates(photoEntities: List<PhotoEntity>): List<DetailsMediaItemViewState> {
         return photoEntities.map { photoEntity ->
             DetailsMediaItemViewState(
                 id = photoEntity.id,
                 url = photoEntity.url,
                 description = photoEntity.description,
-                onPhotoClicked = EquatableCallback {
-                    selectedPhotoIdChannel.trySend(photoEntity.id)
-                }
+                onPhotoClicked = EquatableCallback { setCurrentPhotoIdUseCase.invoke(photoEntity.id.toInt()) }
             )
         }
-    }
-
-    fun onResume(isTablet: Boolean) {
-        refreshOrientationUseCase.invoke(isTablet)
     }
 
     private fun formatSurface(surface: Int): String {
@@ -182,6 +156,8 @@ class DetailsViewModel @Inject constructor(
         }
     }
 
+    private fun mapPhotosToUrls(photos: List<PhotoEntity>): List<String> = photos.map { it.url }
+
     private fun getClipboardAddress(address: String, city: String, country: String): String =
         "$address $city $country"
 
@@ -195,4 +171,16 @@ class DetailsViewModel @Inject constructor(
     }
 
     private fun formatAddress(address: String) = address.replace(" ", "%20")
+
+    fun onResume(isTablet: Boolean) {
+        refreshOrientationUseCase.invoke(isTablet)
+    }
+
+    fun updateCurrentPhotoId(position: Int) {
+        return setCurrentPhotoIdUseCase.invoke(position)
+    }
+
+    fun resetCurrentPropertyId() = resetCurrentPropertyIdUseCase.invoke()
+
+    fun resetCurrentPhotoId() = resetCurrentPhotoIdUseCase.invoke()
 }

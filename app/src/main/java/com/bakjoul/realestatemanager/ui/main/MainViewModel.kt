@@ -34,10 +34,10 @@ class MainViewModel @Inject constructor(
                     MainViewAction.NavigateToDetails
                 }
             } else {
-                null
+                MainViewAction.DisplayEmptyFragment
             }
-        }.map { action ->
-            action?.let { Event(it) }
+        }.map {
+            Event(it)
         }.filterNotNull().asLiveData()
 
 

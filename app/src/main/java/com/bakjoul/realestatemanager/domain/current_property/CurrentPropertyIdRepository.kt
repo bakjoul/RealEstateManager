@@ -10,4 +10,6 @@ interface CurrentPropertyIdRepository {
     fun getCurrentPropertyIdChannel(): Channel<Long>
 
     fun setCurrentPropertyId(currentId: Long)
+
+    fun resetCurrentPropertyId()
 }

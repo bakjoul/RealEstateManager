@@ -9,8 +9,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class CurrentPropertyIdRepositoryImplementation @Inject constructor() :
-    CurrentPropertyIdRepository {
+class CurrentPropertyIdRepositoryImplementation @Inject constructor() : CurrentPropertyIdRepository {
 
     private val currentPropertyIdMutableStateFlow: MutableStateFlow<Long> = MutableStateFlow(-1)
     private val currentPropertyIdChannel: Channel<Long> = Channel()
@@ -22,5 +21,10 @@ class CurrentPropertyIdRepositoryImplementation @Inject constructor() :
     override fun setCurrentPropertyId(currentId: Long) {
         currentPropertyIdMutableStateFlow.value = currentId
         currentPropertyIdChannel.trySend(currentId)
+    }
+
+    override fun resetCurrentPropertyId() {
+        currentPropertyIdMutableStateFlow.value = -1
+        currentPropertyIdChannel.trySend(-1)
     }
 }
