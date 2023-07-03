@@ -15,6 +15,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.viewpager2.widget.ViewPager2
 import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.databinding.FragmentDetailsBinding
@@ -35,9 +36,11 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Medias RecyclerView
         val recyclerViewAdapter = DetailsAdapter()
         binding.detailsMediaRecyclerView.adapter = recyclerViewAdapter
 
+        // Medias ViewPager
         val viewPagerAdapter = DetailsPagerAdapter()
         binding.detailsViewPager.adapter = viewPagerAdapter
         binding.detailsViewPager.orientation = ViewPager2.ORIENTATION_HORIZONTAL
@@ -56,6 +59,13 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
             viewModel.resetCurrentPropertyId()
             requireActivity().onBackPressedDispatcher.onBackPressed()
         }
+
+        // ViewPager thumbnails
+        val thumbnailsAdapter = DetailsPagerThumbnailsAdapter()
+        binding.detailsThumnnailsRecyclerView.adapter = thumbnailsAdapter
+        val snapHelper = LinearSnapHelper()
+        snapHelper.attachToRecyclerView(binding.detailsThumnnailsRecyclerView)
+
         setToolbarInfoAnimation()
 
         viewModel.detailsLiveData.observe(viewLifecycleOwner) { details ->
@@ -92,11 +102,23 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
             if (details.clickedPhotoId != -1 && isViewPagerFirstOpening) {
                 binding.detailsViewPager.setCurrentItem(details.clickedPhotoId, false)
                 isViewPagerFirstOpening = false
+            } else if (details.clickedPhotoId != -1) {
+                binding.detailsViewPager.setCurrentItem(details.clickedPhotoId, true)
             }
             if (details.clickedPhotoId == -1) {
-                binding.detailsViewPagerConstraintLayout.visibility = View.INVISIBLE
+                if (binding.detailsViewPagerConstraintLayout.visibility != View.INVISIBLE) {
+                    binding.detailsViewPagerConstraintLayout.visibility = View.INVISIBLE
+                }
             } else {
-                binding.detailsViewPagerConstraintLayout.visibility = View.VISIBLE
+                if (binding.detailsViewPagerConstraintLayout.visibility != View.VISIBLE) {
+                    binding.detailsViewPagerConstraintLayout.visibility = View.VISIBLE
+                }
+            }
+
+            thumbnailsAdapter.submitList(details.medias)
+            if (details.clickedPhotoId != -1) {
+                binding.detailsThumnnailsRecyclerView.smoothScrollToPosition(details.clickedPhotoId)
+                thumbnailsAdapter.setSelectedItem(details.clickedPhotoId)
             }
 
             binding.detailsItemLocation.setOnLongClickListener {

@@ -74,7 +74,7 @@ class DetailsViewModel @Inject constructor(
                 poiTrain = property.poiTrain,
                 poiAirport = property.poiAirport,
                 location = formatLocation(property.address, formatApartment(property.apartment), property.city, property.zipcode, property.country),
-                medias = mapPhotosToItemViewStates(property.photos),
+                medias = mapPhotosToMediaItemViewStates(property.photos),
                 photoUrls = mapPhotosToUrls(property.photos),
                 clickedPhotoId = photoId,
                 clipboardAddress = getClipboardAddress(property.address, property.city, property.country),
@@ -122,7 +122,7 @@ class DetailsViewModel @Inject constructor(
         }
     }
 
-    private fun mapPhotosToItemViewStates(photoEntities: List<PhotoEntity>): List<DetailsMediaItemViewState> {
+    private fun mapPhotosToMediaItemViewStates(photoEntities: List<PhotoEntity>): List<DetailsMediaItemViewState> {
         return photoEntities.map { photoEntity ->
             DetailsMediaItemViewState(
                 id = photoEntity.id,

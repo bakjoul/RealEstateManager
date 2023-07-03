@@ -7,28 +7,42 @@
     android:layout_height="wrap_content"
     android:layout_marginEnd="5dp">
 
-    <ImageView
-        android:id="@+id/details_photo_item_ImageView"
-        android:layout_width="110dp"
-        android:layout_height="110dp"
-        android:importantForAccessibility="no"
-        android:scaleType="centerCrop"
+    <FrameLayout
+        android:id="@+id/details_photo_item_frame"
+        android:layout_width="112dp"
+        android:layout_height="84dp"
+        android:padding="2dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:src="@drawable/penthouse_upper_east_side" />
+        tools:background="@drawable/photo_frame_bkg">
 
-    <TextView
-        android:id="@+id/details_photo_item_description"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:background="#75000000"
-        android:lines="1"
-        android:padding="10dp"
-        android:textColor="@color/white"
-        android:textSize="15sp"
-        app:layout_constraintBottom_toBottomOf="@id/details_photo_item_ImageView"
-        app:layout_constraintEnd_toEndOf="@+id/details_photo_item_ImageView"
-        app:layout_constraintStart_toStartOf="@id/details_photo_item_ImageView"
-        tools:text="Facade" />
+        <ImageView
+            android:id="@+id/details_photo_item_ImageView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:importantForAccessibility="no"
+            android:scaleType="centerCrop"
+            tools:src="@drawable/penthouse_upper_east_side" />
 
+        <TextView
+            android:id="@+id/details_photo_item_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:background="#50000000"
+            android:gravity="end"
+            android:lines="1"
+            android:paddingHorizontal="4dp"
+            android:paddingVertical="2dp"
+            android:textColor="@color/white"
+            android:textSize="12sp"
+            tools:text="Facade" />
+
+        <View
+            android:id="@+id/details_photo_item_overlay"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#50000000"
+            android:visibility="invisible" />
+    </FrameLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

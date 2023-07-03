@@ -428,8 +428,7 @@
         android:clickable="true"
         android:focusable="true"
         android:longClickable="true"
-        android:padding="8dp"
-        android:visibility="gone">
+        android:padding="8dp">
 
         <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/details_ViewPager"
@@ -457,6 +456,19 @@
             app:layout_constraintStart_toStartOf="@id/details_ViewPager"
             app:progressMode="true"
             app:selectedDotColor="#FF3944BC" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/details_thumnnails_RecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:orientation="horizontal"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintEnd_toEndOf="@id/details_ViewPager"
+            app:layout_constraintStart_toStartOf="@id/details_ViewPager"
+            app:layout_constraintTop_toBottomOf="@id/details_ViewPager"
+            tools:itemCount="5"
+            tools:listitem="@layout/fragment_details_photo_item" />
 
         <ImageView
             android:id="@+id/details_ViewPager_close_button"
