@@ -9,7 +9,7 @@
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/details_appbar"
         android:layout_width="match_parent"
-        android:layout_height="250dp">
+        android:layout_height="300dp">
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:layout_width="match_parent"
@@ -194,33 +194,32 @@
                         app:layout_constraintTop_toBottomOf="@id/details_description_label"
                         tools:text="Anchored by a vast marble gallery with sweeping staircase, the entertaining floor includes a baronial living room facing Park Avenue, handsome library with original paneling, and tremendous dining room; all of which enjoy fireplaces. The state-of-the-art St. Charles designed kitchen includes a sunny breakfast room and staff quarters. Upstairs, the expansive master suite overlooks Park Avenue and includes two marble baths, two dressing rooms, and two offices. Additionally there are three large bedrooms with en-suite baths and a media room." />
 
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/details_media_recyclerView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:orientation="horizontal"
+                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                        app:layout_constraintEnd_toEndOf="@id/details_description_text"
+                        app:layout_constraintStart_toStartOf="@id/details_description_text"
+                        app:layout_constraintTop_toBottomOf="@id/details_description_text"
+                        tools:itemCount="5"
+                        tools:listitem="@layout/fragment_details_photo_item" />
+
                     <com.bakjoul.realestatemanager.designsystem.atome.DetailsFieldView
                         android:id="@+id/details_item_surface"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="12dp"
-                        android:layout_marginTop="16dp"
+                        android:layout_marginTop="24dp"
                         app:detailsImageSrc="@drawable/baseline_settings_overscan_24"
                         app:detailsLabel="@string/details_label_surface"
                         app:detailsTextPreview="750 m²"
-                        app:layout_constraintEnd_toStartOf="@id/details_item_bedrooms"
-                        app:layout_constraintHorizontal_weight="0.5"
+                        app:layout_constraintEnd_toStartOf="@id/details_item_location"
+                        app:layout_constraintHorizontal_weight="0.33"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/details_description_text" />
-
-                    <com.bakjoul.realestatemanager.designsystem.atome.DetailsFieldView
-                        android:id="@+id/details_item_bedrooms"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="12dp"
-                        app:detailsImageSrc="@drawable/hotel_black_24dp"
-                        app:detailsLabel="@string/details_label_bedrooms"
-                        app:detailsTextPreview="4"
-                        app:layout_constraintBottom_toBottomOf="@id/details_item_surface"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_weight="0.5"
-                        app:layout_constraintStart_toEndOf="@id/details_item_surface"
-                        app:layout_constraintTop_toTopOf="@id/details_item_surface" />
+                        app:layout_constraintTop_toBottomOf="@id/details_media_recyclerView" />
 
                     <com.bakjoul.realestatemanager.designsystem.atome.DetailsFieldView
                         android:id="@+id/details_item_rooms"
@@ -228,8 +227,9 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
                         app:detailsImageSrc="@drawable/baseline_home_24"
-                        app:detailsLabel="@string/details_label_rooms"
+                        app:detailsLabel="@string/details_label_rooms_tablet"
                         app:detailsTextPreview="8"
+                        app:layout_constraintBottom_toTopOf="@id/details_item_bathrooms"
                         app:layout_constraintEnd_toEndOf="@id/details_item_surface"
                         app:layout_constraintStart_toStartOf="@id/details_item_surface"
                         app:layout_constraintTop_toBottomOf="@id/details_item_surface" />
@@ -238,13 +238,49 @@
                         android:id="@+id/details_item_bathrooms"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
                         app:detailsImageSrc="@drawable/hot_tub_black_24dp"
-                        app:detailsLabel="@string/details_label_bathrooms"
+                        app:detailsLabel="@string/details_label_bathrooms_tablet"
                         app:detailsTextPreview="2"
                         app:layout_constraintBottom_toBottomOf="@id/details_item_rooms"
-                        app:layout_constraintEnd_toEndOf="@id/details_item_bedrooms"
-                        app:layout_constraintStart_toEndOf="@id/details_item_rooms"
-                        app:layout_constraintTop_toTopOf="@id/details_item_rooms" />
+                        app:layout_constraintEnd_toEndOf="@id/details_item_rooms"
+                        app:layout_constraintStart_toStartOf="@id/details_item_rooms"
+                        app:layout_constraintTop_toBottomOf="@id/details_item_rooms" />
+
+                    <com.bakjoul.realestatemanager.designsystem.atome.DetailsFieldView
+                        android:id="@+id/details_item_bedrooms"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        app:detailsImageSrc="@drawable/hotel_black_24dp"
+                        app:detailsLabel="@string/details_label_bedrooms_tablet"
+                        app:detailsTextPreview="4"
+                        app:layout_constraintEnd_toEndOf="@id/details_item_bathrooms"
+                        app:layout_constraintStart_toStartOf="@id/details_item_bathrooms"
+                        app:layout_constraintTop_toBottomOf="@id/details_item_bathrooms" />
+
+                    <com.bakjoul.realestatemanager.designsystem.atome.DetailsFieldView
+                        android:id="@+id/details_item_location"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        app:detailsImageSrc="@drawable/baseline_location_on_24"
+                        app:detailsLabel="@string/details_label_location"
+                        app:detailsTextPreview="740 Park Avenue\nApt 6/7A\nNew York\nNY 10021\nUnited States"
+                        app:layout_constraintEnd_toStartOf="@id/details_static_map"
+                        app:layout_constraintHorizontal_weight="0.33"
+                        app:layout_constraintStart_toEndOf="@id/details_item_surface"
+                        app:layout_constraintTop_toTopOf="@id/details_item_surface" />
+
+                    <ImageView
+                        android:id="@+id/details_static_map"
+                        android:layout_width="0dp"
+                        android:layout_height="250dp"
+                        android:importantForAccessibility="no"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_weight="0.33"
+                        app:layout_constraintStart_toEndOf="@id/details_item_location"
+                        app:layout_constraintTop_toTopOf="@id/details_item_location"
+                        tools:src="@drawable/penthouse_static_map" />
 
                     <TextView
                         android:id="@+id/details_amenities_label"
@@ -255,168 +291,127 @@
                         android:textColor="@color/grey_label"
                         android:textSize="14sp"
                         android:textStyle="bold"
-                        app:layout_constraintEnd_toEndOf="@id/details_item_rooms"
-                        app:layout_constraintStart_toStartOf="@id/details_item_rooms"
-                        app:layout_constraintTop_toBottomOf="@id/details_item_rooms" />
+                        app:layout_constraintStart_toStartOf="@id/details_item_bedrooms"
+                        app:layout_constraintTop_toBottomOf="@id/details_item_bedrooms" />
+
+                    <com.google.android.flexbox.FlexboxLayout
+                        android:id="@+id/details_amenities_container2"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        app:alignItems="flex_start"
+                        app:flexWrap="wrap"
+                        app:layout_constraintEnd_toStartOf="@id/details_static_map"
+                        app:layout_constraintStart_toStartOf="@id/details_amenities_label"
+                        app:layout_constraintTop_toBottomOf="@id/details_amenities_label"
+                        app:layout_flexGrow="1">
+
+                        <TextView
+                            android:id="@+id/details_poi_school"
+                            style="@style/PointOfInterestTablet"
+                            android:background="@drawable/poi_border"
+                            android:text="@string/details_poi_desc_school"
+                            app:drawableStartCompat="@drawable/baseline_school_24"
+                            tools:visibility="visible" />
+
+                        <TextView
+                            android:id="@+id/details_poi_store"
+                            style="@style/PointOfInterestTablet"
+                            android:background="@drawable/poi_border"
+                            android:text="@string/details_poi_desc_store"
+                            app:drawableStartCompat="@drawable/baseline_store_24"
+                            tools:visibility="visible" />
+
+                        <TextView
+                            android:id="@+id/details_poi_park"
+                            style="@style/PointOfInterestTablet"
+                            android:background="@drawable/poi_border"
+                            android:text="@string/details_poi_desc_park"
+                            app:drawableStartCompat="@drawable/baseline_park_24"
+                            tools:visibility="visible" />
+
+                        <TextView
+                            android:id="@+id/details_poi_restaurant"
+                            style="@style/PointOfInterestTablet"
+                            android:background="@drawable/poi_border"
+                            android:text="@string/details_poi_desc_restaurant"
+                            app:drawableStartCompat="@drawable/baseline_restaurant_24"
+                            tools:visibility="visible" />
+
+                        <TextView
+                            android:id="@+id/details_poi_hospital"
+                            style="@style/PointOfInterestTablet"
+                            android:background="@drawable/poi_border"
+                            android:text="@string/details_poi_desc_hospital"
+                            app:drawableStartCompat="@drawable/baseline_local_hospital_24"
+                            tools:visibility="visible" />
+                    </com.google.android.flexbox.FlexboxLayout>
 
                     <TextView
                         android:id="@+id/details_transportation_label"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
                         android:text="@string/details_label_transportation"
                         android:textColor="@color/grey_label"
                         android:textSize="14sp"
                         android:textStyle="bold"
-                        app:layout_constraintBottom_toBottomOf="@id/details_amenities_label"
-                        app:layout_constraintEnd_toEndOf="@id/details_item_bathrooms"
-                        app:layout_constraintStart_toEndOf="@id/details_amenities_label"
-                        app:layout_constraintTop_toTopOf="@id/details_amenities_label" />
+                        app:layout_constraintStart_toStartOf="@id/details_amenities_container2"
+                        app:layout_constraintTop_toBottomOf="@id/details_amenities_container2" />
 
-                    <LinearLayout
-                        android:id="@+id/details_amenities_container"
+                    <com.google.android.flexbox.FlexboxLayout
+                        android:id="@+id/details_transportation_container2"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        android:orientation="horizontal"
-                        app:layout_constraintEnd_toEndOf="@id/details_amenities_label"
-                        app:layout_constraintStart_toStartOf="@id/details_amenities_label"
-                        app:layout_constraintTop_toBottomOf="@id/details_amenities_label">
-
-                        <ImageView
-                            android:id="@+id/details_poi_school"
-                            style="@style/PointOfInterest"
-                            android:contentDescription="@string/details_poi_desc_school"
-                            android:src="@drawable/baseline_school_24"
-                            tools:visibility="visible" />
-
-                        <ImageView
-                            android:id="@+id/details_poi_store"
-                            style="@style/PointOfInterest"
-                            android:contentDescription="@string/details_poi_desc_store"
-                            android:src="@drawable/baseline_store_24"
-                            tools:visibility="visible" />
-
-                        <ImageView
-                            android:id="@+id/details_poi_park"
-                            style="@style/PointOfInterest"
-                            android:contentDescription="@string/details_poi_desc_park"
-                            android:src="@drawable/baseline_park_24"
-                            tools:visibility="visible" />
-
-                        <ImageView
-                            android:id="@+id/details_poi_restaurant"
-                            style="@style/PointOfInterest"
-                            android:contentDescription="@string/details_poi_desc_restaurant"
-                            android:src="@drawable/baseline_restaurant_24"
-                            tools:visibility="visible" />
-
-                        <ImageView
-                            android:id="@+id/details_poi_hospital"
-                            style="@style/PointOfInterest"
-                            android:contentDescription="@string/details_poi_desc_hospital"
-                            android:src="@drawable/baseline_local_hospital_24"
-                            tools:visibility="visible" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/details_transportation_container"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        app:layout_constraintEnd_toEndOf="@id/details_transportation_label"
+                        app:alignItems="flex_start"
+                        app:flexWrap="wrap"
                         app:layout_constraintStart_toStartOf="@id/details_transportation_label"
-                        app:layout_constraintTop_toTopOf="@id/details_amenities_container">
+                        app:layout_constraintTop_toBottomOf="@id/details_transportation_label"
+                        app:layout_flexGrow="1">
 
-                        <ImageView
+                        <TextView
                             android:id="@+id/details_poi_bus"
-                            style="@style/PointOfInterest"
-                            android:contentDescription="@string/details_poi_desc_bus"
-                            android:src="@drawable/baseline_directions_bus_24"
+                            style="@style/PointOfInterestTablet"
+                            android:background="@drawable/poi_border"
+                            android:text="@string/details_poi_desc_bus"
+                            app:drawableStartCompat="@drawable/baseline_directions_bus_24"
                             tools:visibility="visible" />
 
-                        <ImageView
+                        <TextView
                             android:id="@+id/details_poi_subway"
-                            style="@style/PointOfInterest"
-                            android:contentDescription="@string/details_poi_desc_subway"
-                            android:src="@drawable/baseline_subway_24"
+                            style="@style/PointOfInterestTablet"
+                            android:background="@drawable/poi_border"
+                            android:text="@string/details_poi_desc_subway"
+                            app:drawableStartCompat="@drawable/baseline_subway_24"
                             tools:visibility="visible" />
 
-                        <ImageView
+                        <TextView
                             android:id="@+id/details_poi_tramway"
-                            style="@style/PointOfInterest"
-                            android:contentDescription="@string/details_poi_desc_tramway"
-                            android:src="@drawable/baseline_tram_24"
+                            style="@style/PointOfInterestTablet"
+                            android:background="@drawable/poi_border"
+                            android:text="@string/details_poi_desc_tramway"
+                            app:drawableStartCompat="@drawable/baseline_tram_24"
                             tools:visibility="visible" />
 
-                        <ImageView
+                        <TextView
                             android:id="@+id/details_poi_train"
-                            style="@style/PointOfInterest"
-                            android:contentDescription="@string/details_poi_desc_train"
-                            android:src="@drawable/baseline_train_24"
+                            style="@style/PointOfInterestTablet"
+                            android:background="@drawable/poi_border"
+                            android:text="@string/details_poi_desc_train"
+                            app:drawableStartCompat="@drawable/baseline_train_24"
                             tools:visibility="visible" />
 
-                        <ImageView
+                        <TextView
                             android:id="@+id/details_poi_airport"
-                            style="@style/PointOfInterest"
-                            android:contentDescription="@string/details_poi_desc_airport"
-                            android:src="@drawable/baseline_local_airport_24"
+                            style="@style/PointOfInterestTablet"
+                            android:background="@drawable/poi_border"
+                            android:text="@string/details_poi_desc_airport"
+                            app:drawableStartCompat="@drawable/baseline_local_airport_24"
                             tools:visibility="visible" />
-                    </LinearLayout>
+                    </com.google.android.flexbox.FlexboxLayout>
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.cardview.widget.CardView>
-
-            <androidx.cardview.widget.CardView
-                android:id="@+id/details_card_media"
-                style="@style/CustomCardView">
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/details_media_recyclerView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="12dp"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                    tools:itemCount="5"
-                    tools:listitem="@layout/fragment_details_photo_item" />
-            </androidx.cardview.widget.CardView>
-
-            <androidx.cardview.widget.CardView
-                android:id="@+id/details_card_location"
-                style="@style/CustomCardView">
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingHorizontal="24dp"
-                    android:paddingVertical="12dp">
-
-                    <com.bakjoul.realestatemanager.designsystem.atome.DetailsFieldView
-                        android:id="@+id/details_item_location"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        app:detailsImageSrc="@drawable/baseline_location_on_24"
-                        app:detailsLabel="@string/details_label_location"
-                        app:detailsTextPreview="740 Park Avenue\nApt 6/7A\nNew York\nNY 10021\nUnited States"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@id/details_static_map"
-                        app:layout_constraintHorizontal_weight="0.5"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                    <ImageView
-                        android:id="@+id/details_static_map"
-                        android:layout_width="0dp"
-                        android:layout_height="160dp"
-                        android:importantForAccessibility="no"
-                        app:layout_constraintBottom_toBottomOf="@id/details_item_location"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_weight="0.5"
-                        app:layout_constraintStart_toEndOf="@id/details_item_location"
-                        app:layout_constraintTop_toTopOf="@id/details_item_location"
-                        tools:src="@drawable/penthouse_static_map" />
-                </androidx.constraintlayout.widget.ConstraintLayout>
-            </androidx.cardview.widget.CardView>
-
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
@@ -437,7 +432,7 @@
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
             android:orientation="horizontal"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/details_thumnnails_RecyclerView"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -460,11 +455,12 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/details_thumnnails_RecyclerView"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:orientation="horizontal"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@id/details_ViewPager"
             app:layout_constraintStart_toStartOf="@id/details_ViewPager"
             app:layout_constraintTop_toBottomOf="@id/details_ViewPager"

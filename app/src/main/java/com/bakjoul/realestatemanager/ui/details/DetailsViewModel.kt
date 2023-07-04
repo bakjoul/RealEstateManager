@@ -40,7 +40,7 @@ class DetailsViewModel @Inject constructor(
 ) : ViewModel() {
 
     private companion object {
-        private const val STATIC_MAP_SIZE = "160x160"
+        private const val STATIC_MAP_SIZE = "250x250"
         private const val STATIC_MAP_ZOOM = "17"
     }
 

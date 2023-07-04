@@ -9,8 +9,8 @@
 
     <FrameLayout
         android:id="@+id/details_photo_item_frame"
-        android:layout_width="112dp"
-        android:layout_height="84dp"
+        android:layout_width="@dimen/photo_frame_width"
+        android:layout_height="@dimen/photo_frame_height"
         android:padding="2dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"

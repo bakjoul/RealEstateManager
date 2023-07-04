@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <bool name="isTablet">false</bool>
+    <dimen name="photo_frame_width">114dp</dimen>
+    <dimen name="photo_frame_height">86.5dp</dimen>
 </resources>
