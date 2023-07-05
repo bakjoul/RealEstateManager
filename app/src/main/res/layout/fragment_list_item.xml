@@ -12,7 +12,7 @@
 
         <ImageView
             android:id="@+id/list_item_photo"
-            android:layout_width="100dp"
+            android:layout_width="133.33dp"
             android:layout_height="100dp"
             android:importantForAccessibility="no"
             android:scaleType="centerCrop"
