@@ -57,7 +57,7 @@ class PropertyListViewModel @Inject constructor(
                     features = formatFeatures(it.bedrooms, it.bathrooms, it.surface, surfaceUnit, isTablet),
                     price = formatPrice(it.price, currency, euroRate.rate),
                     currencyRate = formatRate(currency, euroRate.rate, euroRate.updateDate.format(dateFormatter)),
-                    isSold = it.soldDate == null,
+                    isSold = it.soldDate != null,
                     onPropertyClicked = EquatableCallback { setCurrentPropertyIdUseCase.invoke(it.id) }
                 )
             }
