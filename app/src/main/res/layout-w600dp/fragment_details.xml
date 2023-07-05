@@ -80,7 +80,7 @@
                             android:background="@drawable/toolbar_sold_border"
                             android:paddingHorizontal="5dp"
                             android:paddingVertical="0dp"
-                            android:text="@string/toolbar_sold"
+                            android:text="@string/sold"
                             android:textColor="#FFE3242B"
                             android:textSize="12sp"
                             android:textStyle="bold"
@@ -137,14 +137,14 @@
     </com.google.android.material.appbar.AppBarLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/details_fab_back"
+        android:id="@+id/details_fab_close"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:backgroundTint="@color/transparent_grey"
-        android:contentDescription="@string/details_back_button_desc"
+        android:contentDescription="@string/details_close_button_desc"
         android:fitsSystemWindows="true"
         android:outlineProvider="none"
-        android:src="@drawable/baseline_arrow_back_24"
+        android:src="@drawable/baseline_close_24"
         app:fabCustomSize="24dp"
         app:layout_anchor="@id/details_toolbar_photo"
         app:layout_anchorGravity="top|left"

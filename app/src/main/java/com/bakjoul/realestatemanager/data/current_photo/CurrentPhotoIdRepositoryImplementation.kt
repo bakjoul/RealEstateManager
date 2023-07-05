@@ -21,6 +21,8 @@ class CurrentPhotoIdRepositoryImplementation @Inject constructor() : CurrentPhot
     }
 
     override fun resetCurrentPhotoId() {
-        currentPhotoIdMutableStateFlow.value = -1
+        if (currentPhotoIdMutableStateFlow.value != -1) {
+            currentPhotoIdMutableStateFlow.value = -1
+        }
     }
 }
