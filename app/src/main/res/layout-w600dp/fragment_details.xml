@@ -36,7 +36,8 @@
                 app:layout_collapseMode="pin">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="wrap_content"
+                    android:id="@+id/details_toolbar_container"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
                     <androidx.constraintlayout.widget.ConstraintLayout
@@ -71,22 +72,6 @@
                             app:layout_constraintStart_toStartOf="@id/details_toolbar_type"
                             app:layout_constraintTop_toBottomOf="@id/details_toolbar_type"
                             tools:text="$100000" />
-
-                        <TextView
-                            android:id="@+id/details_toolbar_sold"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:background="@drawable/toolbar_sold_border"
-                            android:paddingHorizontal="5dp"
-                            android:paddingVertical="0dp"
-                            android:text="@string/sold"
-                            android:textColor="#FFE3242B"
-                            android:textSize="12sp"
-                            android:textStyle="bold"
-                            app:layout_constraintBottom_toBottomOf="@id/details_toolbar_price"
-                            app:layout_constraintStart_toEndOf="@id/details_toolbar_price"
-                            app:layout_constraintTop_toTopOf="@id/details_toolbar_price" />
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
                     <TextView
@@ -130,6 +115,23 @@
                         app:layout_constraintStart_toEndOf="@id/details_toolbar_surface"
                         app:layout_constraintTop_toTopOf="@id/details_toolbar_surface"
                         tools:text="For sale since 1/1/23" />
+
+                    <TextView
+                        android:id="@+id/details_toolbar_sold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/ribbon_large"
+                        android:fontFamily="monospace"
+                        android:gravity="center_vertical"
+                        android:paddingStart="24dp"
+                        android:paddingEnd="0dp"
+                        android:text="@string/sold"
+                        android:textColor="@color/white"
+                        android:textSize="17sp"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="@id/details_toolbar_container"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@id/details_toolbar_container" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </com.google.android.material.appbar.MaterialToolbar>
