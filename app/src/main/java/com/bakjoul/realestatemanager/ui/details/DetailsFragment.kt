@@ -55,9 +55,14 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
             }
         })
 
-        binding.detailsFabBack.setOnClickListener {
+        binding.detailsFabBack?.setOnClickListener {
+            viewModel.resetCurrentPhotoId()
             viewModel.resetCurrentPropertyId()
             requireActivity().onBackPressedDispatcher.onBackPressed()
+        }
+        binding.detailsFabClose?.setOnClickListener {
+            viewModel.resetCurrentPhotoId()
+            viewModel.resetCurrentPropertyId()
         }
 
         // ViewPager thumbnails

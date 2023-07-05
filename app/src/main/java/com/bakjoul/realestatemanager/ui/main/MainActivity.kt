@@ -32,19 +32,19 @@ class MainActivity : AppCompatActivity() {
         setToolbar()
         setMenu()
 
-        // List of properties
+        val containerDetailsId = binding.mainFrameLayoutContainerDetails?.id
         if (savedInstanceState == null) {
+            // List of properties
             supportFragmentManager.beginTransaction()
                 .replace(binding.mainFrameLayoutContainerList.id, PropertyListFragment())
                 .commitNow()
-        }
 
-        // Empty fragment if in tablet mode
-        val containerDetailsId = binding.mainFrameLayoutContainerDetails?.id
-        if (containerDetailsId != null) {
-            supportFragmentManager.beginTransaction()
-                .replace(containerDetailsId, EmptyFragment())
-                .commitNow()
+            // Empty fragment if in tablet mode
+            if (containerDetailsId != null) {
+                supportFragmentManager.beginTransaction()
+                    .replace(containerDetailsId, EmptyFragment())
+                    .commitNow()
+            }
         }
 
         viewModel.mainViewActionLiveData.observeEvent(this) {

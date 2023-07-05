@@ -11,6 +11,7 @@ import com.bakjoul.realestatemanager.data.settings.model.AppCurrency
 import com.bakjoul.realestatemanager.domain.currency_rate.GetCachedEuroRateUseCase
 import com.bakjoul.realestatemanager.domain.current_property.SetCurrentPropertyIdUseCase
 import com.bakjoul.realestatemanager.domain.property.GetPropertiesFlowUseCase
+import com.bakjoul.realestatemanager.domain.resources.IsTabletUseCase
 import com.bakjoul.realestatemanager.domain.settings.currency.GetCurrentCurrencyUseCase
 import com.bakjoul.realestatemanager.ui.utils.EquatableCallback
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -29,7 +30,8 @@ class PropertyListViewModel @Inject constructor(
     private val getPropertiesFlowUseCase: GetPropertiesFlowUseCase,
     private val setCurrentPropertyIdUseCase: SetCurrentPropertyIdUseCase,
     private val getCurrentCurrencyUseCase: GetCurrentCurrencyUseCase,
-    private val getCachedEuroRateUseCase: GetCachedEuroRateUseCase
+    private val getCachedEuroRateUseCase: GetCachedEuroRateUseCase,
+    private val isTabletUseCase: IsTabletUseCase
 ) : ViewModel() {
 
     private val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
@@ -38,17 +40,19 @@ class PropertyListViewModel @Inject constructor(
         combine(
             getPropertiesFlowUseCase.invoke(),
             getCurrentCurrencyUseCase.invoke(),
-            getCachedEuroRateUseCase.invoke()
-        ) { properties, currency, euroRate ->
+            getCachedEuroRateUseCase.invoke(),
+            isTabletUseCase.invoke()
+        ) { properties, currency, euroRate, isTablet ->
             properties.map {
                 PropertyItemViewState(
                     id = it.id,
                     photoUrl = it.photos.firstOrNull()?.url ?: "",
                     type = it.type,
                     city = it.city,
-                    features = formatFeatures(it.bedrooms, it.bathrooms, it.surface),
+                    features = formatFeatures(it.bedrooms, it.bathrooms, it.surface, isTablet),
                     price = formatPrice(it.price, currency, euroRate.rate),
                     currencyRate = formatRate(currency, euroRate.rate, euroRate.updateDate.format(dateFormatter)),
+                    isSold = it.soldDate == null,
                     onPropertyClicked = EquatableCallback { setCurrentPropertyIdUseCase.invoke(it.id) }
                 )
             }
@@ -57,8 +61,30 @@ class PropertyListViewModel @Inject constructor(
         }
     }
 
-    private fun formatFeatures(bedrooms: Int, bathrooms: Int, surface: Int): String {
-        return "$bedrooms bed. - $bathrooms bath. - $surface sqm"
+    private fun formatFeatures(bedrooms: Int, bathrooms: Int, surface: Int, isTablet: Boolean): String {
+        if (isTablet) {
+            val builder = StringBuilder()
+            builder.append(bedrooms)
+            if (bedrooms > 0) {
+                builder.append(" bedrooms")
+            } else {
+                builder.append(" bedroom")
+            }
+            builder.append(" - ")
+            builder.append(bathrooms)
+            if (bathrooms > 0) {
+                builder.append(" bathrooms")
+            } else {
+                builder.append(" bathroom")
+            }
+            builder.append(" - ")
+            builder.append(surface)
+            builder.append(" sqm")
+
+            return builder.toString()
+        } else {
+            return "$bedrooms bed. - $bathrooms bath. - $surface sqm"
+        }
     }
 
     private fun formatPrice(price: Double, currency: AppCurrency, euroRate: Double): String {

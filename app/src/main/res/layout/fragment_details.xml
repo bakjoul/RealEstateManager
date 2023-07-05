@@ -80,7 +80,7 @@
                             android:background="@drawable/toolbar_sold_border"
                             android:paddingHorizontal="5dp"
                             android:paddingVertical="0dp"
-                            android:text="@string/toolbar_sold"
+                            android:text="@string/sold"
                             android:textColor="#FFE3242B"
                             android:textSize="12sp"
                             android:textStyle="bold"

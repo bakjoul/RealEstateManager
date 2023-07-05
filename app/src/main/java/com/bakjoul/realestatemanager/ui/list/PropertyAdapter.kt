@@ -1,5 +1,6 @@
 package com.bakjoul.realestatemanager.ui.list
 
+import android.graphics.Paint
 import android.text.SpannableString
 import android.view.LayoutInflater
 import android.view.View
@@ -29,16 +30,19 @@ class PropertyAdapter : ListAdapter<PropertyItemViewState, PropertyAdapter.ViewH
             Glide.with(binding.listItemPhoto.context)
                 .load(item.photoUrl)
                 .into(binding.listItemPhoto)
+            binding.listItemPhotoOverlay.visibility = if (item.isSold) View.VISIBLE else View.GONE
+            binding.listItemSold.visibility = if (item.isSold) View.VISIBLE else View.GONE
             binding.listItemType.text = item.type
             binding.listItemCity.text = item.city
-            binding.listItemFeatures?.text = item.features
+            binding.listItemFeatures.text = item.features
             binding.listItemPrice.text = item.price
+            binding.listItemPrice.paintFlags = if (item.isSold) binding.listItemPrice.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG else 0
 
             if (item.currencyRate.isEmpty()) {
-                binding.listItemInfo?.visibility = View.GONE
+                binding.listItemInfo.visibility = View.GONE
             } else {
-                binding.listItemInfo?.visibility = View.VISIBLE
-                binding.listItemInfo?.setOnClickListener {
+                binding.listItemInfo.visibility = View.VISIBLE
+                binding.listItemInfo.setOnClickListener {
                     val tooltipView = LayoutInflater.from(binding.root.context).inflate(R.layout.tooltip_layout, null)
                     val tooltipTextView = tooltipView.findViewById<TextView>(R.id.tooltip_text)
 
