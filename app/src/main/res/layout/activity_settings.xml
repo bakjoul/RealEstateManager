@@ -34,4 +34,16 @@
         app:spinnerImageSrc="@drawable/euro_dollar"
         app:spinnerLabel="@string/settings_currency_label" />
 
+    <com.bakjoul.realestatemanager.designsystem.atome.SettingsSpinnerView
+        android:id="@+id/settings_unit_spinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/settings_currency_spinner"
+        app:spinnerDescription="Changes the unit used for the property surface"
+        app:spinnerEntries="@array/surface_unit_options"
+        app:spinnerImageSrc="@drawable/meter_to_feet_128"
+        app:spinnerLabel="Surface unit" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

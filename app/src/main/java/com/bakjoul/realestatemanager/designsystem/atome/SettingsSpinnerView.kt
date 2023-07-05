@@ -17,6 +17,7 @@ class SettingsSpinnerView @JvmOverloads constructor(
 ) : ConstraintLayout(context, attrs, defStyleAttr) {
 
     private val binding = ViewSettingsSpinnerBinding.inflate(LayoutInflater.from(context), this, true)
+    private var entries: Array<String>? = null
 
     init {
         context.withStyledAttributes(attrs, R.styleable.SettingsSpinnerView) {
@@ -26,8 +27,8 @@ class SettingsSpinnerView @JvmOverloads constructor(
 
             val entriesResId = getResourceId(R.styleable.SettingsSpinnerView_spinnerEntries, 0)
             if (entriesResId != 0) {
-                val entries = resources.getStringArray(entriesResId)
-                val adapter = ArrayAdapter(context, android.R.layout.simple_spinner_item, entries)
+                entries = resources.getStringArray(entriesResId)
+                val adapter = ArrayAdapter(context, android.R.layout.simple_spinner_item, entries as Array<out String>)
                 adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                 binding.settingsSpinner.adapter = adapter
             }
@@ -39,6 +40,6 @@ class SettingsSpinnerView @JvmOverloads constructor(
     }
 
     fun getEntries(): Array<String> {
-        return resources.getStringArray(R.array.currency_options)
+        return entries ?: emptyArray()
     }
 }

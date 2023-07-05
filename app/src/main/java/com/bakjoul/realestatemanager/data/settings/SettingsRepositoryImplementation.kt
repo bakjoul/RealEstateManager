@@ -9,6 +9,7 @@ import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.bakjoul.realestatemanager.data.settings.model.AppCurrency
+import com.bakjoul.realestatemanager.data.settings.model.SurfaceUnit
 import com.bakjoul.realestatemanager.domain.settings.SettingsRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -25,6 +26,7 @@ class SettingsRepositoryImplementation @Inject constructor(
     private companion object {
         private const val SETTINGS_DATA_STORE_NAME = "settings_data_store"
         private val KEY_CURRENCY = stringPreferencesKey("currency")
+        private val KEY_SURFACE_UNIT = stringPreferencesKey("surface_unit")
     }
 
     private val Context.settingsDataStore: DataStore<Preferences> by preferencesDataStore(name = SETTINGS_DATA_STORE_NAME)
@@ -52,4 +54,28 @@ class SettingsRepositoryImplementation @Inject constructor(
                 AppCurrency.valueOf(it)
             }
         }
+
+    override suspend fun setSurfaceUnit(surfaceUnit: SurfaceUnit) {
+        try {
+            application.settingsDataStore.edit { preferences ->
+                preferences[KEY_SURFACE_UNIT] = surfaceUnit.name
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+    }
+
+    override fun getSurfaceUnitFlow(): Flow<SurfaceUnit?> = application.settingsDataStore.data
+    .catch { exception ->
+        if (exception is IOException) {
+            emit(emptyPreferences())
+        } else {
+            throw exception
+        }
+    }
+    .map { preferences ->
+        preferences[KEY_SURFACE_UNIT]?.let {
+            SurfaceUnit.valueOf(it)
+        }
+    }
 }

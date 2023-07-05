@@ -4,4 +4,8 @@
         <item>EUR (€)</item>
         <item>USD ($)</item>
     </string-array>
+    <string-array name="surface_unit_options">
+        <item>Feet (sqft)</item>
+        <item>Meters (sqm)</item>
+    </string-array>
 </resources>

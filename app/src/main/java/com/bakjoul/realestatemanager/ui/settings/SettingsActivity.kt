@@ -24,20 +24,41 @@ class SettingsActivity : AppCompatActivity() {
 
         val currencySpinner = binding.settingsCurrencySpinner.getSpinner()
         val currencyOptions = binding.settingsCurrencySpinner.getEntries()
+        var isCurrencyFirstSelection = true
 
-        var isFirstSelection = true
         viewModel.getCurrencyLiveData().observe(this) { initialCurrency ->
             currencySpinner.setSelection(currencyOptions.indexOf(initialCurrency.nameWithSymbol))
         }
 
         currencySpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                if (isFirstSelection) {
-                    isFirstSelection = false
+                if (isCurrencyFirstSelection) {
+                    isCurrencyFirstSelection = false
                     return
                 }
 
                 viewModel.onCurrencySelected(currencyOptions[position])
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
+        }
+
+        val surfaceUnitSpinner = binding.settingsUnitSpinner.getSpinner()
+        val surfaceUnitOptions = binding.settingsUnitSpinner.getEntries()
+        var isSurfaceUnitFirstSelection = true
+
+        viewModel.getSurfaceUnitLiveData().observe(this) { initialSurfaceUnit ->
+            surfaceUnitSpinner.setSelection(surfaceUnitOptions.indexOf(initialSurfaceUnit.nameWithUnit))
+        }
+
+        surfaceUnitSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                if (isSurfaceUnitFirstSelection) {
+                    isSurfaceUnitFirstSelection = false
+                    return
+                }
+
+                viewModel.onSurfaceUnitSelected(surfaceUnitOptions[position])
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {}
