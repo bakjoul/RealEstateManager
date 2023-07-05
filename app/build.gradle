@@ -4,6 +4,7 @@ plugins {
     id 'dagger.hilt.android.plugin'
     id 'kotlin-kapt'
     id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
+    id 'com.google.gms.google-services'
 }
 
 android {
@@ -94,6 +95,8 @@ dependencies {
     implementation 'com.github.chrisbanes:PhotoView:2.3.0'
     // Flexbox
     implementation 'com.google.android.flexbox:flexbox:3.0.0'
+    // Firestore
+    implementation 'com.google.firebase:firebase-firestore-ktx:24.6.1'
 
     testImplementation 'junit:junit:4.13.2'
 

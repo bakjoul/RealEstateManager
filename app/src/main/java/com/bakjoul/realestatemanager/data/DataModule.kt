@@ -1,6 +1,7 @@
 package com.bakjoul.realestatemanager.data
 
 import com.bakjoul.realestatemanager.data.api.CurrencyApi
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import dagger.Module
@@ -49,4 +50,8 @@ class DataModule {
     @Singleton
     @Provides
     fun provideGson(): Gson = GsonBuilder().create()
+
+    @Singleton
+    @Provides
+    fun provideFirestore(): FirebaseFirestore = FirebaseFirestore.getInstance()
 }
