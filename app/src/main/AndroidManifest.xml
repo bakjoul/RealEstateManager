@@ -17,6 +17,18 @@
         android:theme="@style/Theme.RealEstateManager"
         tools:targetApi="31">
         <activity
+            android:name=".ui.auth.AuthActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.dispatcher.DispatcherActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
             android:name=".ui.settings.SettingsActivity"
             android:exported="false"
             android:label="@string/title_activity_settings"
@@ -24,13 +36,7 @@
         <activity
             android:name=".ui.main.MainActivity"
             android:exported="true"
-            android:theme="@style/Theme.RealEstateManager">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+            android:theme="@style/Theme.RealEstateManager" />
         <activity android:name=".ui.details.DetailsActivity" />
 
         <meta-data

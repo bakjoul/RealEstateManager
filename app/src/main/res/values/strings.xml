@@ -1,5 +1,8 @@
 <resources>
     <string name="app_name">Real Estate Manager</string>
+
+    <string name="google_web_client_id">77269002192-r4c88c9efvrrfb410rd7ps27fa3khj9h.apps.googleusercontent.com</string>
+
     <string name="details_label_media">Media</string>
     <string name="details_label_description">Description</string>
     <string name="details_label_surface">Surface</string>
