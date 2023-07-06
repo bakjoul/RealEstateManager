@@ -19,8 +19,14 @@ class DispatcherActivity : AppCompatActivity() {
 
         viewModel.dispatcherViewActionLiveData.observeEvent(this) {
             when (it) {
-                DispatcherViewAction.NavigateToMainScreen -> startActivity(Intent(applicationContext, MainActivity::class.java))
-                DispatcherViewAction.NavigateToAuthScreen -> startActivity(Intent(applicationContext, AuthActivity::class.java))
+                DispatcherViewAction.NavigateToMainScreen -> {
+                    startActivity(Intent(applicationContext, MainActivity::class.java))
+                    finish()
+                }
+                DispatcherViewAction.NavigateToAuthScreen -> {
+                    startActivity(Intent(applicationContext, AuthActivity::class.java))
+                    finish()
+                }
             }
         }
     }

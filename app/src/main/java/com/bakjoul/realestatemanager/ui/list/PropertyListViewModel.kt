@@ -83,8 +83,7 @@ class PropertyListViewModel @Inject constructor(
                 builder.append(" bathroom")
             }
             builder.append(" - ")
-            builder.append(surface)
-            builder.append(" ${surfaceUnit.unit}")
+            builder.append(" ${formatSurface(surface, surfaceUnit)} ${surfaceUnit.unit}")
 
             return builder.toString()
         } else {

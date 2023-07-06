@@ -172,13 +172,9 @@ class DetailsViewModel @Inject constructor(
 
     private fun formatAddress(address: String) = address.replace(" ", "%20")
 
-    fun onResume(isTablet: Boolean) {
-        refreshOrientationUseCase.invoke(isTablet)
-    }
+    fun onResume(isTablet: Boolean) = refreshOrientationUseCase.invoke(isTablet)
 
-    fun updateCurrentPhotoId(position: Int) {
-        return setCurrentPhotoIdUseCase.invoke(position)
-    }
+    fun updateCurrentPhotoId(position: Int) = setCurrentPhotoIdUseCase.invoke(position)
 
     fun resetCurrentPropertyId() = resetCurrentPropertyIdUseCase.invoke()
 

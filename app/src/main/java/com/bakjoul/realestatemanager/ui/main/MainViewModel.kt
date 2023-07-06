@@ -3,6 +3,7 @@ package com.bakjoul.realestatemanager.ui.main
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
+import com.bakjoul.realestatemanager.domain.auth.LogOutUseCase
 import com.bakjoul.realestatemanager.domain.current_property.GetCurrentPropertyIdChannelUseCase
 import com.bakjoul.realestatemanager.domain.resources.IsTabletUseCase
 import com.bakjoul.realestatemanager.domain.resources.RefreshOrientationUseCase
@@ -19,6 +20,7 @@ class MainViewModel @Inject constructor(
     getCurrentPropertyIdChannelUseCase: GetCurrentPropertyIdChannelUseCase,
     isTabletUseCase: IsTabletUseCase,
     private val refreshOrientationUseCase: RefreshOrientationUseCase,
+    private val logOutUseCase: LogOutUseCase
 ) : ViewModel() {
 
 
@@ -44,4 +46,6 @@ class MainViewModel @Inject constructor(
     fun onResume(isTablet: Boolean) {
         refreshOrientationUseCase.invoke(isTablet)
     }
+
+    fun logOut() = logOutUseCase.invoke()
 }
