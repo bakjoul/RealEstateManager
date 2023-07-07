@@ -36,7 +36,7 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.detailsToolbar.setPadding(0,0,0,0)  // Removes toolbar padding on tablets
+        binding.detailsToolbar.setPadding(0, 0, 0, 0)  // Removes toolbar padding on tablets
 
         // Medias RecyclerView
         val recyclerViewAdapter = DetailsAdapter()
@@ -45,7 +45,6 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
         // Medias ViewPager
         val viewPagerAdapter = DetailsPagerAdapter()
         binding.detailsViewPager.adapter = viewPagerAdapter
-        binding.detailsViewPager.orientation = ViewPager2.ORIENTATION_HORIZONTAL
         binding.photosDotsIndicator.attachTo(binding.detailsViewPager)
         binding.detailsViewPagerCloseButton.setOnClickListener { closeViewPager() }
         binding.detailsViewPagerConstraintLayout.setOnClickListener { closeViewPager() }
@@ -57,12 +56,12 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
             }
         })
 
-        binding.detailsFabBack?.setOnClickListener {
+        binding.detailsImageViewBack?.setOnClickListener {
             viewModel.resetCurrentPhotoId()
             viewModel.resetCurrentPropertyId()
             requireActivity().onBackPressedDispatcher.onBackPressed()
         }
-        binding.detailsFabClose?.setOnClickListener {
+        binding.detailsImageViewClose?.setOnClickListener {
             viewModel.resetCurrentPhotoId()
             viewModel.resetCurrentPropertyId()
         }
@@ -81,7 +80,8 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
                 .into(binding.detailsToolbarPhoto)
             binding.detailsToolbarType.text = details.type
             binding.detailsToolbarPrice.text = details.price
-            binding.detailsToolbarPrice.paintFlags = if (details.isSold) binding.detailsToolbarPrice.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG else 0
+            binding.detailsToolbarPrice.paintFlags =
+                if (details.isSold) binding.detailsToolbarPrice.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG else 0
             binding.detailsToolbarSold.visibility = if (details.isSold) View.VISIBLE else View.GONE
             binding.detailsToolbarCity.text = details.city
             binding.detailsToolbarSurface.text = details.surface
@@ -154,41 +154,31 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
 
     private fun setToolbarInfoAnimation() {
         val toolbarInfo = binding.detailsToolbarTypePriceStatusContainer
-        val initialMargin = DensityUtil.dip2px(requireContext(), 0f)
-        val maximumMargin = DensityUtil.dip2px(requireContext(), 30f)
-        val fabHeight = DensityUtil.dip2px(requireContext(), 48f)
+        val xMargin = DensityUtil.dip2px(requireContext(), 30f)
+        val startAnimationY = DensityUtil.dip2px(requireContext(), 60f)
         val layoutParams = toolbarInfo.layoutParams as ViewGroup.MarginLayoutParams
-        layoutParams.marginStart = initialMargin
+        layoutParams.marginStart = 0
 
-        var previousVerticalOffset = 0
-        var previousMargin = initialMargin // Avoids unnecessary updates
+        var previousMargin = 0 // Avoids unnecessary updates
 
         binding.detailsAppbar.addOnOffsetChangedListener { appBarLayout, verticalOffset ->
-            val totalScrollRange = appBarLayout.totalScrollRange
-            val animatedMargin = (maximumMargin * (previousVerticalOffset - verticalOffset) / fabHeight)
 
-            val newMargin = if (abs(verticalOffset) >= (totalScrollRange - fabHeight)) {
-                if (previousVerticalOffset == 0) {
-                    previousVerticalOffset = verticalOffset
-                }
-                val tempMargin = initialMargin + animatedMargin // Prevents the margin from going below the initial one
-                if (tempMargin < initialMargin) {
-                    initialMargin
-                } else {
-                    tempMargin
-                }
+            val startOfAnimation = appBarLayout.totalScrollRange - startAnimationY
+            val endOfAnimation = appBarLayout.totalScrollRange
+
+            val animatedMargin = if (abs(verticalOffset) > startOfAnimation) {
+                xMargin * (abs(verticalOffset) - startOfAnimation) / (endOfAnimation - startOfAnimation)
             } else {
-                previousVerticalOffset = 0
-                initialMargin
+                0
             }
+
             // Checks if the new margin is different from the previous one
-            if (previousMargin != newMargin) {
-                layoutParams.marginStart = newMargin
+            if (previousMargin != animatedMargin) {
+                layoutParams.marginStart = animatedMargin
                 toolbarInfo.layoutParams = layoutParams
-                toolbarInfo.requestLayout()
 
                 // Updates previous margin
-                previousMargin = newMargin
+                previousMargin = animatedMargin
             }
         }
     }
