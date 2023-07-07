@@ -38,6 +38,10 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
 
         binding.detailsToolbar.setPadding(0, 0, 0, 0)  // Removes toolbar padding on tablets
 
+        if (!resources.getBoolean(R.bool.isTablet)) {
+            setToolbarInfoAnimation()
+        }
+
         // Medias RecyclerView
         val recyclerViewAdapter = DetailsAdapter()
         binding.detailsMediaRecyclerView.adapter = recyclerViewAdapter
@@ -61,10 +65,6 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
             viewModel.resetCurrentPropertyId()
             requireActivity().onBackPressedDispatcher.onBackPressed()
         }
-        binding.detailsImageViewClose?.setOnClickListener {
-            viewModel.resetCurrentPhotoId()
-            viewModel.resetCurrentPropertyId()
-        }
 
         // ViewPager thumbnails
         val thumbnailsAdapter = DetailsPagerThumbnailsAdapter()
@@ -72,16 +72,13 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
         val snapHelper = LinearSnapHelper()
         snapHelper.attachToRecyclerView(binding.detailsThumnnailsRecyclerView)
 
-        setToolbarInfoAnimation()
-
         viewModel.detailsLiveData.observe(viewLifecycleOwner) { details ->
             Glide.with(binding.detailsToolbarPhoto)
                 .load(details.mainPhotoUrl)
                 .into(binding.detailsToolbarPhoto)
             binding.detailsToolbarType.text = details.type
             binding.detailsToolbarPrice.text = details.price
-            binding.detailsToolbarPrice.paintFlags =
-                if (details.isSold) binding.detailsToolbarPrice.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG else 0
+            binding.detailsToolbarPrice.paintFlags = if (details.isSold) binding.detailsToolbarPrice.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG else 0
             binding.detailsToolbarSold.visibility = if (details.isSold) View.VISIBLE else View.GONE
             binding.detailsToolbarCity.text = details.city
             binding.detailsToolbarSurface.text = details.surface

@@ -1,17 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/list_item_layout"
-    style="@style/CustomCardView"
-    >
+    style="@style/CustomCardView">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        >
+        android:layout_margin="8dp">
 
         <ImageView
             android:id="@+id/list_item_photo"
@@ -24,8 +21,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintWidth_max="550dp"
-            tools:src="@drawable/penthouse_upper_east_side"
-            />
+            tools:src="@drawable/penthouse_upper_east_side" />
 
         <View
             android:id="@+id/list_item_photo_overlay"
@@ -36,8 +32,7 @@
             app:layout_constraintBottom_toBottomOf="@id/list_item_photo"
             app:layout_constraintEnd_toEndOf="@id/list_item_photo"
             app:layout_constraintStart_toStartOf="@id/list_item_photo"
-            app:layout_constraintTop_toTopOf="@id/list_item_photo"
-            />
+            app:layout_constraintTop_toTopOf="@id/list_item_photo" />
 
         <TextView
             android:id="@+id/list_item_sold"
@@ -54,8 +49,7 @@
             android:textSize="17sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="@id/list_item_photo"
-            app:layout_constraintEnd_toEndOf="@id/list_item_photo"
-            />
+            app:layout_constraintEnd_toEndOf="@id/list_item_photo" />
 
         <TextView
             android:id="@+id/list_item_type"
@@ -71,8 +65,7 @@
             app:layout_constraintEnd_toStartOf="@id/list_item_price"
             app:layout_constraintStart_toStartOf="@id/list_item_photo"
             app:layout_constraintTop_toBottomOf="@id/list_item_price"
-            tools:text="Flat"
-            />
+            tools:text="Flat" />
 
         <TextView
             android:id="@+id/list_item_city"
@@ -85,9 +78,8 @@
             app:layout_constraintBottom_toTopOf="@id/list_item_features"
             app:layout_constraintEnd_toEndOf="@id/list_item_photo"
             app:layout_constraintStart_toStartOf="@id/list_item_type"
-            app:layout_constraintTop_toBottomOf="@id/list_item_price"
-            tools:text="Manhattan"
-            />
+            app:layout_constraintTop_toBottomOf="@id/list_item_type"
+            tools:text="Manhattan" />
 
         <TextView
             android:id="@+id/list_item_price"
@@ -102,8 +94,7 @@
             app:layout_constraintEnd_toStartOf="@id/list_item_info"
             app:layout_constraintStart_toEndOf="@id/list_item_type"
             app:layout_constraintTop_toBottomOf="@id/list_item_photo"
-            tools:text="$17,870,000"
-            />
+            tools:text="$17,870,000" />
 
         <ImageView
             android:id="@+id/list_item_info"
@@ -114,8 +105,7 @@
             android:contentDescription="@string/info_icon_desc"
             android:src="@drawable/baseline_info_24"
             app:layout_constraintEnd_toEndOf="@id/list_item_photo"
-            app:layout_constraintTop_toBottomOf="@id/list_item_photo"
-            />
+            app:layout_constraintTop_toBottomOf="@id/list_item_photo" />
 
         <TextView
             android:id="@+id/list_item_features"
@@ -129,8 +119,7 @@
             app:layout_constraintEnd_toEndOf="@id/list_item_photo"
             app:layout_constraintStart_toStartOf="@id/list_item_city"
             app:layout_constraintTop_toBottomOf="@id/list_item_city"
-            tools:text="4 bed. - 5 bath. - 14 452 sq ft"
-            />
+            tools:text="4 bed. - 5 bath. - 14 452 sq ft" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

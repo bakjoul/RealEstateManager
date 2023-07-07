@@ -138,16 +138,6 @@
         </com.google.android.material.appbar.CollapsingToolbarLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
-    <ImageView
-        android:id="@+id/details_ImageView_close"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:backgroundTint="@color/transparent_grey"
-        android:contentDescription="@string/details_back_button_desc"
-        android:background="?selectableItemBackground"
-        android:src="@drawable/baseline_arrow_back_24"
-        app:tint="@color/white" />
-
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -424,8 +414,7 @@
         android:longClickable="true"
         android:padding="8dp"
         android:visibility="gone"
-        tools:visibility="visible"
-        >
+        tools:visibility="visible">
 
         <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/details_ViewPager"
@@ -433,11 +422,11 @@
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
             android:orientation="horizontal"
-            app:layout_constraintVertical_chainStyle="packed"
+            app:layout_constraintBottom_toTopOf="@id/details_thumnnails_RecyclerView"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/details_thumnnails_RecyclerView"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="packed" />
 
         <com.tbuonomo.viewpagerdotsindicator.WormDotsIndicator
             android:id="@+id/photos_DotsIndicator"
@@ -462,10 +451,10 @@
             android:layout_marginTop="4dp"
             android:orientation="horizontal"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@id/details_ViewPager"
             app:layout_constraintStart_toStartOf="@id/details_ViewPager"
             app:layout_constraintTop_toBottomOf="@id/details_ViewPager"
-            app:layout_constraintBottom_toBottomOf="parent"
             tools:itemCount="5"
             tools:listitem="@layout/fragment_details_photo_item" />
 

@@ -142,9 +142,9 @@
         android:id="@+id/details_ImageView_back"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:background="?selectableItemBackground"
         android:backgroundTint="@color/transparent_grey"
         android:contentDescription="@string/details_back_button_desc"
-        android:background="?selectableItemBackground"
         android:src="@drawable/baseline_arrow_back_24"
         app:tint="@color/white" />
 
@@ -371,10 +371,10 @@
                     android:id="@+id/details_media_recyclerView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:clipToPadding="false"
-                    android:padding="8dp"
                     android:clipChildren="false"
+                    android:clipToPadding="false"
+                    android:orientation="horizontal"
+                    android:padding="8dp"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     tools:itemCount="5"
                     tools:listitem="@layout/fragment_details_photo_item" />
@@ -426,13 +426,12 @@
         android:layout_height="match_parent"
         android:background="#B3000000"
         android:clickable="true"
-        android:focusable="true"
         android:elevation="1dp"
+        android:focusable="true"
         android:longClickable="true"
         android:padding="8dp"
         android:visibility="gone"
-        tools:visibility="visible"
-        >
+        tools:visibility="visible">
 
         <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/details_ViewPager"
@@ -440,11 +439,11 @@
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
             android:orientation="horizontal"
-            app:layout_constraintVertical_chainStyle="packed"
+            app:layout_constraintBottom_toTopOf="@id/details_thumnnails_RecyclerView"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/details_thumnnails_RecyclerView"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="packed" />
 
         <com.tbuonomo.viewpagerdotsindicator.WormDotsIndicator
             android:id="@+id/photos_DotsIndicator"
@@ -469,10 +468,10 @@
             android:layout_marginTop="4dp"
             android:orientation="horizontal"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@id/details_ViewPager"
             app:layout_constraintStart_toStartOf="@id/details_ViewPager"
             app:layout_constraintTop_toBottomOf="@id/details_ViewPager"
-            app:layout_constraintBottom_toBottomOf="parent"
             tools:itemCount="5"
             tools:listitem="@layout/fragment_details_photo_item" />
 
