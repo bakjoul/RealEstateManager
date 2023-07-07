@@ -83,21 +83,21 @@ class PropertyListViewModel @Inject constructor(
                 builder.append(" bathroom")
             }
             builder.append(" - ")
-            builder.append(" ${formatSurface(surface, surfaceUnit)} ${surfaceUnit.unit}")
+            builder.append(" ${formatSurface(surface, surfaceUnit)}")
 
             return builder.toString()
         } else {
-            return "$bedrooms bed. - $bathrooms bath. - ${formatSurface(surface, surfaceUnit)} ${surfaceUnit.unit}"
+            return "$bedrooms bed. - $bathrooms bath. - ${formatSurface(surface, surfaceUnit)}"
         }
     }
 
     private fun formatSurface(surface: Int, surfaceUnit: SurfaceUnit): String {
         return when (surfaceUnit) {
             SurfaceUnit.Meters -> {
-                surface.toString()
+                "$surface ${surfaceUnit.unit}"
             }
             SurfaceUnit.Feet -> {
-                ceil(surface.toDouble() * 3.28084).toInt().toString()
+                "${ceil(surface.toDouble() * 3.28084).toInt()} ${surfaceUnit.unit}"
             }
         }
     }

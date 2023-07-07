@@ -7,6 +7,7 @@ import androidx.lifecycle.liveData
 import com.bakjoul.realestatemanager.BuildConfig
 import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.data.settings.model.AppCurrency
+import com.bakjoul.realestatemanager.data.settings.model.SurfaceUnit
 import com.bakjoul.realestatemanager.domain.currency_rate.GetCachedEuroRateUseCase
 import com.bakjoul.realestatemanager.domain.current_photo.GetCurrentPhotoIdUseCase
 import com.bakjoul.realestatemanager.domain.current_photo.ResetCurrentPhotoIdUseCase
@@ -16,6 +17,7 @@ import com.bakjoul.realestatemanager.domain.property.GetCurrentPropertyUseCase
 import com.bakjoul.realestatemanager.domain.property.model.PhotoEntity
 import com.bakjoul.realestatemanager.domain.resources.RefreshOrientationUseCase
 import com.bakjoul.realestatemanager.domain.settings.currency.GetCurrentCurrencyUseCase
+import com.bakjoul.realestatemanager.domain.settings.surface_unit.GetCurrentSurfaceUnitUseCase
 import com.bakjoul.realestatemanager.ui.utils.EquatableCallback
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.combine
@@ -25,6 +27,7 @@ import java.time.format.DateTimeFormatter
 import java.util.Currency
 import java.util.Locale
 import javax.inject.Inject
+import kotlin.math.ceil
 
 @HiltViewModel
 class DetailsViewModel @Inject constructor(
@@ -36,6 +39,7 @@ class DetailsViewModel @Inject constructor(
     private val setCurrentPhotoIdUseCase: SetCurrentPhotoIdUseCase,
     private val resetCurrentPropertyIdUseCase: ResetCurrentPropertyIdUseCase,
     private val resetCurrentPhotoIdUseCase: ResetCurrentPhotoIdUseCase,
+    private val getCurrentSurfaceUnitUseCase: GetCurrentSurfaceUnitUseCase,
     getCurrentPhotoIdUseCase: GetCurrentPhotoIdUseCase
 ) : ViewModel() {
 
@@ -50,7 +54,8 @@ class DetailsViewModel @Inject constructor(
             getCurrentCurrencyUseCase.invoke(),
             getCachedEuroRateUseCase.invoke(),
             getCurrentPhotoIdUseCase.invoke(),
-        ) { property, currency, euroRate, photoId ->
+            getCurrentSurfaceUnitUseCase.invoke()
+        ) { property, currency, euroRate, photoId, surfaceUnit ->
             DetailsViewState(
                 mainPhotoUrl = property.photos.first().url,
                 type = property.type,
@@ -59,7 +64,7 @@ class DetailsViewModel @Inject constructor(
                 city = property.city,
                 sale_status = getSaleStatus(property.soldDate, property.entryDate),
                 description = property.description,
-                surface = formatSurface(property.surface),
+                surface = formatSurface(property.surface, surfaceUnit),
                 rooms = property.rooms.toString(),
                 bedrooms = property.bedrooms.toString(),
                 bathrooms = property.bathrooms.toString(),
@@ -91,6 +96,17 @@ class DetailsViewModel @Inject constructor(
         DateTimeFormatter.ofPattern("d/MM/yy", locale)
     } else {
         DateTimeFormatter.ofPattern("M/d/yy", locale)
+    }
+
+    private fun formatSurface(surface: Int, surfaceUnit: SurfaceUnit): String {
+        return when (surfaceUnit) {
+            SurfaceUnit.Meters -> {
+                "$surface ${surfaceUnit.unit}"
+            }
+            SurfaceUnit.Feet -> {
+                "${ceil(surface.toDouble() * 3.28084).toInt()} ${surfaceUnit.unit}"
+            }
+        }
     }
 
     private fun formatPrice(price: Double, currency: AppCurrency, euroRate: Double): String {
@@ -133,9 +149,9 @@ class DetailsViewModel @Inject constructor(
         }
     }
 
-    private fun formatSurface(surface: Int): String {
+/*    private fun formatSurface(surface: Int): String {
         return "$surface m²"
-    }
+    }*/
 
     private fun formatLocation(address: String, apartment: String, city: String, zipcode: String, country: String): String {
         val location = buildString {

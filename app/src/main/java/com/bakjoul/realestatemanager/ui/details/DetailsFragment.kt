@@ -60,7 +60,7 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
             }
         })
 
-        binding.detailsImageViewBack?.setOnClickListener {
+        binding.detailsImageViewBackButton?.setOnClickListener {
             viewModel.resetCurrentPhotoId()
             viewModel.resetCurrentPropertyId()
             requireActivity().onBackPressedDispatcher.onBackPressed()
