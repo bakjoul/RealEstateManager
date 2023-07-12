@@ -42,7 +42,7 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
         val recyclerViewAdapter = DetailsAdapter()
         binding.detailsMediaRecyclerView.adapter = recyclerViewAdapter
 
-        binding.detailsImageViewBackButton?.setOnClickListener {
+        binding.detailsFabBack?.setOnClickListener {
             requireActivity().onBackPressedDispatcher.onBackPressed()
         }
 
@@ -104,7 +104,7 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
     private fun setToolbarInfoAnimation() {
         val toolbarInfo = binding.detailsToolbarTypePriceStatusContainer
         val xMargin = DensityUtil.dip2px(requireContext(), 30f)
-        val startAnimationY = DensityUtil.dip2px(requireContext(), 60f)
+        val startAnimationY = DensityUtil.dip2px(requireContext(), 56f)
         val layoutParams = toolbarInfo.layoutParams as ViewGroup.MarginLayoutParams
         layoutParams.marginStart = 0
 

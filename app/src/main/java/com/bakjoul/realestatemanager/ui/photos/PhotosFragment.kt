@@ -1,15 +1,19 @@
 package com.bakjoul.realestatemanager.ui.photos
 
 import android.content.DialogInterface
+import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.InsetDrawable
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.viewpager2.widget.ViewPager2
 import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.databinding.FragmentPhotosBinding
+import com.bakjoul.realestatemanager.ui.utils.DensityUtil
 import com.bakjoul.realestatemanager.ui.utils.viewBinding
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -25,7 +29,9 @@ class PhotosFragment @Inject constructor() : DialogFragment(R.layout.fragment_ph
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        dialog?.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        setDialogWindow()
+
+        binding.photosViewPagerCloseButton.setOnClickListener { dismiss() }
 
         // Photos ViewPager
         val viewPagerAdapter = PhotosViewPagerAdapter()
@@ -64,6 +70,16 @@ class PhotosFragment @Inject constructor() : DialogFragment(R.layout.fragment_ph
         }
 
 
+    }
+
+    private fun setDialogWindow() {
+        val backgroundColor = ColorDrawable(ContextCompat.getColor(requireContext(), android.R.color.transparent))
+        val inset = InsetDrawable(backgroundColor, DensityUtil.dip2px(requireContext(), 4f))
+        dialog?.window?.setBackgroundDrawable(inset)
+        dialog?.window?.setLayout(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        )
     }
 
     override fun onDismiss(dialog: DialogInterface) {

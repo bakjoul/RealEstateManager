@@ -138,16 +138,17 @@
         </com.google.android.material.appbar.CollapsingToolbarLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
-    <ImageView
-        android:id="@+id/details_ImageView_back_button"
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/details_fab_back"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="14dp"
-        android:background="?selectableItemBackground"
         android:backgroundTint="@color/transparent_grey"
         android:contentDescription="@string/details_back_button_desc"
+        android:outlineProvider="none"
         android:src="@drawable/baseline_arrow_back_24"
+        app:fabCustomSize="24dp"
+        app:layout_anchor="@id/details_toolbar_photo"
+        app:layout_anchorGravity="top|left"
         app:tint="@color/white" />
 
     <androidx.core.widget.NestedScrollView
