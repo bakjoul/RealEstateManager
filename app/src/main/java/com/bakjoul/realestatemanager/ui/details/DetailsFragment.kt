@@ -95,12 +95,6 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
 
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-
-        viewModel.resetCurrentPropertyId()
-    }
-
     private fun setToolbarInfoAnimation() {
         val toolbarInfo = binding.detailsToolbarTypePriceStatusContainer
         val xMargin = DensityUtil.dip2px(requireContext(), 30f)
