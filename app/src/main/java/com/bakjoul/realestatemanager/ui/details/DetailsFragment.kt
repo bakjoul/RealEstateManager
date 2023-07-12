@@ -15,8 +15,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.recyclerview.widget.LinearSnapHelper
-import androidx.viewpager2.widget.ViewPager2
 import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.databinding.FragmentDetailsBinding
 import com.bakjoul.realestatemanager.ui.utils.DensityUtil
@@ -31,8 +29,6 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
     private val binding by viewBinding { FragmentDetailsBinding.bind(it) }
     private val viewModel by viewModels<DetailsViewModel>()
 
-    private var isViewPagerFirstOpening: Boolean = true
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -46,31 +42,9 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
         val recyclerViewAdapter = DetailsAdapter()
         binding.detailsMediaRecyclerView.adapter = recyclerViewAdapter
 
-        // Medias ViewPager
-        val viewPagerAdapter = DetailsPagerAdapter()
-        binding.detailsViewPager.adapter = viewPagerAdapter
-        binding.photosDotsIndicator.attachTo(binding.detailsViewPager)
-        binding.detailsViewPagerCloseButton.setOnClickListener { closeViewPager() }
-        binding.detailsViewPagerConstraintLayout.setOnClickListener { closeViewPager() }
-        binding.detailsViewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
-            override fun onPageSelected(position: Int) {
-                if (!isViewPagerFirstOpening) {
-                    viewModel.updateCurrentPhotoId(position)
-                }
-            }
-        })
-
         binding.detailsImageViewBackButton?.setOnClickListener {
-            viewModel.resetCurrentPhotoId()
-            viewModel.resetCurrentPropertyId()
             requireActivity().onBackPressedDispatcher.onBackPressed()
         }
-
-        // ViewPager thumbnails
-        val thumbnailsAdapter = DetailsPagerThumbnailsAdapter()
-        binding.detailsThumnnailsRecyclerView.adapter = thumbnailsAdapter
-        val snapHelper = LinearSnapHelper()
-        snapHelper.attachToRecyclerView(binding.detailsThumnnailsRecyclerView)
 
         viewModel.detailsLiveData.observe(viewLifecycleOwner) { details ->
             Glide.with(binding.detailsToolbarPhoto)
@@ -102,29 +76,6 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
 
             recyclerViewAdapter.submitList(details.medias)
 
-            viewPagerAdapter.updateData(details.photoUrls)
-            if (details.clickedPhotoId != -1 && isViewPagerFirstOpening) {
-                binding.detailsViewPager.setCurrentItem(details.clickedPhotoId, false)
-                isViewPagerFirstOpening = false
-            } else if (details.clickedPhotoId != -1) {
-                binding.detailsViewPager.setCurrentItem(details.clickedPhotoId, true)
-            }
-            if (details.clickedPhotoId == -1) {
-                if (binding.detailsViewPagerConstraintLayout.visibility != View.INVISIBLE) {
-                    binding.detailsViewPagerConstraintLayout.visibility = View.INVISIBLE
-                }
-            } else {
-                if (binding.detailsViewPagerConstraintLayout.visibility != View.VISIBLE) {
-                    binding.detailsViewPagerConstraintLayout.visibility = View.VISIBLE
-                }
-            }
-
-            thumbnailsAdapter.submitList(details.medias)
-            if (details.clickedPhotoId != -1) {
-                binding.detailsThumnnailsRecyclerView.smoothScrollToPosition(details.clickedPhotoId)
-                thumbnailsAdapter.setSelectedItem(details.clickedPhotoId)
-            }
-
             binding.detailsItemLocation.setOnLongClickListener {
                 val clipboardManager = requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                 val clipData = ClipData.newPlainText("address", details.clipboardAddress)
@@ -141,12 +92,13 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
                 startActivity(intent)
             }
         }
+
     }
 
-    private fun closeViewPager() {
-        binding.detailsViewPagerConstraintLayout.visibility = View.INVISIBLE
-        viewModel.resetCurrentPhotoId()
-        isViewPagerFirstOpening = true
+    override fun onDestroy() {
+        super.onDestroy()
+
+        viewModel.resetCurrentPropertyId()
     }
 
     private fun setToolbarInfoAnimation() {

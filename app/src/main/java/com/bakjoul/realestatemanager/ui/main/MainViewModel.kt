@@ -1,5 +1,6 @@
 package com.bakjoul.realestatemanager.ui.main
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
@@ -8,6 +9,7 @@ import com.bakjoul.realestatemanager.domain.agent.AgentRepository
 import com.bakjoul.realestatemanager.domain.auth.GetCurrentUserUseCase
 import com.bakjoul.realestatemanager.domain.auth.IsUserAuthenticatedUseCase
 import com.bakjoul.realestatemanager.domain.auth.LogOutUseCase
+import com.bakjoul.realestatemanager.domain.current_photo.GetCurrentPhotoIdUseCase
 import com.bakjoul.realestatemanager.domain.current_property.GetCurrentPropertyIdChannelUseCase
 import com.bakjoul.realestatemanager.domain.resources.IsTabletUseCase
 import com.bakjoul.realestatemanager.domain.resources.RefreshOrientationUseCase
@@ -24,6 +26,7 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     getCurrentPropertyIdChannelUseCase: GetCurrentPropertyIdChannelUseCase,
     isTabletUseCase: IsTabletUseCase,
+    getCurrentPhotoIdUseCase: GetCurrentPhotoIdUseCase,
     isUserAuthenticatedUseCase: IsUserAuthenticatedUseCase,
     getCurrentUserUseCase: GetCurrentUserUseCase,
     agentRepository: AgentRepository,
@@ -45,21 +48,25 @@ class MainViewModel @Inject constructor(
     val mainViewActionLiveData: LiveData<Event<MainViewAction>> =
         combine(
             getCurrentPropertyIdChannelUseCase.invoke().receiveAsFlow(),
-            isTabletUseCase.invoke()
-        ) { id, isTablet ->
-            if (id >= 0) {
+            isTabletUseCase.invoke(),
+            getCurrentPhotoIdUseCase.invoke()
+        ) { id, isTablet, currentPhotoId ->
+            Log.d("test", "combine id: $id, isTablet: $isTablet, currentPhotoId: $currentPhotoId")
+            if (currentPhotoId != -1) {
+                MainViewAction.DisplayPhotosDialog
+            } else if (id >= 0) {
                 if (isTablet) {
                     MainViewAction.DisplayDetailsFragment
                 } else {
-                    MainViewAction.NavigateToDetails
+                        Log.d("test", "navigatetodetails: ")
+                        MainViewAction.NavigateToDetails
                 }
             } else {
                 MainViewAction.DisplayEmptyFragment
             }
-        }.map {
+        }.filterNotNull().map {
             Event(it)
-        }.filterNotNull().asLiveData()
-
+        }.asLiveData()
 
     fun onResume(isTablet: Boolean) {
         refreshOrientationUseCase.invoke(isTablet)

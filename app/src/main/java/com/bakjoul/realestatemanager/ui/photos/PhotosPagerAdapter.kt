@@ -1,4 +1,4 @@
-package com.bakjoul.realestatemanager.ui.details
+package com.bakjoul.realestatemanager.ui.photos
 
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
@@ -8,22 +8,23 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bakjoul.realestatemanager.R
-import com.bakjoul.realestatemanager.databinding.FragmentDetailsPhotoItemBinding
+import com.bakjoul.realestatemanager.databinding.PhotosItemBinding
+import com.bakjoul.realestatemanager.ui.details.DetailsMediaItemViewState
 import com.bumptech.glide.Glide
 
-class DetailsPagerThumbnailsAdapter : ListAdapter<DetailsMediaItemViewState, DetailsPagerThumbnailsAdapter.ViewHolder>(DetailsDiffCallback) {
+class PhotosPagerAdapter : ListAdapter<DetailsMediaItemViewState, PhotosPagerAdapter.ViewHolder>(PhotosDiffCallback) {
 
     private var selectedItem: Int = RecyclerView.NO_POSITION
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder = ViewHolder(
-        FragmentDetailsPhotoItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        PhotosItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
     )
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(getItem(position), position == selectedItem)
     }
 
-    class ViewHolder(private val binding: FragmentDetailsPhotoItemBinding) :
+    class ViewHolder(private val binding: PhotosItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(item: DetailsMediaItemViewState, isSelected: Boolean) {
             Glide.with(binding.detailsPhotoItemImageView.context)
@@ -48,7 +49,7 @@ class DetailsPagerThumbnailsAdapter : ListAdapter<DetailsMediaItemViewState, Det
         notifyDataSetChanged()
     }
 
-    object DetailsDiffCallback : DiffUtil.ItemCallback<DetailsMediaItemViewState>() {
+    object PhotosDiffCallback : DiffUtil.ItemCallback<DetailsMediaItemViewState>() {
         override fun areItemsTheSame(oldItem: DetailsMediaItemViewState, newItem: DetailsMediaItemViewState): Boolean = oldItem.id == newItem.id
 
         override fun areContentsTheSame(oldItem: DetailsMediaItemViewState, newItem: DetailsMediaItemViewState): Boolean = oldItem == newItem

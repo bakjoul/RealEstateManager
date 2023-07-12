@@ -1,5 +1,6 @@
 package com.bakjoul.realestatemanager.data.current_property
 
+import android.util.Log
 import com.bakjoul.realestatemanager.domain.current_property.CurrentPropertyIdRepository
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -26,5 +27,6 @@ class CurrentPropertyIdRepositoryImplementation @Inject constructor() : CurrentP
     override fun resetCurrentPropertyId() {
         currentPropertyIdMutableStateFlow.value = -1
         currentPropertyIdChannel.trySend(-1)
+        Log.d("test", "resetCurrentPropertyId: called")
     }
 }

@@ -3,6 +3,7 @@ package com.bakjoul.realestatemanager.ui.details
 import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.liveData
 import com.bakjoul.realestatemanager.BuildConfig
 import com.bakjoul.realestatemanager.R
@@ -10,17 +11,20 @@ import com.bakjoul.realestatemanager.data.settings.model.AppCurrency
 import com.bakjoul.realestatemanager.data.settings.model.SurfaceUnit
 import com.bakjoul.realestatemanager.domain.currency_rate.GetCachedEuroRateUseCase
 import com.bakjoul.realestatemanager.domain.current_photo.GetCurrentPhotoIdUseCase
-import com.bakjoul.realestatemanager.domain.current_photo.ResetCurrentPhotoIdUseCase
 import com.bakjoul.realestatemanager.domain.current_photo.SetCurrentPhotoIdUseCase
 import com.bakjoul.realestatemanager.domain.current_property.ResetCurrentPropertyIdUseCase
 import com.bakjoul.realestatemanager.domain.property.GetCurrentPropertyUseCase
 import com.bakjoul.realestatemanager.domain.property.model.PhotoEntity
+import com.bakjoul.realestatemanager.domain.resources.IsTabletUseCase
 import com.bakjoul.realestatemanager.domain.resources.RefreshOrientationUseCase
 import com.bakjoul.realestatemanager.domain.settings.currency.GetCurrentCurrencyUseCase
 import com.bakjoul.realestatemanager.domain.settings.surface_unit.GetCurrentSurfaceUnitUseCase
 import com.bakjoul.realestatemanager.ui.utils.EquatableCallback
+import com.bakjoul.realestatemanager.ui.utils.Event
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.map
 import java.text.NumberFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -38,8 +42,8 @@ class DetailsViewModel @Inject constructor(
     private val getCachedEuroRateUseCase: GetCachedEuroRateUseCase,
     private val setCurrentPhotoIdUseCase: SetCurrentPhotoIdUseCase,
     private val resetCurrentPropertyIdUseCase: ResetCurrentPropertyIdUseCase,
-    private val resetCurrentPhotoIdUseCase: ResetCurrentPhotoIdUseCase,
     private val getCurrentSurfaceUnitUseCase: GetCurrentSurfaceUnitUseCase,
+    isTabletUseCase: IsTabletUseCase,
     getCurrentPhotoIdUseCase: GetCurrentPhotoIdUseCase
 ) : ViewModel() {
 
@@ -53,9 +57,8 @@ class DetailsViewModel @Inject constructor(
             getCurrentPropertyUseCase.invoke(),
             getCurrentCurrencyUseCase.invoke(),
             getCachedEuroRateUseCase.invoke(),
-            getCurrentPhotoIdUseCase.invoke(),
             getCurrentSurfaceUnitUseCase.invoke()
-        ) { property, currency, euroRate, photoId, surfaceUnit ->
+        ) { property, currency, euroRate, surfaceUnit ->
             DetailsViewState(
                 mainPhotoUrl = property.photos.first().url,
                 type = property.type,
@@ -80,8 +83,6 @@ class DetailsViewModel @Inject constructor(
                 poiAirport = property.poiAirport,
                 location = formatLocation(property.address, formatApartment(property.apartment), property.city, property.zipcode, property.country),
                 medias = mapPhotosToMediaItemViewStates(property.photos),
-                photoUrls = mapPhotosToUrls(property.photos),
-                clickedPhotoId = photoId,
                 clipboardAddress = getClipboardAddress(property.address, property.city, property.country),
                 staticMapUrl = getMapUrl(property.address, property.city, property.country),
                 mapsAddress = getAddress(property.address, property.city, property.country)
@@ -90,6 +91,21 @@ class DetailsViewModel @Inject constructor(
             emit(viewState)
         }
     }
+
+    val detailsViewActionLiveData: LiveData<Event<DetailsViewAction>> =
+        combine(
+            isTabletUseCase.invoke(),
+            getCurrentPhotoIdUseCase.invoke()
+        ) { isTablet, currentPhotoId ->
+            if (!isTablet && currentPhotoId != -1) {
+                DetailsViewAction.DisplayPhotosDialog
+            } else {
+                null
+            }
+        }.filterNotNull().map {
+            Event(it)
+        }.asLiveData()
+
 
     private val locale = Locale.getDefault()
     private val formatter: DateTimeFormatter = if (locale.language == "fr") {
@@ -103,6 +119,7 @@ class DetailsViewModel @Inject constructor(
             SurfaceUnit.Meters -> {
                 "$surface ${surfaceUnit.unit}"
             }
+
             SurfaceUnit.Feet -> {
                 "${ceil(surface.toDouble() * 3.28084).toInt()} ${surfaceUnit.unit}"
             }
@@ -149,10 +166,6 @@ class DetailsViewModel @Inject constructor(
         }
     }
 
-/*    private fun formatSurface(surface: Int): String {
-        return "$surface m²"
-    }*/
-
     private fun formatLocation(address: String, apartment: String, city: String, zipcode: String, country: String): String {
         val location = buildString {
             append(address)
@@ -172,8 +185,6 @@ class DetailsViewModel @Inject constructor(
         }
     }
 
-    private fun mapPhotosToUrls(photos: List<PhotoEntity>): List<String> = photos.map { it.url }
-
     private fun getClipboardAddress(address: String, city: String, country: String): String =
         "$address $city $country"
 
@@ -190,9 +201,5 @@ class DetailsViewModel @Inject constructor(
 
     fun onResume(isTablet: Boolean) = refreshOrientationUseCase.invoke(isTablet)
 
-    fun updateCurrentPhotoId(position: Int) = setCurrentPhotoIdUseCase.invoke(position)
-
     fun resetCurrentPropertyId() = resetCurrentPropertyIdUseCase.invoke()
-
-    fun resetCurrentPhotoId() = resetCurrentPhotoIdUseCase.invoke()
 }

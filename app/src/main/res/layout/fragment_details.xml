@@ -379,7 +379,7 @@
                     android:padding="8dp"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     tools:itemCount="5"
-                    tools:listitem="@layout/fragment_details_photo_item" />
+                    tools:listitem="@layout/photos_item" />
             </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView
@@ -421,73 +421,5 @@
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/details_ViewPager_ConstraintLayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#B3000000"
-        android:clickable="true"
-        android:elevation="1dp"
-        android:focusable="true"
-        android:longClickable="true"
-        android:padding="8dp"
-        android:visibility="gone"
-        tools:visibility="gone">
-
-        <androidx.viewpager2.widget.ViewPager2
-            android:id="@+id/details_ViewPager"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:background="@android:color/transparent"
-            android:orientation="horizontal"
-            app:layout_constraintBottom_toTopOf="@id/details_thumnnails_RecyclerView"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_chainStyle="packed" />
-
-        <com.tbuonomo.viewpagerdotsindicator.WormDotsIndicator
-            android:id="@+id/photos_DotsIndicator"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="4dp"
-            app:dotsColor="#FF3944BC"
-            app:dotsCornerRadius="8dp"
-            app:dotsSize="8dp"
-            app:dotsSpacing="2dp"
-            app:dotsWidthFactor="2.5"
-            app:layout_constraintBottom_toBottomOf="@id/details_ViewPager"
-            app:layout_constraintEnd_toEndOf="@id/details_ViewPager"
-            app:layout_constraintStart_toStartOf="@id/details_ViewPager"
-            app:progressMode="true"
-            app:selectedDotColor="#FF3944BC" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/details_thumnnails_RecyclerView"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:orientation="horizontal"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@id/details_ViewPager"
-            app:layout_constraintStart_toStartOf="@id/details_ViewPager"
-            app:layout_constraintTop_toBottomOf="@id/details_ViewPager"
-            tools:itemCount="5"
-            tools:listitem="@layout/fragment_details_photo_item" />
-
-        <ImageView
-            android:id="@+id/details_ViewPager_close_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:background="?selectableItemBackground"
-            android:contentDescription="@string/details_close_button_desc"
-            android:src="@drawable/baseline_close_24"
-            app:layout_constraintEnd_toEndOf="@id/details_ViewPager"
-            app:layout_constraintTop_toTopOf="@id/details_ViewPager" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

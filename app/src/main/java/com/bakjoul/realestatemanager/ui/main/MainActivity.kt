@@ -2,6 +2,7 @@ package com.bakjoul.realestatemanager.ui.main
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -16,6 +17,7 @@ import com.bakjoul.realestatemanager.ui.details.DetailsActivity
 import com.bakjoul.realestatemanager.ui.details.DetailsFragment
 import com.bakjoul.realestatemanager.ui.dispatcher.DispatcherActivity
 import com.bakjoul.realestatemanager.ui.list.PropertyListFragment
+import com.bakjoul.realestatemanager.ui.photos.PhotosFragment
 import com.bakjoul.realestatemanager.ui.settings.SettingsActivity
 import com.bakjoul.realestatemanager.ui.settings.SettingsFragment
 import com.bakjoul.realestatemanager.ui.utils.Event.Companion.observeEvent
@@ -63,6 +65,15 @@ class MainActivity : AppCompatActivity() {
                                 .replace(containerDetailsId, DetailsFragment())
                                 .commitNow()
                         }
+                    }
+                }
+
+                MainViewAction.DisplayPhotosDialog -> {
+                    Log.d("test", "main: dialog emit")
+                    val existingDialog = supportFragmentManager.findFragmentByTag("PhotosDialogFragment") as? PhotosFragment
+                    if (existingDialog == null) {
+                        val dialog = PhotosFragment()
+                        dialog.show(supportFragmentManager, "PhotosDialogFragment")
                     }
                 }
 

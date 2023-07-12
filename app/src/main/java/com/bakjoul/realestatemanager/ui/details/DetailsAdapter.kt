@@ -5,20 +5,20 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.bakjoul.realestatemanager.databinding.FragmentDetailsPhotoItemBinding
+import com.bakjoul.realestatemanager.databinding.PhotosItemBinding
 import com.bumptech.glide.Glide
 
 class DetailsAdapter : ListAdapter<DetailsMediaItemViewState, DetailsAdapter.ViewHolder>(DetailsDiffCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder = ViewHolder(
-        FragmentDetailsPhotoItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        PhotosItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
     )
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(getItem(position))
     }
 
-    class ViewHolder(private val binding: FragmentDetailsPhotoItemBinding) : RecyclerView.ViewHolder(binding.root) {
+    class ViewHolder(private val binding: PhotosItemBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(item: DetailsMediaItemViewState) {
             Glide.with(binding.detailsPhotoItemImageView.context)
                 .load(item.url)

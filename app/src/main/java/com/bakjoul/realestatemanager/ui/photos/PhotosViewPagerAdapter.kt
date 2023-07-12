@@ -1,17 +1,17 @@
-package com.bakjoul.realestatemanager.ui.details
+package com.bakjoul.realestatemanager.ui.photos
 
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.bakjoul.realestatemanager.databinding.FragmentDetailsViewpagerItemBinding
+import com.bakjoul.realestatemanager.databinding.PhotosViewpagerItemBinding
 import com.bumptech.glide.Glide
 
-class DetailsPagerAdapter : RecyclerView.Adapter<DetailsPagerAdapter.ViewHolder>() {
+class PhotosViewPagerAdapter : RecyclerView.Adapter<PhotosViewPagerAdapter.ViewHolder>() {
     private var photoUrls: List<String> = emptyList()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder = ViewHolder(
-        FragmentDetailsViewpagerItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        PhotosViewpagerItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
     )
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -20,7 +20,7 @@ class DetailsPagerAdapter : RecyclerView.Adapter<DetailsPagerAdapter.ViewHolder>
 
     override fun getItemCount(): Int = photoUrls.size
 
-    class ViewHolder(private val binding: FragmentDetailsViewpagerItemBinding) : RecyclerView.ViewHolder(binding.root) {
+    class ViewHolder(private val binding: PhotosViewpagerItemBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(photoUrl: String) {
             Glide.with(binding.photoItemImageView.context)
                 .load(photoUrl)
