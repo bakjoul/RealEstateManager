@@ -7,8 +7,6 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.liveData
 import com.bakjoul.realestatemanager.BuildConfig
 import com.bakjoul.realestatemanager.R
-import com.bakjoul.realestatemanager.data.settings.model.AppCurrency
-import com.bakjoul.realestatemanager.data.settings.model.SurfaceUnit
 import com.bakjoul.realestatemanager.domain.currency_rate.GetCachedEuroRateUseCase
 import com.bakjoul.realestatemanager.domain.current_photo.GetCurrentPhotoIdUseCase
 import com.bakjoul.realestatemanager.domain.current_photo.SetCurrentPhotoIdUseCase
@@ -21,17 +19,16 @@ import com.bakjoul.realestatemanager.domain.settings.currency.GetCurrentCurrency
 import com.bakjoul.realestatemanager.domain.settings.surface_unit.GetCurrentSurfaceUnitUseCase
 import com.bakjoul.realestatemanager.ui.utils.EquatableCallback
 import com.bakjoul.realestatemanager.ui.utils.Event
+import com.bakjoul.realestatemanager.ui.utils.ViewModelUtils.Companion.formatPrice
+import com.bakjoul.realestatemanager.ui.utils.ViewModelUtils.Companion.formatSurface
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
-import java.text.NumberFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.util.Currency
 import java.util.Locale
 import javax.inject.Inject
-import kotlin.math.ceil
 
 @HiltViewModel
 class DetailsViewModel @Inject constructor(
@@ -112,39 +109,6 @@ class DetailsViewModel @Inject constructor(
         DateTimeFormatter.ofPattern("d/MM/yy", locale)
     } else {
         DateTimeFormatter.ofPattern("M/d/yy", locale)
-    }
-
-    private fun formatSurface(surface: Int, surfaceUnit: SurfaceUnit): String {
-        return when (surfaceUnit) {
-            SurfaceUnit.Meters -> {
-                "$surface ${surfaceUnit.unit}"
-            }
-
-            SurfaceUnit.Feet -> {
-                "${ceil(surface.toDouble() * 3.28084).toInt()} ${surfaceUnit.unit}"
-            }
-        }
-    }
-
-    private fun formatPrice(price: Double, currency: AppCurrency, euroRate: Double): String {
-        val numberFormat = NumberFormat.getNumberInstance()
-
-        val formattedPrice = when (currency) {
-            AppCurrency.USD -> {
-                numberFormat.currency = Currency.getInstance(Locale.US)
-                numberFormat.maximumFractionDigits = 0
-                "$" + numberFormat.format(price)
-            }
-
-            AppCurrency.EUR -> {
-                val convertedPrice = price / euroRate
-                numberFormat.currency = Currency.getInstance(Locale.FRANCE)
-                numberFormat.maximumFractionDigits = 0
-                numberFormat.format(convertedPrice).replace(",", ".") + " €"
-            }
-        }
-
-        return formattedPrice
     }
 
     private fun getSaleStatus(soldDate: LocalDate?, entryDate: LocalDate): String {

@@ -16,17 +16,16 @@ import com.bakjoul.realestatemanager.domain.resources.IsTabletUseCase
 import com.bakjoul.realestatemanager.domain.settings.currency.GetCurrentCurrencyUseCase
 import com.bakjoul.realestatemanager.domain.settings.surface_unit.GetCurrentSurfaceUnitUseCase
 import com.bakjoul.realestatemanager.ui.utils.EquatableCallback
+import com.bakjoul.realestatemanager.ui.utils.ViewModelUtils.Companion.formatPrice
+import com.bakjoul.realestatemanager.ui.utils.ViewModelUtils.Companion.formatSurface
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.combine
-import java.text.NumberFormat
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.time.format.DateTimeFormatter
-import java.util.Currency
 import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
-import kotlin.math.ceil
 
 @HiltViewModel
 class PropertyListViewModel @Inject constructor(
@@ -89,38 +88,6 @@ class PropertyListViewModel @Inject constructor(
         } else {
             return "$bedrooms bed. - $bathrooms bath. - ${formatSurface(surface, surfaceUnit)}"
         }
-    }
-
-    private fun formatSurface(surface: Int, surfaceUnit: SurfaceUnit): String {
-        return when (surfaceUnit) {
-            SurfaceUnit.Meters -> {
-                "$surface ${surfaceUnit.unit}"
-            }
-            SurfaceUnit.Feet -> {
-                "${ceil(surface.toDouble() * 3.28084).toInt()} ${surfaceUnit.unit}"
-            }
-        }
-    }
-
-    private fun formatPrice(price: Double, currency: AppCurrency, euroRate: Double): String {
-        val numberFormat = NumberFormat.getNumberInstance()
-
-        val formattedPrice = when (currency) {
-            AppCurrency.USD -> {
-                numberFormat.currency = Currency.getInstance(Locale.US)
-                numberFormat.maximumFractionDigits = 0
-                "$" + numberFormat.format(price)
-            }
-
-            AppCurrency.EUR -> {
-                val convertedPrice = price / euroRate
-                numberFormat.currency = Currency.getInstance(Locale.FRANCE)
-                numberFormat.maximumFractionDigits = 0
-                numberFormat.format(convertedPrice).replace(",", ".") + " €"
-            }
-        }
-
-        return formattedPrice
     }
 
     private fun formatRate(currency: AppCurrency, euroRate: Double, updateDate: String): SpannableString  {
