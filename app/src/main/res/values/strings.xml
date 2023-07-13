@@ -17,6 +17,10 @@
     <string name="property_type_house">House</string>
     <string name="property_type_duplex">Duplex</string>
     <string name="property_type_penthouse">Penthouse</string>
+    <string name="property_type_loft">Loft</string>
+    <string name="property_type_manor">Manor</string>
+    <string name="property_type_castle">Castle</string>
+    <string name="property_type_other">Other</string>
     <string name="details_label_amenities">Amenities</string>
     <string name="details_label_transportation">Transportation</string>
     <string name="details_poi_desc_school">School</string>
