@@ -8,4 +8,14 @@
         <item>Feet (sqft)</item>
         <item>Meters (sqm)</item>
     </string-array>
+    <string-array name="property_type_options">
+        <item>Flat</item>
+        <item>House</item>
+        <item>Duplex</item>
+        <item>Penthouse</item>
+        <item>Loft</item>
+        <item>Manor</item>
+        <item>Castle</item>
+        <item>Other</item>
+    </string-array>
 </resources>
