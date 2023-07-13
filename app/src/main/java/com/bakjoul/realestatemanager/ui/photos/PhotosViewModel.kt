@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import com.bakjoul.realestatemanager.domain.current_photo.GetCurrentPhotoIdUseCase
-import com.bakjoul.realestatemanager.domain.current_photo.ResetCurrentPhotoIdUseCase
 import com.bakjoul.realestatemanager.domain.current_photo.SetCurrentPhotoIdUseCase
 import com.bakjoul.realestatemanager.domain.property.GetCurrentPropertyUseCase
 import com.bakjoul.realestatemanager.domain.property.model.PhotoEntity
@@ -16,7 +15,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PhotosViewModel @Inject constructor(
-    private val resetCurrentPhotoIdUseCase: ResetCurrentPhotoIdUseCase,
     private val setCurrentPhotoIdUseCase: SetCurrentPhotoIdUseCase,
     getCurrentPropertyUseCase: GetCurrentPropertyUseCase,
     getCurrentPhotoIdUseCase: GetCurrentPhotoIdUseCase,
@@ -47,8 +45,6 @@ class PhotosViewModel @Inject constructor(
             )
         }
     }
-
-    fun resetCurrentPhotoId() = resetCurrentPhotoIdUseCase.invoke()
 
     fun updateCurrentPhotoId(position: Int) = setCurrentPhotoIdUseCase.invoke(position)
 }

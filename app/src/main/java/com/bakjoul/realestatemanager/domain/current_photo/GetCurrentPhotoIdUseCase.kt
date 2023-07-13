@@ -1,6 +1,7 @@
 package com.bakjoul.realestatemanager.domain.current_photo
 
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.receiveAsFlow
 import javax.inject.Inject
 
 class GetCurrentPhotoIdUseCase @Inject constructor(private val currentPhotoIdRepository: CurrentPhotoIdRepository) {

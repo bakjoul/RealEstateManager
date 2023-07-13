@@ -35,38 +35,26 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         setToolbar()
-        //setMenu()
         setNavigationView()
 
         val containerDetailsId = binding.mainFrameLayoutContainerDetails?.id
+        // Empty fragment if in tablet mode
+        if (containerDetailsId != null &&  supportFragmentManager.findFragmentById(containerDetailsId) == null) {
+            supportFragmentManager.beginTransaction()
+                .replace(containerDetailsId, DetailsFragment())
+                .commitNow()
+        }
+
         if (savedInstanceState == null) {
             // List of properties
             supportFragmentManager.beginTransaction()
                 .replace(binding.mainFrameLayoutContainerList.id, PropertyListFragment())
                 .commitNow()
-
-            // Empty fragment if in tablet mode
-            if (containerDetailsId != null) {
-                supportFragmentManager.beginTransaction()
-                    .replace(containerDetailsId, EmptyFragment())
-                    .commitNow()
-            }
         }
 
         viewModel.mainViewActionLiveData.observeEvent(this) {
             when (it) {
                 MainViewAction.NavigateToDetails -> startActivity(Intent(this, DetailsActivity::class.java))
-
-                MainViewAction.DisplayDetailsFragment -> {
-                    if (containerDetailsId != null) {
-                        val existingFragment = supportFragmentManager.findFragmentById(containerDetailsId)
-                        if (existingFragment == null || existingFragment is EmptyFragment) {
-                            supportFragmentManager.beginTransaction()
-                                .replace(containerDetailsId, DetailsFragment())
-                                .commitNow()
-                        }
-                    }
-                }
 
                 MainViewAction.DisplayPhotosDialog -> {
                     Log.d("test", "main: dialog emit")
@@ -74,17 +62,6 @@ class MainActivity : AppCompatActivity() {
                     if (existingDialog == null) {
                         val dialog = PhotosFragment()
                         dialog.show(supportFragmentManager, "PhotosDialogFragment")
-                    }
-                }
-
-                MainViewAction.DisplayEmptyFragment -> {
-                    if (containerDetailsId != null) {
-                        val existingFragment = supportFragmentManager.findFragmentById(containerDetailsId)
-                        if (existingFragment == null || existingFragment is DetailsFragment) {
-                            supportFragmentManager.beginTransaction()
-                                .replace(containerDetailsId, EmptyFragment())
-                                .commitNow()
-                        }
                     }
                 }
             }

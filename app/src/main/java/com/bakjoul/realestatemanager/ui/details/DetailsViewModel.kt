@@ -8,9 +8,9 @@ import androidx.lifecycle.liveData
 import com.bakjoul.realestatemanager.BuildConfig
 import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.domain.currency_rate.GetCachedEuroRateUseCase
+import com.bakjoul.realestatemanager.domain.current_photo.GetCurrentPhotoIdChannelUseCase
 import com.bakjoul.realestatemanager.domain.current_photo.GetCurrentPhotoIdUseCase
 import com.bakjoul.realestatemanager.domain.current_photo.SetCurrentPhotoIdUseCase
-import com.bakjoul.realestatemanager.domain.current_property.ResetCurrentPropertyIdUseCase
 import com.bakjoul.realestatemanager.domain.property.GetCurrentPropertyUseCase
 import com.bakjoul.realestatemanager.domain.property.model.PhotoEntity
 import com.bakjoul.realestatemanager.domain.resources.IsTabletUseCase
@@ -38,10 +38,9 @@ class DetailsViewModel @Inject constructor(
     private val getCurrentCurrencyUseCase: GetCurrentCurrencyUseCase,
     private val getCachedEuroRateUseCase: GetCachedEuroRateUseCase,
     private val setCurrentPhotoIdUseCase: SetCurrentPhotoIdUseCase,
-    private val resetCurrentPropertyIdUseCase: ResetCurrentPropertyIdUseCase,
     private val getCurrentSurfaceUnitUseCase: GetCurrentSurfaceUnitUseCase,
     isTabletUseCase: IsTabletUseCase,
-    getCurrentPhotoIdUseCase: GetCurrentPhotoIdUseCase
+    getCurrentPhotoIdChannelUseCase: GetCurrentPhotoIdChannelUseCase
 ) : ViewModel() {
 
     private companion object {
@@ -92,7 +91,7 @@ class DetailsViewModel @Inject constructor(
     val detailsViewActionLiveData: LiveData<Event<DetailsViewAction>> =
         combine(
             isTabletUseCase.invoke(),
-            getCurrentPhotoIdUseCase.invoke()
+            getCurrentPhotoIdChannelUseCase.invoke()
         ) { isTablet, currentPhotoId ->
             if (!isTablet && currentPhotoId != -1) {
                 DetailsViewAction.DisplayPhotosDialog
@@ -164,6 +163,4 @@ class DetailsViewModel @Inject constructor(
     private fun formatAddress(address: String) = address.replace(" ", "%20")
 
     fun onResume(isTablet: Boolean) = refreshOrientationUseCase.invoke(isTablet)
-
-    fun resetCurrentPropertyId() = resetCurrentPropertyIdUseCase.invoke()
 }

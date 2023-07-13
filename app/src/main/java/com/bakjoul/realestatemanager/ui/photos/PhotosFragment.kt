@@ -1,6 +1,5 @@
 package com.bakjoul.realestatemanager.ui.photos
 
-import android.content.DialogInterface
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.InsetDrawable
 import android.os.Bundle
@@ -37,7 +36,6 @@ class PhotosFragment @Inject constructor() : DialogFragment(R.layout.fragment_ph
         val viewPagerAdapter = PhotosViewPagerAdapter()
         binding.photosViewPager.adapter = viewPagerAdapter
         binding.photosDotsIndicator.attachTo(binding.photosViewPager)
-        binding.photosViewPager.setOnClickListener { resetViewPager() }
         binding.photosViewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 if (!isViewPagerFirstOpening) {
@@ -68,8 +66,6 @@ class PhotosFragment @Inject constructor() : DialogFragment(R.layout.fragment_ph
                 thumbnailsAdapter.setSelectedItem(viewState.currentPhotoId)
             }
         }
-
-
     }
 
     private fun setDialogWindow() {
@@ -80,16 +76,5 @@ class PhotosFragment @Inject constructor() : DialogFragment(R.layout.fragment_ph
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.WRAP_CONTENT
         )
-    }
-
-    override fun onDismiss(dialog: DialogInterface) {
-        super.onDismiss(dialog)
-
-        resetViewPager()
-    }
-
-    private fun resetViewPager() {
-        isViewPagerFirstOpening = true
-        viewModel.resetCurrentPhotoId()
     }
 }

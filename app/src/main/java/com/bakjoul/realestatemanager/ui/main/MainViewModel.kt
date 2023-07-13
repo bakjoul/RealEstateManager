@@ -3,21 +3,22 @@ package com.bakjoul.realestatemanager.ui.main
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
+import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
 import com.bakjoul.realestatemanager.domain.agent.AgentRepository
 import com.bakjoul.realestatemanager.domain.auth.GetCurrentUserUseCase
 import com.bakjoul.realestatemanager.domain.auth.IsUserAuthenticatedUseCase
 import com.bakjoul.realestatemanager.domain.auth.LogOutUseCase
+import com.bakjoul.realestatemanager.domain.current_photo.GetCurrentPhotoIdChannelUseCase
 import com.bakjoul.realestatemanager.domain.current_photo.GetCurrentPhotoIdUseCase
 import com.bakjoul.realestatemanager.domain.current_property.GetCurrentPropertyIdChannelUseCase
 import com.bakjoul.realestatemanager.domain.resources.IsTabletUseCase
 import com.bakjoul.realestatemanager.domain.resources.RefreshOrientationUseCase
 import com.bakjoul.realestatemanager.ui.utils.Event
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -26,7 +27,7 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     getCurrentPropertyIdChannelUseCase: GetCurrentPropertyIdChannelUseCase,
     isTabletUseCase: IsTabletUseCase,
-    getCurrentPhotoIdUseCase: GetCurrentPhotoIdUseCase,
+    getCurrentPhotoIdChannelUseCase: GetCurrentPhotoIdChannelUseCase,
     isUserAuthenticatedUseCase: IsUserAuthenticatedUseCase,
     getCurrentUserUseCase: GetCurrentUserUseCase,
     agentRepository: AgentRepository,
@@ -45,28 +46,27 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    val mainViewActionLiveData: LiveData<Event<MainViewAction>> =
-        combine(
-            getCurrentPropertyIdChannelUseCase.invoke().receiveAsFlow(),
-            isTabletUseCase.invoke(),
-            getCurrentPhotoIdUseCase.invoke()
-        ) { id, isTablet, currentPhotoId ->
-            Log.d("test", "combine id: $id, isTablet: $isTablet, currentPhotoId: $currentPhotoId")
-            if (currentPhotoId != -1) {
-                MainViewAction.DisplayPhotosDialog
-            } else if (id >= 0) {
-                if (isTablet) {
-                    MainViewAction.DisplayDetailsFragment
-                } else {
+    val mainViewActionLiveData: LiveData<Event<MainViewAction>> = liveData {
+        coroutineScope {
+            launch {
+                combine(
+                    getCurrentPropertyIdChannelUseCase.invoke().receiveAsFlow(),
+                    isTabletUseCase.invoke()
+                ) { _, isTablet ->
+                    if (!isTablet) {
                         Log.d("test", "navigatetodetails: ")
-                        MainViewAction.NavigateToDetails
-                }
-            } else {
-                MainViewAction.DisplayEmptyFragment
+                        emit(Event(MainViewAction.NavigateToDetails))
+                    }
+                }.collect()
             }
-        }.filterNotNull().map {
-            Event(it)
-        }.asLiveData()
+
+            launch {
+                getCurrentPhotoIdChannelUseCase.invoke().collect {
+                    emit(Event(MainViewAction.DisplayPhotosDialog))
+                }
+            }
+        }
+    }
 
     fun onResume(isTablet: Boolean) {
         refreshOrientationUseCase.invoke(isTablet)
