@@ -12,4 +12,10 @@
         <attr name="spinnerDescription" format="string" />
         <attr name="spinnerEntries" format="reference" />
     </declare-styleable>
+
+    <declare-styleable name="PlusMinusView">
+        <attr name="plusMinusImageSrc" format="reference" />
+        <attr name="plusMinusLabel" format="string" />
+        <attr name="plusMinusValue" format="integer" />
+    </declare-styleable>
 </resources>

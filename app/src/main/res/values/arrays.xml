@@ -14,8 +14,6 @@
         <item>Duplex</item>
         <item>Penthouse</item>
         <item>Loft</item>
-        <item>Manor</item>
-        <item>Castle</item>
         <item>Other</item>
     </string-array>
 </resources>

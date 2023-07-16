@@ -54,8 +54,7 @@
     <string name="details_sold_on">"Sold on "</string>
     <string name="details_for_sale_since">"For sale since "</string>
     <string name="details_address_clipboard">Address copied to clipboard</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="details_close_button_desc">Close button</string>
     <string name="log_out">Log out</string>
+    <string name="add_property_price">Price</string>
 </resources>

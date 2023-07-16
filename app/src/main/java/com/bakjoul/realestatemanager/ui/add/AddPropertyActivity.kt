@@ -4,7 +4,9 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.bakjoul.realestatemanager.databinding.ActivityAddPropertyBinding
 import com.bakjoul.realestatemanager.ui.utils.viewBinding
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class AddPropertyActivity : AppCompatActivity() {
 
     private val binding by viewBinding { ActivityAddPropertyBinding.inflate(it) }

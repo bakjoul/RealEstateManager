@@ -5,6 +5,7 @@
     android:layout_height="match_parent">
 
     <HorizontalScrollView
+        android:id="@+id/add_property_type_ScrollView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="4dp"
@@ -13,52 +14,80 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <RadioGroup
+            android:id="@+id/add_property_type_RadioGroup"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/type_border_unchecked"
             android:orientation="horizontal">
 
             <RadioButton
+                android:id="@+id/add_property_type_flat_RadioButton"
                 style="@style/PropertyTypeRadioButton"
                 android:drawableStart="@drawable/type_flat_selector"
                 android:text="@string/property_type_flat" />
 
             <RadioButton
+                android:id="@+id/add_property_type_house_RadioButton"
                 style="@style/PropertyTypeRadioButton"
                 android:drawableStart="@drawable/type_house_selector"
                 android:text="@string/property_type_house" />
 
             <RadioButton
+                android:id="@+id/add_property_type_duplex_RadioButton"
                 style="@style/PropertyTypeRadioButton"
                 android:drawableStart="@drawable/type_duplex_selector"
                 android:text="@string/property_type_duplex" />
 
             <RadioButton
+                android:id="@+id/add_property_type_penthouse_RadioButton"
                 style="@style/PropertyTypeRadioButton"
                 android:drawableStart="@drawable/type_penthouse_selector"
                 android:text="@string/property_type_penthouse" />
 
             <RadioButton
+                android:id="@+id/add_property_type_loft_RadioButton"
                 style="@style/PropertyTypeRadioButton"
                 android:drawableStart="@drawable/type_loft_selector"
                 android:text="@string/property_type_loft" />
 
             <RadioButton
-                style="@style/PropertyTypeRadioButton"
-                android:drawableStart="@drawable/type_manor_selector"
-                android:text="@string/property_type_manor" />
-
-            <RadioButton
-                style="@style/PropertyTypeRadioButton"
-                android:drawableStart="@drawable/type_castle_selector"
-                android:text="@string/property_type_castle" />
-
-            <RadioButton
+                android:id="@+id/add_property_type_other_RadioButton"
                 style="@style/PropertyTypeRadioButton"
                 android:drawableStart="@drawable/type_other_selector"
                 android:text="@string/property_type_other" />
         </RadioGroup>
     </HorizontalScrollView>
 
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/add_property_price_TextInputLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/add_property_type_ScrollView">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/add_property_price_TextInputEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/add_property_price"
+            android:inputType="numberDecimal"
+            android:lines="1" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.flexbox.FlexboxLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/add_property_price_TextInputLayout">
+
+        <com.bakjoul.realestatemanager.designsystem.atome.PlusMinusView
+            android:id="@+id/add_property_rooms_PlusMinusView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:plusMinusImageSrc="@drawable/baseline_home_16"
+            app:plusMinusLabel="Rooms" />
+
+    </com.google.android.flexbox.FlexboxLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
