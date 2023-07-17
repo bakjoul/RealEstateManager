@@ -17,5 +17,6 @@
         <attr name="plusMinusImageSrc" format="reference" />
         <attr name="plusMinusLabel" format="string" />
         <attr name="plusMinusValue" format="integer" />
+        <attr name="plusMinusDrawablePadding" format="dimension" />
     </declare-styleable>
 </resources>

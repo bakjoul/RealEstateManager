@@ -228,7 +228,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
-                        app:detailsImageSrc="@drawable/hot_tub_black_24dp"
+                        app:detailsImageSrc="@drawable/hot_tub_black_16dp"
                         app:detailsLabel="@string/details_label_bathrooms_tablet"
                         app:detailsTextPreview="2"
                         app:layout_constraintBottom_toBottomOf="@id/details_item_rooms"

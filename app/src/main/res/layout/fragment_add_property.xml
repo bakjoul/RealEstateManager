@@ -77,6 +77,7 @@
     <com.google.android.flexbox.FlexboxLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/add_property_price_TextInputLayout">
 
@@ -84,9 +85,25 @@
             android:id="@+id/add_property_rooms_PlusMinusView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            app:plusMinusDrawablePadding="2dp"
             app:plusMinusImageSrc="@drawable/baseline_home_16"
             app:plusMinusLabel="Rooms" />
+
+        <com.bakjoul.realestatemanager.designsystem.atome.PlusMinusView
+            android:id="@+id/add_property_bathrooms_PlusMinusView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:plusMinusDrawablePadding="3.5dp"
+            app:plusMinusImageSrc="@drawable/hot_tub_black_16dp"
+            app:plusMinusLabel="Bathrooms" />
+
+        <com.bakjoul.realestatemanager.designsystem.atome.PlusMinusView
+            android:id="@+id/add_property_bedrooms_PlusMinusView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:plusMinusDrawablePadding="3.5dp"
+            app:plusMinusImageSrc="@drawable/hotel_black_16dp"
+            app:plusMinusLabel="Bedrooms" />
 
     </com.google.android.flexbox.FlexboxLayout>
 

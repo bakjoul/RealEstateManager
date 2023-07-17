@@ -26,17 +26,27 @@ class PlusMinusView @JvmOverloads constructor(
             if (drawableStart != null) {
                 setDrawableStart(drawableStart)
             }
-            getString(R.styleable.PlusMinusView_plusMinusLabel)?.let { binding.viewPlusMinusLabelText.text = it }
+            getString(R.styleable.PlusMinusView_plusMinusLabel)?.let {
+                binding.viewPlusMinusLabelText.text = it
+            }
             getString(R.styleable.PlusMinusView_plusMinusValue)?.let {
                 val editableText = SpannableStringBuilder(it)
                 binding.viewPlusMinusValueEditText.text = editableText
+            }
+            getDimensionPixelSize(R.styleable.PlusMinusView_plusMinusDrawablePadding, 2).let {
+                binding.viewPlusMinusLabelText.compoundDrawablePadding = it
             }
         }
     }
 
     private fun setDrawableStart(drawable: Drawable) {
         val compoundDrawables = binding.viewPlusMinusLabelText.compoundDrawables
-        binding.viewPlusMinusLabelText.setCompoundDrawablesWithIntrinsicBounds(drawable, compoundDrawables[1], compoundDrawables[2], compoundDrawables[3])
+        binding.viewPlusMinusLabelText.setCompoundDrawablesWithIntrinsicBounds(
+            drawable,
+            compoundDrawables[1],
+            compoundDrawables[2],
+            compoundDrawables[3]
+        )
     }
 
     fun getValueEditText(): EditText {
