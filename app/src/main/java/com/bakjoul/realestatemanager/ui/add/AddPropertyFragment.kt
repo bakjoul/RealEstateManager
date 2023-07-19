@@ -19,6 +19,14 @@ class AddPropertyFragment : Fragment(R.layout.fragment_add_property) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.addPropertyTypeRadioGroup.setOnCheckedChangeListener { _, checkedId ->
+            viewModel.onPropertyTypeChanged(checkedId)
+        }
+
+        binding.addPropertyTypeSaleStatusToggle.setOnCheckedChangeListener { _, isChecked ->
+            viewModel.onSaleStatusChanged(isChecked)
+        }
+
         binding.addPropertyRoomsPlusMinusView.getValueEditText()
             .addTextChangedListener(object : TextWatcher {
                 override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -36,10 +44,6 @@ class AddPropertyFragment : Fragment(R.layout.fragment_add_property) {
 
         binding.addPropertyRoomsPlusMinusView.incrementButton().setOnClickListener {
             viewModel.incrementRooms()
-        }
-
-        viewModel.numberOfRoomsLiveData.observe(viewLifecycleOwner) {
-            binding.addPropertyRoomsPlusMinusView.setValueEditText(it.toString())
         }
     }
 }

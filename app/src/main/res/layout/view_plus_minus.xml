@@ -9,11 +9,11 @@
         android:id="@+id/view_plus_minus_label_text"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="2dp"
         android:gravity="bottom"
         android:textSize="11sp"
+        android:paddingHorizontal="4dp"
         app:layout_constraintEnd_toEndOf="@id/view_plus_minus_increment_button"
-        app:layout_constraintStart_toStartOf="@id/view_plus_minus_decrement_button"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:drawableStartCompat="@drawable/baseline_home_16"
         tools:text="Rooms" />
@@ -26,7 +26,7 @@
         android:padding="8dp"
         android:src="@drawable/baseline_remove_24"
         app:backgroundTint="@color/blue_toolbar"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="@id/view_plus_minus_label_text"
         app:layout_constraintTop_toBottomOf="@id/view_plus_minus_label_text"
         app:tint="@color/white" />
 

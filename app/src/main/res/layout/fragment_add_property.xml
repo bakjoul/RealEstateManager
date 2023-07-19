@@ -2,13 +2,14 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:padding="8dp">
 
     <HorizontalScrollView
         android:id="@+id/add_property_type_ScrollView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="4dp"
+        android:padding="1dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -59,17 +60,70 @@
     </HorizontalScrollView>
 
     <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/add_property_date_TextInputLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintEnd_toStartOf="@id/add_property_type_sale_status_Toggle"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/add_property_type_ScrollView">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/add_property_date_TextInputEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Date"
+            android:inputType="numberDecimal"
+            android:lines="1" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <androidx.appcompat.widget.AppCompatToggleButton
+        android:id="@+id/add_property_type_sale_status_Toggle"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginTop="6dp"
+        android:layout_marginBottom="1dp"
+        android:background="@drawable/sale_status_selector"
+        android:checked="true"
+        android:textColor="@color/white"
+        android:textOff="Sold"
+        android:textOn="For sale"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@id/add_property_date_TextInputLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/add_property_date_TextInputLayout" />
+
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/add_property_price_TextInputLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/add_property_type_ScrollView">
+        app:layout_constraintTop_toBottomOf="@id/add_property_date_TextInputLayout">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/add_property_price_TextInputEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/add_property_price"
+            android:hint="@string/property_price"
+            android:inputType="numberDecimal"
+            android:lines="1" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/add_property_surface_TextInputLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/add_property_price_TextInputLayout">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/add_property_surface_TextInputEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/property_label_surface"
             android:inputType="numberDecimal"
             android:lines="1" />
     </com.google.android.material.textfield.TextInputLayout>
@@ -77,9 +131,9 @@
     <com.google.android.flexbox.FlexboxLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="12dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/add_property_price_TextInputLayout">
+        app:layout_constraintTop_toBottomOf="@id/add_property_surface_TextInputLayout">
 
         <com.bakjoul.realestatemanager.designsystem.atome.PlusMinusView
             android:id="@+id/add_property_rooms_PlusMinusView"

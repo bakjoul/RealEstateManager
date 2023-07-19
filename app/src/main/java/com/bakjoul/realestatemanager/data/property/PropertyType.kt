@@ -4,5 +4,7 @@ enum class PropertyType() {
     Flat,
     House,
     Duplex,
-    Penthouse
+    Penthouse,
+    Loft,
+    Other
 }
