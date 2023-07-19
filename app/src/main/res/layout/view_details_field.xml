@@ -24,7 +24,7 @@
         android:textStyle="bold"
         app:layout_constraintStart_toEndOf="@id/details_field_icon"
         app:layout_constraintTop_toTopOf="@id/details_field_icon"
-        tools:text="@string/details_label_surface" />
+        tools:text="@string/property_label_surface" />
 
     <TextView
         android:id="@+id/details_field_text"

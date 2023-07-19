@@ -125,7 +125,7 @@
                         android:gravity="center_vertical"
                         android:paddingStart="24dp"
                         android:paddingEnd="0dp"
-                        android:text="@string/sold"
+                        android:text="@string/property_sold"
                         android:textColor="@color/white"
                         android:textSize="17sp"
                         android:textStyle="bold"
@@ -143,7 +143,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:backgroundTint="@color/grey_transparent"
-        android:contentDescription="@string/details_back_button_desc"
+        android:contentDescription="@string/back_button_desc"
         android:outlineProvider="none"
         android:src="@drawable/baseline_arrow_back_24"
         app:fabCustomSize="24dp"
@@ -176,7 +176,7 @@
                         android:id="@+id/details_description_label"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/details_label_description"
+                        android:text="@string/property_label_description"
                         android:textColor="@color/grey_label"
                         android:textSize="17sp"
                         android:textStyle="bold"
@@ -202,7 +202,7 @@
                         android:layout_marginStart="12dp"
                         android:layout_marginTop="16dp"
                         app:detailsImageSrc="@drawable/baseline_settings_overscan_24"
-                        app:detailsLabel="@string/details_label_surface"
+                        app:detailsLabel="@string/property_label_surface"
                         app:detailsTextPreview="750 m²"
                         app:layout_constraintEnd_toStartOf="@id/details_item_bedrooms"
                         app:layout_constraintHorizontal_weight="0.5"
@@ -215,7 +215,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="12dp"
                         app:detailsImageSrc="@drawable/hotel_black_24dp"
-                        app:detailsLabel="@string/details_label_bedrooms"
+                        app:detailsLabel="@string/property_label_bedrooms"
                         app:detailsTextPreview="4"
                         app:layout_constraintBottom_toBottomOf="@id/details_item_surface"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -229,7 +229,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
                         app:detailsImageSrc="@drawable/baseline_home_24"
-                        app:detailsLabel="@string/details_label_rooms"
+                        app:detailsLabel="@string/property_label_rooms"
                         app:detailsTextPreview="8"
                         app:layout_constraintEnd_toEndOf="@id/details_item_surface"
                         app:layout_constraintStart_toStartOf="@id/details_item_surface"
@@ -239,8 +239,8 @@
                         android:id="@+id/details_item_bathrooms"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        app:detailsImageSrc="@drawable/hot_tub_black_16dp"
-                        app:detailsLabel="@string/details_label_bathrooms"
+                        app:detailsImageSrc="@drawable/hot_tub_black_24dp"
+                        app:detailsLabel="@string/property_label_bathrooms"
                         app:detailsTextPreview="2"
                         app:layout_constraintBottom_toBottomOf="@id/details_item_rooms"
                         app:layout_constraintEnd_toEndOf="@id/details_item_bedrooms"
@@ -252,7 +252,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
-                        android:text="@string/details_label_amenities"
+                        android:text="@string/property_label_amenities"
                         android:textColor="@color/grey_label"
                         android:textSize="14sp"
                         android:textStyle="bold"
@@ -264,7 +264,7 @@
                         android:id="@+id/details_transportation_label"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:text="@string/details_label_transportation"
+                        android:text="@string/property_label_transportation"
                         android:textColor="@color/grey_label"
                         android:textSize="14sp"
                         android:textStyle="bold"
@@ -286,35 +286,35 @@
                         <ImageView
                             android:id="@+id/details_poi_school"
                             style="@style/PointOfInterest"
-                            android:contentDescription="@string/details_poi_desc_school"
+                            android:contentDescription="@string/property_poi_desc_school"
                             android:src="@drawable/baseline_school_24"
                             tools:visibility="visible" />
 
                         <ImageView
                             android:id="@+id/details_poi_store"
                             style="@style/PointOfInterest"
-                            android:contentDescription="@string/details_poi_desc_store"
+                            android:contentDescription="@string/property_poi_desc_store"
                             android:src="@drawable/baseline_store_24"
                             tools:visibility="visible" />
 
                         <ImageView
                             android:id="@+id/details_poi_park"
                             style="@style/PointOfInterest"
-                            android:contentDescription="@string/details_poi_desc_park"
+                            android:contentDescription="@string/property_poi_desc_park"
                             android:src="@drawable/baseline_park_24"
                             tools:visibility="visible" />
 
                         <ImageView
                             android:id="@+id/details_poi_restaurant"
                             style="@style/PointOfInterest"
-                            android:contentDescription="@string/details_poi_desc_restaurant"
+                            android:contentDescription="@string/property_poi_desc_restaurant"
                             android:src="@drawable/baseline_restaurant_24"
                             tools:visibility="visible" />
 
                         <ImageView
                             android:id="@+id/details_poi_hospital"
                             style="@style/PointOfInterest"
-                            android:contentDescription="@string/details_poi_desc_hospital"
+                            android:contentDescription="@string/property_poi_desc_hospital"
                             android:src="@drawable/baseline_local_hospital_24"
                             tools:visibility="visible" />
                     </LinearLayout>
@@ -331,35 +331,35 @@
                         <ImageView
                             android:id="@+id/details_poi_bus"
                             style="@style/PointOfInterest"
-                            android:contentDescription="@string/details_poi_desc_bus"
+                            android:contentDescription="@string/property_poi_desc_bus"
                             android:src="@drawable/baseline_directions_bus_24"
                             tools:visibility="visible" />
 
                         <ImageView
                             android:id="@+id/details_poi_subway"
                             style="@style/PointOfInterest"
-                            android:contentDescription="@string/details_poi_desc_subway"
+                            android:contentDescription="@string/property_poi_desc_subway"
                             android:src="@drawable/baseline_subway_24"
                             tools:visibility="visible" />
 
                         <ImageView
                             android:id="@+id/details_poi_tramway"
                             style="@style/PointOfInterest"
-                            android:contentDescription="@string/details_poi_desc_tramway"
+                            android:contentDescription="@string/property_poi_desc_tramway"
                             android:src="@drawable/baseline_tram_24"
                             tools:visibility="visible" />
 
                         <ImageView
                             android:id="@+id/details_poi_train"
                             style="@style/PointOfInterest"
-                            android:contentDescription="@string/details_poi_desc_train"
+                            android:contentDescription="@string/property_poi_desc_train"
                             android:src="@drawable/baseline_train_24"
                             tools:visibility="visible" />
 
                         <ImageView
                             android:id="@+id/details_poi_airport"
                             style="@style/PointOfInterest"
-                            android:contentDescription="@string/details_poi_desc_airport"
+                            android:contentDescription="@string/property_poi_desc_airport"
                             android:src="@drawable/baseline_local_airport_24"
                             tools:visibility="visible" />
                     </LinearLayout>
@@ -398,7 +398,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         app:detailsImageSrc="@drawable/baseline_location_on_24"
-                        app:detailsLabel="@string/details_label_location"
+                        app:detailsLabel="@string/property_label_location"
                         app:detailsTextPreview="740 Park Avenue\nApt 6/7A\nNew York\nNY 10021\nUnited States"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toStartOf="@id/details_static_map"

@@ -125,7 +125,7 @@
                         android:gravity="center_vertical"
                         android:paddingStart="24dp"
                         android:paddingEnd="0dp"
-                        android:text="@string/sold"
+                        android:text="@string/property_sold"
                         android:textColor="@color/white"
                         android:textSize="17sp"
                         android:textStyle="bold"
@@ -163,7 +163,7 @@
                         android:id="@+id/details_description_label"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/details_label_description"
+                        android:text="@string/property_label_description"
                         android:textColor="@color/grey_label"
                         android:textSize="17sp"
                         android:textStyle="bold"
@@ -203,7 +203,7 @@
                         android:layout_marginStart="12dp"
                         android:layout_marginTop="24dp"
                         app:detailsImageSrc="@drawable/baseline_settings_overscan_24"
-                        app:detailsLabel="@string/details_label_surface"
+                        app:detailsLabel="@string/property_label_surface"
                         app:detailsTextPreview="750 m²"
                         app:layout_constraintEnd_toStartOf="@id/details_item_location"
                         app:layout_constraintHorizontal_weight="0.33"
@@ -216,7 +216,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
                         app:detailsImageSrc="@drawable/baseline_home_24"
-                        app:detailsLabel="@string/details_label_rooms_tablet"
+                        app:detailsLabel="@string/property_label_rooms_tablet"
                         app:detailsTextPreview="8"
                         app:layout_constraintBottom_toTopOf="@id/details_item_bathrooms"
                         app:layout_constraintEnd_toEndOf="@id/details_item_surface"
@@ -228,8 +228,8 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
-                        app:detailsImageSrc="@drawable/hot_tub_black_16dp"
-                        app:detailsLabel="@string/details_label_bathrooms_tablet"
+                        app:detailsImageSrc="@drawable/hot_tub_black_24dp"
+                        app:detailsLabel="@string/property_label_bathrooms_tablet"
                         app:detailsTextPreview="2"
                         app:layout_constraintBottom_toBottomOf="@id/details_item_rooms"
                         app:layout_constraintEnd_toEndOf="@id/details_item_rooms"
@@ -242,7 +242,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
                         app:detailsImageSrc="@drawable/hotel_black_24dp"
-                        app:detailsLabel="@string/details_label_bedrooms_tablet"
+                        app:detailsLabel="@string/property_label_bedrooms_tablet"
                         app:detailsTextPreview="4"
                         app:layout_constraintEnd_toEndOf="@id/details_item_bathrooms"
                         app:layout_constraintStart_toStartOf="@id/details_item_bathrooms"
@@ -253,7 +253,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         app:detailsImageSrc="@drawable/baseline_location_on_24"
-                        app:detailsLabel="@string/details_label_location"
+                        app:detailsLabel="@string/property_label_location"
                         app:detailsTextPreview="740 Park Avenue\nApt 6/7A\nNew York\nNY 10021\nUnited States"
                         app:layout_constraintEnd_toStartOf="@id/details_static_map"
                         app:layout_constraintHorizontal_weight="0.33"
@@ -276,7 +276,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
-                        android:text="@string/details_label_amenities"
+                        android:text="@string/property_label_amenities"
                         android:textColor="@color/grey_label"
                         android:textSize="14sp"
                         android:textStyle="bold"
@@ -299,7 +299,7 @@
                             android:id="@+id/details_poi_school"
                             style="@style/PointOfInterestTablet"
                             android:background="@drawable/poi_border"
-                            android:text="@string/details_poi_desc_school"
+                            android:text="@string/property_poi_desc_school"
                             app:drawableStartCompat="@drawable/baseline_school_24"
                             tools:visibility="visible" />
 
@@ -307,7 +307,7 @@
                             android:id="@+id/details_poi_store"
                             style="@style/PointOfInterestTablet"
                             android:background="@drawable/poi_border"
-                            android:text="@string/details_poi_desc_store"
+                            android:text="@string/property_poi_desc_store"
                             app:drawableStartCompat="@drawable/baseline_store_24"
                             tools:visibility="visible" />
 
@@ -315,7 +315,7 @@
                             android:id="@+id/details_poi_park"
                             style="@style/PointOfInterestTablet"
                             android:background="@drawable/poi_border"
-                            android:text="@string/details_poi_desc_park"
+                            android:text="@string/property_poi_desc_park"
                             app:drawableStartCompat="@drawable/baseline_park_24"
                             tools:visibility="visible" />
 
@@ -323,7 +323,7 @@
                             android:id="@+id/details_poi_restaurant"
                             style="@style/PointOfInterestTablet"
                             android:background="@drawable/poi_border"
-                            android:text="@string/details_poi_desc_restaurant"
+                            android:text="@string/property_poi_desc_restaurant"
                             app:drawableStartCompat="@drawable/baseline_restaurant_24"
                             tools:visibility="visible" />
 
@@ -331,7 +331,7 @@
                             android:id="@+id/details_poi_hospital"
                             style="@style/PointOfInterestTablet"
                             android:background="@drawable/poi_border"
-                            android:text="@string/details_poi_desc_hospital"
+                            android:text="@string/property_poi_desc_hospital"
                             app:drawableStartCompat="@drawable/baseline_local_hospital_24"
                             tools:visibility="visible" />
                     </com.google.android.flexbox.FlexboxLayout>
@@ -341,7 +341,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
-                        android:text="@string/details_label_transportation"
+                        android:text="@string/property_label_transportation"
                         android:textColor="@color/grey_label"
                         android:textSize="14sp"
                         android:textStyle="bold"
@@ -363,7 +363,7 @@
                             android:id="@+id/details_poi_bus"
                             style="@style/PointOfInterestTablet"
                             android:background="@drawable/poi_border"
-                            android:text="@string/details_poi_desc_bus"
+                            android:text="@string/property_poi_desc_bus"
                             app:drawableStartCompat="@drawable/baseline_directions_bus_24"
                             tools:visibility="visible" />
 
@@ -371,7 +371,7 @@
                             android:id="@+id/details_poi_subway"
                             style="@style/PointOfInterestTablet"
                             android:background="@drawable/poi_border"
-                            android:text="@string/details_poi_desc_subway"
+                            android:text="@string/property_poi_desc_subway"
                             app:drawableStartCompat="@drawable/baseline_subway_24"
                             tools:visibility="visible" />
 
@@ -379,7 +379,7 @@
                             android:id="@+id/details_poi_tramway"
                             style="@style/PointOfInterestTablet"
                             android:background="@drawable/poi_border"
-                            android:text="@string/details_poi_desc_tramway"
+                            android:text="@string/property_poi_desc_tramway"
                             app:drawableStartCompat="@drawable/baseline_tram_24"
                             tools:visibility="visible" />
 
@@ -387,7 +387,7 @@
                             android:id="@+id/details_poi_train"
                             style="@style/PointOfInterestTablet"
                             android:background="@drawable/poi_border"
-                            android:text="@string/details_poi_desc_train"
+                            android:text="@string/property_poi_desc_train"
                             app:drawableStartCompat="@drawable/baseline_train_24"
                             tools:visibility="visible" />
 
@@ -395,7 +395,7 @@
                             android:id="@+id/details_poi_airport"
                             style="@style/PointOfInterestTablet"
                             android:background="@drawable/poi_border"
-                            android:text="@string/details_poi_desc_airport"
+                            android:text="@string/property_poi_desc_airport"
                             app:drawableStartCompat="@drawable/baseline_local_airport_24"
                             tools:visibility="visible" />
                     </com.google.android.flexbox.FlexboxLayout>

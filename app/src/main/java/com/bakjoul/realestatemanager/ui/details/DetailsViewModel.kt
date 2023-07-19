@@ -9,7 +9,6 @@ import com.bakjoul.realestatemanager.BuildConfig
 import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.domain.currency_rate.GetCachedEuroRateUseCase
 import com.bakjoul.realestatemanager.domain.current_photo.GetCurrentPhotoIdChannelUseCase
-import com.bakjoul.realestatemanager.domain.current_photo.GetCurrentPhotoIdUseCase
 import com.bakjoul.realestatemanager.domain.current_photo.SetCurrentPhotoIdUseCase
 import com.bakjoul.realestatemanager.domain.property.GetCurrentPropertyUseCase
 import com.bakjoul.realestatemanager.domain.property.model.PhotoEntity
@@ -83,8 +82,8 @@ class DetailsViewModel @Inject constructor(
                 staticMapUrl = getMapUrl(property.address, property.city, property.country),
                 mapsAddress = getAddress(property.address, property.city, property.country)
             )
-        }.collect { viewState ->
-            emit(viewState)
+        }.collect {
+            emit(it)
         }
     }
 
@@ -112,9 +111,9 @@ class DetailsViewModel @Inject constructor(
 
     private fun getSaleStatus(soldDate: LocalDate?, entryDate: LocalDate): String {
         return if (soldDate != null) {
-            application.getString(R.string.details_sold_on) + soldDate.format(formatter)
+            application.getString(R.string.property_sold_on) + soldDate.format(formatter)
         } else {
-            application.getString(R.string.details_for_sale_since) + entryDate.format(formatter)
+            application.getString(R.string.property_for_sale_since) + entryDate.format(formatter)
         }
     }
 

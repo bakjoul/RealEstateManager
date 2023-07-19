@@ -53,7 +53,7 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:background="?selectableItemBackground"
-        android:contentDescription="@string/details_close_button_desc"
+        android:contentDescription="@string/close_button_desc"
         android:src="@drawable/baseline_close_24"
         app:layout_constraintEnd_toEndOf="@id/photos_ViewPager"
         app:layout_constraintTop_toTopOf="@id/photos_ViewPager" />
