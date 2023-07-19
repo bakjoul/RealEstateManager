@@ -45,5 +45,33 @@ class AddPropertyFragment : Fragment(R.layout.fragment_add_property) {
         binding.addPropertyRoomsPlusMinusView.incrementButton().setOnClickListener {
             viewModel.incrementRooms()
         }
+
+        binding.addPropertyBathroomsPlusMinusView.decrementButton().setOnClickListener {
+            viewModel.decrementBathrooms()
+        }
+
+        binding.addPropertyBathroomsPlusMinusView.incrementButton().setOnClickListener {
+            viewModel.incrementBathrooms()
+        }
+
+        binding.addPropertyBedroomsPlusMinusView.decrementButton().setOnClickListener {
+            viewModel.decrementBedrooms()
+        }
+
+        binding.addPropertyBedroomsPlusMinusView.incrementButton().setOnClickListener {
+            viewModel.incrementBedrooms()
+        }
+
+        viewModel.viewStateLiveData.observe(viewLifecycleOwner) {
+            binding.addPropertyDateTextInputEditText.hint = it.dateHint
+            binding.addPropertyPriceTextInputEditText.hint = it.priceHint
+            binding.addPropertySurfaceTextInputEditText.hint = it.surfaceHint
+            binding.addPropertyRoomsPlusMinusView.setValueEditText(it.numberOfRooms)
+            binding.addPropertyRoomsPlusMinusView.decrementButton().alpha = if (binding.addPropertyRoomsPlusMinusView.getValue() == 0) 0.5f else 1f
+            binding.addPropertyBathroomsPlusMinusView.setValueEditText(it.numberOfBathrooms)
+            binding.addPropertyBathroomsPlusMinusView.decrementButton().alpha = if (binding.addPropertyBathroomsPlusMinusView.getValue() == 0) 0.5f else 1f
+            binding.addPropertyBedroomsPlusMinusView.setValueEditText(it.numberOfBedrooms)
+            binding.addPropertyBedroomsPlusMinusView.decrementButton().alpha = if (binding.addPropertyBedroomsPlusMinusView.getValue() == 0) 0.5f else 1f
+        }
     }
 }

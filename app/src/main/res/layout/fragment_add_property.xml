@@ -73,7 +73,6 @@
             android:id="@+id/add_property_date_TextInputEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Date"
             android:inputType="numberDecimal"
             android:lines="1" />
     </com.google.android.material.textfield.TextInputLayout>
@@ -87,8 +86,8 @@
         android:background="@drawable/sale_status_selector"
         android:checked="true"
         android:textColor="@color/white"
-        android:textOff="Sold"
-        android:textOn="For sale"
+        android:textOff="@string/property_sold"
+        android:textOn="@string/property_for_sale"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@id/add_property_date_TextInputLayout"
         app:layout_constraintEnd_toEndOf="parent"
@@ -106,7 +105,6 @@
             android:id="@+id/add_property_price_TextInputEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/property_price"
             android:inputType="numberDecimal"
             android:lines="1" />
     </com.google.android.material.textfield.TextInputLayout>
@@ -123,7 +121,6 @@
             android:id="@+id/add_property_surface_TextInputEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/property_label_surface"
             android:inputType="numberDecimal"
             android:lines="1" />
     </com.google.android.material.textfield.TextInputLayout>

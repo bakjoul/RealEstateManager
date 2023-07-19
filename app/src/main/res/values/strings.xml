@@ -45,4 +45,5 @@
     <string name="close_button_desc">Close button</string>
     <string name="log_out">Log out</string>
     <string name="property_price">Price</string>
+    <string name="property_for_sale">For sale</string>
 </resources>

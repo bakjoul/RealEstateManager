@@ -4,10 +4,10 @@ import com.bakjoul.realestatemanager.data.property.PropertyType
 
 data class AddPropertyViewState(
     val propertyType: PropertyType?,
-    val isForSale: Boolean,
     val dateHint: String,
+    val priceHint: String,
     val surfaceHint: String,
-    val numberOfRooms: Int,
-    val numberOfBathrooms: Int,
-    val numberOfBedrooms: Int
+    val numberOfRooms: String,
+    val numberOfBathrooms: String,
+    val numberOfBedrooms: String
 )

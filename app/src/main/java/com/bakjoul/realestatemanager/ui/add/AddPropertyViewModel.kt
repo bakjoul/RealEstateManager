@@ -1,21 +1,25 @@
 package com.bakjoul.realestatemanager.ui.add
 
+import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.data.property.PropertyType
+import com.bakjoul.realestatemanager.data.settings.model.AppCurrency
+import com.bakjoul.realestatemanager.data.settings.model.SurfaceUnit
 import com.bakjoul.realestatemanager.domain.settings.currency.GetCurrentCurrencyUseCase
 import com.bakjoul.realestatemanager.domain.settings.surface_unit.GetCurrentSurfaceUnitUseCase
+import com.bakjoul.realestatemanager.ui.utils.combine
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.combine
 import javax.inject.Inject
 
 @HiltViewModel
 class AddPropertyViewModel @Inject constructor(
     private val getCurrentCurrencyUseCase: GetCurrentCurrencyUseCase,
-    private val getCurrentSurfaceUnitUseCase: GetCurrentSurfaceUnitUseCase
+    private val getCurrentSurfaceUnitUseCase: GetCurrentSurfaceUnitUseCase,
+    private val application: Application
 ) : ViewModel() {
 
     private val propertyTypeMutableStateFlow: MutableStateFlow<PropertyType?> = MutableStateFlow(null)
@@ -35,17 +39,33 @@ class AddPropertyViewModel @Inject constructor(
             numberOfBedroomsMutableStateFlow
         ) { currency, surfaceUnit, propertyType, isForSale, numberOfRooms, numberOfBathrooms, numberOfBedrooms ->
             AddPropertyViewState(
-                propertyType = null,
-                isForSale = true,
-                dateHint = "Date",
-                surfaceHint = "Surface",
-                numberOfRooms = 0,
-                numberOfBathrooms = 0,
-                numberOfBedrooms = 0
+                propertyType = propertyType,
+                dateHint = formatDateHint(isForSale),
+                priceHint = formatPriceHint(currency),
+                surfaceHint = formatSurfaceHint(surfaceUnit),
+                numberOfRooms = numberOfRooms.toString(),
+                numberOfBathrooms = numberOfBathrooms.toString(),
+                numberOfBedrooms = numberOfBedrooms.toString()
             )
         }.collect {
             emit(it)
         }
+    }
+
+    private fun formatPriceHint(currency: AppCurrency): String {
+        return "Price (${currency.symbol})"
+    }
+
+    private fun formatDateHint(isForSale: Boolean): String {
+        return if (isForSale) {
+            application.getString(R.string.property_for_sale_since)
+        } else {
+            application.getString(R.string.property_sold_on)
+        }
+    }
+
+    private fun formatSurfaceHint(surfaceUnit: SurfaceUnit): String {
+        return "Surface (${surfaceUnit.unit})"
     }
 
     fun onPropertyTypeChanged(checkedId: Int) {
