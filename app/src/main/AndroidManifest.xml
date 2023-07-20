@@ -45,7 +45,7 @@
             android:name=".ui.main.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.RealEstateManager" />
-        <activity android:name=".ui.details.DetailsActivity" />
+        <activity android:name=".ui.details.activity.DetailsActivity" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"

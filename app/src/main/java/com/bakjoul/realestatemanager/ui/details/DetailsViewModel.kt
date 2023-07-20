@@ -3,27 +3,20 @@ package com.bakjoul.realestatemanager.ui.details
 import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
 import androidx.lifecycle.liveData
 import com.bakjoul.realestatemanager.BuildConfig
 import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.domain.currency_rate.GetCachedEuroRateUseCase
-import com.bakjoul.realestatemanager.domain.current_photo.GetCurrentPhotoIdChannelUseCase
 import com.bakjoul.realestatemanager.domain.current_photo.SetCurrentPhotoIdUseCase
 import com.bakjoul.realestatemanager.domain.property.GetCurrentPropertyUseCase
 import com.bakjoul.realestatemanager.domain.property.model.PhotoEntity
-import com.bakjoul.realestatemanager.domain.resources.IsTabletUseCase
-import com.bakjoul.realestatemanager.domain.resources.RefreshOrientationUseCase
 import com.bakjoul.realestatemanager.domain.settings.currency.GetCurrentCurrencyUseCase
 import com.bakjoul.realestatemanager.domain.settings.surface_unit.GetCurrentSurfaceUnitUseCase
 import com.bakjoul.realestatemanager.ui.utils.EquatableCallback
-import com.bakjoul.realestatemanager.ui.utils.Event
 import com.bakjoul.realestatemanager.ui.utils.ViewModelUtils.Companion.formatPrice
 import com.bakjoul.realestatemanager.ui.utils.ViewModelUtils.Companion.formatSurface
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.map
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -33,13 +26,10 @@ import javax.inject.Inject
 class DetailsViewModel @Inject constructor(
     private val application: Application,
     private val getCurrentPropertyUseCase: GetCurrentPropertyUseCase,
-    private val refreshOrientationUseCase: RefreshOrientationUseCase,
     private val getCurrentCurrencyUseCase: GetCurrentCurrencyUseCase,
     private val getCachedEuroRateUseCase: GetCachedEuroRateUseCase,
     private val setCurrentPhotoIdUseCase: SetCurrentPhotoIdUseCase,
-    private val getCurrentSurfaceUnitUseCase: GetCurrentSurfaceUnitUseCase,
-    isTabletUseCase: IsTabletUseCase,
-    getCurrentPhotoIdChannelUseCase: GetCurrentPhotoIdChannelUseCase
+    private val getCurrentSurfaceUnitUseCase: GetCurrentSurfaceUnitUseCase
 ) : ViewModel() {
 
     private companion object {
@@ -86,21 +76,6 @@ class DetailsViewModel @Inject constructor(
             emit(it)
         }
     }
-
-    val detailsViewActionLiveData: LiveData<Event<DetailsViewAction>> =
-        combine(
-            isTabletUseCase.invoke(),
-            getCurrentPhotoIdChannelUseCase.invoke()
-        ) { isTablet, currentPhotoId ->
-            if (!isTablet && currentPhotoId != -1) {
-                DetailsViewAction.DisplayPhotosDialog
-            } else {
-                null
-            }
-        }.filterNotNull().map {
-            Event(it)
-        }.asLiveData()
-
 
     private val locale = Locale.getDefault()
     private val formatter: DateTimeFormatter = if (locale.language == "fr") {
@@ -160,6 +135,4 @@ class DetailsViewModel @Inject constructor(
     }
 
     private fun formatAddress(address: String) = address.replace(" ", "%20")
-
-    fun onResume(isTablet: Boolean) = refreshOrientationUseCase.invoke(isTablet)
 }

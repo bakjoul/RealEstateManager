@@ -9,9 +9,8 @@ import com.bakjoul.realestatemanager.domain.agent.AgentRepository
 import com.bakjoul.realestatemanager.domain.auth.GetCurrentUserUseCase
 import com.bakjoul.realestatemanager.domain.auth.IsUserAuthenticatedUseCase
 import com.bakjoul.realestatemanager.domain.auth.LogOutUseCase
-import com.bakjoul.realestatemanager.domain.current_photo.GetCurrentPhotoIdChannelUseCase
-import com.bakjoul.realestatemanager.domain.current_photo.GetCurrentPhotoIdUseCase
-import com.bakjoul.realestatemanager.domain.current_property.GetCurrentPropertyIdChannelUseCase
+import com.bakjoul.realestatemanager.domain.current_photo.GetCurrentPhotoIdAsEventUseCase
+import com.bakjoul.realestatemanager.domain.current_property.GetCurrentPropertyIdAsEventUseCase
 import com.bakjoul.realestatemanager.domain.resources.IsTabletUseCase
 import com.bakjoul.realestatemanager.domain.resources.RefreshOrientationUseCase
 import com.bakjoul.realestatemanager.ui.utils.Event
@@ -19,15 +18,14 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    getCurrentPropertyIdChannelUseCase: GetCurrentPropertyIdChannelUseCase,
+    getCurrentPropertyIdAsEventUseCase: GetCurrentPropertyIdAsEventUseCase,
     isTabletUseCase: IsTabletUseCase,
-    getCurrentPhotoIdChannelUseCase: GetCurrentPhotoIdChannelUseCase,
+    getCurrentPhotoIdAsEventUseCase: GetCurrentPhotoIdAsEventUseCase,
     isUserAuthenticatedUseCase: IsUserAuthenticatedUseCase,
     getCurrentUserUseCase: GetCurrentUserUseCase,
     agentRepository: AgentRepository,
@@ -50,7 +48,7 @@ class MainViewModel @Inject constructor(
         coroutineScope {
             launch {
                 combine(
-                    getCurrentPropertyIdChannelUseCase.invoke().receiveAsFlow(),
+                    getCurrentPropertyIdAsEventUseCase.invoke(),
                     isTabletUseCase.invoke()
                 ) { _, isTablet ->
                     if (!isTablet) {
@@ -61,7 +59,7 @@ class MainViewModel @Inject constructor(
             }
 
             launch {
-                getCurrentPhotoIdChannelUseCase.invoke().collect {
+                getCurrentPhotoIdAsEventUseCase.invoke().collect {
                     emit(Event(MainViewAction.DisplayPhotosDialog))
                 }
             }

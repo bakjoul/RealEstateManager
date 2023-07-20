@@ -12,8 +12,7 @@ import androidx.core.view.GravityCompat
 import androidx.core.view.MenuProvider
 import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.databinding.ActivityMainBinding
-import com.bakjoul.realestatemanager.ui.EmptyFragment
-import com.bakjoul.realestatemanager.ui.details.DetailsActivity
+import com.bakjoul.realestatemanager.ui.details.activity.DetailsActivity
 import com.bakjoul.realestatemanager.ui.details.DetailsFragment
 import com.bakjoul.realestatemanager.ui.dispatcher.DispatcherActivity
 import com.bakjoul.realestatemanager.ui.list.PropertyListFragment
