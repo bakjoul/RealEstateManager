@@ -65,7 +65,7 @@ class PropertyListViewModel @Inject constructor(
         }
     }
 
-    private fun formatFeatures(bedrooms: Int, bathrooms: Int, surface: Int, surfaceUnit: SurfaceUnit, isTablet: Boolean): String {
+    private fun formatFeatures(bedrooms: Int, bathrooms: Int, surface: Double, surfaceUnit: SurfaceUnit, isTablet: Boolean): String {
         if (isTablet) {
             val builder = StringBuilder()
             builder.append(bedrooms)

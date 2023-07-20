@@ -10,8 +10,8 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:gravity="bottom"
-        android:textSize="11sp"
         android:paddingHorizontal="4dp"
+        android:textSize="11sp"
         app:layout_constraintEnd_toEndOf="@id/view_plus_minus_increment_button"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -39,16 +39,18 @@
         android:background="@drawable/plus_minus_value_border"
         android:gravity="center"
         android:hint="@null"
+        android:imeOptions=""
         android:importantForAutofill="no"
         android:inputType="number"
         android:lines="1"
+        android:text="@string/zero"
         android:textSize="14sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@id/view_plus_minus_decrement_button"
         app:layout_constraintEnd_toStartOf="@id/view_plus_minus_increment_button"
         app:layout_constraintStart_toEndOf="@id/view_plus_minus_decrement_button"
         app:layout_constraintTop_toTopOf="@id/view_plus_minus_decrement_button"
-        tools:text="10" />
+        tools:text="100" />
 
     <ImageButton
         android:id="@+id/view_plus_minus_increment_button"

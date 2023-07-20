@@ -10,7 +10,7 @@ data class PropertyEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val type: String,
     val price: Double,
-    val surface: Int,
+    val surface: Double,
     val rooms: Int,
     val bedrooms: Int,
     val bathrooms: Int,

@@ -36,6 +36,13 @@ class PlusMinusView @JvmOverloads constructor(
             getDimensionPixelSize(R.styleable.PlusMinusView_plusMinusDrawablePadding, 2).let {
                 binding.viewPlusMinusLabelText.compoundDrawablePadding = it
             }
+
+            val editTextWidth = getDimensionPixelSize(R.styleable.PlusMinusView_plusMinusEditTextWidth, 0)
+            if (editTextWidth != 0) {
+                val layoutParams = binding.viewPlusMinusValueEditText.layoutParams
+                layoutParams.width = editTextWidth
+                binding.viewPlusMinusValueEditText.layoutParams = layoutParams
+            }
         }
     }
 
@@ -49,6 +56,10 @@ class PlusMinusView @JvmOverloads constructor(
         )
     }
 
+    fun setLabel(label: String) {
+        binding.viewPlusMinusLabelText.text = label
+    }
+
     fun getValueEditText(): EditText {
         return binding.viewPlusMinusValueEditText
     }
@@ -58,8 +69,38 @@ class PlusMinusView @JvmOverloads constructor(
         binding.viewPlusMinusValueEditText.text = editableText
     }
 
-    fun getValue(): Int {
+    fun getIntValue(): Int {
         return binding.viewPlusMinusValueEditText.text.toString().toInt()
+    }
+
+    fun getDoubleValue(): Double {
+        return binding.viewPlusMinusValueEditText.text.toString().toDouble()
+    }
+
+    fun getFormattedIntValue(): String {
+        val inputText = binding.viewPlusMinusValueEditText.text.toString()
+        return if (inputText.isNotBlank()) {
+            val value = inputText.toInt()
+            value.toString()
+        } else {
+            // If input is blank
+            "0"
+        }
+    }
+
+    fun getFormattedDoubleValue(): String {
+        val inputText = binding.viewPlusMinusValueEditText.text.toString()
+        return if (inputText.isNotBlank()) {
+            val value = inputText.toDouble()
+            if (value == value.toInt().toDouble()) {
+                value.toInt().toString()
+            } else {
+                value.toString()
+            }
+        } else {
+            // If input is blank
+            "0"
+        }
     }
 
     fun decrementButton(): ImageButton = binding.viewPlusMinusDecrementButton

@@ -46,4 +46,5 @@
     <string name="log_out">Log out</string>
     <string name="property_price">Price</string>
     <string name="property_for_sale">For sale</string>
+    <string name="zero">0</string>
 </resources>

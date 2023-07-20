@@ -8,16 +8,17 @@ import java.util.Locale
 import kotlin.math.ceil
 
 class ViewModelUtils {
+
     companion object {
 
-        fun formatSurface(surface: Int, surfaceUnit: SurfaceUnit): String {
+        fun formatSurface(surface: Double, surfaceUnit: SurfaceUnit): String {
             return when (surfaceUnit) {
                 SurfaceUnit.Meters -> {
                     "$surface ${surfaceUnit.unit}"
                 }
 
                 SurfaceUnit.Feet -> {
-                    "${ceil(surface.toDouble() * 3.28084).toInt()} ${surfaceUnit.unit}"
+                    "${ceil(surface * 3.28084).toInt()} ${surfaceUnit.unit}"
                 }
             }
         }

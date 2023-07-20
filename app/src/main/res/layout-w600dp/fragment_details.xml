@@ -292,8 +292,7 @@
                         app:flexWrap="wrap"
                         app:layout_constraintEnd_toStartOf="@id/details_static_map"
                         app:layout_constraintStart_toStartOf="@id/details_amenities_label"
-                        app:layout_constraintTop_toBottomOf="@id/details_amenities_label"
-                        app:layout_flexGrow="1">
+                        app:layout_constraintTop_toBottomOf="@id/details_amenities_label">
 
                         <TextView
                             android:id="@+id/details_poi_school"

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="8dp">
@@ -67,13 +68,14 @@
         android:layout_marginEnd="8dp"
         app:layout_constraintEnd_toStartOf="@id/add_property_type_sale_status_Toggle"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/add_property_type_ScrollView">
+        app:layout_constraintTop_toBottomOf="@id/add_property_type_ScrollView"
+        tools:hint="For sale since">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/add_property_date_TextInputEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="numberDecimal"
+            android:focusable="false"
             android:lines="1" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -99,26 +101,11 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/add_property_date_TextInputLayout">
+        app:layout_constraintTop_toBottomOf="@id/add_property_date_TextInputLayout"
+        tools:hint="Price (€)">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/add_property_price_TextInputEditText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="numberDecimal"
-            android:lines="1" />
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/add_property_surface_TextInputLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/add_property_price_TextInputLayout">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/add_property_surface_TextInputEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="numberDecimal"
@@ -129,13 +116,28 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
+        app:alignItems="flex_start"
+        app:flexWrap="wrap"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/add_property_surface_TextInputLayout">
+        app:layout_constraintTop_toBottomOf="@id/add_property_price_TextInputLayout">
+
+        <com.bakjoul.realestatemanager.designsystem.atome.PlusMinusView
+            android:id="@+id/add_property_surface_PlusMinusView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="4dp"
+            app:layout_flexGrow="1"
+            app:plusMinusDrawablePadding="2dp"
+            app:plusMinusEditTextWidth="38dp"
+            app:plusMinusImageSrc="@drawable/baseline_home_16"
+            app:plusMinusLabel="Surface" />
 
         <com.bakjoul.realestatemanager.designsystem.atome.PlusMinusView
             android:id="@+id/add_property_rooms_PlusMinusView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:paddingBottom="4dp"
+            app:layout_flexGrow="1"
             app:plusMinusDrawablePadding="2dp"
             app:plusMinusImageSrc="@drawable/baseline_home_16"
             app:plusMinusLabel="Rooms" />
@@ -144,6 +146,8 @@
             android:id="@+id/add_property_bathrooms_PlusMinusView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:paddingBottom="4dp"
+            app:layout_flexGrow="1"
             app:plusMinusDrawablePadding="3.5dp"
             app:plusMinusImageSrc="@drawable/hot_tub_black_16dp"
             app:plusMinusLabel="Bathrooms" />
@@ -152,10 +156,11 @@
             android:id="@+id/add_property_bedrooms_PlusMinusView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:paddingBottom="4dp"
+            app:layout_flexGrow="1"
             app:plusMinusDrawablePadding="3.5dp"
             app:plusMinusImageSrc="@drawable/hotel_black_16dp"
             app:plusMinusLabel="Bedrooms" />
-
     </com.google.android.flexbox.FlexboxLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

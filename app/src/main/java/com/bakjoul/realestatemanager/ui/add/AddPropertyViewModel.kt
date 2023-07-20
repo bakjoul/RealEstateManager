@@ -13,6 +13,10 @@ import com.bakjoul.realestatemanager.domain.settings.surface_unit.GetCurrentSurf
 import com.bakjoul.realestatemanager.ui.utils.combine
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import java.time.Instant
+import java.time.LocalDate
+import java.time.ZoneId
+import java.time.ZonedDateTime
 import javax.inject.Inject
 
 @HiltViewModel
@@ -24,6 +28,8 @@ class AddPropertyViewModel @Inject constructor(
 
     private val propertyTypeMutableStateFlow: MutableStateFlow<PropertyType?> = MutableStateFlow(null)
     private val isForSaleMutableStateFlow: MutableStateFlow<Boolean> = MutableStateFlow(true)
+    private val dateMutableStateFlow: MutableStateFlow<LocalDate?> = MutableStateFlow(null)
+    private val surfaceMutableStateFlow: MutableStateFlow<Double> = MutableStateFlow(0.0)
     private val numberOfRoomsMutableStateFlow: MutableStateFlow<Int> = MutableStateFlow(0)
     private val numberOfBathroomsMutableStateFlow: MutableStateFlow<Int> = MutableStateFlow(0)
     private val numberOfBedroomsMutableStateFlow: MutableStateFlow<Int> = MutableStateFlow(0)
@@ -34,21 +40,31 @@ class AddPropertyViewModel @Inject constructor(
             getCurrentSurfaceUnitUseCase.invoke(),
             propertyTypeMutableStateFlow,
             isForSaleMutableStateFlow,
+            surfaceMutableStateFlow,
             numberOfRoomsMutableStateFlow,
             numberOfBathroomsMutableStateFlow,
             numberOfBedroomsMutableStateFlow
-        ) { currency, surfaceUnit, propertyType, isForSale, numberOfRooms, numberOfBathrooms, numberOfBedrooms ->
+        ) { currency, surfaceUnit, propertyType, isForSale, surface, numberOfRooms, numberOfBathrooms, numberOfBedrooms ->
             AddPropertyViewState(
                 propertyType = propertyType,
                 dateHint = formatDateHint(isForSale),
                 priceHint = formatPriceHint(currency),
-                surfaceHint = formatSurfaceHint(surfaceUnit),
+                surfaceLabel = formatSurfaceLabel(surfaceUnit),
+                surface = formatSurfaceValue(surface),
                 numberOfRooms = numberOfRooms.toString(),
                 numberOfBathrooms = numberOfBathrooms.toString(),
                 numberOfBedrooms = numberOfBedrooms.toString()
             )
         }.collect {
             emit(it)
+        }
+    }
+
+    private fun formatSurfaceValue(surface: Double): String {
+        return if (surface == surface.toInt().toDouble()) {
+            surface.toInt().toString()
+        } else {
+            String.format("%.1f", surface)
         }
     }
 
@@ -64,7 +80,7 @@ class AddPropertyViewModel @Inject constructor(
         }
     }
 
-    private fun formatSurfaceHint(surfaceUnit: SurfaceUnit): String {
+    private fun formatSurfaceLabel(surfaceUnit: SurfaceUnit): String {
         return "Surface (${surfaceUnit.unit})"
     }
 
@@ -84,36 +100,73 @@ class AddPropertyViewModel @Inject constructor(
         isForSaleMutableStateFlow.value = isForSale
     }
 
-    fun decrementRooms() {
-        val currentValue = numberOfRoomsMutableStateFlow.value
-        if (currentValue > 0) {
-            numberOfRoomsMutableStateFlow.value = currentValue - 1
+    fun onSurfaceValueChanged(surface: Double) {
+        if (surface >= 0.0) {
+            surfaceMutableStateFlow.value = surface
         }
     }
 
-    fun incrementRooms() {
-        numberOfRoomsMutableStateFlow.value = numberOfRoomsMutableStateFlow.value.plus(1)
-    }
-
-    fun decrementBathrooms() {
-        val currentValue = numberOfBathroomsMutableStateFlow.value
-        if (currentValue > 0) {
-            numberOfBathroomsMutableStateFlow.value = currentValue - 1
+    fun decrementSurface(surface: Double) {
+        if (surface > 0) {
+            surfaceMutableStateFlow.value = surface - 1
         }
     }
 
-    fun incrementBathrooms() {
-        numberOfBathroomsMutableStateFlow.value = numberOfBathroomsMutableStateFlow.value.plus(1)
+    fun incrementSurface(surface: Double) {
+        surfaceMutableStateFlow.value = surface + 1
     }
 
-    fun decrementBedrooms() {
-        val currentValue = numberOfBedroomsMutableStateFlow.value
-        if (currentValue > 0) {
-            numberOfBedroomsMutableStateFlow.value = currentValue - 1
+    fun onRoomsValueChanged(rooms: Int) {
+        if (rooms >= 0) {
+            numberOfRoomsMutableStateFlow.value = rooms
         }
     }
 
-    fun incrementBedrooms() {
-        numberOfBedroomsMutableStateFlow.value = numberOfBedroomsMutableStateFlow.value.plus(1)
+    fun decrementRooms(rooms: Int) {
+        if (rooms > 0) {
+            numberOfRoomsMutableStateFlow.value = rooms - 1
+        }
+    }
+
+    fun incrementRooms(rooms: Int) {
+        numberOfRoomsMutableStateFlow.value = rooms + 1
+    }
+
+    fun onBathroomsValueChanged(bathrooms: Int) {
+        if (bathrooms >= 0) {
+            numberOfBathroomsMutableStateFlow.value = bathrooms
+        }
+    }
+
+    fun decrementBathrooms(bathrooms: Int) {
+        if (bathrooms > 0) {
+            numberOfBathroomsMutableStateFlow.value = bathrooms - 1
+        }
+    }
+
+    fun incrementBathrooms(bathrooms: Int) {
+        numberOfBathroomsMutableStateFlow.value = bathrooms + 1
+    }
+
+    fun onBedroomsValueChanged(bedrooms: Int) {
+        if (bedrooms  >= 0) {
+            numberOfBedroomsMutableStateFlow.value = bedrooms
+        }
+    }
+
+    fun decrementBedrooms(bedrooms: Int) {
+        if (bedrooms > 0) {
+            numberOfBedroomsMutableStateFlow.value = bedrooms - 1
+        }
+    }
+
+    fun incrementBedrooms(bedrooms: Int) {
+        numberOfBedroomsMutableStateFlow.value = bedrooms + 1
+    }
+
+    fun onDateChanged(date: Any?) {
+        val instant = Instant.ofEpochMilli(date as Long)
+        val zonedDateTime = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault())
+        dateMutableStateFlow.value = zonedDateTime.toLocalDate()
     }
 }
