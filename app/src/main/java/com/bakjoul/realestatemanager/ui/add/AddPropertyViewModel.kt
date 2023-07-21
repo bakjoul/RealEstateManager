@@ -5,14 +5,19 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import com.bakjoul.realestatemanager.R
+import com.bakjoul.realestatemanager.data.autocomplete.model.PredictionResponse
 import com.bakjoul.realestatemanager.data.property.PropertyType
 import com.bakjoul.realestatemanager.data.settings.model.AppCurrency
 import com.bakjoul.realestatemanager.data.settings.model.SurfaceUnit
+import com.bakjoul.realestatemanager.domain.autocomplete.GetAddressPredictionsUseCase
 import com.bakjoul.realestatemanager.domain.settings.currency.GetCurrentCurrencyUseCase
 import com.bakjoul.realestatemanager.domain.settings.surface_unit.GetCurrentSurfaceUnitUseCase
 import com.bakjoul.realestatemanager.ui.utils.combine
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -21,9 +26,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AddPropertyViewModel @Inject constructor(
+    private val application: Application,
     private val getCurrentCurrencyUseCase: GetCurrentCurrencyUseCase,
     private val getCurrentSurfaceUnitUseCase: GetCurrentSurfaceUnitUseCase,
-    private val application: Application
+    private val getAddressPredictionsUseCase: GetAddressPredictionsUseCase
 ) : ViewModel() {
 
     private val propertyTypeMutableStateFlow: MutableStateFlow<PropertyType?> = MutableStateFlow(null)
@@ -33,6 +39,14 @@ class AddPropertyViewModel @Inject constructor(
     private val numberOfRoomsMutableStateFlow: MutableStateFlow<Int> = MutableStateFlow(0)
     private val numberOfBathroomsMutableStateFlow: MutableStateFlow<Int> = MutableStateFlow(0)
     private val numberOfBedroomsMutableStateFlow: MutableStateFlow<Int> = MutableStateFlow(0)
+    private val currentAddressInputMutableStateFlow: MutableStateFlow<String?> = MutableStateFlow(null)
+    private val addressPredictionsFlow: Flow<List<PredictionResponse>> = currentAddressInputMutableStateFlow.flatMapLatest { input ->
+            if (input.isNullOrEmpty() || input.length < 5) {
+                flowOf(emptyList())
+            } else {
+                getAddressPredictionsUseCase.invoke(input)
+            }
+        }
 
     val viewStateLiveData: LiveData<AddPropertyViewState> = liveData {
         combine(
@@ -43,8 +57,9 @@ class AddPropertyViewModel @Inject constructor(
             surfaceMutableStateFlow,
             numberOfRoomsMutableStateFlow,
             numberOfBathroomsMutableStateFlow,
-            numberOfBedroomsMutableStateFlow
-        ) { currency, surfaceUnit, propertyType, isForSale, surface, numberOfRooms, numberOfBathrooms, numberOfBedrooms ->
+            numberOfBedroomsMutableStateFlow,
+            addressPredictionsFlow
+        ) { currency, surfaceUnit, propertyType, isForSale, surface, numberOfRooms, numberOfBathrooms, numberOfBedrooms, address ->
             AddPropertyViewState(
                 propertyType = propertyType,
                 dateHint = formatDateHint(isForSale),
@@ -53,11 +68,20 @@ class AddPropertyViewModel @Inject constructor(
                 surface = formatSurfaceValue(surface),
                 numberOfRooms = numberOfRooms.toString(),
                 numberOfBathrooms = numberOfBathrooms.toString(),
-                numberOfBedrooms = numberOfBedrooms.toString()
+                numberOfBedrooms = numberOfBedrooms.toString(),
+                addressPredictions = mapAddressPredictions(address)
             )
         }.collect {
             emit(it)
         }
+    }
+
+    private fun mapAddressPredictions(predictionResponseList: List<PredictionResponse>?): List<String> {
+        val addressPredictionsSet = predictionResponseList?.mapNotNull { predictionResponse ->
+                predictionResponse.structuredFormatting?.mainText
+            }?.toSet()
+
+        return addressPredictionsSet?.toList() ?: emptyList()
     }
 
     private fun formatSurfaceValue(surface: Double): String {
@@ -149,7 +173,7 @@ class AddPropertyViewModel @Inject constructor(
     }
 
     fun onBedroomsValueChanged(bedrooms: Int) {
-        if (bedrooms  >= 0) {
+        if (bedrooms >= 0) {
             numberOfBedroomsMutableStateFlow.value = bedrooms
         }
     }
@@ -168,5 +192,9 @@ class AddPropertyViewModel @Inject constructor(
         val instant = Instant.ofEpochMilli(date as Long)
         val zonedDateTime = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault())
         dateMutableStateFlow.value = zonedDateTime.toLocalDate()
+    }
+
+    fun onAddressChanged(address: String) {
+        currentAddressInputMutableStateFlow.value = address
     }
 }

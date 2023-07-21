@@ -1,6 +1,7 @@
 package com.bakjoul.realestatemanager.ui.add
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.ViewTreeObserver
 import android.view.inputmethod.EditorInfo
@@ -214,6 +215,11 @@ class AddPropertyFragment : Fragment(R.layout.fragment_add_property) {
             viewModel.incrementBedrooms(binding.addPropertyBedroomsPlusMinusView.getIntValue())
         }
 
+        binding.addPropertyAddressTextInputEditText.doAfterTextChanged { editable ->
+            val address = editable?.toString() ?: ""
+            viewModel.onAddressChanged(address)
+        }
+
         viewModel.viewStateLiveData.observe(viewLifecycleOwner) {
             binding.addPropertyDateTextInputLayout.hint = it.dateHint
             binding.addPropertyPriceTextInputLayout.hint = it.priceHint
@@ -230,6 +236,8 @@ class AddPropertyFragment : Fragment(R.layout.fragment_add_property) {
             if (binding.addPropertyBedroomsPlusMinusView.getFormattedIntValue() != it.numberOfBedrooms) {
                 binding.addPropertyBedroomsPlusMinusView.setValueEditText(it.numberOfBedrooms)
             }
+
+            Log.d("test", "onViewCreated: ${it.addressPredictions}")
         }
     }
 }

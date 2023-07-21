@@ -10,5 +10,6 @@ data class AddPropertyViewState(
     val surface: String,
     val numberOfRooms: String,
     val numberOfBathrooms: String,
-    val numberOfBedrooms: String
+    val numberOfBedrooms: String,
+    val addressPredictions: List<String>
 )

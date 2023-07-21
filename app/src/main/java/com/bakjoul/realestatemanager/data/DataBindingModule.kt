@@ -2,6 +2,7 @@ package com.bakjoul.realestatemanager.data
 
 import com.bakjoul.realestatemanager.data.agent.AgentRepositoryImplementation
 import com.bakjoul.realestatemanager.data.auth.AuthRepositoryImplementation
+import com.bakjoul.realestatemanager.data.autocomplete.AutocompleteRepositoryImplementation
 import com.bakjoul.realestatemanager.data.currency_rate.CurrencyRateRepositoryImplementation
 import com.bakjoul.realestatemanager.data.current_photo.CurrentPhotoIdRepositoryImplementation
 import com.bakjoul.realestatemanager.data.current_property.CurrentPropertyIdRepositoryImplementation
@@ -10,6 +11,7 @@ import com.bakjoul.realestatemanager.data.resources.ResourcesRepositoryImplement
 import com.bakjoul.realestatemanager.data.settings.SettingsRepositoryImplementation
 import com.bakjoul.realestatemanager.domain.agent.AgentRepository
 import com.bakjoul.realestatemanager.domain.auth.AuthRepository
+import com.bakjoul.realestatemanager.domain.autocomplete.AutocompleteRepository
 import com.bakjoul.realestatemanager.domain.currency_rate.CurrencyRateRepository
 import com.bakjoul.realestatemanager.domain.current_photo.CurrentPhotoIdRepository
 import com.bakjoul.realestatemanager.domain.current_property.CurrentPropertyIdRepository
@@ -57,4 +59,8 @@ abstract class DataBindingModule {
     @Singleton
     @Binds
     abstract fun bindAgentRepository(agentRepositoryImplementation: AgentRepositoryImplementation): AgentRepository
+
+    @Singleton
+    @Binds
+    abstract fun bindAutocompleteRepository(autocompleteRepositoryImplementation: AutocompleteRepositoryImplementation): AutocompleteRepository
 }

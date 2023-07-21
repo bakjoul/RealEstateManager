@@ -1,6 +1,7 @@
 package com.bakjoul.realestatemanager.data
 
 import com.bakjoul.realestatemanager.data.api.CurrencyApi
+import com.bakjoul.realestatemanager.data.api.GoogleApi
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.gson.Gson
@@ -47,6 +48,10 @@ class DataModule {
     @Singleton
     @Provides
     fun provideCurrencyApi(retrofit: Retrofit): CurrencyApi = retrofit.create(CurrencyApi::class.java)
+
+    @Singleton
+    @Provides
+    fun provideGoogleApi(retrofit: Retrofit): GoogleApi = retrofit.create(GoogleApi::class.java)
 
     @Singleton
     @Provides
