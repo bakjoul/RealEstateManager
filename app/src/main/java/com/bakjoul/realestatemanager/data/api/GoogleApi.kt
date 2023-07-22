@@ -8,10 +8,17 @@ import retrofit2.http.Url
 interface GoogleApi {
 
     @GET
-    suspend fun requestPlaceAutocomplete(
+    suspend fun getAddressPredictions(
         @Url url: String,
         @Query("input") input: String,
         @Query("type") type: String,
+        @Query("key") key: String
+    ): AutocompleteResponse
+
+    @GET
+    suspend fun getAddressDetails(
+        @Url url: String,
+        @Query("place_id") placeId: String,
         @Query("key") key: String
     ): AutocompleteResponse
 }

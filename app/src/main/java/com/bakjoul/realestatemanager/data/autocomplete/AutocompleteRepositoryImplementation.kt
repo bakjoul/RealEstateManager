@@ -5,7 +5,7 @@ import com.bakjoul.realestatemanager.BuildConfig
 import com.bakjoul.realestatemanager.data.api.GoogleApi
 import com.bakjoul.realestatemanager.data.autocomplete.model.AutocompleteResponse
 import com.bakjoul.realestatemanager.domain.autocomplete.AutocompleteRepository
-import com.bakjoul.realestatemanager.domain.autocomplete.AutocompleteResponseWrapper
+import com.bakjoul.realestatemanager.data.autocomplete.model.AutocompleteResponseWrapper
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -25,7 +25,7 @@ class AutocompleteRepositoryImplementation @Inject constructor(private val googl
             return AutocompleteResponseWrapper.Success(existingResponse)
         } else {
             try {
-                val response = googleApi.requestPlaceAutocomplete(
+                val response = googleApi.getAddressPredictions(
                     url = "https://maps.googleapis.com/maps/api/place/autocomplete/json",
                     input = input,
                     type = TYPE,

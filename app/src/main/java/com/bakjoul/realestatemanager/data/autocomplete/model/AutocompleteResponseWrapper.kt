@@ -1,6 +1,4 @@
-package com.bakjoul.realestatemanager.domain.autocomplete
-
-import com.bakjoul.realestatemanager.data.autocomplete.model.AutocompleteResponse
+package com.bakjoul.realestatemanager.data.autocomplete.model
 
 sealed class AutocompleteResponseWrapper {
     data class Success(val autocompleteResponse: AutocompleteResponse) : AutocompleteResponseWrapper()

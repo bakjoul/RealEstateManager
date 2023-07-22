@@ -1,6 +1,7 @@
 package com.bakjoul.realestatemanager.domain.autocomplete
 
 import android.util.Log
+import com.bakjoul.realestatemanager.data.autocomplete.model.AutocompleteResponseWrapper
 import com.bakjoul.realestatemanager.data.autocomplete.model.PredictionResponse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
