@@ -1,7 +1,9 @@
 package com.bakjoul.realestatemanager.data.autocomplete
 
+import androidx.collection.LruCache
 import com.bakjoul.realestatemanager.BuildConfig
 import com.bakjoul.realestatemanager.data.api.GoogleApi
+import com.bakjoul.realestatemanager.data.autocomplete.model.AutocompleteResponse
 import com.bakjoul.realestatemanager.domain.autocomplete.AutocompleteRepository
 import com.bakjoul.realestatemanager.domain.autocomplete.AutocompleteResponseWrapper
 import javax.inject.Inject
@@ -14,23 +16,32 @@ class AutocompleteRepositoryImplementation @Inject constructor(private val googl
         private const val TYPE = "geocode"
     }
 
-    override suspend fun getAddressPredictions(input: String): AutocompleteResponseWrapper {
-        try {
-            val response = googleApi.requestPlaceAutocomplete(
-                url = "https://maps.googleapis.com/maps/api/place/autocomplete/json",
-                input = input,
-                type = TYPE,
-                key = BuildConfig.MAPS_API_KEY
-            )
+    private val lruCache: LruCache<String, AutocompleteResponse> = LruCache(500)
 
-            return if (response.status == "OK") {
-                AutocompleteResponseWrapper.Success(response)
-            } else {
-                val status = response.status ?: "Unknown error"
-                AutocompleteResponseWrapper.Failure(status)
+    override suspend fun getAddressPredictions(input: String): AutocompleteResponseWrapper {
+        val existingResponse = lruCache.get(input)
+
+        if (existingResponse != null) {
+            return AutocompleteResponseWrapper.Success(existingResponse)
+        } else {
+            try {
+                val response = googleApi.requestPlaceAutocomplete(
+                    url = "https://maps.googleapis.com/maps/api/place/autocomplete/json",
+                    input = input,
+                    type = TYPE,
+                    key = BuildConfig.MAPS_API_KEY
+                )
+
+                return if (response.status == "OK") {
+                    lruCache.put(input, response)
+                    AutocompleteResponseWrapper.Success(response)
+                } else {
+                    val status = response.status ?: "Unknown error"
+                    AutocompleteResponseWrapper.Failure(status)
+                }
+            } catch (e: Exception) {
+                return AutocompleteResponseWrapper.Error(e)
             }
-        } catch (e: Exception) {
-            return AutocompleteResponseWrapper.Error(e)
         }
     }
 }
