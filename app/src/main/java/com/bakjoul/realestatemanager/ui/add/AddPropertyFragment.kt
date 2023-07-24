@@ -257,6 +257,8 @@ class AddPropertyFragment : Fragment(R.layout.fragment_add_property) {
             when (it) {
                 AddPropertyViewAction.HideSuggestions -> {
                     binding.addPropertyAddressSuggestionsRecyclerView.visibility = View.GONE
+                    binding.addPropertyAddressTextInputEditText.clearFocus()
+                    hideKeyboard()
                 }
             }
         }
