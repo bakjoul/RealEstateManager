@@ -96,7 +96,7 @@
                         android:drawablePadding="4dp"
                         android:textColor="@color/white"
                         android:textSize="14sp"
-                        app:drawableStartCompat="@drawable/baseline_settings_overscan_16"
+                        app:drawableStartCompat="@drawable/baseline_settings_overscan_16_white"
                         app:layout_constraintBottom_toBottomOf="@id/details_toolbar_city"
                         app:layout_constraintStart_toEndOf="@id/details_toolbar_city"
                         app:layout_constraintTop_toTopOf="@id/details_toolbar_city"

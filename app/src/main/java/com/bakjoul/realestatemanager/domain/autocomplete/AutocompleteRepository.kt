@@ -1,8 +1,8 @@
 package com.bakjoul.realestatemanager.domain.autocomplete
 
-import com.bakjoul.realestatemanager.data.autocomplete.model.AutocompleteResponseWrapper
+import com.bakjoul.realestatemanager.domain.autocomplete.model.AutocompleteWrapper
 
 interface AutocompleteRepository {
 
-    suspend fun getAddressPredictions(input: String): AutocompleteResponseWrapper
+    suspend fun getAddressPredictions(input: String): AutocompleteWrapper
 }

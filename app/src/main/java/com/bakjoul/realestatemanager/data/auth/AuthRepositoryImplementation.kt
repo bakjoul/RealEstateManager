@@ -1,7 +1,7 @@
 package com.bakjoul.realestatemanager.data.auth
 
 import com.bakjoul.realestatemanager.domain.auth.AuthRepository
-import com.bakjoul.realestatemanager.domain.auth.LoggedUserEntity
+import com.bakjoul.realestatemanager.domain.auth.model.LoggedUserEntity
 import com.google.firebase.auth.FirebaseAuth
 import javax.inject.Inject
 import javax.inject.Singleton

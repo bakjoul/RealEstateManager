@@ -25,7 +25,7 @@ class DataModule {
     @Provides
     fun provideRetrofit(): Retrofit {
         val interceptor = HttpLoggingInterceptor().apply {
-            level = HttpLoggingInterceptor.Level.BODY
+            level = HttpLoggingInterceptor.Level.BASIC
         }
 
         val gson = GsonBuilder()

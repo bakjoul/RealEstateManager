@@ -1,15 +1,17 @@
 package com.bakjoul.realestatemanager.ui.add
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.ViewTreeObserver
 import android.view.inputmethod.EditorInfo
+import androidx.core.content.ContextCompat
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.DividerItemDecoration
 import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.databinding.FragmentAddPropertyBinding
+import com.bakjoul.realestatemanager.ui.utils.Event.Companion.observeEvent
 import com.bakjoul.realestatemanager.ui.utils.hideKeyboard
 import com.bakjoul.realestatemanager.ui.utils.viewBinding
 import com.google.android.material.datepicker.MaterialDatePicker
@@ -23,6 +25,12 @@ class AddPropertyFragment : Fragment(R.layout.fragment_add_property) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val suggestionsRVAdapter = AddPropertySuggestionAdapter()
+        binding.addPropertyAddressSuggestionsRecyclerView.adapter = suggestionsRVAdapter
+        val divider = DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
+        divider.setDrawable(ContextCompat.getDrawable(requireContext(),R.drawable.divider)!!)
+        binding.addPropertyAddressSuggestionsRecyclerView.addItemDecoration(divider)
 
         // Property type radio group
         binding.addPropertyTypeRadioGroup.setOnCheckedChangeListener { _, checkedId ->
@@ -237,7 +245,20 @@ class AddPropertyFragment : Fragment(R.layout.fragment_add_property) {
                 binding.addPropertyBedroomsPlusMinusView.setValueEditText(it.numberOfBedrooms)
             }
 
-            Log.d("test", "onViewCreated: ${it.addressPredictions}")
+            if (it.addressPredictions.isEmpty()) {
+                binding.addPropertyAddressSuggestionsRecyclerView.visibility = View.GONE
+            } else {
+                binding.addPropertyAddressSuggestionsRecyclerView.visibility = View.VISIBLE
+            }
+            suggestionsRVAdapter.submitList(it.addressPredictions)
+        }
+
+        viewModel.viewActionLiveData.observeEvent(viewLifecycleOwner) {
+            when (it) {
+                AddPropertyViewAction.HideSuggestions -> {
+                    binding.addPropertyAddressSuggestionsRecyclerView.visibility = View.GONE
+                }
+            }
         }
     }
 }

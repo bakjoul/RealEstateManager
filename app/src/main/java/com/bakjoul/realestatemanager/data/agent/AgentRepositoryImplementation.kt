@@ -3,7 +3,7 @@ package com.bakjoul.realestatemanager.data.agent
 import android.util.Log
 import com.bakjoul.realestatemanager.data.agent.model.AgentResponse
 import com.bakjoul.realestatemanager.domain.agent.AgentRepository
-import com.bakjoul.realestatemanager.domain.auth.LoggedUserEntity
+import com.bakjoul.realestatemanager.domain.auth.model.LoggedUserEntity
 import com.google.firebase.firestore.FirebaseFirestore
 import javax.inject.Inject
 

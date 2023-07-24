@@ -5,7 +5,8 @@ import com.bakjoul.realestatemanager.BuildConfig
 import com.bakjoul.realestatemanager.data.api.GoogleApi
 import com.bakjoul.realestatemanager.data.autocomplete.model.AutocompleteResponse
 import com.bakjoul.realestatemanager.domain.autocomplete.AutocompleteRepository
-import com.bakjoul.realestatemanager.data.autocomplete.model.AutocompleteResponseWrapper
+import com.bakjoul.realestatemanager.domain.autocomplete.model.AutocompleteWrapper
+import com.bakjoul.realestatemanager.domain.autocomplete.model.PredictionEntity
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -19,11 +20,13 @@ class AutocompleteRepositoryImplementation @Inject constructor(private val googl
 
     private val lruCache: LruCache<String, AutocompleteResponse> = LruCache(500)
 
-    override suspend fun getAddressPredictions(input: String): AutocompleteResponseWrapper {
+    override suspend fun getAddressPredictions(input: String): AutocompleteWrapper {
         val existingResponse = lruCache.get(input)
 
         if (existingResponse != null) {
-            return AutocompleteResponseWrapper.Success(existingResponse)
+            val predictions = mapPredictions(existingResponse)
+
+            return AutocompleteWrapper.Success(predictions)
         } else {
             try {
                 val response = googleApi.getAddressPredictions(
@@ -33,16 +36,41 @@ class AutocompleteRepositoryImplementation @Inject constructor(private val googl
                     key = BuildConfig.MAPS_API_KEY
                 )
 
-                return if (response.status == "OK") {
-                    lruCache.put(input, response)
-                    AutocompleteResponseWrapper.Success(response)
-                } else {
-                    val status = response.status ?: "Unknown error"
-                    AutocompleteResponseWrapper.Failure(status)
+                return when (response.status) {
+                    "OK" -> {
+                        lruCache.put(input, response)
+                        val predictions = mapPredictions(response)
+
+                        AutocompleteWrapper.Success(predictions)
+                    }
+                    "ZERO_RESULTS" -> {
+                        lruCache.put(input, response)
+                        val emptyPredictions = listOf(PredictionEntity(address = "No results found", placeId = ""))
+
+                        AutocompleteWrapper.Empty(emptyPredictions)
+                    }
+                    else -> {
+                        val status = response.status ?: "Unknown error"
+                        AutocompleteWrapper.Failure(status)
+                    }
                 }
             } catch (e: Exception) {
-                return AutocompleteResponseWrapper.Error(e)
+                return AutocompleteWrapper.Error(e)
             }
         }
+    }
+
+    private fun mapPredictions(existingResponse: AutocompleteResponse): List<PredictionEntity> {
+        val filteredPredictions = existingResponse.predictions?.filter { predictionResponse ->
+            !predictionResponse.description.isNullOrBlank() && !predictionResponse.placeId.isNullOrBlank()
+        }
+
+        val predictionEntities = filteredPredictions?.map { predictionResponse ->
+            PredictionEntity(
+                address = predictionResponse.description!!,
+                placeId = predictionResponse.placeId!!
+            )
+        } ?: emptyList()
+        return predictionEntities
     }
 }

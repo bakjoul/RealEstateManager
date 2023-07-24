@@ -1,4 +1,4 @@
-package com.bakjoul.realestatemanager.domain.auth
+package com.bakjoul.realestatemanager.domain.auth.model
 
 data class LoggedUserEntity(
     val id: String,
