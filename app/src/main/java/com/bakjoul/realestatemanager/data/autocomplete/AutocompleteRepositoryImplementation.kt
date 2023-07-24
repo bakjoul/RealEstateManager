@@ -13,6 +13,7 @@ import javax.inject.Singleton
 class AutocompleteRepositoryImplementation @Inject constructor(private val googleApi: GoogleApi) : AutocompleteRepository {
 
     private companion object {
+        private const val AUTOCOMPLETE_API_URL = "https://maps.googleapis.com/maps/api/place/autocomplete/json"
         private const val TYPE = "geocode"
     }
 
@@ -26,7 +27,7 @@ class AutocompleteRepositoryImplementation @Inject constructor(private val googl
         } else {
             try {
                 val response = googleApi.getAddressPredictions(
-                    url = "https://maps.googleapis.com/maps/api/place/autocomplete/json",
+                    url = AUTOCOMPLETE_API_URL,
                     input = input,
                     type = TYPE,
                     key = BuildConfig.MAPS_API_KEY
