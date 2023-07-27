@@ -1,8 +1,8 @@
 package com.bakjoul.realestatemanager.domain.geocoding
 
-import com.bakjoul.realestatemanager.data.geocoding.model.GeocodingResponseWrapper
+import com.bakjoul.realestatemanager.domain.geocoding.model.GeocodingWrapper
 
 interface GeocodingRepository {
 
-    suspend fun getAddressDetails(placeId: String): GeocodingResponseWrapper
+    suspend fun getAddressDetails(placeId: String): GeocodingWrapper
 }

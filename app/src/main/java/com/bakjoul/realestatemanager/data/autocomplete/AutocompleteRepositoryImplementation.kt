@@ -47,7 +47,7 @@ class AutocompleteRepositoryImplementation @Inject constructor(private val googl
                         lruCache.put(input, response)
                         val emptyPredictions = listOf(PredictionEntity(address = "No results found", placeId = ""))
 
-                        AutocompleteWrapper.Empty(emptyPredictions)
+                        AutocompleteWrapper.NoResults(emptyPredictions)
                     }
                     else -> {
                         val status = response.status ?: "Unknown error"

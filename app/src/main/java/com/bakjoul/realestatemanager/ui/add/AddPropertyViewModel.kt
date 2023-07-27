@@ -1,6 +1,7 @@
 package com.bakjoul.realestatemanager.ui.add
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -11,6 +12,8 @@ import com.bakjoul.realestatemanager.data.settings.model.AppCurrency
 import com.bakjoul.realestatemanager.data.settings.model.SurfaceUnit
 import com.bakjoul.realestatemanager.domain.autocomplete.GetAddressPredictionsUseCase
 import com.bakjoul.realestatemanager.domain.autocomplete.model.PredictionEntity
+import com.bakjoul.realestatemanager.domain.geocoding.GetAddressDetailsUseCase
+import com.bakjoul.realestatemanager.domain.geocoding.model.GeocodingResultEntity
 import com.bakjoul.realestatemanager.domain.settings.currency.GetCurrentCurrencyUseCase
 import com.bakjoul.realestatemanager.domain.settings.surface_unit.GetCurrentSurfaceUnitUseCase
 import com.bakjoul.realestatemanager.ui.utils.EquatableCallback
@@ -32,7 +35,8 @@ class AddPropertyViewModel @Inject constructor(
     private val application: Application,
     private val getCurrentCurrencyUseCase: GetCurrentCurrencyUseCase,
     private val getCurrentSurfaceUnitUseCase: GetCurrentSurfaceUnitUseCase,
-    private val getAddressPredictionsUseCase: GetAddressPredictionsUseCase
+    private val getAddressPredictionsUseCase: GetAddressPredictionsUseCase,
+    private val getAddressDetailsUseCase: GetAddressDetailsUseCase
 ) : ViewModel() {
 
     private val propertyTypeMutableStateFlow: MutableStateFlow<PropertyType?> = MutableStateFlow(null)
@@ -51,6 +55,13 @@ class AddPropertyViewModel @Inject constructor(
             }
         }
     private val selectedAddressMutableStateFlow: MutableStateFlow<PredictionEntity?> = MutableStateFlow(null)
+    private val selectedAddressDetailsFlow: Flow<GeocodingResultEntity?> = selectedAddressMutableStateFlow.flatMapLatest { prediction ->
+        if (prediction == null) {
+            flowOf(null)
+        } else {
+            getAddressDetailsUseCase.invoke(prediction.placeId)
+        }
+    }
 
     val viewStateLiveData: LiveData<AddPropertyViewState> = liveData {
         combine(
@@ -62,8 +73,9 @@ class AddPropertyViewModel @Inject constructor(
             numberOfRoomsMutableStateFlow,
             numberOfBathroomsMutableStateFlow,
             numberOfBedroomsMutableStateFlow,
-            addressPredictionsFlow
-        ) { currency, surfaceUnit, propertyType, isForSale, surface, numberOfRooms, numberOfBathrooms, numberOfBedrooms, address ->
+            addressPredictionsFlow,
+            selectedAddressDetailsFlow
+        ) { currency, surfaceUnit, propertyType, isForSale, surface, numberOfRooms, numberOfBathrooms, numberOfBedrooms, address, addressDetails ->
             AddPropertyViewState(
                 propertyType = propertyType,
                 dateHint = formatDateHint(isForSale),
@@ -73,10 +85,29 @@ class AddPropertyViewModel @Inject constructor(
                 numberOfRooms = numberOfRooms.toString(),
                 numberOfBathrooms = numberOfBathrooms.toString(),
                 numberOfBedrooms = numberOfBedrooms.toString(),
-                addressPredictions = mapAddressPredictions(address)
+                addressPredictions = mapAddressPredictions(address),
+                address = formatAddress(addressDetails),
+                state = "",
+                city = "",
+                zipcode = ""
             )
         }.collect {
             emit(it)
+        }
+    }
+
+    private fun formatAddress(addressDetails: GeocodingResultEntity?): String? {
+        return if (addressDetails == null) {
+            null
+        } else {
+            val streetNumberComponent = addressDetails.addressComponents.find { it.types.contains("street_number") }
+            val routeComponent = addressDetails.addressComponents.find { it.types.contains("route") }
+
+            if (streetNumberComponent != null && routeComponent != null) {
+                return streetNumberComponent.longName + " " + routeComponent.longName
+            }
+
+            return null
         }
     }
 
@@ -208,5 +239,10 @@ class AddPropertyViewModel @Inject constructor(
 
     fun onAddressChanged(address: String) {
         currentAddressInputMutableStateFlow.value = address
+
+        Log.d("test", "onAddressChanged: ${selectedAddressMutableStateFlow.value} $address")
+        if (selectedAddressMutableStateFlow.value != null && address != selectedAddressMutableStateFlow.value!!.address) {
+            selectedAddressMutableStateFlow.value = null
+        }
     }
 }

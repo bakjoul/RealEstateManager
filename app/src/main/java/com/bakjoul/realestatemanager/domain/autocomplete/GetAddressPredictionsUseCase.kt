@@ -16,7 +16,7 @@ class GetAddressPredictionsUseCase @Inject constructor(private val autocompleteR
     suspend fun invoke(input: String): Flow<List<PredictionEntity>> = flow {
         when (val wrapper = autocompleteRepository.getAddressPredictions(input)) {
             is AutocompleteWrapper.Success -> emit(wrapper.predictions)
-            is AutocompleteWrapper.Empty -> emit(wrapper.predictions)
+            is AutocompleteWrapper.NoResults -> emit(wrapper.predictions)
             is AutocompleteWrapper.Failure -> Log.i(TAG, "Failed to get address predictions")
             is AutocompleteWrapper.Error -> Log.e(TAG, "Error while getting address predictions: ${wrapper.throwable.message}")
         }

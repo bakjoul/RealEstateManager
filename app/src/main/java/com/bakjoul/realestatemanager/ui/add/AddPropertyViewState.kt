@@ -11,5 +11,9 @@ data class AddPropertyViewState(
     val numberOfRooms: String,
     val numberOfBathrooms: String,
     val numberOfBedrooms: String,
-    val addressPredictions: List<AddPropertySuggestionItemViewState>
+    val addressPredictions: List<AddPropertySuggestionItemViewState>,
+    val address: String?,
+    val city: String?,
+    val state: String?,
+    val zipcode: String?,
 )

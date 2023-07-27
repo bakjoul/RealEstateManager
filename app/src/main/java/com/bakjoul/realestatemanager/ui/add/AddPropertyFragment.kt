@@ -1,6 +1,7 @@
 package com.bakjoul.realestatemanager.ui.add
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.ViewTreeObserver
 import android.view.inputmethod.EditorInfo
@@ -29,7 +30,7 @@ class AddPropertyFragment : Fragment(R.layout.fragment_add_property) {
         val suggestionsRVAdapter = AddPropertySuggestionAdapter()
         binding.addPropertyAddressSuggestionsRecyclerView.adapter = suggestionsRVAdapter
         val divider = DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
-        divider.setDrawable(ContextCompat.getDrawable(requireContext(),R.drawable.divider)!!)
+        divider.setDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.divider)!!)
         binding.addPropertyAddressSuggestionsRecyclerView.addItemDecoration(divider)
 
         // Property type radio group
@@ -38,7 +39,8 @@ class AddPropertyFragment : Fragment(R.layout.fragment_add_property) {
         }
 
         // Date picker for sale status
-        val materialDateBuilder: MaterialDatePicker.Builder<*> = MaterialDatePicker.Builder.datePicker()
+        val materialDateBuilder: MaterialDatePicker.Builder<*> =
+            MaterialDatePicker.Builder.datePicker()
         val materialDatePicker: MaterialDatePicker<*> = materialDateBuilder.build()
 
         binding.addPropertyDateTextInputEditText.setOnClickListener {
@@ -56,20 +58,22 @@ class AddPropertyFragment : Fragment(R.layout.fragment_add_property) {
         }
 
         // Surface plus minus view
-        binding.addPropertySurfacePlusMinusView.getValueEditText().setOnFocusChangeListener { _, hasFocus ->
-            if (hasFocus) {
-                // Detects when layout is ready to be drawn
-                binding.root.viewTreeObserver.addOnPreDrawListener(object : ViewTreeObserver.OnPreDrawListener {
-                    override fun onPreDraw(): Boolean {
-                        // Removes listener to prevent repeated calls
-                        binding.root.viewTreeObserver.removeOnPreDrawListener(this)
-                        // Selects all text
-                        binding.addPropertySurfacePlusMinusView.getValueEditText().selectAll()
-                        return true
-                    }
-                })
+        binding.addPropertySurfacePlusMinusView.getValueEditText()
+            .setOnFocusChangeListener { _, hasFocus ->
+                if (hasFocus) {
+                    // Detects when layout is ready to be drawn
+                    binding.root.viewTreeObserver.addOnPreDrawListener(object :
+                        ViewTreeObserver.OnPreDrawListener {
+                        override fun onPreDraw(): Boolean {
+                            // Removes listener to prevent repeated calls
+                            binding.root.viewTreeObserver.removeOnPreDrawListener(this)
+                            // Selects all text
+                            binding.addPropertySurfacePlusMinusView.getValueEditText().selectAll()
+                            return true
+                        }
+                    })
+                }
             }
-        }
 
         // Disable minus button when value is 0
         binding.addPropertySurfacePlusMinusView.getValueEditText().doAfterTextChanged { editable ->
@@ -95,20 +99,22 @@ class AddPropertyFragment : Fragment(R.layout.fragment_add_property) {
         }
 
         // Rooms plus minus view
-        binding.addPropertyRoomsPlusMinusView.getValueEditText().setOnFocusChangeListener { _, hasFocus ->
-            if (hasFocus) {
-                // Detects when layout is ready to be drawn
-                binding.root.viewTreeObserver.addOnPreDrawListener(object : ViewTreeObserver.OnPreDrawListener {
-                    override fun onPreDraw(): Boolean {
-                        // Removes listener to prevent repeated calls
-                        binding.root.viewTreeObserver.removeOnPreDrawListener(this)
-                        // Selects all text
-                        binding.addPropertyRoomsPlusMinusView.getValueEditText().selectAll()
-                        return true
-                    }
-                })
+        binding.addPropertyRoomsPlusMinusView.getValueEditText()
+            .setOnFocusChangeListener { _, hasFocus ->
+                if (hasFocus) {
+                    // Detects when layout is ready to be drawn
+                    binding.root.viewTreeObserver.addOnPreDrawListener(object :
+                        ViewTreeObserver.OnPreDrawListener {
+                        override fun onPreDraw(): Boolean {
+                            // Removes listener to prevent repeated calls
+                            binding.root.viewTreeObserver.removeOnPreDrawListener(this)
+                            // Selects all text
+                            binding.addPropertyRoomsPlusMinusView.getValueEditText().selectAll()
+                            return true
+                        }
+                    })
+                }
             }
-        }
 
         // Disable minus button when value is 0
         binding.addPropertyRoomsPlusMinusView.getValueEditText().doAfterTextChanged { editable ->
@@ -119,7 +125,8 @@ class AddPropertyFragment : Fragment(R.layout.fragment_add_property) {
                 binding.addPropertyRoomsPlusMinusView.setValueEditText("0")
             } else {
                 binding.addPropertyRoomsPlusMinusView.isEnabled = rooms != 0
-                binding.addPropertyRoomsPlusMinusView.decrementButton().alpha = if (rooms == 0) 0.5f else 1f
+                binding.addPropertyRoomsPlusMinusView.decrementButton().alpha =
+                    if (rooms == 0) 0.5f else 1f
 
                 viewModel.onRoomsValueChanged(rooms)
             }
@@ -134,35 +141,39 @@ class AddPropertyFragment : Fragment(R.layout.fragment_add_property) {
         }
 
         // Bathrooms plus minus view
-        binding.addPropertyBathroomsPlusMinusView.getValueEditText().setOnFocusChangeListener { _, hasFocus ->
-            if (hasFocus) {
-                // Detects when layout is ready to be drawn
-                binding.root.viewTreeObserver.addOnPreDrawListener(object : ViewTreeObserver.OnPreDrawListener {
-                    override fun onPreDraw(): Boolean {
-                        // Removes listener to prevent repeated calls
-                        binding.root.viewTreeObserver.removeOnPreDrawListener(this)
-                        // Selects all text
-                        binding.addPropertyBathroomsPlusMinusView.getValueEditText().selectAll()
-                        return true
-                    }
-                })
+        binding.addPropertyBathroomsPlusMinusView.getValueEditText()
+            .setOnFocusChangeListener { _, hasFocus ->
+                if (hasFocus) {
+                    // Detects when layout is ready to be drawn
+                    binding.root.viewTreeObserver.addOnPreDrawListener(object :
+                        ViewTreeObserver.OnPreDrawListener {
+                        override fun onPreDraw(): Boolean {
+                            // Removes listener to prevent repeated calls
+                            binding.root.viewTreeObserver.removeOnPreDrawListener(this)
+                            // Selects all text
+                            binding.addPropertyBathroomsPlusMinusView.getValueEditText().selectAll()
+                            return true
+                        }
+                    })
+                }
             }
-        }
 
         // Disable minus button when value is 0
-        binding.addPropertyBathroomsPlusMinusView.getValueEditText().doAfterTextChanged { editable ->
-            val bathroomsText = editable?.toString()
-            val bathrooms = bathroomsText?.toIntOrNull() ?: 0
+        binding.addPropertyBathroomsPlusMinusView.getValueEditText()
+            .doAfterTextChanged { editable ->
+                val bathroomsText = editable?.toString()
+                val bathrooms = bathroomsText?.toIntOrNull() ?: 0
 
-            if (bathroomsText.isNullOrEmpty()) {
-                binding.addPropertyBathroomsPlusMinusView.setValueEditText("0")
-            } else {
-                binding.addPropertyBathroomsPlusMinusView.isEnabled = bathrooms != 0
-                binding.addPropertyBathroomsPlusMinusView.decrementButton().alpha = if (bathrooms == 0) 0.5f else 1f
+                if (bathroomsText.isNullOrEmpty()) {
+                    binding.addPropertyBathroomsPlusMinusView.setValueEditText("0")
+                } else {
+                    binding.addPropertyBathroomsPlusMinusView.isEnabled = bathrooms != 0
+                    binding.addPropertyBathroomsPlusMinusView.decrementButton().alpha =
+                        if (bathrooms == 0) 0.5f else 1f
 
-                viewModel.onBathroomsValueChanged(bathrooms)
+                    viewModel.onBathroomsValueChanged(bathrooms)
+                }
             }
-        }
 
         binding.addPropertyBathroomsPlusMinusView.decrementButton().setOnClickListener {
             viewModel.decrementBathrooms(binding.addPropertyBathroomsPlusMinusView.getIntValue())
@@ -173,20 +184,22 @@ class AddPropertyFragment : Fragment(R.layout.fragment_add_property) {
         }
 
         // Bedrooms plus minus view
-        binding.addPropertyBedroomsPlusMinusView.getValueEditText().setOnFocusChangeListener { _, hasFocus ->
-            if (hasFocus) {
-                // Detects when layout is ready to be drawn
-                binding.root.viewTreeObserver.addOnPreDrawListener(object : ViewTreeObserver.OnPreDrawListener {
-                    override fun onPreDraw(): Boolean {
-                        // Removes listener to prevent repeated calls
-                        binding.root.viewTreeObserver.removeOnPreDrawListener(this)
-                        // Selects all text
-                        binding.addPropertyBedroomsPlusMinusView.getValueEditText().selectAll()
-                        return true
-                    }
-                })
+        binding.addPropertyBedroomsPlusMinusView.getValueEditText()
+            .setOnFocusChangeListener { _, hasFocus ->
+                if (hasFocus) {
+                    // Detects when layout is ready to be drawn
+                    binding.root.viewTreeObserver.addOnPreDrawListener(object :
+                        ViewTreeObserver.OnPreDrawListener {
+                        override fun onPreDraw(): Boolean {
+                            // Removes listener to prevent repeated calls
+                            binding.root.viewTreeObserver.removeOnPreDrawListener(this)
+                            // Selects all text
+                            binding.addPropertyBedroomsPlusMinusView.getValueEditText().selectAll()
+                            return true
+                        }
+                    })
+                }
             }
-        }
 
         // Disable minus button when value is 0
         binding.addPropertyBedroomsPlusMinusView.getValueEditText().doAfterTextChanged { editable ->
@@ -197,23 +210,26 @@ class AddPropertyFragment : Fragment(R.layout.fragment_add_property) {
                 binding.addPropertyBedroomsPlusMinusView.setValueEditText("0")
             } else {
                 binding.addPropertyBedroomsPlusMinusView.isEnabled = bedrooms != 0
-                binding.addPropertyBedroomsPlusMinusView.decrementButton().alpha = if (bedrooms == 0) 0.5f else 1f
+                binding.addPropertyBedroomsPlusMinusView.decrementButton().alpha =
+                    if (bedrooms == 0) 0.5f else 1f
 
                 viewModel.onBedroomsValueChanged(bedrooms)
             }
         }
 
-        binding.addPropertyBedroomsPlusMinusView.getValueEditText().imeOptions = EditorInfo.IME_ACTION_DONE
+        binding.addPropertyBedroomsPlusMinusView.getValueEditText().imeOptions =
+            EditorInfo.IME_ACTION_DONE
 
-        binding.addPropertyBedroomsPlusMinusView.getValueEditText().setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
-                binding.addPropertyBedroomsPlusMinusView.getValueEditText().clearFocus()
-                hideKeyboard()
-                true
-            } else {
-                false
+        binding.addPropertyBedroomsPlusMinusView.getValueEditText()
+            .setOnEditorActionListener { _, actionId, _ ->
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    binding.addPropertyBedroomsPlusMinusView.getValueEditText().clearFocus()
+                    hideKeyboard()
+                    true
+                } else {
+                    false
+                }
             }
-        }
 
         binding.addPropertyBedroomsPlusMinusView.decrementButton().setOnClickListener {
             viewModel.decrementBedrooms(binding.addPropertyBedroomsPlusMinusView.getIntValue())
@@ -245,12 +261,17 @@ class AddPropertyFragment : Fragment(R.layout.fragment_add_property) {
                 binding.addPropertyBedroomsPlusMinusView.setValueEditText(it.numberOfBedrooms)
             }
 
-            if (it.addressPredictions.isEmpty()) {
+            Log.d("test", "onViewCreated: ${it.address} ${binding.addPropertyAddressTextInputEditText.text}")
+            if (it.addressPredictions.isEmpty() || (it.address != null && it.address.equals(binding.addPropertyAddressTextInputEditText))) {
                 binding.addPropertyAddressSuggestionsRecyclerView.visibility = View.GONE
             } else {
                 binding.addPropertyAddressSuggestionsRecyclerView.visibility = View.VISIBLE
             }
             suggestionsRVAdapter.submitList(it.addressPredictions)
+
+            if (it.address != null && it.address != binding.addPropertyAddressTextInputEditText.text.toString()) {
+                binding.addPropertyAddressTextInputEditText.setText(it.address)
+            }
         }
 
         viewModel.viewActionLiveData.observeEvent(viewLifecycleOwner) {

@@ -7,6 +7,6 @@ data class GeocodingResultResponse (
     @SerializedName("formatted_address") val formattedAddress: String?,
     @SerializedName("geometry") val geometry: GeometryResponse?,
     @SerializedName("place_id") val placeId: String?,
-    @SerializedName("plus_code") val plusCode: List<PlusCodeResponse>?,
+    @SerializedName("plus_code") val plusCode: PlusCodeResponse?,
     @SerializedName("types") val types: List<String>?
 )
