@@ -21,6 +21,7 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 class DataModule {
 
+    @GooglePlacesRetrofit
     @Singleton
     @Provides
     fun provideRetrofit(): Retrofit {
@@ -39,7 +40,7 @@ class DataModule {
             .build()
 
         return Retrofit.Builder()
-            .baseUrl("https://r.mtdv.me/currencyapi/")
+            .baseUrl("https://maps.googleapis.com/maps/api/place")
             .addConverterFactory(GsonConverterFactory.create(gson))
             .client(httpClient)
             .build()
@@ -51,7 +52,7 @@ class DataModule {
 
     @Singleton
     @Provides
-    fun provideGoogleApi(retrofit: Retrofit): GoogleApi = retrofit.create(GoogleApi::class.java)
+    fun provideGoogleApi(@GooglePlacesRetrofit retrofit: Retrofit): GoogleApi = retrofit.create(GoogleApi::class.java)
 
     @Singleton
     @Provides

@@ -7,70 +7,58 @@ import com.bakjoul.realestatemanager.data.autocomplete.model.AutocompleteRespons
 import com.bakjoul.realestatemanager.domain.autocomplete.AutocompleteRepository
 import com.bakjoul.realestatemanager.domain.autocomplete.model.AutocompleteWrapper
 import com.bakjoul.realestatemanager.domain.autocomplete.model.PredictionEntity
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.coroutines.coroutineContext
 
 @Singleton
 class AutocompleteRepositoryImplementation @Inject constructor(private val googleApi: GoogleApi) : AutocompleteRepository {
 
     private companion object {
-        private const val AUTOCOMPLETE_API_URL = "https://maps.googleapis.com/maps/api/place/autocomplete/json"
         private const val TYPE = "geocode"
     }
 
-    private val lruCache: LruCache<String, AutocompleteResponse> = LruCache(500)
+    private val lruCache: LruCache<String, AutocompleteWrapper> = LruCache(500)
 
-    override suspend fun getAddressPredictions(input: String): AutocompleteWrapper {
-        val existingResponse = lruCache.get(input)
+    override suspend fun getAddressPredictions(input: String): AutocompleteWrapper = withContext(Dispatchers.IO) {
+        lruCache.get(input) ?: try {
+            val response = googleApi.getAddressPredictions(
+                input = input,
+                type = TYPE,
+                key = BuildConfig.MAPS_API_KEY
+            )
 
-        if (existingResponse != null) {
-            val predictions = mapPredictions(existingResponse)
+            when (response.status) {
+                "OK" -> {
+                    val predictions = mapPredictions(response)
 
-            return AutocompleteWrapper.Success(predictions)
-        } else {
-            try {
-                val response = googleApi.getAddressPredictions(
-                    url = AUTOCOMPLETE_API_URL,
-                    input = input,
-                    type = TYPE,
-                    key = BuildConfig.MAPS_API_KEY
-                )
-
-                return when (response.status) {
-                    "OK" -> {
-                        lruCache.put(input, response)
-                        val predictions = mapPredictions(response)
-
+                    if (predictions != null) {
                         AutocompleteWrapper.Success(predictions)
-                    }
-                    "ZERO_RESULTS" -> {
-                        lruCache.put(input, response)
-                        val emptyPredictions = listOf(PredictionEntity(address = "No results found", placeId = ""))
-
-                        AutocompleteWrapper.NoResults(emptyPredictions)
-                    }
-                    else -> {
-                        val status = response.status ?: "Unknown error"
-                        AutocompleteWrapper.Failure(status)
-                    }
+                    } else {
+                        AutocompleteWrapper.NoResults
+                    }.also { lruCache.put(input, it) }
                 }
-            } catch (e: Exception) {
-                return AutocompleteWrapper.Error(e)
+                "ZERO_RESULTS" -> AutocompleteWrapper.NoResults.also { lruCache.put(input, it) }
+                else -> AutocompleteWrapper.Failure(response.status ?: "Unknown error")
+            }
+        } catch (e: Exception) {
+            coroutineContext.ensureActive()
+            AutocompleteWrapper.Error(e)
+        }
+    }
+
+    private fun mapPredictions(existingResponse: AutocompleteResponse): List<PredictionEntity>? =
+        existingResponse.predictions?.mapNotNull { predictionResponse ->
+            if (predictionResponse.description.isNullOrBlank() || predictionResponse.placeId.isNullOrBlank()) {
+                return@mapNotNull null
+            } else {
+                PredictionEntity(
+                    address = predictionResponse.description,
+                    placeId = predictionResponse.placeId,
+                )
             }
         }
-    }
-
-    private fun mapPredictions(existingResponse: AutocompleteResponse): List<PredictionEntity> {
-        val filteredPredictions = existingResponse.predictions?.filter { predictionResponse ->
-            !predictionResponse.description.isNullOrBlank() && !predictionResponse.placeId.isNullOrBlank()
-        }
-
-        val predictionEntities = filteredPredictions?.map { predictionResponse ->
-            PredictionEntity(
-                address = predictionResponse.description!!,
-                placeId = predictionResponse.placeId!!
-            )
-        } ?: emptyList()
-        return predictionEntities
-    }
 }

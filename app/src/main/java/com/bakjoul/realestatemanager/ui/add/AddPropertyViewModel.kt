@@ -11,6 +11,7 @@ import com.bakjoul.realestatemanager.data.property.PropertyType
 import com.bakjoul.realestatemanager.data.settings.model.AppCurrency
 import com.bakjoul.realestatemanager.data.settings.model.SurfaceUnit
 import com.bakjoul.realestatemanager.domain.autocomplete.GetAddressPredictionsUseCase
+import com.bakjoul.realestatemanager.domain.autocomplete.model.AutocompleteWrapper
 import com.bakjoul.realestatemanager.domain.autocomplete.model.PredictionEntity
 import com.bakjoul.realestatemanager.domain.geocoding.GetAddressDetailsUseCase
 import com.bakjoul.realestatemanager.domain.geocoding.model.GeocodingResultEntity
@@ -20,15 +21,18 @@ import com.bakjoul.realestatemanager.ui.utils.EquatableCallback
 import com.bakjoul.realestatemanager.ui.utils.Event
 import com.bakjoul.realestatemanager.ui.utils.combine
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.transformLatest
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.milliseconds
 
 @HiltViewModel
 class AddPropertyViewModel @Inject constructor(
@@ -47,11 +51,13 @@ class AddPropertyViewModel @Inject constructor(
     private val numberOfBathroomsMutableStateFlow: MutableStateFlow<Int> = MutableStateFlow(0)
     private val numberOfBedroomsMutableStateFlow: MutableStateFlow<Int> = MutableStateFlow(0)
     private val currentAddressInputMutableStateFlow: MutableStateFlow<String?> = MutableStateFlow(null)
-    private val addressPredictionsFlow: Flow<List<PredictionEntity>> = currentAddressInputMutableStateFlow.flatMapLatest { input ->
+    private val addressPredictionsFlow: Flow<AutocompleteWrapper?> = currentAddressInputMutableStateFlow
+        .transformLatest { input ->
             if (input.isNullOrEmpty() || input.length < 5) {
-                flowOf(emptyList())
+                emit(null)
             } else {
-                getAddressPredictionsUseCase.invoke(input)
+                delay(300.milliseconds)
+                emit(getAddressPredictionsUseCase.invoke(input))
             }
         }
     private val selectedAddressMutableStateFlow: MutableStateFlow<PredictionEntity?> = MutableStateFlow(null)
@@ -114,8 +120,17 @@ class AddPropertyViewModel @Inject constructor(
     private val _viewActionLiveData = MutableLiveData<Event<AddPropertyViewAction>>()
     val viewActionLiveData: LiveData<Event<AddPropertyViewAction>> get() = _viewActionLiveData
 
-    private fun mapAddressPredictions(predictions: List<PredictionEntity>): List<AddPropertySuggestionItemViewState> {
-        return predictions.map { predictionEntity ->
+    private fun mapAddressPredictions(wrapper : AutocompleteWrapper?): List<AddPropertySuggestionItemViewState> = when (wrapper) {
+        is AutocompleteWrapper.Error,
+        is AutocompleteWrapper.Failure -> emptyList()
+        is AutocompleteWrapper.NoResults -> listOf(
+            AddPropertySuggestionItemViewState(
+                "",
+                "NO SUGGESTIONS",
+
+            )
+        )
+        is AutocompleteWrapper.Success -> wrapper.predictions.map { predictionEntity ->
             AddPropertySuggestionItemViewState(
                 id = predictionEntity.placeId,
                 address = predictionEntity.address,
@@ -125,6 +140,7 @@ class AddPropertyViewModel @Inject constructor(
                 }
             )
         }
+        null -> emptyList()
     }
 
     private fun formatSurfaceValue(surface: Double): String {
