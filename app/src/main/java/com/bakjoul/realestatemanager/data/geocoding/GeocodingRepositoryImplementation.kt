@@ -1,6 +1,5 @@
 package com.bakjoul.realestatemanager.data.geocoding
 
-import android.util.Log
 import androidx.collection.LruCache
 import com.bakjoul.realestatemanager.BuildConfig
 import com.bakjoul.realestatemanager.data.api.GoogleApi
@@ -13,6 +12,9 @@ import com.bakjoul.realestatemanager.domain.geocoding.model.GeocodingResultEntit
 import com.bakjoul.realestatemanager.domain.geocoding.model.GeocodingWrapper
 import com.bakjoul.realestatemanager.domain.geocoding.model.GeometryEntity
 import com.bakjoul.realestatemanager.domain.geocoding.model.LocationEntity
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -20,65 +22,46 @@ import javax.inject.Singleton
 class GeocodingRepositoryImplementation @Inject constructor(private val googleApi: GoogleApi) :
     GeocodingRepository {
 
-    private companion object {
-        private const val GEOCODING_API_URL = "https://maps.googleapis.com/maps/api/geocode/json"
-    }
+    private val lruCache: LruCache<String, GeocodingWrapper> = LruCache(100)
 
-    private val lruCache: LruCache<String, GeocodingResponse> = LruCache(100)
+    override suspend fun getAddressDetails(placeId: String): GeocodingWrapper = withContext(Dispatchers.IO) {
+        lruCache.get(placeId) ?: try {
+            val response = googleApi.getAddressDetails(
+                placeId = placeId,
+                key = BuildConfig.MAPS_API_KEY
+            )
 
-    override suspend fun getAddressDetails(placeId: String): GeocodingWrapper {
-        val existingResponse = lruCache.get(placeId)
+            when (response.status) {
+                "OK" -> {
+                    val result = mapResults(response)
 
-        if (existingResponse != null) {
-            val result = mapResults(existingResponse)
-
-            return GeocodingWrapper.Success(result)
-        } else {
-            try {
-                val response = googleApi.getAddressDetails(
-                    url = GEOCODING_API_URL,
-                    placeId = placeId,
-                    key = BuildConfig.MAPS_API_KEY
-                )
-
-                return when (response.status) {
-                    "OK" -> {
-                        Log.d("test", "getAddressDetails: SALUT OK")
-                        lruCache.put(placeId, response)
-                        val result = mapResults(response)
-
+                    if (result != null) {
                         GeocodingWrapper.Success(result)
-                    }
-                    "ZERO_RESULTS" -> {
-                        Log.d("test", "getAddressDetails: SALUT ZERO")
-                        lruCache.put(placeId, response)
-
-                        GeocodingWrapper.NoResults(emptyList<GeocodingResultEntity>())
-                    }
-                    else -> {
-                        Log.d("test", "getAddressDetails: SALUT ELSE")
-                        val status = response.status ?: "Unknown error"
-                        GeocodingWrapper.Failure(status)
-                    }
+                    } else {
+                        GeocodingWrapper.NoResults
+                    }.also { lruCache.put(placeId, it) }
                 }
-            } catch (e: Exception) {
-                return GeocodingWrapper.Error(e)
+                "ZERO_RESULTS" -> GeocodingWrapper.NoResults.also { lruCache.put(placeId, it) }
+                else -> GeocodingWrapper.Failure(response.status ?: "Unknown error")
             }
+        } catch (e: Exception) {
+            coroutineContext.ensureActive()
+            GeocodingWrapper.Error(e)
         }
     }
 
-    private fun mapResults(response: GeocodingResponse): List<GeocodingResultEntity> {
-        val responseResult = response.results?.firstOrNull() ?: return emptyList()
+    private fun mapResults(response: GeocodingResponse?): List<GeocodingResultEntity>? {
+        val responseResult = response?.results?.firstOrNull() ?: return null
 
         val addressComponents = mapAddressComponents(responseResult.addressComponents)
         val geometry = mapGeometry(responseResult.geometry)
         val placeId = responseResult.placeId
 
-        if (addressComponents.isEmpty() || geometry == null || placeId == null) {
-            return emptyList()
+        if (addressComponents.isNotEmpty() && geometry != null && placeId != null) {
+            return listOf(GeocodingResultEntity(addressComponents, geometry, placeId))
         }
 
-        return listOf(GeocodingResultEntity(addressComponents, geometry, placeId))
+        return null
     }
 
     private fun mapAddressComponents(addressComponents: List<AddressComponentResponse>?): List<AddressComponentEntity> {

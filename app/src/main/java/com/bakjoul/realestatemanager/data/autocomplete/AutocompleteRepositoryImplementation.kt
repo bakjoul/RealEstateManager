@@ -12,7 +12,6 @@ import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlin.coroutines.coroutineContext
 
 @Singleton
 class AutocompleteRepositoryImplementation @Inject constructor(private val googleApi: GoogleApi) : AutocompleteRepository {
@@ -50,8 +49,8 @@ class AutocompleteRepositoryImplementation @Inject constructor(private val googl
         }
     }
 
-    private fun mapPredictions(existingResponse: AutocompleteResponse): List<PredictionEntity>? =
-        existingResponse.predictions?.mapNotNull { predictionResponse ->
+    private fun mapPredictions(response: AutocompleteResponse): List<PredictionEntity>? =
+        response.predictions?.mapNotNull { predictionResponse ->
             if (predictionResponse.description.isNullOrBlank() || predictionResponse.placeId.isNullOrBlank()) {
                 return@mapNotNull null
             } else {

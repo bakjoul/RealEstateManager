@@ -15,32 +15,37 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
+import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 class DataModule {
 
-    @GooglePlacesRetrofit
     @Singleton
     @Provides
-    fun provideRetrofit(): Retrofit {
-        val interceptor = HttpLoggingInterceptor().apply {
-            level = HttpLoggingInterceptor.Level.BASIC
-        }
+    fun provideGson(): Gson = GsonBuilder().setLenient().create()
 
-        val gson = GsonBuilder()
-            .setLenient()
-            .create()
+    @Singleton
+    @Provides
+    fun provideHttpLoggingInterceptor(): HttpLoggingInterceptor = HttpLoggingInterceptor().apply {
+        level = HttpLoggingInterceptor.Level.BASIC
+    }
 
-        val httpClient = OkHttpClient.Builder()
-            .addInterceptor(interceptor)
-            .connectTimeout(10, TimeUnit.SECONDS)
-            .readTimeout(10, TimeUnit.SECONDS)
-            .build()
+    @Singleton
+    @Provides
+    fun provideOkHttpClient(httpLoggingInterceptor: HttpLoggingInterceptor): OkHttpClient = OkHttpClient.Builder()
+        .addInterceptor(httpLoggingInterceptor)
+        .connectTimeout(10, TimeUnit.SECONDS)
+        .readTimeout(10, TimeUnit.SECONDS)
+        .build()
 
+    @Singleton
+    @Provides
+    @Named("CurrencyApiRetrofit")
+    fun provideCurrencyApiRetrofit(httpClient: OkHttpClient, gson: Gson): Retrofit {
         return Retrofit.Builder()
-            .baseUrl("https://maps.googleapis.com/maps/api/place")
+            .baseUrl("https://api.getgeoapi.com/v2/currency/convert/")
             .addConverterFactory(GsonConverterFactory.create(gson))
             .client(httpClient)
             .build()
@@ -48,15 +53,22 @@ class DataModule {
 
     @Singleton
     @Provides
-    fun provideCurrencyApi(retrofit: Retrofit): CurrencyApi = retrofit.create(CurrencyApi::class.java)
+    @Named("GoogleApiRetrofit")
+    fun provideGoogleApiRetrofit(httpClient: OkHttpClient, gson: Gson): Retrofit {
+        return Retrofit.Builder()
+            .baseUrl("https://maps.googleapis.com/maps/api/")
+            .addConverterFactory(GsonConverterFactory.create(gson))
+            .client(httpClient)
+            .build()
+    }
 
     @Singleton
     @Provides
-    fun provideGoogleApi(@GooglePlacesRetrofit retrofit: Retrofit): GoogleApi = retrofit.create(GoogleApi::class.java)
+    fun provideCurrencyApi(@Named("CurrencyApiRetrofit") retrofit: Retrofit): CurrencyApi = retrofit.create(CurrencyApi::class.java)
 
     @Singleton
     @Provides
-    fun provideGson(): Gson = GsonBuilder().create()
+    fun provideGoogleApi(@Named("GoogleApiRetrofit") retrofit: Retrofit): GoogleApi = retrofit.create(GoogleApi::class.java)
 
     @Singleton
     @Provides

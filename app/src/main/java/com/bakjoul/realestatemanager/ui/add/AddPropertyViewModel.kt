@@ -14,7 +14,7 @@ import com.bakjoul.realestatemanager.domain.autocomplete.GetAddressPredictionsUs
 import com.bakjoul.realestatemanager.domain.autocomplete.model.AutocompleteWrapper
 import com.bakjoul.realestatemanager.domain.autocomplete.model.PredictionEntity
 import com.bakjoul.realestatemanager.domain.geocoding.GetAddressDetailsUseCase
-import com.bakjoul.realestatemanager.domain.geocoding.model.GeocodingResultEntity
+import com.bakjoul.realestatemanager.domain.geocoding.model.GeocodingWrapper
 import com.bakjoul.realestatemanager.domain.settings.currency.GetCurrentCurrencyUseCase
 import com.bakjoul.realestatemanager.domain.settings.surface_unit.GetCurrentSurfaceUnitUseCase
 import com.bakjoul.realestatemanager.ui.utils.EquatableCallback
@@ -24,8 +24,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.transformLatest
 import java.time.Instant
 import java.time.LocalDate
@@ -61,11 +59,12 @@ class AddPropertyViewModel @Inject constructor(
             }
         }
     private val selectedAddressMutableStateFlow: MutableStateFlow<PredictionEntity?> = MutableStateFlow(null)
-    private val selectedAddressDetailsFlow: Flow<GeocodingResultEntity?> = selectedAddressMutableStateFlow.flatMapLatest { prediction ->
+    private val selectedAddressDetailsFlow: Flow<GeocodingWrapper?> = selectedAddressMutableStateFlow
+        .transformLatest { prediction ->
         if (prediction == null) {
-            flowOf(null)
+            emit(null)
         } else {
-            getAddressDetailsUseCase.invoke(prediction.placeId)
+            emit(getAddressDetailsUseCase.invoke(prediction.placeId))
         }
     }
 
@@ -102,34 +101,33 @@ class AddPropertyViewModel @Inject constructor(
         }
     }
 
-    private fun formatAddress(addressDetails: GeocodingResultEntity?): String? {
-        return if (addressDetails == null) {
-            null
+    private val _viewActionLiveData = MutableLiveData<Event<AddPropertyViewAction>>()
+    val viewActionLiveData: LiveData<Event<AddPropertyViewAction>> get() = _viewActionLiveData
+
+    private fun formatDateHint(isForSale: Boolean): String {
+        return if (isForSale) {
+            application.getString(R.string.property_for_sale_since)
         } else {
-            val streetNumberComponent = addressDetails.addressComponents.find { it.types.contains("street_number") }
-            val routeComponent = addressDetails.addressComponents.find { it.types.contains("route") }
-
-            if (streetNumberComponent != null && routeComponent != null) {
-                return streetNumberComponent.longName + " " + routeComponent.longName
-            }
-
-            return null
+            application.getString(R.string.property_sold_on)
         }
     }
 
-    private val _viewActionLiveData = MutableLiveData<Event<AddPropertyViewAction>>()
-    val viewActionLiveData: LiveData<Event<AddPropertyViewAction>> get() = _viewActionLiveData
+    private fun formatPriceHint(currency: AppCurrency): String = "Price (${currency.symbol})"
+
+    private fun formatSurfaceLabel(surfaceUnit: SurfaceUnit): String = "Surface (${surfaceUnit.unit})"
+
+    private fun formatSurfaceValue(surface: Double): String {
+        return if (surface == surface.toInt().toDouble()) {
+            surface.toInt().toString()
+        } else {
+            String.format("%.1f", surface)
+        }
+    }
 
     private fun mapAddressPredictions(wrapper : AutocompleteWrapper?): List<AddPropertySuggestionItemViewState> = when (wrapper) {
         is AutocompleteWrapper.Error,
         is AutocompleteWrapper.Failure -> emptyList()
-        is AutocompleteWrapper.NoResults -> listOf(
-            AddPropertySuggestionItemViewState(
-                "",
-                "NO SUGGESTIONS",
-
-            )
-        )
+        is AutocompleteWrapper.NoResults -> emptyList()
         is AutocompleteWrapper.Success -> wrapper.predictions.map { predictionEntity ->
             AddPropertySuggestionItemViewState(
                 id = predictionEntity.placeId,
@@ -143,28 +141,26 @@ class AddPropertyViewModel @Inject constructor(
         null -> emptyList()
     }
 
-    private fun formatSurfaceValue(surface: Double): String {
-        return if (surface == surface.toInt().toDouble()) {
-            surface.toInt().toString()
-        } else {
-            String.format("%.1f", surface)
+    private fun formatAddress(wrapper: GeocodingWrapper?): String? = when (wrapper) {
+        is GeocodingWrapper.Error,
+        is GeocodingWrapper.Failure -> null
+        is GeocodingWrapper.NoResults -> null
+        is GeocodingWrapper.Success -> {
+            val result = wrapper.results.firstOrNull()
+            if (result != null) {
+                val streetNumberComponent = result.addressComponents.find { it.types.contains("street_number") }
+                val routeComponent = result.addressComponents.find { it.types.contains("route") }
+
+                if (streetNumberComponent != null && routeComponent != null) {
+                    streetNumberComponent.longName + " " + routeComponent.longName
+                } else {
+                    null
+                }
+            } else {
+                null
+            }
         }
-    }
-
-    private fun formatPriceHint(currency: AppCurrency): String {
-        return "Price (${currency.symbol})"
-    }
-
-    private fun formatDateHint(isForSale: Boolean): String {
-        return if (isForSale) {
-            application.getString(R.string.property_for_sale_since)
-        } else {
-            application.getString(R.string.property_sold_on)
-        }
-    }
-
-    private fun formatSurfaceLabel(surfaceUnit: SurfaceUnit): String {
-        return "Surface (${surfaceUnit.unit})"
+        null -> null
     }
 
     fun onPropertyTypeChanged(checkedId: Int) {
