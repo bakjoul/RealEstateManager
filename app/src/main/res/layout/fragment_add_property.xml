@@ -177,7 +177,7 @@
             android:id="@+id/add_property_address_TextInputEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="none"
+            android:inputType="textNoSuggestions"
             android:lines="1" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -194,7 +194,7 @@
             android:id="@+id/add_property_complementary_address_TextInputEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="none"
+            android:inputType="textNoSuggestions"
             android:lines="1" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -211,7 +211,7 @@
             android:id="@+id/add_property_city_TextInputEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="none"
+            android:inputType="textNoSuggestions"
             android:lines="1" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -231,7 +231,7 @@
             android:id="@+id/add_property_state_region_TextInputEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="none"
+            android:inputType="textNoSuggestions"
             android:lines="1" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -250,7 +250,7 @@
             android:id="@+id/add_property_zipcode_TextInputEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="none"
+            android:inputType="number"
             android:lines="1" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -262,7 +262,7 @@
         app:layout_constraintEnd_toEndOf="@id/add_property_address_TextInputLayout"
         app:layout_constraintStart_toStartOf="@id/add_property_address_TextInputLayout"
         app:layout_constraintTop_toBottomOf="@id/add_property_address_TextInputLayout"
-        tools:visibility="visible">
+        tools:visibility="gone">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/add_property_address_suggestions_RecyclerView"
