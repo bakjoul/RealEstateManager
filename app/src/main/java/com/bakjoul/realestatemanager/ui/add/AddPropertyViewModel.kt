@@ -1,7 +1,6 @@
 package com.bakjoul.realestatemanager.ui.add
 
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -67,6 +66,8 @@ class AddPropertyViewModel @Inject constructor(
             emit(getAddressDetailsUseCase.invoke(prediction.placeId))
         }
     }
+    private var currentAddress: String? = null
+    private var isAddressTextUpdatedByAutocomplete = false
 
     val viewStateLiveData: LiveData<AddPropertyViewState> = liveData {
         combine(
@@ -81,6 +82,7 @@ class AddPropertyViewModel @Inject constructor(
             addressPredictionsFlow,
             selectedAddressDetailsFlow
         ) { currency, surfaceUnit, propertyType, isForSale, surface, numberOfRooms, numberOfBathrooms, numberOfBedrooms, address, addressDetails ->
+            currentAddress = formatAddress(addressDetails)
             AddPropertyViewState(
                 propertyType = propertyType,
                 dateHint = formatDateHint(isForSale),
@@ -91,7 +93,7 @@ class AddPropertyViewModel @Inject constructor(
                 numberOfBathrooms = numberOfBathrooms.toString(),
                 numberOfBedrooms = numberOfBedrooms.toString(),
                 addressPredictions = mapAddressPredictions(address),
-                address = formatAddress(addressDetails),
+                address = currentAddress,
                 state = "",
                 city = "",
                 zipcode = ""
@@ -250,11 +252,20 @@ class AddPropertyViewModel @Inject constructor(
     }
 
     fun onAddressChanged(address: String) {
-        currentAddressInputMutableStateFlow.value = address
+        if (!isAddressTextUpdatedByAutocomplete) {
+            val selectedAddress = selectedAddressMutableStateFlow.value
+            currentAddressInputMutableStateFlow.value = address
 
-        Log.d("test", "onAddressChanged: ${selectedAddressMutableStateFlow.value} $address")
-        if (selectedAddressMutableStateFlow.value != null && address != selectedAddressMutableStateFlow.value!!.address) {
-            selectedAddressMutableStateFlow.value = null
+            if (selectedAddress != null && address != currentAddress) {
+                selectedAddressMutableStateFlow.value = null
+                currentAddress = null
+            }
+        } else {
+            isAddressTextUpdatedByAutocomplete = false
         }
+    }
+
+    fun onAddressTextUpdatedByAutocomplete() {
+        isAddressTextUpdatedByAutocomplete = true
     }
 }

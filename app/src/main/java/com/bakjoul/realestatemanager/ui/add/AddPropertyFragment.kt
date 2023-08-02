@@ -1,7 +1,6 @@
 package com.bakjoul.realestatemanager.ui.add
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.ViewTreeObserver
 import android.view.inputmethod.EditorInfo
@@ -261,17 +260,18 @@ class AddPropertyFragment : Fragment(R.layout.fragment_add_property) {
                 binding.addPropertyBedroomsPlusMinusView.setValueEditText(it.numberOfBedrooms)
             }
 
-            Log.d("test", "onViewCreated: ${it.address} ${binding.addPropertyAddressTextInputEditText.text}")
-            if (it.addressPredictions.isEmpty() || (it.address != null && it.address.equals(binding.addPropertyAddressTextInputEditText))) {
+            // Updates address field on autocomplete selection
+            if (it.address != null && it.address != binding.addPropertyAddressTextInputEditText.text.toString()) {
+                viewModel.onAddressTextUpdatedByAutocomplete()
+                binding.addPropertyAddressTextInputEditText.setText(it.address)
+            }
+
+            if (it.addressPredictions.isEmpty() || (it.address != null && it.address == binding.addPropertyAddressTextInputEditText.text.toString())) {
                 binding.addPropertyAddressSuggestionsRecyclerView.visibility = View.GONE
             } else {
                 binding.addPropertyAddressSuggestionsRecyclerView.visibility = View.VISIBLE
             }
             suggestionsRVAdapter.submitList(it.addressPredictions)
-
-            if (it.address != null && it.address != binding.addPropertyAddressTextInputEditText.text.toString()) {
-                binding.addPropertyAddressTextInputEditText.setText(it.address)
-            }
         }
 
         viewModel.viewActionLiveData.observeEvent(viewLifecycleOwner) {
