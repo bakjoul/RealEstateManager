@@ -216,8 +216,7 @@ class AddPropertyFragment : Fragment(R.layout.fragment_add_property) {
             }
         }
 
-        binding.addPropertyBedroomsPlusMinusView.getValueEditText().imeOptions =
-            EditorInfo.IME_ACTION_DONE
+        binding.addPropertyBedroomsPlusMinusView.getValueEditText().imeOptions = EditorInfo.IME_ACTION_DONE
 
         binding.addPropertyBedroomsPlusMinusView.getValueEditText()
             .setOnEditorActionListener { _, actionId, _ ->
@@ -243,6 +242,16 @@ class AddPropertyFragment : Fragment(R.layout.fragment_add_property) {
             viewModel.onAddressChanged(address)
         }
 
+        // Hides suggestions if user click on the close button
+        binding.addPropertyAddressSuggestionsCloseButton.setOnClickListener {
+            binding.addPropertyAddressSuggestionsContainer.visibility = View.GONE
+        }
+
+        // Hides suggestions if user click on the root view
+        binding.root.setOnClickListener {
+            binding.addPropertyAddressSuggestionsContainer.visibility = View.GONE
+        }
+
         viewModel.viewStateLiveData.observe(viewLifecycleOwner) {
             binding.addPropertyDateTextInputLayout.hint = it.dateHint
             binding.addPropertyPriceTextInputLayout.hint = it.priceHint
@@ -260,24 +269,29 @@ class AddPropertyFragment : Fragment(R.layout.fragment_add_property) {
                 binding.addPropertyBedroomsPlusMinusView.setValueEditText(it.numberOfBedrooms)
             }
 
-            // Updates address field on autocomplete selection
+            // Updates address fields on autocomplete selection
             if (it.address != null && it.address != binding.addPropertyAddressTextInputEditText.text.toString()) {
                 viewModel.onAddressTextUpdatedByAutocomplete()
                 binding.addPropertyAddressTextInputEditText.setText(it.address)
             }
 
+            // Hides suggestions when a suggestion is selected
             if (it.addressPredictions.isEmpty() || (it.address != null && it.address == binding.addPropertyAddressTextInputEditText.text.toString())) {
-                binding.addPropertyAddressSuggestionsRecyclerView.visibility = View.GONE
+                binding.addPropertyAddressSuggestionsContainer.visibility = View.GONE
             } else {
-                binding.addPropertyAddressSuggestionsRecyclerView.visibility = View.VISIBLE
+                binding.addPropertyAddressSuggestionsContainer.visibility = View.VISIBLE
             }
             suggestionsRVAdapter.submitList(it.addressPredictions)
+
+            if (it.state != null) binding.addPropertyStateRegionTextInputEditText.setText(it.state)
+            if (it.city != null) binding.addPropertyCityTextInputEditText.setText(it.city)
+            if (it.zipcode != null) binding.addPropertyZipcodeTextInputEditText.setText(it.zipcode)
         }
 
         viewModel.viewActionLiveData.observeEvent(viewLifecycleOwner) {
             when (it) {
                 AddPropertyViewAction.HideSuggestions -> {
-                    binding.addPropertyAddressSuggestionsRecyclerView.visibility = View.GONE
+                    binding.addPropertyAddressSuggestionsContainer.visibility = View.GONE
                     binding.addPropertyAddressTextInputEditText.clearFocus()
                     hideKeyboard()
                 }

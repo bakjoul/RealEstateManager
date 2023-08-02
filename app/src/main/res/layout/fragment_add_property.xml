@@ -254,21 +254,41 @@
             android:lines="1" />
     </com.google.android.material.textfield.TextInputLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/add_property_address_suggestions_RecyclerView"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/add_property_address_suggestions_container"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="-1dp"
-        android:background="@drawable/suggestions_bkg"
-        android:maxHeight="200dp"
-        android:padding="2dp"
-        android:scrollbars="vertical"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintEnd_toEndOf="@id/add_property_address_TextInputLayout"
         app:layout_constraintStart_toStartOf="@id/add_property_address_TextInputLayout"
         app:layout_constraintTop_toBottomOf="@id/add_property_address_TextInputLayout"
-        tools:itemCount="5"
-        tools:listitem="@layout/fragment_add_property_suggestion_item"
-        tools:visibility="gone" />
+        tools:visibility="visible">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/add_property_address_suggestions_RecyclerView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/suggestions_bkg"
+            android:maxHeight="200dp"
+            android:scrollbars="vertical"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:itemCount="5"
+            tools:listitem="@layout/fragment_add_property_suggestion_item" />
+
+        <ImageButton
+            android:id="@+id/add_property_address_suggestions_close_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:background="@null"
+            android:contentDescription="@string/add_property_close_button_desc"
+            android:padding="0dp"
+            android:src="@drawable/baseline_close_24_grey"
+            app:layout_constraintEnd_toEndOf="@id/add_property_address_suggestions_RecyclerView"
+            app:layout_constraintTop_toTopOf="@id/add_property_address_suggestions_RecyclerView" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

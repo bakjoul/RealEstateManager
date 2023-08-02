@@ -1,6 +1,7 @@
 package com.bakjoul.realestatemanager.ui.add
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -66,8 +67,12 @@ class AddPropertyViewModel @Inject constructor(
             emit(getAddressDetailsUseCase.invoke(prediction.placeId))
         }
     }
-    private var currentAddress: String? = null
+
     private var isAddressTextUpdatedByAutocomplete = false
+    private var currentAddress: String? = null
+    private var state: String? = null
+    private var city: String? = null
+    private var zipcode: String? = null
 
     val viewStateLiveData: LiveData<AddPropertyViewState> = liveData {
         combine(
@@ -82,7 +87,8 @@ class AddPropertyViewModel @Inject constructor(
             addressPredictionsFlow,
             selectedAddressDetailsFlow
         ) { currency, surfaceUnit, propertyType, isForSale, surface, numberOfRooms, numberOfBathrooms, numberOfBedrooms, address, addressDetails ->
-            currentAddress = formatAddress(addressDetails)
+            updateAddressData(addressDetails)
+            Log.d("test", "address: $currentAddress state: $state city: $city zipcode: $zipcode")
             AddPropertyViewState(
                 propertyType = propertyType,
                 dateHint = formatDateHint(isForSale),
@@ -94,9 +100,9 @@ class AddPropertyViewModel @Inject constructor(
                 numberOfBedrooms = numberOfBedrooms.toString(),
                 addressPredictions = mapAddressPredictions(address),
                 address = currentAddress,
-                state = "",
-                city = "",
-                zipcode = ""
+                state = state,
+                city = city,
+                zipcode = zipcode
             )
         }.collect {
             emit(it)
@@ -143,26 +149,45 @@ class AddPropertyViewModel @Inject constructor(
         null -> emptyList()
     }
 
-    private fun formatAddress(wrapper: GeocodingWrapper?): String? = when (wrapper) {
+    private fun updateAddressData(wrapper: GeocodingWrapper?) = when (wrapper) {
         is GeocodingWrapper.Error,
-        is GeocodingWrapper.Failure -> null
-        is GeocodingWrapper.NoResults -> null
+        is GeocodingWrapper.Failure -> null // TODO
+        is GeocodingWrapper.NoResults -> null // TODO
         is GeocodingWrapper.Success -> {
             val result = wrapper.results.firstOrNull()
             if (result != null) {
                 val streetNumberComponent = result.addressComponents.find { it.types.contains("street_number") }
                 val routeComponent = result.addressComponents.find { it.types.contains("route") }
+                val stateComponent = result.addressComponents.find { it.types.contains("administrative_area_level_1") }
+                val cityComponent = result.addressComponents.find { it.types.contains("locality") }
+                val zipcodeComponent = result.addressComponents.find { it.types.contains("postal_code") }
 
-                if (streetNumberComponent != null && routeComponent != null) {
-                    streetNumberComponent.longName + " " + routeComponent.longName
+                if (streetNumberComponent != null
+                    && routeComponent != null
+                    && stateComponent != null
+                    && cityComponent != null
+                    && zipcodeComponent != null) {
+                    currentAddress = streetNumberComponent.longName + " " + routeComponent.longName
+                    state = stateComponent.longName
+                    city = cityComponent.longName
+                    zipcode = zipcodeComponent.longName
                 } else {
-                    null
+                    resetAddressFields()
                 }
             } else {
-                null
+                resetAddressFields()
             }
         }
-        null -> null
+        null -> {
+            resetAddressFields()
+        }
+    }
+
+    private fun resetAddressFields() {
+        currentAddress = null
+        state = null
+        city = null
+        zipcode = null
     }
 
     fun onPropertyTypeChanged(checkedId: Int) {

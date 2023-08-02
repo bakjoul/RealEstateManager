@@ -52,4 +52,5 @@
     <string name="add_property_city_hint">City</string>
     <string name="add_property_state_hint">State</string>
     <string name="add_property_zip_code_hint">Zip code</string>
+    <string name="add_property_close_button_desc">Close suggestions</string>
 </resources>
