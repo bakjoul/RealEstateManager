@@ -2,6 +2,7 @@ package com.bakjoul.realestatemanager.data.currency_rate
 
 import android.app.Application
 import android.content.Context
+import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
@@ -10,22 +11,21 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.bakjoul.realestatemanager.BuildConfig
 import com.bakjoul.realestatemanager.data.api.CurrencyApi
-import com.bakjoul.realestatemanager.data.currency_rate.model.CurrencyRateResponse
-import com.bakjoul.realestatemanager.data.currency_rate.model.CurrencyRateResponseWrapper
-import com.bakjoul.realestatemanager.data.currency_rate.model.CurrencyResponse
-import com.bakjoul.realestatemanager.data.currency_rate.model.RatesResponse
+import com.bakjoul.realestatemanager.data.currency_rate.model.CurrencyRateWrapper
 import com.bakjoul.realestatemanager.data.settings.model.AppCurrency
 import com.bakjoul.realestatemanager.domain.currency_rate.CurrencyRateRepository
 import com.bakjoul.realestatemanager.domain.currency_rate.model.CurrencyRateEntity
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 import java.io.IOException
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -48,13 +48,14 @@ class CurrencyRateRepositoryImplementation @Inject constructor(
     private val Context.currencyRateDataStore: DataStore<Preferences> by preferencesDataStore(name = CURRENCY_RATE_DATA_STORE_NAME)
     private val currencyRateType = object : TypeToken<CurrencyRateEntity>() {}.type
 
-    override suspend fun getEuroRate(): CurrencyRateResponseWrapper {
+    override suspend fun getEuroRate(): CurrencyRateWrapper = withContext(Dispatchers.IO) {
         val cachedEuroRate = getCachedEuroRateFlow().firstOrNull()
-        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-        val formattedCachedRateUpdate = cachedEuroRate?.updateDate?.format(formatter)
+        /*val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val formattedCachedRateUpdate = cachedEuroRate?.updateDate?.format(formatter)*/
 
         if (cachedEuroRate == null || cachedEuroRate.updateDate != LocalDate.now()) {
             try {
+                Log.d("test", "getEuroRate: $coroutineContext")
                 val response = currencyApi.getCurrencyRate(
                     "EUR",
                     "USD",
@@ -62,22 +63,24 @@ class CurrencyRateRepositoryImplementation @Inject constructor(
                 )
 
                 return if (response.status == "success" && response.rates?.usdResponse?.rate != null) {
-                    val currencyRate = CurrencyRateEntity(
+                    val rate = CurrencyRateEntity(
                         currency = AppCurrency.EUR,
                         rate = response.rates.usdResponse.rate.toDouble(),
                         updateDate = LocalDate.now(),
                     )
-                    saveEuroRate(currencyRate)
-                    CurrencyRateResponseWrapper.Success(response)
+                    saveEuroRate(rate)
+                    Log.i(TAG, "Euro exchange rate at $${rate.rate} on ${rate.updateDate}")
+                    CurrencyRateWrapper.Success(rate)
                 } else {
-                    CurrencyRateResponseWrapper.Failure("getEuroRate(): failure")
+                    CurrencyRateWrapper.Failure("Failed to update Euro rate")
                 }
 
             } catch (e: Exception) {
-                return CurrencyRateResponseWrapper.Error(e)
+                coroutineContext.ensureActive()
+                return CurrencyRateWrapper.Error(e)
             }
         } else {
-            val cachedResponse = CurrencyRateResponse(
+            /*val cachedRate = CurrencyRateResponse(
                 updatedDate = formattedCachedRateUpdate ?: "",
                 rates = RatesResponse(
                     usdResponse = CurrencyResponse(
@@ -88,8 +91,14 @@ class CurrencyRateRepositoryImplementation @Inject constructor(
                     eurResponse = null
                 ),
                 status = "success"
+            )*/
+            val cachedRate = CurrencyRateEntity(
+                currency = AppCurrency.EUR,
+                rate = cachedEuroRate.rate,
+                updateDate = cachedEuroRate.updateDate,
             )
-            return CurrencyRateResponseWrapper.Success(cachedResponse)
+
+            return CurrencyRateWrapper.Success(cachedRate)
         }
     }
 

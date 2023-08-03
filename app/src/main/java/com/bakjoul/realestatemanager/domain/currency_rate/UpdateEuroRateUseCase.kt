@@ -1,7 +1,7 @@
 package com.bakjoul.realestatemanager.domain.currency_rate
 
 import android.util.Log
-import com.bakjoul.realestatemanager.data.currency_rate.model.CurrencyRateResponseWrapper
+import com.bakjoul.realestatemanager.data.currency_rate.model.CurrencyRateWrapper
 import javax.inject.Inject
 
 class UpdateEuroRateUseCase @Inject constructor(private val currencyRateRepository: CurrencyRateRepository) {
@@ -12,15 +12,15 @@ class UpdateEuroRateUseCase @Inject constructor(private val currencyRateReposito
 
     suspend fun invoke() {
         when (val result = currencyRateRepository.getEuroRate()) {
-            is CurrencyRateResponseWrapper.Success -> {
-                Log.i(TAG, "Euro exchange rate at $${result.currencyRateResponse.rates?.usdResponse?.rate} on ${result.currencyRateResponse.updatedDate}")
+            is CurrencyRateWrapper.Success -> {
+                Log.i(TAG, "Euro exchange rate at $${result.currencyRateEntity.rate} on ${result.currencyRateEntity.updateDate}")
             }
 
-            is CurrencyRateResponseWrapper.Error -> {
-                Log.d(TAG, "Error while updating Euro rate: ${result.throwable.message}")
+            is CurrencyRateWrapper.Error -> {
+                Log.d(TAG, "Error while updating Euro rate: ${result.exception.message}")
             }
 
-            is CurrencyRateResponseWrapper.Failure -> {
+            is CurrencyRateWrapper.Failure -> {
                 Log.d(TAG, "Failed to update Euro rate")
             }
         }

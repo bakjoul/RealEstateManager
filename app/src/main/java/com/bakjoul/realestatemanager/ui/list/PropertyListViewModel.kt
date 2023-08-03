@@ -32,7 +32,7 @@ class PropertyListViewModel @Inject constructor(
     private val getPropertiesFlowUseCase: GetPropertiesFlowUseCase,
     private val setCurrentPropertyIdUseCase: SetCurrentPropertyIdUseCase,
     private val getCurrentCurrencyUseCase: GetCurrentCurrencyUseCase,
-    private val getCachedEuroRateUseCase: GetCachedEuroRateUseCase,
+    private val getEuroRateUseCase: GetCachedEuroRateUseCase,
     private val getCurrentSurfaceUnitUseCase: GetCurrentSurfaceUnitUseCase,
     private val isTabletUseCase: IsTabletUseCase
 ) : ViewModel() {
@@ -43,7 +43,7 @@ class PropertyListViewModel @Inject constructor(
         combine(
             getPropertiesFlowUseCase.invoke(),
             getCurrentCurrencyUseCase.invoke(),
-            getCachedEuroRateUseCase.invoke(),
+            getEuroRateUseCase.invoke(),
             getCurrentSurfaceUnitUseCase.invoke(),
             isTabletUseCase.invoke()
         ) { properties, currency, euroRate, surfaceUnit, isTablet ->
