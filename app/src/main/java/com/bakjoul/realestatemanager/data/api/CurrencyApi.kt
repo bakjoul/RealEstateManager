@@ -10,6 +10,5 @@ interface CurrencyApi {
     suspend fun getCurrencyRate(
         @Query("from") from: String,
         @Query("to") to: String,
-        @Query("api_key") key: String
     ): CurrencyRateResponse
 }

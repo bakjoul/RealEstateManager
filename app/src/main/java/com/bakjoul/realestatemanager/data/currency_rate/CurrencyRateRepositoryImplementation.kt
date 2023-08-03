@@ -8,7 +8,6 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
-import com.bakjoul.realestatemanager.BuildConfig
 import com.bakjoul.realestatemanager.data.api.CurrencyApi
 import com.bakjoul.realestatemanager.data.currency_rate.model.CurrencyRateResponse
 import com.bakjoul.realestatemanager.data.currency_rate.model.CurrencyRateResponseWrapper
@@ -19,6 +18,7 @@ import com.bakjoul.realestatemanager.domain.currency_rate.CurrencyRateRepository
 import com.bakjoul.realestatemanager.domain.currency_rate.model.CurrencyRateEntity
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.firstOrNull
@@ -28,6 +28,7 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.coroutines.coroutineContext
 
 @Singleton
 class CurrencyRateRepositoryImplementation @Inject constructor(
@@ -58,7 +59,6 @@ class CurrencyRateRepositoryImplementation @Inject constructor(
                 val response = currencyApi.getCurrencyRate(
                     "EUR",
                     "USD",
-                    BuildConfig.CURRENCY_API_KEY
                 )
 
                 return if (response.status == "success" && response.rates?.usdResponse?.rate != null) {
@@ -74,6 +74,7 @@ class CurrencyRateRepositoryImplementation @Inject constructor(
                 }
 
             } catch (e: Exception) {
+                coroutineContext.ensureActive()
                 return CurrencyRateResponseWrapper.Error(e)
             }
         } else {

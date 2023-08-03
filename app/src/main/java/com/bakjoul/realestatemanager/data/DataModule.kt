@@ -1,5 +1,6 @@
 package com.bakjoul.realestatemanager.data
 
+import com.bakjoul.realestatemanager.BuildConfig
 import com.bakjoul.realestatemanager.data.api.CurrencyApi
 import com.bakjoul.realestatemanager.data.api.GoogleApi
 import com.google.firebase.auth.FirebaseAuth
@@ -10,12 +11,13 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
-import javax.inject.Named
+import javax.inject.Qualifier
 import javax.inject.Singleton
 
 @Module
@@ -32,9 +34,35 @@ class DataModule {
         level = HttpLoggingInterceptor.Level.BASIC
     }
 
+    @CurrencyApiHttpClient
     @Singleton
     @Provides
-    fun provideOkHttpClient(httpLoggingInterceptor: HttpLoggingInterceptor): OkHttpClient = OkHttpClient.Builder()
+    fun provideCurrencyApiOkHttpClient(httpLoggingInterceptor: HttpLoggingInterceptor): OkHttpClient = OkHttpClient.Builder()
+        .addInterceptor(httpLoggingInterceptor)
+        .connectTimeout(10, TimeUnit.SECONDS)
+        .readTimeout(10, TimeUnit.SECONDS)
+        .addInterceptor(
+            Interceptor { chain: Interceptor.Chain ->
+                chain.proceed(
+                    chain.request().let { request ->
+                        request
+                            .newBuilder()
+                            .url(
+                                request.url.newBuilder()
+                                    .addQueryParameter("api_key", BuildConfig.CURRENCY_API_KEY)
+                                    .build()
+                            )
+                            .build()
+                    }
+                )
+            }
+        )
+        .build()
+
+    @GoogleApiHttpClient
+    @Singleton
+    @Provides
+    fun provideGoogleApiOkHttpClient(httpLoggingInterceptor: HttpLoggingInterceptor): OkHttpClient = OkHttpClient.Builder()
         .addInterceptor(httpLoggingInterceptor)
         .connectTimeout(10, TimeUnit.SECONDS)
         .readTimeout(10, TimeUnit.SECONDS)
@@ -42,33 +70,29 @@ class DataModule {
 
     @Singleton
     @Provides
-    @Named("CurrencyApiRetrofit")
-    fun provideCurrencyApiRetrofit(httpClient: OkHttpClient, gson: Gson): Retrofit {
-        return Retrofit.Builder()
-            .baseUrl("https://api.getgeoapi.com/v2/currency/convert/")
-            .addConverterFactory(GsonConverterFactory.create(gson))
-            .client(httpClient)
-            .build()
-    }
+    @CurrencyApiRetrofit
+    fun provideCurrencyApiRetrofit(@CurrencyApiHttpClient httpClient: OkHttpClient, gson: Gson): Retrofit = Retrofit.Builder()
+        .baseUrl("https://api.getgeoapi.com/v2/currency/convert/")
+        .addConverterFactory(GsonConverterFactory.create(gson))
+        .client(httpClient)
+        .build()
 
     @Singleton
     @Provides
-    @Named("GoogleApiRetrofit")
-    fun provideGoogleApiRetrofit(httpClient: OkHttpClient, gson: Gson): Retrofit {
-        return Retrofit.Builder()
-            .baseUrl("https://maps.googleapis.com/maps/api/")
-            .addConverterFactory(GsonConverterFactory.create(gson))
-            .client(httpClient)
-            .build()
-    }
+    @GoogleApiRetrofit
+    fun provideGoogleApiRetrofit(@GoogleApiHttpClient httpClient: OkHttpClient, gson: Gson): Retrofit = Retrofit.Builder()
+        .baseUrl("https://maps.googleapis.com/maps/api/")
+        .addConverterFactory(GsonConverterFactory.create(gson))
+        .client(httpClient)
+        .build()
 
     @Singleton
     @Provides
-    fun provideCurrencyApi(@Named("CurrencyApiRetrofit") retrofit: Retrofit): CurrencyApi = retrofit.create(CurrencyApi::class.java)
+    fun provideCurrencyApi(@CurrencyApiRetrofit retrofit: Retrofit): CurrencyApi = retrofit.create(CurrencyApi::class.java)
 
     @Singleton
     @Provides
-    fun provideGoogleApi(@Named("GoogleApiRetrofit") retrofit: Retrofit): GoogleApi = retrofit.create(GoogleApi::class.java)
+    fun provideGoogleApi(@GoogleApiRetrofit retrofit: Retrofit): GoogleApi = retrofit.create(GoogleApi::class.java)
 
     @Singleton
     @Provides
@@ -78,3 +102,19 @@ class DataModule {
     @Provides
     fun provideFirebaseAuth(): FirebaseAuth = FirebaseAuth.getInstance()
 }
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class GoogleApiRetrofit
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class GoogleApiHttpClient
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class CurrencyApiRetrofit
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class CurrencyApiHttpClient
