@@ -1,7 +1,6 @@
 package com.bakjoul.realestatemanager.data.autocomplete
 
 import androidx.collection.LruCache
-import com.bakjoul.realestatemanager.BuildConfig
 import com.bakjoul.realestatemanager.data.api.GoogleApi
 import com.bakjoul.realestatemanager.data.autocomplete.model.AutocompleteResponse
 import com.bakjoul.realestatemanager.domain.autocomplete.AutocompleteRepository
@@ -26,8 +25,7 @@ class AutocompleteRepositoryImplementation @Inject constructor(private val googl
         lruCache.get(input) ?: try {
             val response = googleApi.getAddressPredictions(
                 input = input,
-                type = TYPE,
-                key = BuildConfig.MAPS_API_KEY
+                type = TYPE
             )
 
             when (response.status) {

@@ -4,6 +4,6 @@ import com.bakjoul.realestatemanager.domain.currency_rate.model.CurrencyRateEnti
 
 sealed class CurrencyRateWrapper {
     data class Success(val currencyRateEntity: CurrencyRateEntity) : CurrencyRateWrapper()
-    data class Failure(val message: String) : CurrencyRateWrapper()
-    data class Error(val exception: Exception) : CurrencyRateWrapper()
+    data class Failure(val currencyRateEntity: CurrencyRateEntity, val message: String) : CurrencyRateWrapper()
+    data class Error(val currencyRateEntity: CurrencyRateEntity, val exception: Exception) : CurrencyRateWrapper()
 }

@@ -10,13 +10,11 @@ interface GoogleApi {
     @GET("place/autocomplete/json")
     suspend fun getAddressPredictions(
         @Query("input") input: String,
-        @Query("type") type: String,
-        @Query("key") key: String
+        @Query("type") type: String
     ): AutocompleteResponse
 
     @GET("geocode/json")
     suspend fun getAddressDetails(
-        @Query("place_id") placeId: String,
-        @Query("key") key: String
+        @Query("place_id") placeId: String
     ): GeocodingResponse
 }

@@ -1,7 +1,6 @@
 package com.bakjoul.realestatemanager.data.geocoding
 
 import androidx.collection.LruCache
-import com.bakjoul.realestatemanager.BuildConfig
 import com.bakjoul.realestatemanager.data.api.GoogleApi
 import com.bakjoul.realestatemanager.data.geocoding.model.AddressComponentResponse
 import com.bakjoul.realestatemanager.data.geocoding.model.GeocodingResponse
@@ -27,8 +26,7 @@ class GeocodingRepositoryImplementation @Inject constructor(private val googleAp
     override suspend fun getAddressDetails(placeId: String): GeocodingWrapper = withContext(Dispatchers.IO) {
         lruCache.get(placeId) ?: try {
             val response = googleApi.getAddressDetails(
-                placeId = placeId,
-                key = BuildConfig.MAPS_API_KEY
+                placeId = placeId
             )
 
             when (response.status) {

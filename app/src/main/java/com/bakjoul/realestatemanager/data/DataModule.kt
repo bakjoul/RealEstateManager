@@ -26,7 +26,7 @@ class DataModule {
 
     @Singleton
     @Provides
-    fun provideGson(): Gson = GsonBuilder().setLenient().create()
+    fun provideGson(): Gson = GsonBuilder().create()
 
     @Singleton
     @Provides
@@ -41,22 +41,6 @@ class DataModule {
         .addInterceptor(httpLoggingInterceptor)
         .connectTimeout(10, TimeUnit.SECONDS)
         .readTimeout(10, TimeUnit.SECONDS)
-        .addInterceptor(
-            Interceptor { chain: Interceptor.Chain ->
-                chain.proceed(
-                    chain.request().let { request ->
-                        request
-                            .newBuilder()
-                            .url(
-                                request.url.newBuilder()
-                                    .addQueryParameter("api_key", BuildConfig.CURRENCY_API_KEY)
-                                    .build()
-                            )
-                            .build()
-                    }
-                )
-            }
-        )
         .build()
 
     @GoogleApiHttpClient
@@ -66,13 +50,29 @@ class DataModule {
         .addInterceptor(httpLoggingInterceptor)
         .connectTimeout(10, TimeUnit.SECONDS)
         .readTimeout(10, TimeUnit.SECONDS)
+        .addInterceptor(
+            Interceptor { chain: Interceptor.Chain ->
+                chain.proceed(
+                    chain.request().let { request ->
+                        request
+                            .newBuilder()
+                            .url(
+                                request.url.newBuilder()
+                                    .addQueryParameter("key", BuildConfig.GOOGLE_API_KEY)
+                                    .build()
+                            )
+                            .build()
+                    }
+                )
+            }
+        )
         .build()
 
     @Singleton
     @Provides
     @CurrencyApiRetrofit
     fun provideCurrencyApiRetrofit(@CurrencyApiHttpClient httpClient: OkHttpClient, gson: Gson): Retrofit = Retrofit.Builder()
-        .baseUrl("https://api.getgeoapi.com/v2/currency/convert/")
+        .baseUrl("https://api.getgeoapi.com/v2/currency/")
         .addConverterFactory(GsonConverterFactory.create(gson))
         .client(httpClient)
         .build()

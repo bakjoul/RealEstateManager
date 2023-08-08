@@ -4,12 +4,14 @@ import android.graphics.Typeface
 import android.text.SpannableString
 import android.text.SpannableStringBuilder
 import android.text.style.StyleSpan
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
+import com.bakjoul.realestatemanager.data.currency_rate.model.CurrencyRateWrapper
 import com.bakjoul.realestatemanager.data.settings.model.AppCurrency
 import com.bakjoul.realestatemanager.data.settings.model.SurfaceUnit
-import com.bakjoul.realestatemanager.domain.currency_rate.GetCachedEuroRateUseCase
+import com.bakjoul.realestatemanager.domain.currency_rate.GetEuroRateUseCase
 import com.bakjoul.realestatemanager.domain.current_property.SetCurrentPropertyIdUseCase
 import com.bakjoul.realestatemanager.domain.property.GetPropertiesFlowUseCase
 import com.bakjoul.realestatemanager.domain.resources.IsTabletUseCase
@@ -32,12 +34,18 @@ class PropertyListViewModel @Inject constructor(
     private val getPropertiesFlowUseCase: GetPropertiesFlowUseCase,
     private val setCurrentPropertyIdUseCase: SetCurrentPropertyIdUseCase,
     private val getCurrentCurrencyUseCase: GetCurrentCurrencyUseCase,
-    private val getEuroRateUseCase: GetCachedEuroRateUseCase,
+    private val getEuroRateUseCase: GetEuroRateUseCase,
     private val getCurrentSurfaceUnitUseCase: GetCurrentSurfaceUnitUseCase,
     private val isTabletUseCase: IsTabletUseCase
 ) : ViewModel() {
 
+    private companion object {
+        private const val TAG = "PropertyListViewModel"
+    }
+
     private val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+    private var euroRate: Double = 0.0
+    private var euroRateDate: String = ""
 
     val propertiesLiveData: LiveData<List<PropertyItemViewState>> = liveData {
         combine(
@@ -46,7 +54,9 @@ class PropertyListViewModel @Inject constructor(
             getEuroRateUseCase.invoke(),
             getCurrentSurfaceUnitUseCase.invoke(),
             isTabletUseCase.invoke()
-        ) { properties, currency, euroRate, surfaceUnit, isTablet ->
+        ) { properties, currency, euroRateWrapper, surfaceUnit, isTablet ->
+            updateRate(euroRateWrapper)
+
             properties.map {
                 PropertyItemViewState(
                     id = it.id,
@@ -54,14 +64,36 @@ class PropertyListViewModel @Inject constructor(
                     type = it.type,
                     city = it.city,
                     features = formatFeatures(it.bedrooms, it.bathrooms, it.surface, surfaceUnit, isTablet),
-                    price = formatPrice(it.price, currency, euroRate.rate),
-                    currencyRate = formatRate(currency, euroRate.rate, euroRate.updateDate.format(dateFormatter)),
+                    price = formatPrice(it.price, currency, euroRate),
+                    currencyRate = formatRate(currency, euroRate, euroRateDate),
                     isSold = it.soldDate != null,
                     onPropertyClicked = EquatableCallback { setCurrentPropertyIdUseCase.invoke(it.id) }
                 )
             }
         }.collect { propertiesItemViewStates ->
             emit(propertiesItemViewStates)
+        }
+    }
+
+    private fun updateRate(euroRateWrapper: CurrencyRateWrapper) {
+        when (euroRateWrapper) {
+            is CurrencyRateWrapper.Success -> {
+                euroRate = euroRateWrapper.currencyRateEntity.rate
+                euroRateDate = euroRateWrapper.currencyRateEntity.updateDate.format(dateFormatter)
+                Log.i(TAG, "Euro exchange rate at $$euroRate on $euroRateDate")
+            }
+
+            is CurrencyRateWrapper.Failure -> {
+                euroRate = euroRateWrapper.currencyRateEntity.rate
+                euroRateDate = euroRateWrapper.currencyRateEntity.updateDate.format(dateFormatter)
+                Log.i(TAG, "Euro exchange rate at $$euroRate on $euroRateDate")
+            }
+
+            is CurrencyRateWrapper.Error -> {
+                euroRate = euroRateWrapper.currencyRateEntity.rate
+                euroRateDate = euroRateWrapper.currencyRateEntity.updateDate.format(dateFormatter)
+                Log.i(TAG, "Euro exchange rate at $$euroRate on $euroRateDate")
+            }
         }
     }
 

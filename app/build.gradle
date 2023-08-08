@@ -25,7 +25,7 @@ android {
 
         Properties properties = new Properties()
         properties.load(project.rootProject.file('local.properties').newDataInputStream())
-        buildConfigField 'String', 'MAPS_API_KEY', "\"${properties.getProperty('MAPS_API_KEY')}\""
+        buildConfigField 'String', 'GOOGLE_API_KEY', "\"${properties.getProperty('GOOGLE_API_KEY')}\""
         buildConfigField 'String', 'CURRENCY_API_KEY', "\"${properties.getProperty('CURRENCY_API_KEY')}\""
     }
 
@@ -94,7 +94,7 @@ dependencies {
     // LiveData
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.6.1'
     // Fragment
-    implementation 'androidx.fragment:fragment-ktx:1.6.0'
+    implementation 'androidx.fragment:fragment-ktx:1.6.1'
     // Retrofit
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
@@ -112,7 +112,7 @@ dependencies {
     // Firestore
     implementation 'com.google.firebase:firebase-firestore-ktx:24.7.0'
     // Firebase Auth
-    implementation 'com.google.firebase:firebase-auth-ktx:22.1.0'
+    implementation 'com.google.firebase:firebase-auth-ktx:22.1.1'
     // Google Auth
     implementation 'com.google.android.gms:play-services-auth:20.6.0'
 

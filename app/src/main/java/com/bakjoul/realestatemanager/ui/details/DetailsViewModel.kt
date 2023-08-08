@@ -6,7 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import com.bakjoul.realestatemanager.BuildConfig
 import com.bakjoul.realestatemanager.R
-import com.bakjoul.realestatemanager.domain.currency_rate.GetCachedEuroRateUseCase
+import com.bakjoul.realestatemanager.data.currency_rate.model.CurrencyRateWrapper
+import com.bakjoul.realestatemanager.domain.currency_rate.GetEuroRateUseCase
 import com.bakjoul.realestatemanager.domain.current_photo.SetCurrentPhotoIdUseCase
 import com.bakjoul.realestatemanager.domain.property.GetCurrentPropertyUseCase
 import com.bakjoul.realestatemanager.domain.property.model.PhotoEntity
@@ -27,7 +28,7 @@ class DetailsViewModel @Inject constructor(
     private val application: Application,
     private val getCurrentPropertyUseCase: GetCurrentPropertyUseCase,
     private val getCurrentCurrencyUseCase: GetCurrentCurrencyUseCase,
-    private val getCachedEuroRateUseCase: GetCachedEuroRateUseCase,
+    private val getEuroRateUseCase: GetEuroRateUseCase,
     private val setCurrentPhotoIdUseCase: SetCurrentPhotoIdUseCase,
     private val getCurrentSurfaceUnitUseCase: GetCurrentSurfaceUnitUseCase
 ) : ViewModel() {
@@ -37,17 +38,21 @@ class DetailsViewModel @Inject constructor(
         private const val STATIC_MAP_ZOOM = "17"
     }
 
+    private var euroRate: Double = 0.0
+
     val detailsLiveData: LiveData<DetailsViewState> = liveData {
         combine(
             getCurrentPropertyUseCase.invoke(),
             getCurrentCurrencyUseCase.invoke(),
-            getCachedEuroRateUseCase.invoke(),
+            getEuroRateUseCase.invoke(),
             getCurrentSurfaceUnitUseCase.invoke()
-        ) { property, currency, euroRate, surfaceUnit ->
+        ) { property, currency, euroRateWrapper, surfaceUnit ->
+            updateRate(euroRateWrapper)
+
             DetailsViewState(
                 mainPhotoUrl = property.photos.first().url,
                 type = property.type,
-                price = formatPrice(property.price, currency, euroRate.rate),
+                price = formatPrice(property.price, currency, euroRate),
                 isSold = property.soldDate != null,
                 city = property.city,
                 sale_status = getSaleStatus(property.soldDate, property.entryDate),
@@ -74,6 +79,14 @@ class DetailsViewModel @Inject constructor(
             )
         }.collect {
             emit(it)
+        }
+    }
+
+    private fun updateRate(euroRateWrapper: CurrencyRateWrapper) {
+        euroRate = when (euroRateWrapper) {
+            is CurrencyRateWrapper.Success -> euroRateWrapper.currencyRateEntity.rate
+            is CurrencyRateWrapper.Failure -> euroRateWrapper.currencyRateEntity.rate
+            is CurrencyRateWrapper.Error -> euroRateWrapper.currencyRateEntity.rate
         }
     }
 
@@ -127,7 +140,7 @@ class DetailsViewModel @Inject constructor(
 
     private fun getMapUrl(address: String, city: String, country: String): String {
         val formattedAddress = formatAddress("$address,$city,$country")
-        return "https://maps.googleapis.com/maps/api/staticmap?&size=$STATIC_MAP_SIZE&zoom=$STATIC_MAP_ZOOM&markers=$formattedAddress&key=${BuildConfig.MAPS_API_KEY}"
+        return "https://maps.googleapis.com/maps/api/staticmap?&size=$STATIC_MAP_SIZE&zoom=$STATIC_MAP_ZOOM&markers=$formattedAddress&key=${BuildConfig.GOOGLE_API_KEY}"
     }
 
     private fun getAddress(address: String, city: String, country: String): String {
