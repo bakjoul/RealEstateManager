@@ -237,9 +237,28 @@ class AddPropertyFragment : Fragment(R.layout.fragment_add_property) {
             viewModel.incrementBedrooms(binding.addPropertyBedroomsPlusMinusView.getIntValue())
         }
 
+        binding.addPropertyAddressTextInputLayout.isEndIconVisible = false
         binding.addPropertyAddressTextInputEditText.doAfterTextChanged { editable ->
             val address = editable?.toString() ?: ""
+
+            binding.addPropertyAddressTextInputLayout.isEndIconVisible = address.isNotEmpty()
             viewModel.onAddressChanged(address)
+        }
+
+        binding.addPropertyAddressTextInputLayout.setEndIconOnClickListener {
+            viewModel.onAddressTextCleared()
+            binding.addPropertyAddressTextInputEditText.setText("")
+        }
+
+        binding.addPropertyComplementaryAddressTextInputLayout.isEndIconVisible = false
+        binding.addPropertyComplementaryAddressTextInputEditText.doAfterTextChanged { editable ->
+            val complementaryAddress = editable?.toString() ?: ""
+
+            binding.addPropertyComplementaryAddressTextInputLayout.isEndIconVisible = complementaryAddress.isNotEmpty()
+        }
+
+        binding.addPropertyComplementaryAddressTextInputLayout.setEndIconOnClickListener {// TODO
+            binding.addPropertyComplementaryAddressTextInputEditText.setText("")
         }
 
         // Hides suggestions if user click on the close button
@@ -283,9 +302,9 @@ class AddPropertyFragment : Fragment(R.layout.fragment_add_property) {
             }
             suggestionsRVAdapter.submitList(it.addressPredictions)
 
-            if (it.state != null) binding.addPropertyStateRegionTextInputEditText.setText(it.state)
-            if (it.city != null) binding.addPropertyCityTextInputEditText.setText(it.city)
-            if (it.zipcode != null) binding.addPropertyZipcodeTextInputEditText.setText(it.zipcode)
+            binding.addPropertyStateRegionTextInputEditText.setText(it.state ?: "")
+            binding.addPropertyCityTextInputEditText.setText(it.city ?: "")
+            binding.addPropertyZipcodeTextInputEditText.setText(it.zipcode ?: "")
         }
 
         viewModel.viewActionLiveData.observeEvent(viewLifecycleOwner) {

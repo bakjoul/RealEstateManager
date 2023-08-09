@@ -68,6 +68,7 @@ class AddPropertyViewModel @Inject constructor(
         }
     }
 
+    private var isAddressTextCleared = false
     private var isAddressTextUpdatedByAutocomplete = false
     private var currentAddress: String? = null
     private var state: String? = null
@@ -146,6 +147,7 @@ class AddPropertyViewModel @Inject constructor(
                 }
             )
         }
+
         null -> emptyList()
     }
 
@@ -166,7 +168,8 @@ class AddPropertyViewModel @Inject constructor(
                     && routeComponent != null
                     && stateComponent != null
                     && cityComponent != null
-                    && zipcodeComponent != null) {
+                    && zipcodeComponent != null
+                ) {
                     currentAddress = streetNumberComponent.longName + " " + routeComponent.longName
                     state = stateComponent.longName
                     city = cityComponent.longName
@@ -178,9 +181,8 @@ class AddPropertyViewModel @Inject constructor(
                 resetAddressFields()
             }
         }
-        null -> {
-            resetAddressFields()
-        }
+
+        null -> resetAddressFields()
     }
 
     private fun resetAddressFields() {
@@ -277,6 +279,13 @@ class AddPropertyViewModel @Inject constructor(
     }
 
     fun onAddressChanged(address: String) {
+        if (isAddressTextCleared) {
+            isAddressTextCleared = false
+            selectedAddressMutableStateFlow.value = null
+            currentAddressInputMutableStateFlow.value = address
+            return
+        }
+
         if (!isAddressTextUpdatedByAutocomplete) {
             val selectedAddress = selectedAddressMutableStateFlow.value
             currentAddressInputMutableStateFlow.value = address
@@ -292,5 +301,9 @@ class AddPropertyViewModel @Inject constructor(
 
     fun onAddressTextUpdatedByAutocomplete() {
         isAddressTextUpdatedByAutocomplete = true
+    }
+
+    fun onAddressTextCleared() {
+        isAddressTextCleared = true
     }
 }
