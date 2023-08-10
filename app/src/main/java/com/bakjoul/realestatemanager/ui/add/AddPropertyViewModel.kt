@@ -61,12 +61,12 @@ class AddPropertyViewModel @Inject constructor(
     private val selectedAddressMutableStateFlow: MutableStateFlow<PredictionEntity?> = MutableStateFlow(null)
     private val selectedAddressDetailsFlow: Flow<GeocodingWrapper?> = selectedAddressMutableStateFlow
         .transformLatest { prediction ->
-        if (prediction == null) {
-            emit(null)
-        } else {
-            emit(getAddressDetailsUseCase.invoke(prediction.placeId))
+            if (prediction == null) {
+                emit(null)
+            } else {
+                emit(getAddressDetailsUseCase.invoke(prediction.placeId))
+            }
         }
-    }
 
     private var isAddressTextCleared = false
     private var isAddressTextUpdatedByAutocomplete = false
@@ -133,7 +133,7 @@ class AddPropertyViewModel @Inject constructor(
         }
     }
 
-    private fun mapAddressPredictions(wrapper : AutocompleteWrapper?): List<AddPropertySuggestionItemViewState> = when (wrapper) {
+    private fun mapAddressPredictions(wrapper: AutocompleteWrapper?): List<AddPropertySuggestionItemViewState> = when (wrapper) {
         is AutocompleteWrapper.Error,
         is AutocompleteWrapper.Failure -> emptyList()
         is AutocompleteWrapper.NoResults -> emptyList()

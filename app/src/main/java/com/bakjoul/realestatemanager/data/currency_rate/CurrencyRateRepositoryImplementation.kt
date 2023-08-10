@@ -54,23 +54,23 @@ class CurrencyRateRepositoryImplementation @Inject constructor(
                     BuildConfig.CURRENCY_API_KEY
                 )
 
-                if (response.status == "success" && response.rates?.usdResponse?.rate != null) {
-                    val rate = CurrencyRateEntity(
-                        currency = AppCurrency.EUR,
-                        rate = response.rates.usdResponse.rate.toDouble(),
-                        updateDate = LocalDate.now(),
-                    )
+                when {
+                    response.status == "success" && response.rates?.usdResponse?.rate != null -> {
+                        val rate = CurrencyRateEntity(
+                            currency = AppCurrency.EUR,
+                            rate = response.rates.usdResponse.rate.toDouble(),
+                            updateDate = LocalDate.now(),
+                        )
 
-                    updateCachedEuroRate(rate)
-                    CurrencyRateWrapper.Success(rate)
-                } else {
-                    if (cachedRate != null) {
-                        CurrencyRateWrapper.Failure(cachedRate, "Failed to update Euro rate, last cached rate will be used (${cachedRate.rate} on ${cachedRate.updateDate})")
-                    } else {
-                        CurrencyRateWrapper.Failure(getDefaultRate(), "Failed to update Euro rate, default rate will be used)")
+                        updateCachedEuroRate(rate)
+                        CurrencyRateWrapper.Success(rate)
                     }
+                    cachedRate != null -> CurrencyRateWrapper.Failure(
+                        cachedRate,
+                        "Failed to update Euro rate, last cached rate will be used (${cachedRate.rate} on ${cachedRate.updateDate})"
+                    )
+                    else -> CurrencyRateWrapper.Failure(getDefaultRate(), "Failed to update Euro rate, default rate will be used)")
                 }
-
             } catch (e: Exception) {
                 coroutineContext.ensureActive()
 
@@ -81,13 +81,11 @@ class CurrencyRateRepositoryImplementation @Inject constructor(
         }
     }
 
-    private fun getDefaultRate(): CurrencyRateEntity {
-        return CurrencyRateEntity(
-            currency = AppCurrency.EUR,
-            rate = DEFAULT_EURO_RATE,
-            updateDate = DEFAULT_EURO_RATE_DATE,
-        )
-    }
+    private fun getDefaultRate() = CurrencyRateEntity(
+        currency = AppCurrency.EUR,
+        rate = DEFAULT_EURO_RATE,
+        updateDate = DEFAULT_EURO_RATE_DATE,
+    )
 
     private suspend fun updateCachedEuroRate(currencyRate: CurrencyRateEntity) {
         val rate = currencyRate.rate.toString()

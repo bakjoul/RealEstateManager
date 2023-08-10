@@ -6,5 +6,5 @@ import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 class GetEuroRateUseCase @Inject constructor(private val currencyRateRepository: CurrencyRateRepository) {
-    fun invoke(): Flow<CurrencyRateWrapper> = flow { emit(currencyRateRepository.getEuroRate()) }
+    suspend fun invoke(): CurrencyRateWrapper = currencyRateRepository.getEuroRate()
 }

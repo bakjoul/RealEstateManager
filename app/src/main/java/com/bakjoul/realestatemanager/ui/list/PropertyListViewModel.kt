@@ -1,14 +1,14 @@
 package com.bakjoul.realestatemanager.ui.list
 
+import android.app.Application
 import android.graphics.Typeface
 import android.text.SpannableString
 import android.text.SpannableStringBuilder
 import android.text.style.StyleSpan
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
-import com.bakjoul.realestatemanager.data.currency_rate.model.CurrencyRateWrapper
+import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.data.settings.model.AppCurrency
 import com.bakjoul.realestatemanager.data.settings.model.SurfaceUnit
 import com.bakjoul.realestatemanager.domain.currency_rate.GetEuroRateUseCase
@@ -22,6 +22,7 @@ import com.bakjoul.realestatemanager.ui.utils.ViewModelUtils.Companion.formatPri
 import com.bakjoul.realestatemanager.ui.utils.ViewModelUtils.Companion.formatSurface
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flow
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.time.format.DateTimeFormatter
@@ -31,6 +32,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PropertyListViewModel @Inject constructor(
+    private val application: Application,
     private val getPropertiesFlowUseCase: GetPropertiesFlowUseCase,
     private val setCurrentPropertyIdUseCase: SetCurrentPropertyIdUseCase,
     private val getCurrentCurrencyUseCase: GetCurrentCurrencyUseCase,
@@ -44,19 +46,15 @@ class PropertyListViewModel @Inject constructor(
     }
 
     private val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-    private var euroRate: Double = 0.0
-    private var euroRateDate: String = ""
 
     val propertiesLiveData: LiveData<List<PropertyItemViewState>> = liveData {
         combine(
             getPropertiesFlowUseCase.invoke(),
             getCurrentCurrencyUseCase.invoke(),
-            getEuroRateUseCase.invoke(),
+            flow { emit(getEuroRateUseCase.invoke()) },
             getCurrentSurfaceUnitUseCase.invoke(),
-            isTabletUseCase.invoke()
+            isTabletUseCase.invoke(),
         ) { properties, currency, euroRateWrapper, surfaceUnit, isTablet ->
-            updateRate(euroRateWrapper)
-
             properties.map {
                 PropertyItemViewState(
                     id = it.id,
@@ -64,8 +62,12 @@ class PropertyListViewModel @Inject constructor(
                     type = it.type,
                     city = it.city,
                     features = formatFeatures(it.bedrooms, it.bathrooms, it.surface, surfaceUnit, isTablet),
-                    price = formatPrice(it.price, currency, euroRate),
-                    currencyRate = formatRate(currency, euroRate, euroRateDate),
+                    price = formatPrice(it.price, currency, euroRateWrapper.currencyRateEntity.rate),
+                    currencyRate = formatRate(
+                        currency,
+                        euroRateWrapper.currencyRateEntity.rate,
+                        euroRateWrapper.currencyRateEntity.updateDate.format(dateFormatter)
+                    ),
                     isSold = it.soldDate != null,
                     onPropertyClicked = EquatableCallback { setCurrentPropertyIdUseCase.invoke(it.id) }
                 )
@@ -75,54 +77,20 @@ class PropertyListViewModel @Inject constructor(
         }
     }
 
-    private fun updateRate(euroRateWrapper: CurrencyRateWrapper) {
-        when (euroRateWrapper) {
-            is CurrencyRateWrapper.Success -> {
-                euroRate = euroRateWrapper.currencyRateEntity.rate
-                euroRateDate = euroRateWrapper.currencyRateEntity.updateDate.format(dateFormatter)
-                Log.i(TAG, "Euro exchange rate at $$euroRate on $euroRateDate")
-            }
-
-            is CurrencyRateWrapper.Failure -> {
-                euroRate = euroRateWrapper.currencyRateEntity.rate
-                euroRateDate = euroRateWrapper.currencyRateEntity.updateDate.format(dateFormatter)
-                Log.i(TAG, "Euro exchange rate at $$euroRate on $euroRateDate")
-            }
-
-            is CurrencyRateWrapper.Error -> {
-                euroRate = euroRateWrapper.currencyRateEntity.rate
-                euroRateDate = euroRateWrapper.currencyRateEntity.updateDate.format(dateFormatter)
-                Log.i(TAG, "Euro exchange rate at $$euroRate on $euroRateDate")
-            }
-        }
-    }
-
-    private fun formatFeatures(bedrooms: Int, bathrooms: Int, surface: Double, surfaceUnit: SurfaceUnit, isTablet: Boolean): String {
+    private fun formatFeatures(bedrooms: Int, bathrooms: Int, surface: Double, surfaceUnit: SurfaceUnit, isTablet: Boolean): String =
         if (isTablet) {
-            val builder = StringBuilder()
-            builder.append(bedrooms)
-            if (bedrooms > 0) {
-                builder.append(" bedrooms")
-            } else {
-                builder.append(" bedroom")
-            }
-            builder.append(" - ")
-            builder.append(bathrooms)
-            if (bathrooms > 0) {
-                builder.append(" bathrooms")
-            } else {
-                builder.append(" bathroom")
-            }
-            builder.append(" - ")
-            builder.append(" ${formatSurface(surface, surfaceUnit)}")
-
-            return builder.toString()
+            val (mappedSurface, mappedSurfaceUnit) = formatSurface(surface, surfaceUnit)
+            application.resources.getString(
+                R.string.features,
+                application.resources.getQuantityString(R.plurals.bedroom_plural, bedrooms, bedrooms),
+                application.resources.getQuantityString(R.plurals.bathroom_plural, bathrooms, bathrooms),
+                application.resources.getString(R.string.surface, mappedSurface, mappedSurfaceUnit)
+            )
         } else {
-            return "$bedrooms bed. - $bathrooms bath. - ${formatSurface(surface, surfaceUnit)}"
+            "$bedrooms bed. - $bathrooms bath. - ${formatSurface(surface, surfaceUnit)}"
         }
-    }
 
-    private fun formatRate(currency: AppCurrency, euroRate: Double, updateDate: String): SpannableString  {
+    private fun formatRate(currency: AppCurrency, euroRate: Double, updateDate: String): SpannableString {
         val rateText = "\$$euroRate"
         val formattedDate = formatDateString(updateDate)
         val fullText = when (currency) {

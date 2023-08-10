@@ -1,6 +1,18 @@
 <resources>
     <string name="app_name">Real Estate Manager</string>
 
+    <plurals name="bedroom_plural">
+        <item quantity="one">%d bedroom</item>
+        <item quantity="other">%d bedrooms</item>
+    </plurals>
+    <plurals name="bathroom_plural">
+        <item quantity="one">%d bathroom</item>
+        <item quantity="other">%d bathrooms</item>
+    </plurals>
+    <string name="surface">%d %s</string>
+
+    <string name="features">%s - %s - %s</string>
+
     <string name="google_web_client_id">77269002192-r4c88c9efvrrfb410rd7ps27fa3khj9h.apps.googleusercontent.com</string>
 
     <string name="property_label_description">Description</string>

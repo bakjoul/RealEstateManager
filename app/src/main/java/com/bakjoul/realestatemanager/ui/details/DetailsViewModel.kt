@@ -18,6 +18,9 @@ import com.bakjoul.realestatemanager.ui.utils.ViewModelUtils.Companion.formatPri
 import com.bakjoul.realestatemanager.ui.utils.ViewModelUtils.Companion.formatSurface
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -38,21 +41,17 @@ class DetailsViewModel @Inject constructor(
         private const val STATIC_MAP_ZOOM = "17"
     }
 
-    private var euroRate: Double = 0.0
-
     val detailsLiveData: LiveData<DetailsViewState> = liveData {
         combine(
             getCurrentPropertyUseCase.invoke(),
             getCurrentCurrencyUseCase.invoke(),
-            getEuroRateUseCase.invoke(),
+            flow { emit(getEuroRateUseCase.invoke()) },
             getCurrentSurfaceUnitUseCase.invoke()
         ) { property, currency, euroRateWrapper, surfaceUnit ->
-            updateRate(euroRateWrapper)
-
             DetailsViewState(
                 mainPhotoUrl = property.photos.first().url,
                 type = property.type,
-                price = formatPrice(property.price, currency, euroRate),
+                price = formatPrice(property.price, currency, euroRateWrapper.currencyRateEntity.rate),
                 isSold = property.soldDate != null,
                 city = property.city,
                 sale_status = getSaleStatus(property.soldDate, property.entryDate),
@@ -82,13 +81,6 @@ class DetailsViewModel @Inject constructor(
         }
     }
 
-    private fun updateRate(euroRateWrapper: CurrencyRateWrapper) {
-        euroRate = when (euroRateWrapper) {
-            is CurrencyRateWrapper.Success -> euroRateWrapper.currencyRateEntity.rate
-            is CurrencyRateWrapper.Failure -> euroRateWrapper.currencyRateEntity.rate
-            is CurrencyRateWrapper.Error -> euroRateWrapper.currencyRateEntity.rate
-        }
-    }
 
     private val locale = Locale.getDefault()
     private val formatter: DateTimeFormatter = if (locale.language == "fr") {

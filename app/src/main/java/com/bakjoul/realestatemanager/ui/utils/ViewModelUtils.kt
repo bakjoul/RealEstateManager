@@ -11,16 +11,9 @@ class ViewModelUtils {
 
     companion object {
 
-        fun formatSurface(surface: Double, surfaceUnit: SurfaceUnit): String {
-            return when (surfaceUnit) {
-                SurfaceUnit.Meters -> {
-                    "$surface ${surfaceUnit.unit}"
-                }
-
-                SurfaceUnit.Feet -> {
-                    "${ceil(surface * 3.28084).toInt()} ${surfaceUnit.unit}"
-                }
-            }
+        fun formatSurface(surface: Double, surfaceUnit: SurfaceUnit): Pair<Int, String> = when (surfaceUnit) {
+            SurfaceUnit.Meters -> surface.toInt() to surfaceUnit.unit
+            SurfaceUnit.Feet -> ceil(surface * 3.28084).toInt() to surfaceUnit.unit
         }
 
         fun formatPrice(price: Double, currency: AppCurrency, euroRate: Double): String {
