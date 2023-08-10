@@ -6,7 +6,7 @@ import retrofit2.http.Query
 
 interface CurrencyApi {
 
-    @GET("convert")
+    @GET("v2/currency/convert")
     suspend fun getCurrencyRate(
         @Query("from") from: String,
         @Query("to") to: String,

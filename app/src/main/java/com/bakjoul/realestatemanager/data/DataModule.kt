@@ -72,7 +72,7 @@ class DataModule {
     @Provides
     @CurrencyApiRetrofit
     fun provideCurrencyApiRetrofit(@CurrencyApiHttpClient httpClient: OkHttpClient, gson: Gson): Retrofit = Retrofit.Builder()
-        .baseUrl("https://api.getgeoapi.com/v2/currency/")
+        .baseUrl("https://api.getgeoapi.com/")
         .addConverterFactory(GsonConverterFactory.create(gson))
         .client(httpClient)
         .build()
