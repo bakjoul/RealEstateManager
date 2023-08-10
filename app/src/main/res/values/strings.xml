@@ -53,4 +53,5 @@
     <string name="add_property_state_region_hint">State / Region</string>
     <string name="add_property_zip_code_hint">Zip code</string>
     <string name="add_property_close_button_desc">Close suggestions</string>
+    <string name="add_property_description_hint">Description</string>
 </resources>
