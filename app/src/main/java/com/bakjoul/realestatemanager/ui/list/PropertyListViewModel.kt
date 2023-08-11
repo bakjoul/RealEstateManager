@@ -41,10 +41,6 @@ class PropertyListViewModel @Inject constructor(
     private val isTabletUseCase: IsTabletUseCase
 ) : ViewModel() {
 
-    private companion object {
-        private const val TAG = "PropertyListViewModel"
-    }
-
     private val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
     val propertiesLiveData: LiveData<List<PropertyItemViewState>> = liveData {
@@ -77,9 +73,10 @@ class PropertyListViewModel @Inject constructor(
         }
     }
 
-    private fun formatFeatures(bedrooms: Int, bathrooms: Int, surface: Double, surfaceUnit: SurfaceUnit, isTablet: Boolean): String =
-        if (isTablet) {
-            val (mappedSurface, mappedSurfaceUnit) = formatSurface(surface, surfaceUnit)
+    private fun formatFeatures(bedrooms: Int, bathrooms: Int, surface: Double, surfaceUnit: SurfaceUnit, isTablet: Boolean): String {
+        val (mappedSurface, mappedSurfaceUnit) = formatSurface(surface, surfaceUnit)
+
+        return if (isTablet) {
             application.resources.getString(
                 R.string.features,
                 application.resources.getQuantityString(R.plurals.bedroom_plural, bedrooms, bedrooms),
@@ -87,8 +84,9 @@ class PropertyListViewModel @Inject constructor(
                 application.resources.getString(R.string.surface, mappedSurface, mappedSurfaceUnit)
             )
         } else {
-            "$bedrooms bed. - $bathrooms bath. - ${formatSurface(surface, surfaceUnit)}"
+            String.format("%d bed. - %d bath. - %d %s", bedrooms, bathrooms, mappedSurface, mappedSurfaceUnit)
         }
+    }
 
     private fun formatRate(currency: AppCurrency, euroRate: Double, updateDate: String): SpannableString {
         val rateText = "\$$euroRate"

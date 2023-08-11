@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import com.bakjoul.realestatemanager.BuildConfig
 import com.bakjoul.realestatemanager.R
-import com.bakjoul.realestatemanager.data.currency_rate.model.CurrencyRateWrapper
 import com.bakjoul.realestatemanager.domain.currency_rate.GetEuroRateUseCase
 import com.bakjoul.realestatemanager.domain.current_photo.SetCurrentPhotoIdUseCase
 import com.bakjoul.realestatemanager.domain.property.GetCurrentPropertyUseCase
@@ -19,8 +18,6 @@ import com.bakjoul.realestatemanager.ui.utils.ViewModelUtils.Companion.formatSur
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.map
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -48,6 +45,8 @@ class DetailsViewModel @Inject constructor(
             flow { emit(getEuroRateUseCase.invoke()) },
             getCurrentSurfaceUnitUseCase.invoke()
         ) { property, currency, euroRateWrapper, surfaceUnit ->
+            val formattedSurface = formatSurface(property.surface, surfaceUnit)
+
             DetailsViewState(
                 mainPhotoUrl = property.photos.first().url,
                 type = property.type,
@@ -56,7 +55,7 @@ class DetailsViewModel @Inject constructor(
                 city = property.city,
                 sale_status = getSaleStatus(property.soldDate, property.entryDate),
                 description = property.description,
-                surface = formatSurface(property.surface, surfaceUnit),
+                surface = "${formattedSurface.first} ${formattedSurface.second}",
                 rooms = property.rooms.toString(),
                 bedrooms = property.bedrooms.toString(),
                 bathrooms = property.bathrooms.toString(),
