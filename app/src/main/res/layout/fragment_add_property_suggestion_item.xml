@@ -8,10 +8,10 @@
 
     <TextView
         android:id="@+id/add_property_suggestion_TextView"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:paddingVertical="10dp"
-        android:paddingStart="16dp"
+        android:paddingStart="14dp"
         android:paddingEnd="32dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

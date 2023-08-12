@@ -74,7 +74,7 @@ class AddPropertyFragment : Fragment(R.layout.fragment_add_property) {
                 }
             }
 
-        // Disable minus button when value is 0
+        // Disable surface minus button when value is 0
         binding.addPropertySurfacePlusMinusView.getValueEditText().doAfterTextChanged { editable ->
             val surfaceText = editable?.toString()
             val surface = surfaceText?.toDoubleOrNull() ?: 0.0
@@ -115,7 +115,7 @@ class AddPropertyFragment : Fragment(R.layout.fragment_add_property) {
                 }
             }
 
-        // Disable minus button when value is 0
+        // Disable rooms minus button when value is 0
         binding.addPropertyRoomsPlusMinusView.getValueEditText().doAfterTextChanged { editable ->
             val roomsText = editable?.toString()
             val rooms = roomsText?.toIntOrNull() ?: 0
@@ -157,7 +157,7 @@ class AddPropertyFragment : Fragment(R.layout.fragment_add_property) {
                 }
             }
 
-        // Disable minus button when value is 0
+        // Disable bathrooms minus button when value is 0
         binding.addPropertyBathroomsPlusMinusView.getValueEditText()
             .doAfterTextChanged { editable ->
                 val bathroomsText = editable?.toString()
@@ -200,7 +200,7 @@ class AddPropertyFragment : Fragment(R.layout.fragment_add_property) {
                 }
             }
 
-        // Disable minus button when value is 0
+        // Disable bedrooms minus button when value is 0
         binding.addPropertyBedroomsPlusMinusView.getValueEditText().doAfterTextChanged { editable ->
             val bedroomsText = editable?.toString()
             val bedrooms = bedroomsText?.toIntOrNull() ?: 0
@@ -216,8 +216,8 @@ class AddPropertyFragment : Fragment(R.layout.fragment_add_property) {
             }
         }
 
+        // Hides keyboard and clear focus when done is pressed
         binding.addPropertyBedroomsPlusMinusView.getValueEditText().imeOptions = EditorInfo.IME_ACTION_DONE
-
         binding.addPropertyBedroomsPlusMinusView.getValueEditText()
             .setOnEditorActionListener { _, actionId, _ ->
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
@@ -235,40 +235,6 @@ class AddPropertyFragment : Fragment(R.layout.fragment_add_property) {
 
         binding.addPropertyBedroomsPlusMinusView.incrementButton().setOnClickListener {
             viewModel.incrementBedrooms(binding.addPropertyBedroomsPlusMinusView.getIntValue())
-        }
-
-        binding.addPropertyAddressTextInputLayout.isEndIconVisible = false
-        binding.addPropertyAddressTextInputEditText.doAfterTextChanged { editable ->
-            val address = editable?.toString() ?: ""
-
-            binding.addPropertyAddressTextInputLayout.isEndIconVisible = address.isNotEmpty()
-            viewModel.onAddressChanged(address)
-        }
-
-        binding.addPropertyAddressTextInputLayout.setEndIconOnClickListener {
-            viewModel.onAddressTextCleared()
-            binding.addPropertyAddressTextInputEditText.setText("")
-        }
-
-        binding.addPropertyComplementaryAddressTextInputLayout.isEndIconVisible = false
-        binding.addPropertyComplementaryAddressTextInputEditText.doAfterTextChanged { editable ->
-            val complementaryAddress = editable?.toString() ?: ""
-
-            binding.addPropertyComplementaryAddressTextInputLayout.isEndIconVisible = complementaryAddress.isNotEmpty()
-        }
-
-        binding.addPropertyComplementaryAddressTextInputLayout.setEndIconOnClickListener {// TODO
-            binding.addPropertyComplementaryAddressTextInputEditText.setText("")
-        }
-
-        // Hides suggestions if user click on the close button
-        binding.addPropertyAddressSuggestionsCloseButton.setOnClickListener {
-            binding.addPropertyAddressSuggestionsContainer.visibility = View.GONE
-        }
-
-        // Hides suggestions if user click on the root view
-        binding.root.setOnClickListener {
-            binding.addPropertyAddressSuggestionsContainer.visibility = View.GONE
         }
 
         // Chip listeners
@@ -289,6 +255,43 @@ class AddPropertyFragment : Fragment(R.layout.fragment_add_property) {
             it.setOnCheckedChangeListener { chip, isChecked ->
                 viewModel.onChipCheckedChanged(chip, isChecked)
             }
+        }
+
+        // Address text input
+        binding.addPropertyAddressTextInputLayout.isEndIconVisible = false
+        binding.addPropertyAddressTextInputEditText.doAfterTextChanged { editable ->
+            val address = editable?.toString() ?: ""
+
+            binding.addPropertyAddressTextInputLayout.isEndIconVisible = address.isNotEmpty()
+            viewModel.onAddressChanged(address)
+        }
+
+        binding.addPropertyAddressTextInputLayout.setEndIconOnClickListener {
+            viewModel.onAddressTextCleared()
+            binding.addPropertyAddressTextInputEditText.setText("")
+            binding.addPropertyComplementaryAddressTextInputEditText.setText("")
+        }
+
+        // Complementary address text input
+        binding.addPropertyComplementaryAddressTextInputLayout.isEndIconVisible = false
+        binding.addPropertyComplementaryAddressTextInputEditText.doAfterTextChanged { editable ->
+            val complementaryAddress = editable?.toString() ?: ""
+            binding.addPropertyComplementaryAddressTextInputLayout.isEndIconVisible = complementaryAddress.isNotEmpty()
+        }
+
+        binding.addPropertyComplementaryAddressTextInputLayout.setEndIconOnClickListener {
+            viewModel.onComplementaryAddressTextCleared()
+            binding.addPropertyComplementaryAddressTextInputEditText.setText("")
+        }
+
+        // Hides suggestions if user click on the close button
+        binding.addPropertyAddressSuggestionsCloseButton.setOnClickListener {
+            binding.addPropertyAddressSuggestionsContainer.visibility = View.GONE
+        }
+
+        // Hides suggestions if user click on the root view
+        binding.root.setOnClickListener {
+            binding.addPropertyAddressSuggestionsContainer.visibility = View.GONE
         }
 
         viewModel.viewStateLiveData.observe(viewLifecycleOwner) {

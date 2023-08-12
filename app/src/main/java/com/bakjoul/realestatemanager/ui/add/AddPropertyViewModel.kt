@@ -44,12 +44,13 @@ class AddPropertyViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val propertyTypeMutableStateFlow: MutableStateFlow<PropertyType?> = MutableStateFlow(null)
-    private val isForSaleMutableStateFlow: MutableStateFlow<Boolean> = MutableStateFlow(true)
     private val dateMutableStateFlow: MutableStateFlow<LocalDate?> = MutableStateFlow(null)
+    private val isForSaleMutableStateFlow: MutableStateFlow<Boolean> = MutableStateFlow(true)
     private val surfaceMutableStateFlow: MutableStateFlow<Double> = MutableStateFlow(0.0)
     private val numberOfRoomsMutableStateFlow: MutableStateFlow<Int> = MutableStateFlow(0)
     private val numberOfBathroomsMutableStateFlow: MutableStateFlow<Int> = MutableStateFlow(0)
     private val numberOfBedroomsMutableStateFlow: MutableStateFlow<Int> = MutableStateFlow(0)
+    private val poiListMutableStateFlow: MutableStateFlow<Collection<PropertyPoi>> = MutableStateFlow(emptyList())
     private val currentAddressInputMutableStateFlow: MutableStateFlow<String?> = MutableStateFlow(null)
     private val addressPredictionsFlow: Flow<AutocompleteWrapper?> = currentAddressInputMutableStateFlow
         .transformLatest { input ->
@@ -69,7 +70,7 @@ class AddPropertyViewModel @Inject constructor(
                 emit(getAddressDetailsUseCase.invoke(prediction.placeId))
             }
         }
-    private val poiListMutableStateFlow: MutableStateFlow<Collection<PropertyPoi>> = MutableStateFlow(emptyList())
+    private val complementaryAddressInputMutableStateFlow: MutableStateFlow<String?> = MutableStateFlow(null)
 
     private var isAddressTextCleared = false
     private var isAddressTextUpdatedByAutocomplete = false
@@ -211,6 +212,12 @@ class AddPropertyViewModel @Inject constructor(
         isForSaleMutableStateFlow.value = isForSale
     }
 
+    fun onDateChanged(date: Any?) {
+        val instant = Instant.ofEpochMilli(date as Long)
+        val zonedDateTime = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault())
+        dateMutableStateFlow.value = zonedDateTime.toLocalDate()
+    }
+
     fun onSurfaceValueChanged(surface: Double) {
         if (surface >= 0.0) {
             surfaceMutableStateFlow.value = surface
@@ -275,10 +282,28 @@ class AddPropertyViewModel @Inject constructor(
         numberOfBedroomsMutableStateFlow.value = bedrooms + 1
     }
 
-    fun onDateChanged(date: Any?) {
-        val instant = Instant.ofEpochMilli(date as Long)
-        val zonedDateTime = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault())
-        dateMutableStateFlow.value = zonedDateTime.toLocalDate()
+    fun onChipCheckedChanged(chip: CompoundButton, isChecked: Boolean) {
+        val poi = when (chip.text) {
+            PropertyPoi.School.name -> PropertyPoi.School
+            PropertyPoi.Store.name -> PropertyPoi.Store
+            PropertyPoi.Park.name -> PropertyPoi.Park
+            PropertyPoi.Restaurant.name -> PropertyPoi.Restaurant
+            PropertyPoi.Hospital.name -> PropertyPoi.Hospital
+            PropertyPoi.Bus.name -> PropertyPoi.Bus
+            PropertyPoi.Subway.name -> PropertyPoi.Subway
+            PropertyPoi.Tramway.name -> PropertyPoi.Tramway
+            PropertyPoi.Train.name -> PropertyPoi.Train
+            PropertyPoi.Airport.name -> PropertyPoi.Airport
+            else -> null
+        }
+
+        poi?.let {
+            val currentList = poiListMutableStateFlow.value.toMutableList().apply {
+                if (isChecked) add(it) else remove(it)
+            }
+
+            poiListMutableStateFlow.value = currentList
+        }
     }
 
     fun onAddressChanged(address: String) {
@@ -286,6 +311,7 @@ class AddPropertyViewModel @Inject constructor(
             isAddressTextCleared = false
             selectedAddressMutableStateFlow.value = null
             currentAddressInputMutableStateFlow.value = address
+            complementaryAddressInputMutableStateFlow.value = null
             return
         }
 
@@ -310,27 +336,7 @@ class AddPropertyViewModel @Inject constructor(
         isAddressTextCleared = true
     }
 
-    fun onChipCheckedChanged(chip: CompoundButton, isChecked: Boolean) {
-        val poi = when (chip.text) {
-            PropertyPoi.School.name -> PropertyPoi.School
-            PropertyPoi.Store.name -> PropertyPoi.Store
-            PropertyPoi.Park.name -> PropertyPoi.Park
-            PropertyPoi.Restaurant.name -> PropertyPoi.Restaurant
-            PropertyPoi.Hospital.name -> PropertyPoi.Hospital
-            PropertyPoi.Bus.name -> PropertyPoi.Bus
-            PropertyPoi.Subway.name -> PropertyPoi.Subway
-            PropertyPoi.Tramway.name -> PropertyPoi.Tramway
-            PropertyPoi.Train.name -> PropertyPoi.Train
-            PropertyPoi.Airport.name -> PropertyPoi.Airport
-            else -> null
-        }
-
-        poi?.let {
-            val currentList = poiListMutableStateFlow.value.toMutableList().apply {
-                if (isChecked) add(it) else remove(it)
-            }
-
-            poiListMutableStateFlow.value = currentList
-        }
+    fun onComplementaryAddressTextCleared() {
+        complementaryAddressInputMutableStateFlow.value = null
     }
 }
