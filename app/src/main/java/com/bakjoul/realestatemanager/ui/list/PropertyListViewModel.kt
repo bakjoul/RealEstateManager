@@ -78,13 +78,13 @@ class PropertyListViewModel @Inject constructor(
 
         return if (isTablet) {
             application.resources.getString(
-                R.string.features,
+                R.string.property_features_tablet,
                 application.resources.getQuantityString(R.plurals.bedroom_plural, bedrooms, bedrooms),
                 application.resources.getQuantityString(R.plurals.bathroom_plural, bathrooms, bathrooms),
-                application.resources.getString(R.string.surface, mappedSurface, mappedSurfaceUnit)
+                application.resources.getString(R.string.property_surface, mappedSurface, mappedSurfaceUnit)
             )
         } else {
-            String.format("%d bed. - %d bath. - %d %s", bedrooms, bathrooms, mappedSurface, mappedSurfaceUnit)
+            application.resources.getString(R.string.property_features, bedrooms, bathrooms, mappedSurface, mappedSurfaceUnit)
         }
     }
 
