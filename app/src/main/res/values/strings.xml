@@ -9,12 +9,12 @@
         <item quantity="one">%d bathroom</item>
         <item quantity="other">%d bathrooms</item>
     </plurals>
-    <string name="surface">%d %s</string>
-
-    <string name="features">%s - %s - %s</string>
 
     <string name="google_web_client_id">77269002192-r4c88c9efvrrfb410rd7ps27fa3khj9h.apps.googleusercontent.com</string>
 
+    <string name="property_surface">%d %s</string>
+    <string name="property_features">%d bed. - %d bath. - %d %s</string>
+    <string name="property_features_tablet">%s - %s - %s</string>
     <string name="property_label_description">Description</string>
     <string name="property_label_surface">Surface</string>
     <string name="property_label_rooms">Nb. of rooms</string>
