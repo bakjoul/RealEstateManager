@@ -2,11 +2,13 @@ package com.bakjoul.realestatemanager.ui.add
 
 import android.app.Application
 import android.util.Log
+import android.widget.CompoundButton
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import com.bakjoul.realestatemanager.R
+import com.bakjoul.realestatemanager.data.property.PropertyPoi
 import com.bakjoul.realestatemanager.data.property.PropertyType
 import com.bakjoul.realestatemanager.data.settings.model.AppCurrency
 import com.bakjoul.realestatemanager.data.settings.model.SurfaceUnit
@@ -67,6 +69,7 @@ class AddPropertyViewModel @Inject constructor(
                 emit(getAddressDetailsUseCase.invoke(prediction.placeId))
             }
         }
+    private val poiListMutableStateFlow: MutableStateFlow<Collection<PropertyPoi>> = MutableStateFlow(emptyList())
 
     private var isAddressTextCleared = false
     private var isAddressTextUpdatedByAutocomplete = false
@@ -305,5 +308,29 @@ class AddPropertyViewModel @Inject constructor(
 
     fun onAddressTextCleared() {
         isAddressTextCleared = true
+    }
+
+    fun onChipCheckedChanged(chip: CompoundButton, isChecked: Boolean) {
+        val poi = when (chip.text) {
+            PropertyPoi.School.name -> PropertyPoi.School
+            PropertyPoi.Store.name -> PropertyPoi.Store
+            PropertyPoi.Park.name -> PropertyPoi.Park
+            PropertyPoi.Restaurant.name -> PropertyPoi.Restaurant
+            PropertyPoi.Hospital.name -> PropertyPoi.Hospital
+            PropertyPoi.Bus.name -> PropertyPoi.Bus
+            PropertyPoi.Subway.name -> PropertyPoi.Subway
+            PropertyPoi.Tramway.name -> PropertyPoi.Tramway
+            PropertyPoi.Train.name -> PropertyPoi.Train
+            PropertyPoi.Airport.name -> PropertyPoi.Airport
+            else -> null
+        }
+
+        poi?.let {
+            val currentList = poiListMutableStateFlow.value.toMutableList().apply {
+                if (isChecked) add(it) else remove(it)
+            }
+
+            poiListMutableStateFlow.value = currentList
+        }
     }
 }

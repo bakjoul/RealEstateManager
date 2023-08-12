@@ -271,6 +271,26 @@ class AddPropertyFragment : Fragment(R.layout.fragment_add_property) {
             binding.addPropertyAddressSuggestionsContainer.visibility = View.GONE
         }
 
+        // Chip listeners
+        val poiChips = listOf(
+            binding.addPropertyAmenitiesSchoolChip,
+            binding.addPropertyAmenitiesStoreChip,
+            binding.addPropertyAmenitiesParkChip,
+            binding.addPropertyAmenitiesRestaurantChip,
+            binding.addPropertyAmenitiesHospitalChip,
+            binding.addPropertyTransportationBusChip,
+            binding.addPropertyTransportationSubwayChip,
+            binding.addPropertyTransportationTramwayChip,
+            binding.addPropertyTransportationTrainChip,
+            binding.addPropertyTransportationAirportChip
+        )
+
+        poiChips.forEach {
+            it.setOnCheckedChangeListener { chip, isChecked ->
+                viewModel.onChipCheckedChanged(chip, isChecked)
+            }
+        }
+
         viewModel.viewStateLiveData.observe(viewLifecycleOwner) {
             binding.addPropertyDateTextInputLayout.hint = it.dateHint
             binding.addPropertyPriceTextInputLayout.hint = it.priceHint

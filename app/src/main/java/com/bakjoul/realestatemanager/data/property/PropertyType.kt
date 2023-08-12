@@ -1,6 +1,6 @@
 package com.bakjoul.realestatemanager.data.property
 
-enum class PropertyType() {
+enum class PropertyType {
     Flat,
     House,
     Duplex,
