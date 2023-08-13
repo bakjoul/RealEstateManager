@@ -71,6 +71,7 @@ class AddPropertyViewModel @Inject constructor(
             }
         }
     private val complementaryAddressInputMutableStateFlow: MutableStateFlow<String?> = MutableStateFlow(null)
+    private val descriptionInputMutableStateFlow: MutableStateFlow<String?> = MutableStateFlow(null)
 
     private var isAddressTextCleared = false
     private var isAddressTextUpdatedByAutocomplete = false
@@ -336,7 +337,19 @@ class AddPropertyViewModel @Inject constructor(
         isAddressTextCleared = true
     }
 
+    fun onComplementaryAddressChanged(addressDetails: String) {
+        complementaryAddressInputMutableStateFlow.value = addressDetails
+    }
+
     fun onComplementaryAddressTextCleared() {
         complementaryAddressInputMutableStateFlow.value = null
+    }
+
+    fun onDescriptionChanged(description: String) {
+        descriptionInputMutableStateFlow.value = description
+    }
+
+    fun onDescriptionTextCleared() {
+        descriptionInputMutableStateFlow.value = null
     }
 }

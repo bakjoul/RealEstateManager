@@ -272,18 +272,6 @@ class AddPropertyFragment : Fragment(R.layout.fragment_add_property) {
             binding.addPropertyComplementaryAddressTextInputEditText.setText("")
         }
 
-        // Complementary address text input
-        binding.addPropertyComplementaryAddressTextInputLayout.isEndIconVisible = false
-        binding.addPropertyComplementaryAddressTextInputEditText.doAfterTextChanged { editable ->
-            val complementaryAddress = editable?.toString() ?: ""
-            binding.addPropertyComplementaryAddressTextInputLayout.isEndIconVisible = complementaryAddress.isNotEmpty()
-        }
-
-        binding.addPropertyComplementaryAddressTextInputLayout.setEndIconOnClickListener {
-            viewModel.onComplementaryAddressTextCleared()
-            binding.addPropertyComplementaryAddressTextInputEditText.setText("")
-        }
-
         // Hides suggestions if user click on the close button
         binding.addPropertyAddressSuggestionsCloseButton.setOnClickListener {
             binding.addPropertyAddressSuggestionsContainer.visibility = View.GONE
@@ -292,6 +280,34 @@ class AddPropertyFragment : Fragment(R.layout.fragment_add_property) {
         // Hides suggestions if user click on the root view
         binding.root.setOnClickListener {
             binding.addPropertyAddressSuggestionsContainer.visibility = View.GONE
+        }
+
+        // Complementary address text input
+        binding.addPropertyComplementaryAddressTextInputLayout.isEndIconVisible = false
+        binding.addPropertyComplementaryAddressTextInputEditText.doAfterTextChanged { editable ->
+            val complementaryAddress = editable?.toString() ?: ""
+
+            binding.addPropertyComplementaryAddressTextInputLayout.isEndIconVisible = complementaryAddress.isNotEmpty()
+            viewModel.onComplementaryAddressChanged(complementaryAddress)
+        }
+
+        binding.addPropertyComplementaryAddressTextInputLayout.setEndIconOnClickListener {
+            viewModel.onComplementaryAddressTextCleared()
+            binding.addPropertyComplementaryAddressTextInputEditText.setText("")
+        }
+
+        // Description text input
+        binding.addPropertyDescriptionTextInputLayout.isEndIconVisible = false
+        binding.addPropertyDescriptionTextInputEditText.doAfterTextChanged { editable ->
+            val description = editable?.toString() ?: ""
+
+            binding.addPropertyDescriptionTextInputLayout.isEndIconVisible = description.isNotEmpty()
+            viewModel.onDescriptionChanged(description)
+        }
+
+        binding.addPropertyDescriptionTextInputLayout.setEndIconOnClickListener {
+            viewModel.onDescriptionTextCleared()
+            binding.addPropertyDescriptionTextInputEditText.setText("")
         }
 
         viewModel.viewStateLiveData.observe(viewLifecycleOwner) {

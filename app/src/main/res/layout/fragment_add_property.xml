@@ -374,6 +374,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:hint="@string/add_property_description_hint"
+            app:endIconDrawable="@drawable/backspace_24"
+            app:endIconMode="custom"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/add_property_state_region_TextInputLayout">
@@ -382,6 +384,7 @@
                 android:id="@+id/add_property_description_TextInputEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:gravity="top"
                 android:maxLines="8"
                 android:minLines="4" />
         </com.google.android.material.textfield.TextInputLayout>
@@ -396,7 +399,7 @@
             app:layout_constraintBottom_toTopOf="@id/add_property_address_TextInputLayout"
             app:layout_constraintEnd_toEndOf="@id/add_property_address_TextInputLayout"
             app:layout_constraintStart_toStartOf="@id/add_property_address_TextInputLayout"
-            tools:visibility="visible">
+            tools:visibility="gone">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/add_property_address_suggestions_RecyclerView"
@@ -419,8 +422,8 @@
                 android:contentDescription="@string/add_property_close_button_desc"
                 android:padding="0dp"
                 android:src="@drawable/baseline_close_24_grey"
-                app:layout_constraintEnd_toEndOf="@id/add_property_address_suggestions_RecyclerView"
-                app:layout_constraintBottom_toBottomOf="@id/add_property_address_suggestions_RecyclerView" />
+                app:layout_constraintBottom_toBottomOf="@id/add_property_address_suggestions_RecyclerView"
+                app:layout_constraintEnd_toEndOf="@id/add_property_address_suggestions_RecyclerView" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
