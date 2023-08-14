@@ -389,6 +389,17 @@
                 android:minLines="4" />
         </com.google.android.material.textfield.TextInputLayout>
 
+        <ImageButton
+            android:id="@+id/add_property_camera_ImageButton"
+            android:layout_width="@dimen/photo_frame_width"
+            android:layout_height="@dimen/photo_frame_height"
+            android:layout_marginTop="12dp"
+            android:background="@null"
+            android:contentDescription="@string/add_property_camera_btn_desc"
+            android:src="@drawable/baseline_camera_alt_24"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/add_property_description_TextInputLayout" />
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/add_property_address_suggestions_container"
             android:layout_width="0dp"

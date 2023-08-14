@@ -89,6 +89,7 @@ dependencies {
     kapt 'com.google.dagger:hilt-compiler:2.45'
     // Room
     implementation "androidx.room:room-runtime:2.5.2"
+    //noinspection KaptUsageInsteadOfKsp
     kapt "androidx.room:room-compiler:2.5.2"
     implementation "androidx.room:room-ktx:2.5.2"
     // LiveData
@@ -115,6 +116,13 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth-ktx:22.1.1'
     // Google Auth
     implementation 'com.google.android.gms:play-services-auth:20.6.0'
+
+    // CameraX core library using the camera2 implementation
+    def camerax_version = "1.2.3"
+    implementation "androidx.camera:camera-core:${camerax_version}"
+    implementation "androidx.camera:camera-lifecycle:${camerax_version}"
+    implementation "androidx.camera:camera-view:${camerax_version}"
+    implementation "androidx.camera:camera-extensions:${camerax_version}"
 
     testImplementation 'junit:junit:4.13.2'
 

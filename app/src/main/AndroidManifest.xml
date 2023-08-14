@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-feature android:name="android.hardware.camera.any" />
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <application
         android:name=".ui.MainApplication"
@@ -16,6 +18,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.RealEstateManager"
         tools:targetApi="31">
+        <activity
+            android:name=".ui.camera.CameraActivity"
+            android:exported="false" />
         <activity
             android:name=".ui.add.AddPropertyActivity"
             android:exported="true">
