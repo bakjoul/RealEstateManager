@@ -5,19 +5,19 @@
     android:layout_height="match_parent">
 
     <androidx.camera.view.PreviewView
-        android:id="@+id/camera_PreviewView"
+        android:id="@+id/camera_view_finder"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
     <ImageButton
-        android:id="@+id/camera_capture_button"
+        android:id="@+id/camera_shutter_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="64dp"
         android:background="@null"
         android:contentDescription="@string/camera_capture_btn_desc"
         android:padding="0dp"
-        android:src="@drawable/capture_68"
+        android:src="@drawable/shutter_68"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
