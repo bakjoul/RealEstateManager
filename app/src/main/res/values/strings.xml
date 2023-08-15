@@ -73,4 +73,5 @@
     <string name="dialog_dismiss">Dismiss</string>
     <string name="camera_error_starting">Error starting camera</string>
     <string name="add_property_camera_btn_desc">Take a photo image button</string>
+    <string name="camera_capture_btn_desc">Capture button</string>
 </resources>
