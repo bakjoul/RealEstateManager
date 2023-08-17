@@ -1,76 +1,67 @@
 package com.bakjoul.realestatemanager.ui.camera
 
-import android.Manifest
 import android.content.ContentValues
-import android.content.pm.PackageManager
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
+import android.view.View
 import android.widget.Toast
-import androidx.annotation.RequiresApi
-import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import com.bakjoul.realestatemanager.R
-import com.bakjoul.realestatemanager.databinding.ActivityCameraBinding
+import com.bakjoul.realestatemanager.databinding.FragmentCameraBinding
 import com.bakjoul.realestatemanager.ui.utils.viewBinding
+import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
-class CameraActivity : AppCompatActivity() {
+@AndroidEntryPoint
+class CameraFragment : Fragment(R.layout.fragment_camera) {
 
     private companion object {
-        private const val TAG = "CameraActivity"
+        private const val TAG = "CameraFragment"
         private const val FILENAME_FORMAT = "yyyyMMdd_HHmmss"
     }
 
-    private val binding by viewBinding { ActivityCameraBinding.inflate(it) }
+    private val binding by viewBinding { FragmentCameraBinding.bind(it) }
+    private val viewModel: CameraViewModel by viewModels()
 
     private var imageCapture: ImageCapture? = null
     private lateinit var outputDirectory: File
     private lateinit var cameraExecutor: ExecutorService
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(binding.root)
-
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            finish()
-        } else {
-            startCamera()
-        }
-
-        binding.cameraShutterButton.setOnClickListener {
-            takePhoto()
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                animateFlash()
-            }
-        }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         outputDirectory = getOutputDirectory()
         cameraExecutor = Executors.newSingleThreadExecutor()
+
+        startCamera()
+
+        binding.cameraShutterButton.setOnClickListener { takePhoto() }
+        binding.cameraCancelButton.setOnClickListener { requireActivity().finish() }
     }
 
     private fun getOutputDirectory(): File {
-        val mediaDir = externalMediaDirs.firstOrNull()?.let {
+        val mediaDir = requireActivity().externalMediaDirs.firstOrNull()?.let {
             File(it, resources.getString(R.string.app_name)).apply { mkdirs() }
         }
         return if (mediaDir != null && mediaDir.exists())
-            mediaDir else filesDir
+            mediaDir else requireContext().filesDir
     }
 
     private fun startCamera() {
-        val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
+        val cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
 
         cameraProviderFuture.addListener({
             val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
@@ -82,9 +73,9 @@ class CameraActivity : AppCompatActivity() {
                 cameraProvider.unbindAll()
                 cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageCapture)
             } catch (e: Exception) {
-                Toast.makeText(this, getString(R.string.camera_error_starting), Toast.LENGTH_LONG).show()
+                Toast.makeText(requireContext(), getString(R.string.camera_error_starting), Toast.LENGTH_LONG).show()
             }
-        }, ContextCompat.getMainExecutor(this))
+        }, ContextCompat.getMainExecutor(requireContext()))
     }
 
     private fun takePhoto() {
@@ -100,36 +91,23 @@ class CameraActivity : AppCompatActivity() {
         }
 
         val outputOptions = ImageCapture.OutputFileOptions
-            .Builder(contentResolver,
-                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                contentValues)
+            .Builder(requireContext().contentResolver, MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
             .build()
 
         imageCapture.takePicture(
             outputOptions,
-            ContextCompat.getMainExecutor(this),
+            ContextCompat.getMainExecutor(requireContext()),
             object : ImageCapture.OnImageSavedCallback {
                 override fun onError(exception: ImageCaptureException) {
-                    Log.e(TAG, "Photo captured failed: ${exception.message}", exception)
+                    val message = "Error taking photo: ${exception.message}"
+                    Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
+                    Log.e(TAG, message, exception)
                 }
 
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
-                    val message = "Photo capture succeeded: ${output.savedUri}"
-                    Toast.makeText(this@CameraActivity, message, Toast.LENGTH_SHORT).show()
-                    Log.d(TAG, message)
+                    viewModel.onImageSaved(output.savedUri)
                 }
             })
-    }
-
-
-    @RequiresApi(Build.VERSION_CODES.M)
-    private fun animateFlash() {
-        binding.root.postDelayed({
-            binding.root.foreground = ColorDrawable(Color.WHITE)
-            binding.root.postDelayed({
-                binding.root.foreground = null
-            }, 50)
-        }, 100)
     }
 
     override fun onDestroy() {

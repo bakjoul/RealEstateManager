@@ -21,7 +21,7 @@
         android:theme="@style/Theme.RealEstateManager"
         tools:targetApi="31">
         <activity
-            android:name=".ui.camera.CameraActivity"
+            android:name=".ui.camera.activity.CameraActivity"
             android:exported="false" />
         <activity
             android:name=".ui.add.AddPropertyActivity"

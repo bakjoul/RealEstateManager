@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black">
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/photo_preview_separator_Guideline"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="@dimen/camera_separator_percent" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/photo_preview_center_vertical_Guideline"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.50" />
+
+    <ImageView
+        android:id="@+id/photo_preview"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="@dimen/camera_margin_top"
+        android:contentDescription="@string/camera_captured_photo_preview_desc"
+        android:scaleType="fitXY"
+        app:layout_constraintBottom_toTopOf="@id/photo_preview_separator_Guideline"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/photo_preview_description"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="12dp"
+        android:layout_marginTop="12dp"
+        android:hint="@string/description_label"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/photo_preview_separator_Guideline">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/photo_preview_description_editText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textAutoCorrect|textCapSentences"
+            android:lines="1" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <View
+        android:id="@+id/photo_preview_shutter_shadow_View"
+        android:layout_width="84dp"
+        android:layout_height="84dp"
+        android:layout_marginBottom="@dimen/camera_shutter_margin_bottom"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/photo_preview_center_vertical_Guideline"
+        app:layout_constraintStart_toStartOf="@id/photo_preview_center_vertical_Guideline" />
+
+    <ImageButton
+        android:id="@+id/photo_preview_cancel_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/round_button_background"
+        android:contentDescription="@string/camera_cancel_button_desc"
+        android:padding="8dp"
+        android:src="@drawable/close_32"
+        app:layout_constraintBottom_toBottomOf="@id/photo_preview_shutter_shadow_View"
+        app:layout_constraintEnd_toStartOf="@id/photo_preview_shutter_shadow_View"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/photo_preview_shutter_shadow_View" />
+
+    <ImageButton
+        android:id="@+id/photo_preview_done_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/round_button_background"
+        android:contentDescription="@string/camera_done_button_desc"
+        android:padding="8dp"
+        android:src="@drawable/done_32"
+        app:layout_constraintBottom_toBottomOf="@id/photo_preview_shutter_shadow_View"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/photo_preview_shutter_shadow_View"
+        app:layout_constraintTop_toTopOf="@id/photo_preview_shutter_shadow_View" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

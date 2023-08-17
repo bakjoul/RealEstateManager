@@ -15,7 +15,7 @@
     <string name="property_surface">%d %s</string>
     <string name="property_features">%d bed. - %d bath. - %d %s</string>
     <string name="property_features_tablet">%s - %s - %s</string>
-    <string name="property_label_description">Description</string>
+    <string name="description_label">Description</string>
     <string name="property_label_surface">Surface</string>
     <string name="property_label_rooms">Nb. of rooms</string>
     <string name="property_label_bathrooms">Nb. of bathrooms</string>
@@ -65,7 +65,6 @@
     <string name="add_property_state_region_hint">State / Region</string>
     <string name="add_property_zip_code_hint">Zip code</string>
     <string name="add_property_close_button_desc">Close suggestions</string>
-    <string name="add_property_description_hint">Description</string>
     <string name="add_property_camera_permission_denied">Camera permission is denied</string>
     <string name="snackbar_settings">Change Settings</string>
     <string name="dialog_permission_required">Permission required</string>
@@ -74,4 +73,11 @@
     <string name="camera_error_starting">Error starting camera</string>
     <string name="add_property_camera_btn_desc">Take a photo image button</string>
     <string name="camera_capture_btn_desc">Capture button</string>
+    <string name="camera_photo_mode">Photo</string>
+    <string name="camera_flip_button_desc">Flip camera button</string>
+    <string name="camera_captured_photo_preview_desc">Captured photo preview</string>
+    <string name="camera_cancel_button_desc">Cancel button</string>
+    <string name="camera_done_button_desc">Done button</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
