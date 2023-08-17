@@ -19,8 +19,12 @@ import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.databinding.FragmentCameraBinding
 import com.bakjoul.realestatemanager.ui.utils.viewBinding
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.asExecutor
 import java.io.File
 import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.Locale
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -36,15 +40,12 @@ class CameraFragment : Fragment(R.layout.fragment_camera) {
     private val binding by viewBinding { FragmentCameraBinding.bind(it) }
     private val viewModel: CameraViewModel by viewModels()
 
+    private val filenameFormatter by lazy { DateTimeFormatter.ofPattern(FILENAME_FORMAT) }
+
     private var imageCapture: ImageCapture? = null
-    private lateinit var outputDirectory: File
-    private lateinit var cameraExecutor: ExecutorService
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        outputDirectory = getOutputDirectory()
-        cameraExecutor = Executors.newSingleThreadExecutor()
 
         startCamera()
 
@@ -52,40 +53,38 @@ class CameraFragment : Fragment(R.layout.fragment_camera) {
         binding.cameraCancelButton.setOnClickListener { requireActivity().finish() }
     }
 
-    private fun getOutputDirectory(): File {
-        val mediaDir = requireActivity().externalMediaDirs.firstOrNull()?.let {
-            File(it, resources.getString(R.string.app_name)).apply { mkdirs() }
-        }
-        return if (mediaDir != null && mediaDir.exists())
-            mediaDir else requireContext().filesDir
-    }
-
     private fun startCamera() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
 
-        cameraProviderFuture.addListener({
-            val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
-            val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
-            val preview = Preview.Builder().build().also { it.setSurfaceProvider(binding.cameraViewFinder.surfaceProvider) }
-            imageCapture = ImageCapture.Builder().build()
+        cameraProviderFuture.addListener(
+            {
+                val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
+                val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
+                val preview = Preview.Builder().build().apply {
+                    setSurfaceProvider(binding.cameraViewFinder.surfaceProvider)
+                }
 
-            try {
-                cameraProvider.unbindAll()
-                cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageCapture)
-            } catch (e: Exception) {
-                Toast.makeText(requireContext(), getString(R.string.camera_error_starting), Toast.LENGTH_LONG).show()
-            }
-        }, ContextCompat.getMainExecutor(requireContext()))
+                imageCapture = ImageCapture.Builder().build()
+
+                try {
+                    cameraProvider.unbindAll()
+                    cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageCapture)
+                } catch (e: Exception) {
+                    Toast.makeText(requireContext(), getString(R.string.camera_error_starting), Toast.LENGTH_LONG).show()
+                }
+            },
+            Dispatchers.Main.asExecutor()
+        )
     }
 
     private fun takePhoto() {
         val imageCapture = imageCapture ?: return
 
-        val name = SimpleDateFormat(FILENAME_FORMAT, Locale.FRANCE).format(System.currentTimeMillis())
+        val name = filenameFormatter.format(LocalDateTime.now())
         val contentValues = ContentValues().apply {
             put(MediaStore.MediaColumns.DISPLAY_NAME, name)
             put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
-            if(Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
                 put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/${resources.getString(R.string.app_name)}")
             }
         }
@@ -96,7 +95,7 @@ class CameraFragment : Fragment(R.layout.fragment_camera) {
 
         imageCapture.takePicture(
             outputOptions,
-            ContextCompat.getMainExecutor(requireContext()),
+            Dispatchers.Main.asExecutor(),
             object : ImageCapture.OnImageSavedCallback {
                 override fun onError(exception: ImageCaptureException) {
                     val message = "Error taking photo: ${exception.message}"
@@ -105,13 +104,8 @@ class CameraFragment : Fragment(R.layout.fragment_camera) {
                 }
 
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
-                    viewModel.onImageSaved(output.savedUri)
+                    viewModel.onImageSaved(output.savedUri?.toString())
                 }
             })
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        cameraExecutor.shutdown()
     }
 }

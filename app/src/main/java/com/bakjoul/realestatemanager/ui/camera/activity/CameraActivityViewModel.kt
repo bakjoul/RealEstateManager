@@ -15,9 +15,7 @@ class CameraActivityViewModel @Inject constructor(
 
     val viewActionLiveData: LiveData<Event<CameraActivityViewAction>> = liveData {
         getCapturedPhotoUriUseCase.invoke().collect {
-            if (it != null) {
-                emit(Event(CameraActivityViewAction.ShowCapturedPhoto))
-            }
+            emit(Event(CameraActivityViewAction.ShowCapturedPhoto))
         }
     }
 }

@@ -1,21 +1,20 @@
 package com.bakjoul.realestatemanager.data.camera
 
-import android.net.Uri
 import com.bakjoul.realestatemanager.domain.camera.CameraRepository
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class CameraRepositoryImplementation @Inject constructor() : CameraRepository {
 
-    private val capturedPhotoUriMutableStateFlow: MutableStateFlow<Uri?> = MutableStateFlow(null)
+    private val capturedPhotoUriMutableSharedFlow: MutableSharedFlow<String> = MutableSharedFlow()
 
-    override fun setCapturedPhotoUri(uri: Uri) {
-        capturedPhotoUriMutableStateFlow.value = uri
+    override fun setCapturedPhotoUri(uri: String) {
+        capturedPhotoUriMutableSharedFlow.tryEmit(uri)
     }
 
-    override fun getCapturedPhotoUri(): Flow<Uri?> = capturedPhotoUriMutableStateFlow.asStateFlow()
+    override fun getCapturedPhotoUri(): Flow<String> = capturedPhotoUriMutableSharedFlow.asSharedFlow()
 }

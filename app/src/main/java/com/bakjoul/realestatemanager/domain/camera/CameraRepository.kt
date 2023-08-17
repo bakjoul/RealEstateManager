@@ -1,11 +1,10 @@
 package com.bakjoul.realestatemanager.domain.camera
 
-import android.net.Uri
 import kotlinx.coroutines.flow.Flow
 
 interface CameraRepository {
 
-    fun setCapturedPhotoUri(uri: Uri)
+    fun setCapturedPhotoUri(uri: String)
 
-    fun getCapturedPhotoUri(): Flow<Uri?>
+    fun getCapturedPhotoUri(): Flow<String>
 }

@@ -3,11 +3,13 @@ package com.bakjoul.realestatemanager.ui.camera.photo_preview
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.databinding.FragmentPhotoPreviewBinding
 import com.bakjoul.realestatemanager.ui.utils.viewBinding
+import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -20,19 +22,17 @@ class PhotoPreviewFragment : Fragment(R.layout.fragment_photo_preview) {
         super.onViewCreated(view, savedInstanceState)
 
         viewModel.viewStateLiveData.observe(viewLifecycleOwner) { viewState ->
-            binding.photoPreview.setImageURI(viewState.photoUri)
+            Glide.with(binding.photoPreview).load(viewState.photoUri).into(binding.photoPreview)
 
             binding.photoPreviewCancelButton.setOnClickListener {
-                viewState.photoUri?.let {
-                    requireContext().contentResolver.delete(it, null, null)
-                }
+                requireContext().contentResolver.delete(viewState.photoUri.toUri(), null, null)
                 requireActivity().onBackPressedDispatcher.onBackPressed()
             }
 
             binding.photoPreviewDoneButton.setOnClickListener {
                 // TODO CHECK IF DESCRIPTION IS NOT EMPTY
-                    Toast.makeText(requireContext(), "Photo successfully added", Toast.LENGTH_SHORT).show()
-                    requireActivity().finish()
+                Toast.makeText(requireContext(), "Photo successfully added", Toast.LENGTH_SHORT).show()
+                requireActivity().finish()
             }
         }
     }
