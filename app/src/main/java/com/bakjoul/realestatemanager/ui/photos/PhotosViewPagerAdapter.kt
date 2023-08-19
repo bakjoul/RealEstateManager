@@ -22,9 +22,7 @@ class PhotosViewPagerAdapter : RecyclerView.Adapter<PhotosViewPagerAdapter.ViewH
 
     class ViewHolder(private val binding: PhotosViewpagerItemBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(photoUrl: String) {
-            Glide.with(binding.photoItemImageView.context)
-                .load(photoUrl)
-                .into(binding.photoItemImageView)
+            Glide.with(binding.photoItemImageView.context).load(photoUrl).into(binding.photoItemImageView)
         }
     }
 

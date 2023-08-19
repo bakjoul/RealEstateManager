@@ -27,9 +27,7 @@ class PropertyAdapter : ListAdapter<PropertyItemViewState, PropertyAdapter.ViewH
 
     class ViewHolder(private val binding: FragmentListItemBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(item: PropertyItemViewState) {
-            Glide.with(binding.listItemPhoto.context)
-                .load(item.photoUrl)
-                .into(binding.listItemPhoto)
+            Glide.with(binding.listItemPhoto.context).load(item.photoUrl).into(binding.listItemPhoto)
             binding.listItemPhotoOverlay.visibility = if (item.isSold) View.VISIBLE else View.GONE
             binding.listItemSold.visibility = if (item.isSold) View.VISIBLE else View.GONE
             binding.listItemType.text = item.type

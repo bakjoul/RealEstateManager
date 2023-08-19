@@ -47,9 +47,7 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
         }
 
         viewModel.detailsLiveData.observe(viewLifecycleOwner) { details ->
-            Glide.with(binding.detailsToolbarPhoto)
-                .load(details.mainPhotoUrl)
-                .into(binding.detailsToolbarPhoto)
+            Glide.with(binding.detailsToolbarPhoto).load(details.mainPhotoUrl).into(binding.detailsToolbarPhoto)
             binding.detailsToolbarType.text = details.type
             binding.detailsToolbarPrice.text = details.price
             binding.detailsToolbarPrice.paintFlags = if (details.isSold) binding.detailsToolbarPrice.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG else 0
@@ -83,9 +81,7 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
                 Toast.makeText(requireContext(), getString(R.string.property_address_clipboard), Toast.LENGTH_SHORT).show()
                 true
             }
-            Glide.with(binding.detailsStaticMap)
-                .load(details.staticMapUrl)
-                .into(binding.detailsStaticMap)
+            Glide.with(binding.detailsStaticMap).load(details.staticMapUrl).into(binding.detailsStaticMap)
             binding.detailsStaticMap.setOnClickListener {
                 val intent = Intent(Intent.ACTION_VIEW, Uri.parse("geo:0,0?q=${details.mapsAddress}"))
                 intent.setPackage("com.google.android.apps.maps")

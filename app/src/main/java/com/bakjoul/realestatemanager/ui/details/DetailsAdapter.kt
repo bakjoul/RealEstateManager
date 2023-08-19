@@ -20,9 +20,7 @@ class DetailsAdapter : ListAdapter<DetailsMediaItemViewState, DetailsAdapter.Vie
 
     class ViewHolder(private val binding: PhotosItemBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(item: DetailsMediaItemViewState) {
-            Glide.with(binding.detailsPhotoItemImageView.context)
-                .load(item.url)
-                .into(binding.detailsPhotoItemImageView)
+            Glide.with(binding.detailsPhotoItemImageView.context).load(item.url).into(binding.detailsPhotoItemImageView)
             binding.detailsPhotoItemDescription.text = item.description
             binding.detailsPhotoItem.setOnClickListener { item.onPhotoClicked() }
         }

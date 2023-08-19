@@ -1,7 +1,6 @@
 package com.bakjoul.realestatemanager.ui.add
 
 import android.app.Application
-import android.util.Log
 import android.widget.CompoundButton
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -94,7 +93,6 @@ class AddPropertyViewModel @Inject constructor(
             selectedAddressDetailsFlow
         ) { currency, surfaceUnit, propertyType, isForSale, surface, numberOfRooms, numberOfBathrooms, numberOfBedrooms, address, addressDetails ->
             updateAddressData(addressDetails)
-            Log.d("test", "address: $currentAddress state: $state city: $city zipcode: $zipcode")
             AddPropertyViewState(
                 propertyType = propertyType,
                 dateHint = formatDateHint(isForSale),
