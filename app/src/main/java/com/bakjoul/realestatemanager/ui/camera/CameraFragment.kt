@@ -12,7 +12,6 @@ import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.bakjoul.realestatemanager.R
@@ -21,13 +20,8 @@ import com.bakjoul.realestatemanager.ui.utils.viewBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.asExecutor
-import java.io.File
-import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.Locale
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
 
 @AndroidEntryPoint
 class CameraFragment : Fragment(R.layout.fragment_camera) {
@@ -38,7 +32,7 @@ class CameraFragment : Fragment(R.layout.fragment_camera) {
     }
 
     private val binding by viewBinding { FragmentCameraBinding.bind(it) }
-    private val viewModel: CameraViewModel by viewModels()
+    private val viewModel by viewModels<CameraViewModel>()
 
     private val filenameFormatter by lazy { DateTimeFormatter.ofPattern(FILENAME_FORMAT) }
 

@@ -25,13 +25,16 @@ class PhotoPreviewFragment : Fragment(R.layout.fragment_photo_preview) {
             Glide.with(binding.photoPreview).load(viewState.photoUri).into(binding.photoPreview)
 
             binding.photoPreviewCancelButton.setOnClickListener {
-                requireContext().contentResolver.delete(viewState.photoUri.toUri(), null, null)
+                requireContext().contentResolver.delete(viewState.photoUri.toUri(), null, null) // TODO à faire côté VM
+                viewModel.onPhotoPreviewDismissed()
                 requireActivity().onBackPressedDispatcher.onBackPressed()
             }
 
             binding.photoPreviewDoneButton.setOnClickListener {
                 // TODO CHECK IF DESCRIPTION IS NOT EMPTY
-                Toast.makeText(requireContext(), "Photo successfully added", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Photo successfully added", Toast.LENGTH_SHORT)
+                    .show()
+                viewModel.onPhotoPreviewDismissed()
                 requireActivity().finish()
             }
         }

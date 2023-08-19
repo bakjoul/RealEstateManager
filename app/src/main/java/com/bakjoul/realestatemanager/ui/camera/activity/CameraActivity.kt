@@ -36,7 +36,7 @@ class CameraActivity : AppCompatActivity() {
 
         viewModel.viewActionLiveData.observeEvent(this) {
             when (it) {
-                CameraActivityViewAction.ShowCapturedPhoto -> {
+                CameraActivityViewAction.ShowPhotoPreview -> {
                     supportFragmentManager.beginTransaction()
                         .replace(binding.cameraFrameLayoutContainer.id, PhotoPreviewFragment())
                         .addToBackStack(null)
