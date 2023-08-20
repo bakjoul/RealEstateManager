@@ -8,6 +8,7 @@ import android.text.style.StyleSpan
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
+import androidx.lifecycle.viewModelScope
 import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.data.settings.model.AppCurrency
 import com.bakjoul.realestatemanager.data.settings.model.SurfaceUnit
@@ -24,7 +25,9 @@ import com.bakjoul.realestatemanager.ui.utils.ViewModelUtils.Companion.formatPri
 import com.bakjoul.realestatemanager.ui.utils.ViewModelUtils.Companion.formatSurface
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.time.format.DateTimeFormatter
@@ -124,6 +127,13 @@ class PropertyListViewModel @Inject constructor(
     }
 
     fun onAddPropertyClicked() {
-        setAddPropertyViewActionUseCase.invoke(MainViewAction.ShowAddProperty)
+        viewModelScope.launch {
+            val isTablet = isTabletUseCase.invoke().first()
+            if (isTablet) {
+                setAddPropertyViewActionUseCase.invoke(MainViewAction.ShowAddPropertyFragment)
+            } else {
+                setAddPropertyViewActionUseCase.invoke(MainViewAction.ShowAddPropertyActivity)
+            }
+        }
     }
 }

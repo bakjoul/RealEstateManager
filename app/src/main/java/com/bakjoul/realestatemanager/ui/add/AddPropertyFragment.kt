@@ -371,6 +371,8 @@ class AddPropertyFragment : Fragment(R.layout.fragment_add_property) {
                     binding.addPropertyAddressTextInputEditText.clearFocus()
                     hideKeyboard()
                 }
+
+                AddPropertyViewAction.CloseActivity -> requireActivity().finish()
             }
         }
     }

@@ -13,6 +13,7 @@ import androidx.core.view.GravityCompat
 import androidx.core.view.MenuProvider
 import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.databinding.ActivityMainBinding
+import com.bakjoul.realestatemanager.ui.add.AddPropertyActivity
 import com.bakjoul.realestatemanager.ui.add.AddPropertyFragment
 import com.bakjoul.realestatemanager.ui.details.DetailsFragment
 import com.bakjoul.realestatemanager.ui.details.activity.DetailsActivity
@@ -72,7 +73,7 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
 
-                MainViewAction.ShowAddProperty -> {
+                MainViewAction.ShowAddPropertyFragment -> {
                     val existingDialog = supportFragmentManager.findFragmentByTag(ADD_PROPERTY_FRAGMENT_TAG) as? AddPropertyFragment
                     if (containerDetailsId != null && existingDialog == null) {
                         supportFragmentManager.beginTransaction()
@@ -83,7 +84,7 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
 
-                MainViewAction.CloseAddProperty -> {
+                MainViewAction.CloseAddPropertyFragment -> {
                     if (containerDetailsId != null) {
                         val addPropertyFragment = supportFragmentManager.findFragmentByTag(ADD_PROPERTY_FRAGMENT_TAG)
                         if (addPropertyFragment != null) {
@@ -93,6 +94,10 @@ class MainActivity : AppCompatActivity() {
                                 .commitNow()
                         }
                     }
+                }
+
+                MainViewAction.ShowAddPropertyActivity -> {
+                    startActivity(Intent(this, AddPropertyActivity::class.java))
                 }
             }
         }

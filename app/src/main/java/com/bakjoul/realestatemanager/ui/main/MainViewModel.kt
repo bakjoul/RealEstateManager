@@ -70,7 +70,11 @@ class MainViewModel @Inject constructor(
                    isTabletUseCase.invoke()
                ) { viewAction, isTablet ->
                    if (isTablet) {
-                       if (viewAction is MainViewAction.ShowAddProperty || viewAction is MainViewAction.CloseAddProperty) {
+                       if (viewAction is MainViewAction.ShowAddPropertyFragment || viewAction is MainViewAction.CloseAddPropertyFragment) {
+                           emit(Event(viewAction))
+                       }
+                   } else {
+                       if (viewAction is MainViewAction.ShowAddPropertyActivity) {
                            emit(Event(viewAction))
                        }
                    }

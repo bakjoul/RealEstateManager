@@ -364,7 +364,9 @@ class AddPropertyViewModel @Inject constructor(
         viewModelScope.launch {
             val isTablet = isTabletUseCase.invoke().first()
             if (isTablet) {
-                setAddPropertyViewActionUseCase.invoke(MainViewAction.CloseAddProperty)
+                setAddPropertyViewActionUseCase.invoke(MainViewAction.CloseAddPropertyFragment)
+            } else {
+                _viewActionLiveData.value = Event(AddPropertyViewAction.CloseActivity)
             }
         }
     }
