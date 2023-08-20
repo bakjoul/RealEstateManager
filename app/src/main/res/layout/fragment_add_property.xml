@@ -1,441 +1,457 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="?attr/colorSurface">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="8dp">
-
-        <HorizontalScrollView
-            android:id="@+id/add_property_type_HorizontalScrollView"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:padding="1dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <RadioGroup
-                android:id="@+id/add_property_type_RadioGroup"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/type_border_unchecked"
-                android:orientation="horizontal">
-
-                <RadioButton
-                    android:id="@+id/add_property_type_flat_RadioButton"
-                    style="@style/PropertyTypeRadioButton"
-                    android:drawableStart="@drawable/type_flat_selector"
-                    android:text="@string/property_type_flat" />
-
-                <RadioButton
-                    android:id="@+id/add_property_type_house_RadioButton"
-                    style="@style/PropertyTypeRadioButton"
-                    android:drawableStart="@drawable/type_house_selector"
-                    android:text="@string/property_type_house" />
-
-                <RadioButton
-                    android:id="@+id/add_property_type_duplex_RadioButton"
-                    style="@style/PropertyTypeRadioButton"
-                    android:drawableStart="@drawable/type_duplex_selector"
-                    android:text="@string/property_type_duplex" />
-
-                <RadioButton
-                    android:id="@+id/add_property_type_penthouse_RadioButton"
-                    style="@style/PropertyTypeRadioButton"
-                    android:drawableStart="@drawable/type_penthouse_selector"
-                    android:text="@string/property_type_penthouse" />
-
-                <RadioButton
-                    android:id="@+id/add_property_type_loft_RadioButton"
-                    style="@style/PropertyTypeRadioButton"
-                    android:drawableStart="@drawable/type_loft_selector"
-                    android:text="@string/property_type_loft" />
-
-                <RadioButton
-                    android:id="@+id/add_property_type_other_RadioButton"
-                    style="@style/PropertyTypeRadioButton"
-                    android:drawableStart="@drawable/type_other_selector"
-                    android:text="@string/property_type_other" />
-            </RadioGroup>
-        </HorizontalScrollView>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/add_property_date_TextInputLayout"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:layout_marginEnd="8dp"
-            app:layout_constraintEnd_toStartOf="@id/add_property_type_sale_status_Toggle"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/add_property_type_HorizontalScrollView"
-            tools:hint="For sale since">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/add_property_date_TextInputEditText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:focusable="false"
-                android:lines="1" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <androidx.appcompat.widget.AppCompatToggleButton
-            android:id="@+id/add_property_type_sale_status_Toggle"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_marginTop="6dp"
-            android:layout_marginBottom="1dp"
-            android:background="@drawable/sale_status_selector"
-            android:checked="true"
-            android:textColor="@color/white"
-            android:textOff="@string/property_sold"
-            android:textOn="@string/property_for_sale"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="@id/add_property_date_TextInputLayout"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/add_property_date_TextInputLayout" />
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/add_property_price_TextInputLayout"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/add_property_date_TextInputLayout"
-            tools:hint="Price (€)">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/add_property_price_TextInputEditText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="numberDecimal"
-                android:lines="1" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.flexbox.FlexboxLayout
-            android:id="@+id/add_property_features_FlexboxLayout"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            app:alignItems="flex_start"
-            app:flexWrap="wrap"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/add_property_price_TextInputLayout">
-
-            <com.bakjoul.realestatemanager.designsystem.atome.PlusMinusView
-                android:id="@+id/add_property_surface_PlusMinusView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingBottom="4dp"
-                app:layout_flexGrow="1"
-                app:plusMinusDrawablePadding="4dp"
-                app:plusMinusEditTextWidth="38dp"
-                app:plusMinusImageSrc="@drawable/baseline_settings_overscan_16"
-                app:plusMinusLabel="Surface" />
-
-            <com.bakjoul.realestatemanager.designsystem.atome.PlusMinusView
-                android:id="@+id/add_property_rooms_PlusMinusView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingBottom="4dp"
-                app:layout_flexGrow="1"
-                app:plusMinusDrawablePadding="2dp"
-                app:plusMinusImageSrc="@drawable/baseline_home_16"
-                app:plusMinusLabel="Rooms" />
-
-            <com.bakjoul.realestatemanager.designsystem.atome.PlusMinusView
-                android:id="@+id/add_property_bathrooms_PlusMinusView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingBottom="4dp"
-                app:layout_flexGrow="1"
-                app:plusMinusDrawablePadding="3.5dp"
-                app:plusMinusImageSrc="@drawable/hot_tub_black_16dp"
-                app:plusMinusLabel="Bathrooms" />
-
-            <com.bakjoul.realestatemanager.designsystem.atome.PlusMinusView
-                android:id="@+id/add_property_bedrooms_PlusMinusView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingBottom="4dp"
-                app:layout_flexGrow="1"
-                app:plusMinusDrawablePadding="3.5dp"
-                app:plusMinusImageSrc="@drawable/hotel_black_16dp"
-                app:plusMinusLabel="Bedrooms" />
-        </com.google.android.flexbox.FlexboxLayout>
-
-        <TextView
-            android:id="@+id/add_property_amenities_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:drawablePadding="7dp"
-            android:gravity="bottom"
-            android:text="@string/property_label_amenities"
-            android:textSize="15sp"
-            app:drawableStartCompat="@drawable/nearby_house_24"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/add_property_features_FlexboxLayout" />
-
-        <com.google.android.material.chip.ChipGroup
-            android:id="@+id/add_property_amenities_ChipGroup"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:paddingVertical="8dp"
-            app:chipSpacingVertical="8dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/add_property_amenities_label">
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/add_property_amenities_school_Chip"
-                style="@style/Chip"
-                android:text="@string/property_poi_desc_school" />
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/add_property_amenities_store_Chip"
-                style="@style/Chip"
-                android:text="@string/property_poi_desc_store" />
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/add_property_amenities_park_Chip"
-                style="@style/Chip"
-                android:text="@string/property_poi_desc_park" />
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/add_property_amenities_restaurant_Chip"
-                style="@style/Chip"
-                android:text="@string/property_poi_desc_restaurant" />
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/add_property_amenities_hospital_Chip"
-                style="@style/Chip"
-                android:text="@string/property_poi_desc_hospital" />
-        </com.google.android.material.chip.ChipGroup>
-
-        <TextView
-            android:id="@+id/add_property_transportation_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:drawablePadding="6dp"
-            android:gravity="top"
-            android:text="@string/property_label_transportation"
-            android:textSize="15sp"
-            app:drawableStartCompat="@drawable/transportation_24"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/add_property_amenities_ChipGroup" />
-
-        <com.google.android.material.chip.ChipGroup
-            android:id="@+id/add_property_transportation_ChipGroup"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:paddingVertical="8dp"
-            app:chipSpacingVertical="8dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/add_property_transportation_label">
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/add_property_transportation_bus_Chip"
-                style="@style/Chip"
-                android:text="@string/property_poi_desc_bus" />
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/add_property_transportation_subway_Chip"
-                style="@style/Chip"
-                android:text="@string/property_poi_desc_subway" />
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/add_property_transportation_tramway_Chip"
-                style="@style/Chip"
-                android:text="@string/property_poi_desc_tramway" />
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/add_property_transportation_train_Chip"
-                style="@style/Chip"
-                android:text="@string/property_poi_desc_train" />
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/add_property_transportation_airport_Chip"
-                style="@style/Chip"
-                android:text="@string/property_poi_desc_airport" />
-        </com.google.android.material.chip.ChipGroup>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/add_property_address_TextInputLayout"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:hint="@string/add_property_address_hint"
-            app:endIconDrawable="@drawable/backspace_24"
-            app:endIconMode="custom"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/add_property_transportation_ChipGroup">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/add_property_address_TextInputEditText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textNoSuggestions"
-                android:lines="1" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/add_property_complementary_address_TextInputLayout"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:hint="@string/add_property_apartment_hint"
-            app:endIconDrawable="@drawable/backspace_24"
-            app:endIconMode="custom"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/add_property_address_TextInputLayout">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/add_property_complementary_address_TextInputEditText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textNoSuggestions"
-                android:lines="1" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/add_property_city_TextInputLayout"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:hint="@string/add_property_city_hint"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/add_property_complementary_address_TextInputLayout">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/add_property_city_TextInputEditText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:clickable="false"
-                android:focusable="false"
-                android:lines="1" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/add_property_state_region_TextInputLayout"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:layout_marginEnd="4dp"
-            android:hint="@string/add_property_state_region_hint"
-            app:layout_constraintEnd_toStartOf="@id/add_property_zipcode_TextInputLayout"
-            app:layout_constraintHorizontal_weight="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/add_property_city_TextInputLayout">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/add_property_state_region_TextInputEditText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:clickable="false"
-                android:focusable="false"
-                android:lines="1" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/add_property_zipcode_TextInputLayout"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
-            android:hint="@string/add_property_zip_code_hint"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_weight="0.5"
-            app:layout_constraintStart_toEndOf="@id/add_property_state_region_TextInputLayout"
-            app:layout_constraintTop_toTopOf="@id/add_property_state_region_TextInputLayout">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/add_property_zipcode_TextInputEditText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:clickable="false"
-                android:focusable="false"
-                android:lines="1" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/add_property_description_TextInputLayout"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:hint="@string/description_label"
-            app:endIconDrawable="@drawable/backspace_24"
-            app:endIconMode="custom"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/add_property_state_region_TextInputLayout">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/add_property_description_TextInputEditText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="top"
-                android:maxLines="8"
-                android:minLines="4" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <ImageButton
-            android:id="@+id/add_property_camera_ImageButton"
-            android:layout_width="@dimen/photo_frame_width"
-            android:layout_height="@dimen/photo_frame_height"
-            android:layout_marginTop="12dp"
-            android:background="@null"
-            android:contentDescription="@string/add_property_camera_btn_desc"
-            android:src="@drawable/baseline_camera_alt_24"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/add_property_description_TextInputLayout" />
+        android:layout_height="match_parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/add_property_address_suggestions_container"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/suggestions_bkg"
-            android:paddingHorizontal="2dp"
-            android:paddingVertical="1dp"
-            app:layout_constraintBottom_toTopOf="@id/add_property_address_TextInputLayout"
-            app:layout_constraintEnd_toEndOf="@id/add_property_address_TextInputLayout"
-            app:layout_constraintStart_toStartOf="@id/add_property_address_TextInputLayout"
-            tools:visibility="gone">
+            android:padding="8dp">
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/add_property_address_suggestions_RecyclerView"
+            <HorizontalScrollView
+                android:id="@+id/add_property_type_HorizontalScrollView"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                android:padding="1dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:itemCount="5"
-                tools:listitem="@layout/fragment_add_property_suggestion_item" />
+                app:layout_constraintTop_toTopOf="parent">
 
-            <ImageButton
-                android:id="@+id/add_property_address_suggestions_close_button"
+                <RadioGroup
+                    android:id="@+id/add_property_type_RadioGroup"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/type_border_unchecked"
+                    android:orientation="horizontal">
+
+                    <RadioButton
+                        android:id="@+id/add_property_type_flat_RadioButton"
+                        style="@style/PropertyTypeRadioButton"
+                        android:drawableStart="@drawable/type_flat_selector"
+                        android:text="@string/property_type_flat" />
+
+                    <RadioButton
+                        android:id="@+id/add_property_type_house_RadioButton"
+                        style="@style/PropertyTypeRadioButton"
+                        android:drawableStart="@drawable/type_house_selector"
+                        android:text="@string/property_type_house" />
+
+                    <RadioButton
+                        android:id="@+id/add_property_type_duplex_RadioButton"
+                        style="@style/PropertyTypeRadioButton"
+                        android:drawableStart="@drawable/type_duplex_selector"
+                        android:text="@string/property_type_duplex" />
+
+                    <RadioButton
+                        android:id="@+id/add_property_type_penthouse_RadioButton"
+                        style="@style/PropertyTypeRadioButton"
+                        android:drawableStart="@drawable/type_penthouse_selector"
+                        android:text="@string/property_type_penthouse" />
+
+                    <RadioButton
+                        android:id="@+id/add_property_type_loft_RadioButton"
+                        style="@style/PropertyTypeRadioButton"
+                        android:drawableStart="@drawable/type_loft_selector"
+                        android:text="@string/property_type_loft" />
+
+                    <RadioButton
+                        android:id="@+id/add_property_type_other_RadioButton"
+                        style="@style/PropertyTypeRadioButton"
+                        android:drawableStart="@drawable/type_other_selector"
+                        android:text="@string/property_type_other" />
+                </RadioGroup>
+            </HorizontalScrollView>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/add_property_date_TextInputLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="8dp"
+                app:layout_constraintEnd_toStartOf="@id/add_property_type_sale_status_Toggle"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/add_property_type_HorizontalScrollView"
+                tools:hint="For sale since">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/add_property_date_TextInputEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:focusable="false"
+                    android:lines="1" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <androidx.appcompat.widget.AppCompatToggleButton
+                android:id="@+id/add_property_type_sale_status_Toggle"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="1dp"
+                android:background="@drawable/sale_status_selector"
+                android:checked="true"
+                android:textColor="@color/white"
+                android:textOff="@string/property_sold"
+                android:textOn="@string/property_for_sale"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@id/add_property_date_TextInputLayout"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/add_property_date_TextInputLayout" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/add_property_price_TextInputLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/add_property_date_TextInputLayout"
+                tools:hint="Price (€)">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/add_property_price_TextInputEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="numberDecimal"
+                    android:lines="1" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.flexbox.FlexboxLayout
+                android:id="@+id/add_property_features_FlexboxLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                app:alignItems="flex_start"
+                app:flexWrap="wrap"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/add_property_price_TextInputLayout">
+
+                <com.bakjoul.realestatemanager.designsystem.atome.PlusMinusView
+                    android:id="@+id/add_property_surface_PlusMinusView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="4dp"
+                    app:layout_flexGrow="1"
+                    app:plusMinusDrawablePadding="4dp"
+                    app:plusMinusEditTextWidth="38dp"
+                    app:plusMinusImageSrc="@drawable/baseline_settings_overscan_16"
+                    app:plusMinusLabel="Surface" />
+
+                <com.bakjoul.realestatemanager.designsystem.atome.PlusMinusView
+                    android:id="@+id/add_property_rooms_PlusMinusView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="4dp"
+                    app:layout_flexGrow="1"
+                    app:plusMinusDrawablePadding="2dp"
+                    app:plusMinusImageSrc="@drawable/baseline_home_16"
+                    app:plusMinusLabel="Rooms" />
+
+                <com.bakjoul.realestatemanager.designsystem.atome.PlusMinusView
+                    android:id="@+id/add_property_bathrooms_PlusMinusView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="4dp"
+                    app:layout_flexGrow="1"
+                    app:plusMinusDrawablePadding="3.5dp"
+                    app:plusMinusImageSrc="@drawable/hot_tub_black_16dp"
+                    app:plusMinusLabel="Bathrooms" />
+
+                <com.bakjoul.realestatemanager.designsystem.atome.PlusMinusView
+                    android:id="@+id/add_property_bedrooms_PlusMinusView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="4dp"
+                    app:layout_flexGrow="1"
+                    app:plusMinusDrawablePadding="3.5dp"
+                    app:plusMinusImageSrc="@drawable/hotel_black_16dp"
+                    app:plusMinusLabel="Bedrooms" />
+            </com.google.android.flexbox.FlexboxLayout>
+
+            <TextView
+                android:id="@+id/add_property_amenities_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="12dp"
-                android:layout_marginVertical="8dp"
-                android:background="@null"
-                android:contentDescription="@string/add_property_close_button_desc"
-                android:padding="0dp"
-                android:src="@drawable/baseline_close_24_grey"
-                app:layout_constraintBottom_toBottomOf="@id/add_property_address_suggestions_RecyclerView"
-                app:layout_constraintEnd_toEndOf="@id/add_property_address_suggestions_RecyclerView" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
+                android:layout_marginTop="4dp"
+                android:drawablePadding="7dp"
+                android:gravity="bottom"
+                android:text="@string/property_label_amenities"
+                android:textSize="15sp"
+                app:drawableStartCompat="@drawable/nearby_house_24"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/add_property_features_FlexboxLayout" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</ScrollView>
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/add_property_amenities_ChipGroup"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:paddingVertical="8dp"
+                app:chipSpacingVertical="8dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/add_property_amenities_label">
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/add_property_amenities_school_Chip"
+                    style="@style/Chip"
+                    android:text="@string/property_poi_desc_school" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/add_property_amenities_store_Chip"
+                    style="@style/Chip"
+                    android:text="@string/property_poi_desc_store" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/add_property_amenities_park_Chip"
+                    style="@style/Chip"
+                    android:text="@string/property_poi_desc_park" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/add_property_amenities_restaurant_Chip"
+                    style="@style/Chip"
+                    android:text="@string/property_poi_desc_restaurant" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/add_property_amenities_hospital_Chip"
+                    style="@style/Chip"
+                    android:text="@string/property_poi_desc_hospital" />
+            </com.google.android.material.chip.ChipGroup>
+
+            <TextView
+                android:id="@+id/add_property_transportation_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:drawablePadding="6dp"
+                android:gravity="top"
+                android:text="@string/property_label_transportation"
+                android:textSize="15sp"
+                app:drawableStartCompat="@drawable/transportation_24"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/add_property_amenities_ChipGroup" />
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/add_property_transportation_ChipGroup"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:paddingVertical="8dp"
+                app:chipSpacingVertical="8dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/add_property_transportation_label">
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/add_property_transportation_bus_Chip"
+                    style="@style/Chip"
+                    android:text="@string/property_poi_desc_bus" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/add_property_transportation_subway_Chip"
+                    style="@style/Chip"
+                    android:text="@string/property_poi_desc_subway" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/add_property_transportation_tramway_Chip"
+                    style="@style/Chip"
+                    android:text="@string/property_poi_desc_tramway" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/add_property_transportation_train_Chip"
+                    style="@style/Chip"
+                    android:text="@string/property_poi_desc_train" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/add_property_transportation_airport_Chip"
+                    style="@style/Chip"
+                    android:text="@string/property_poi_desc_airport" />
+            </com.google.android.material.chip.ChipGroup>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/add_property_address_TextInputLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:hint="@string/add_property_address_hint"
+                app:endIconDrawable="@drawable/backspace_24"
+                app:endIconMode="custom"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/add_property_transportation_ChipGroup">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/add_property_address_TextInputEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textNoSuggestions"
+                    android:lines="1" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/add_property_complementary_address_TextInputLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:hint="@string/add_property_apartment_hint"
+                app:endIconDrawable="@drawable/backspace_24"
+                app:endIconMode="custom"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/add_property_address_TextInputLayout">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/add_property_complementary_address_TextInputEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textNoSuggestions"
+                    android:lines="1" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/add_property_city_TextInputLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:hint="@string/add_property_city_hint"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/add_property_complementary_address_TextInputLayout">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/add_property_city_TextInputEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clickable="false"
+                    android:focusable="false"
+                    android:lines="1" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/add_property_state_region_TextInputLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="4dp"
+                android:hint="@string/add_property_state_region_hint"
+                app:layout_constraintEnd_toStartOf="@id/add_property_zipcode_TextInputLayout"
+                app:layout_constraintHorizontal_weight="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/add_property_city_TextInputLayout">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/add_property_state_region_TextInputEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clickable="false"
+                    android:focusable="false"
+                    android:lines="1" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/add_property_zipcode_TextInputLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:hint="@string/add_property_zip_code_hint"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_weight="0.5"
+                app:layout_constraintStart_toEndOf="@id/add_property_state_region_TextInputLayout"
+                app:layout_constraintTop_toTopOf="@id/add_property_state_region_TextInputLayout">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/add_property_zipcode_TextInputEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clickable="false"
+                    android:focusable="false"
+                    android:lines="1" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/add_property_description_TextInputLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:hint="@string/description_label"
+                app:endIconDrawable="@drawable/backspace_24"
+                app:endIconMode="custom"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/add_property_state_region_TextInputLayout">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/add_property_description_TextInputEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="top"
+                    android:maxLines="8"
+                    android:minLines="4" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <ImageButton
+                android:id="@+id/add_property_camera_ImageButton"
+                android:layout_width="@dimen/photo_frame_width"
+                android:layout_height="@dimen/photo_frame_height"
+                android:layout_marginTop="12dp"
+                android:background="@null"
+                android:contentDescription="@string/add_property_camera_btn_desc"
+                android:src="@drawable/baseline_camera_alt_24"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/add_property_description_TextInputLayout" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/add_property_address_suggestions_container"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:background="@drawable/suggestions_bkg"
+                android:paddingHorizontal="2dp"
+                android:paddingVertical="1dp"
+                app:layout_constraintBottom_toTopOf="@id/add_property_address_TextInputLayout"
+                app:layout_constraintEnd_toEndOf="@id/add_property_address_TextInputLayout"
+                app:layout_constraintStart_toStartOf="@id/add_property_address_TextInputLayout"
+                tools:visibility="gone">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/add_property_address_suggestions_RecyclerView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:itemCount="5"
+                    tools:listitem="@layout/fragment_add_property_suggestion_item" />
+
+                <ImageButton
+                    android:id="@+id/add_property_address_suggestions_close_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="12dp"
+                    android:layout_marginVertical="8dp"
+                    android:background="@null"
+                    android:contentDescription="@string/add_property_close_button_desc"
+                    android:padding="0dp"
+                    android:src="@drawable/baseline_close_24_grey"
+                    app:layout_constraintBottom_toBottomOf="@id/add_property_address_suggestions_RecyclerView"
+                    app:layout_constraintEnd_toEndOf="@id/add_property_address_suggestions_RecyclerView" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/add_property_done_fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp"
+        android:contentDescription="@string/list_add_property_fab_desc"
+        android:src="@drawable/baseline_done_24" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

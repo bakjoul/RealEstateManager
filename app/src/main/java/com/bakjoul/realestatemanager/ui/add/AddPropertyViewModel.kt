@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
+import androidx.lifecycle.viewModelScope
 import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.data.property.PropertyPoi
 import com.bakjoul.realestatemanager.data.property.PropertyType
@@ -16,8 +17,11 @@ import com.bakjoul.realestatemanager.domain.autocomplete.model.AutocompleteWrapp
 import com.bakjoul.realestatemanager.domain.autocomplete.model.PredictionEntity
 import com.bakjoul.realestatemanager.domain.geocoding.GetAddressDetailsUseCase
 import com.bakjoul.realestatemanager.domain.geocoding.model.GeocodingWrapper
+import com.bakjoul.realestatemanager.domain.property.SetAddPropertyViewActionUseCase
+import com.bakjoul.realestatemanager.domain.resources.IsTabletUseCase
 import com.bakjoul.realestatemanager.domain.settings.currency.GetCurrentCurrencyUseCase
 import com.bakjoul.realestatemanager.domain.settings.surface_unit.GetCurrentSurfaceUnitUseCase
+import com.bakjoul.realestatemanager.ui.main.MainViewAction
 import com.bakjoul.realestatemanager.ui.utils.EquatableCallback
 import com.bakjoul.realestatemanager.ui.utils.Event
 import com.bakjoul.realestatemanager.ui.utils.combine
@@ -25,7 +29,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.transformLatest
+import kotlinx.coroutines.launch
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -39,7 +45,9 @@ class AddPropertyViewModel @Inject constructor(
     private val getCurrentCurrencyUseCase: GetCurrentCurrencyUseCase,
     private val getCurrentSurfaceUnitUseCase: GetCurrentSurfaceUnitUseCase,
     private val getAddressPredictionsUseCase: GetAddressPredictionsUseCase,
-    private val getAddressDetailsUseCase: GetAddressDetailsUseCase
+    private val getAddressDetailsUseCase: GetAddressDetailsUseCase,
+    private val setAddPropertyViewActionUseCase: SetAddPropertyViewActionUseCase,
+    private val isTabletUseCase: IsTabletUseCase
 ) : ViewModel() {
 
     private val propertyTypeMutableStateFlow: MutableStateFlow<PropertyType?> = MutableStateFlow(null)
@@ -349,5 +357,15 @@ class AddPropertyViewModel @Inject constructor(
 
     fun onDescriptionTextCleared() {
         descriptionInputMutableStateFlow.value = null
+    }
+
+    fun onDoneButtonClicked() {
+        // TODO check everything
+        viewModelScope.launch {
+            val isTablet = isTabletUseCase.invoke().first()
+            if (isTablet) {
+                setAddPropertyViewActionUseCase.invoke(MainViewAction.CloseAddProperty)
+            }
+        }
     }
 }

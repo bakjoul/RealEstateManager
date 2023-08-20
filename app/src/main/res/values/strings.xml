@@ -80,4 +80,5 @@
     <string name="camera_done_button_desc">Done button</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="list_add_property_fab_desc">Add property button</string>
 </resources>

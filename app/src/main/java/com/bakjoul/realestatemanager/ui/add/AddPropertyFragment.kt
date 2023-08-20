@@ -325,6 +325,9 @@ class AddPropertyFragment : Fragment(R.layout.fragment_add_property) {
         // Camera
         binding.addPropertyCameraImageButton.setOnClickListener { requestCameraPermission() }
 
+        // Done button
+        binding.addPropertyDoneFab.setOnClickListener { viewModel.onDoneButtonClicked() }
+
         viewModel.viewStateLiveData.observe(viewLifecycleOwner) {
             binding.addPropertyDateTextInputLayout.hint = it.dateHint
             binding.addPropertyPriceTextInputLayout.hint = it.priceHint

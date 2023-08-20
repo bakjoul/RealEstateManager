@@ -14,9 +14,11 @@ import com.bakjoul.realestatemanager.data.settings.model.SurfaceUnit
 import com.bakjoul.realestatemanager.domain.currency_rate.GetEuroRateUseCase
 import com.bakjoul.realestatemanager.domain.current_property.SetCurrentPropertyIdUseCase
 import com.bakjoul.realestatemanager.domain.property.GetPropertiesFlowUseCase
+import com.bakjoul.realestatemanager.domain.property.SetAddPropertyViewActionUseCase
 import com.bakjoul.realestatemanager.domain.resources.IsTabletUseCase
 import com.bakjoul.realestatemanager.domain.settings.currency.GetCurrentCurrencyUseCase
 import com.bakjoul.realestatemanager.domain.settings.surface_unit.GetCurrentSurfaceUnitUseCase
+import com.bakjoul.realestatemanager.ui.main.MainViewAction
 import com.bakjoul.realestatemanager.ui.utils.EquatableCallback
 import com.bakjoul.realestatemanager.ui.utils.ViewModelUtils.Companion.formatPrice
 import com.bakjoul.realestatemanager.ui.utils.ViewModelUtils.Companion.formatSurface
@@ -38,7 +40,8 @@ class PropertyListViewModel @Inject constructor(
     private val getCurrentCurrencyUseCase: GetCurrentCurrencyUseCase,
     private val getEuroRateUseCase: GetEuroRateUseCase,
     private val getCurrentSurfaceUnitUseCase: GetCurrentSurfaceUnitUseCase,
-    private val isTabletUseCase: IsTabletUseCase
+    private val isTabletUseCase: IsTabletUseCase,
+    private val setAddPropertyViewActionUseCase: SetAddPropertyViewActionUseCase
 ) : ViewModel() {
 
     private val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
@@ -118,5 +121,9 @@ class PropertyListViewModel @Inject constructor(
         val outputFormat = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
 
         return date?.let { outputFormat.format(it) }
+    }
+
+    fun onAddPropertyClicked() {
+        setAddPropertyViewActionUseCase.invoke(MainViewAction.ShowAddProperty)
     }
 }

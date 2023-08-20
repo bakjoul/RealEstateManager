@@ -12,6 +12,7 @@ import androidx.core.view.GravityCompat
 import androidx.core.view.MenuProvider
 import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.databinding.ActivityMainBinding
+import com.bakjoul.realestatemanager.ui.add.AddPropertyFragment
 import com.bakjoul.realestatemanager.ui.details.activity.DetailsActivity
 import com.bakjoul.realestatemanager.ui.details.DetailsFragment
 import com.bakjoul.realestatemanager.ui.dispatcher.DispatcherActivity
@@ -53,14 +54,34 @@ class MainActivity : AppCompatActivity() {
 
         viewModel.mainViewActionLiveData.observeEvent(this) {
             when (it) {
-                MainViewAction.NavigateToDetails -> startActivity(Intent(this, DetailsActivity::class.java))
+                MainViewAction.ShowDetails -> startActivity(Intent(this, DetailsActivity::class.java))
 
-                MainViewAction.DisplayPhotosDialog -> {
+                MainViewAction.ShowPhotosDialog -> {
                     Log.d("test", "main: dialog emit")
                     val existingDialog = supportFragmentManager.findFragmentByTag("PhotosDialogFragment") as? PhotosFragment
                     if (existingDialog == null) {
                         val dialog = PhotosFragment()
                         dialog.show(supportFragmentManager, "PhotosDialogFragment")
+                    }
+                }
+
+                MainViewAction.ShowAddProperty -> {
+                    if (containerDetailsId != null) {
+                        supportFragmentManager.beginTransaction()
+                            .add(containerDetailsId, AddPropertyFragment())
+                            .addToBackStack(null)
+                            .commit()
+                    }
+                }
+
+                MainViewAction.CloseAddProperty -> {
+                    if (containerDetailsId != null) {
+                        val addPropertyFragment = supportFragmentManager.findFragmentById(containerDetailsId)
+                        if (addPropertyFragment != null) {
+                            supportFragmentManager.beginTransaction()
+                                .remove(addPropertyFragment)
+                                .commitNow()
+                        }
                     }
                 }
             }

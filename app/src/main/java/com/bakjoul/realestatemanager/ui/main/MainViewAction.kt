@@ -1,6 +1,8 @@
 package com.bakjoul.realestatemanager.ui.main
 
 sealed class MainViewAction {
-    object NavigateToDetails : MainViewAction()
-    object DisplayPhotosDialog: MainViewAction()
+    object ShowDetails : MainViewAction()
+    object ShowPhotosDialog: MainViewAction()
+    object ShowAddProperty: MainViewAction()
+    object CloseAddProperty: MainViewAction()
 }

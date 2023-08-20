@@ -1,6 +1,5 @@
 package com.bakjoul.realestatemanager.ui.main
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
@@ -11,6 +10,7 @@ import com.bakjoul.realestatemanager.domain.auth.IsUserAuthenticatedUseCase
 import com.bakjoul.realestatemanager.domain.auth.LogOutUseCase
 import com.bakjoul.realestatemanager.domain.current_photo.GetCurrentPhotoIdAsEventUseCase
 import com.bakjoul.realestatemanager.domain.current_property.GetCurrentPropertyIdAsEventUseCase
+import com.bakjoul.realestatemanager.domain.property.GetAddPropertyViewActionUseCase
 import com.bakjoul.realestatemanager.domain.resources.IsTabletUseCase
 import com.bakjoul.realestatemanager.domain.resources.RefreshOrientationUseCase
 import com.bakjoul.realestatemanager.ui.utils.Event
@@ -29,6 +29,7 @@ class MainViewModel @Inject constructor(
     isUserAuthenticatedUseCase: IsUserAuthenticatedUseCase,
     getCurrentUserUseCase: GetCurrentUserUseCase,
     agentRepository: AgentRepository,
+    getAddPropertyViewActionUseCase: GetAddPropertyViewActionUseCase,
     private val refreshOrientationUseCase: RefreshOrientationUseCase,
     private val logOutUseCase: LogOutUseCase
 ) : ViewModel() {
@@ -52,23 +53,33 @@ class MainViewModel @Inject constructor(
                     isTabletUseCase.invoke()
                 ) { _, isTablet ->
                     if (!isTablet) {
-                        Log.d("test", "navigatetodetails: ")
-                        emit(Event(MainViewAction.NavigateToDetails))
+                        emit(Event(MainViewAction.ShowDetails))
                     }
                 }.collect()
             }
 
             launch {
                 getCurrentPhotoIdAsEventUseCase.invoke().collect {
-                    emit(Event(MainViewAction.DisplayPhotosDialog))
+                    emit(Event(MainViewAction.ShowPhotosDialog))
                 }
+            }
+
+            launch {
+               combine(
+                   getAddPropertyViewActionUseCase.invoke(),
+                   isTabletUseCase.invoke()
+               ) { viewAction, isTablet ->
+                   if (isTablet) {
+                       if (viewAction is MainViewAction.ShowAddProperty || viewAction is MainViewAction.CloseAddProperty) {
+                           emit(Event(viewAction))
+                       }
+                   }
+               }.collect()
             }
         }
     }
 
-    fun onResume(isTablet: Boolean) {
-        refreshOrientationUseCase.invoke(isTablet)
-    }
+    fun onResume(isTablet: Boolean) = refreshOrientationUseCase.invoke(isTablet)
 
     fun logOut() = logOutUseCase.invoke()
 }
