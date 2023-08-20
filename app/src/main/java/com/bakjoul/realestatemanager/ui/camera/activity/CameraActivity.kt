@@ -42,6 +42,8 @@ class CameraActivity : AppCompatActivity() {
                         .addToBackStack(null)
                         .commit()
                 }
+                CameraActivityViewAction.ClosePhotoPreview -> supportFragmentManager.popBackStack()
+                CameraActivityViewAction.CloseCamera -> finish()
             }
         }
     }

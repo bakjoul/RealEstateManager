@@ -44,7 +44,7 @@ class CameraFragment : Fragment(R.layout.fragment_camera) {
         startCamera()
 
         binding.cameraShutterButton.setOnClickListener { takePhoto() }
-        binding.cameraCancelButton.setOnClickListener { requireActivity().finish() }
+        binding.cameraCloseButton.setOnClickListener { viewModel.onCloseButtonClicked() }
     }
 
     private fun startCamera() {
