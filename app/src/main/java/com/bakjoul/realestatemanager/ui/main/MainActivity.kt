@@ -2,7 +2,6 @@ package com.bakjoul.realestatemanager.ui.main
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -11,6 +10,8 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.core.view.MenuProvider
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.databinding.ActivityMainBinding
 import com.bakjoul.realestatemanager.ui.add.AddPropertyActivity
@@ -65,7 +66,6 @@ class MainActivity : AppCompatActivity() {
                 MainViewAction.ShowDetails -> startActivity(Intent(this, DetailsActivity::class.java))
 
                 MainViewAction.ShowPhotosDialog -> {
-                    Log.d("test", "main: dialog emit")
                     val existingDialog = supportFragmentManager.findFragmentByTag(PHOTOS_DIALOG_TAG) as? PhotosFragment
                     if (existingDialog == null) {
                         val dialog = PhotosFragment()
@@ -74,8 +74,8 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 MainViewAction.ShowAddPropertyFragment -> {
-                    val existingDialog = supportFragmentManager.findFragmentByTag(ADD_PROPERTY_FRAGMENT_TAG) as? AddPropertyFragment
-                    if (containerDetailsId != null && existingDialog == null) {
+                    val existingFragment = supportFragmentManager.findFragmentByTag(ADD_PROPERTY_FRAGMENT_TAG) as? AddPropertyFragment
+                    if (containerDetailsId != null && existingFragment == null) {
                         supportFragmentManager.beginTransaction()
                             .setCustomAnimations(R.anim.slide_in_bottom, 0)
                             .add(containerDetailsId, AddPropertyFragment(), ADD_PROPERTY_FRAGMENT_TAG)
@@ -86,12 +86,10 @@ class MainActivity : AppCompatActivity() {
 
                 MainViewAction.CloseAddPropertyFragment -> {
                     if (containerDetailsId != null) {
-                        val addPropertyFragment = supportFragmentManager.findFragmentByTag(ADD_PROPERTY_FRAGMENT_TAG)
-                        if (addPropertyFragment != null) {
-                            supportFragmentManager.beginTransaction()
-                                .setCustomAnimations(0, R.anim.slide_out_bottom)
-                                .remove(addPropertyFragment)
-                                .commitNow()
+                        val fragmentManager = supportFragmentManager
+                        val existingFragment = fragmentManager.findFragmentByTag(ADD_PROPERTY_FRAGMENT_TAG)
+                        if (existingFragment != null) {
+                            closeAddPropertyFragment(fragmentManager, existingFragment)
                         }
                     }
                 }
@@ -101,6 +99,14 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    private fun closeAddPropertyFragment(fragmentManager: FragmentManager, addPropertyFragment: Fragment) {
+        fragmentManager.beginTransaction()
+            .setCustomAnimations(0, R.anim.slide_out_bottom)
+            .remove(addPropertyFragment)
+            .commit()
+        fragmentManager.popBackStack()
     }
 
     private fun setToolbar() {
@@ -139,14 +145,11 @@ class MainActivity : AppCompatActivity() {
     private fun handleOnBackPressed() {
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                val addPropertyFragment =
-                    supportFragmentManager.findFragmentByTag(ADD_PROPERTY_FRAGMENT_TAG)
+                val fragmentManager = supportFragmentManager
+                val existingFragment = fragmentManager.findFragmentByTag(ADD_PROPERTY_FRAGMENT_TAG)
 
-                if (addPropertyFragment != null) {
-                    supportFragmentManager.beginTransaction()
-                        .setCustomAnimations(0, R.anim.slide_out_bottom)
-                        .remove(addPropertyFragment)
-                        .commit()
+                if (existingFragment != null) {
+                    closeAddPropertyFragment(fragmentManager, existingFragment)
                 } else {
                     onBackPressedDispatcher.onBackPressed()
                 }
