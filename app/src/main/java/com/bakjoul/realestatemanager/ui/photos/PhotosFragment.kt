@@ -1,5 +1,6 @@
 package com.bakjoul.realestatemanager.ui.photos
 
+import android.content.DialogInterface
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.InsetDrawable
 import android.os.Bundle
@@ -13,6 +14,7 @@ import androidx.viewpager2.widget.ViewPager2
 import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.databinding.FragmentPhotosBinding
 import com.bakjoul.realestatemanager.ui.utils.DensityUtil
+import com.bakjoul.realestatemanager.ui.utils.Event.Companion.observeEvent
 import com.bakjoul.realestatemanager.ui.utils.viewBinding
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -30,7 +32,7 @@ class PhotosFragment @Inject constructor() : DialogFragment(R.layout.fragment_ph
 
         setDialogWindow()
 
-        binding.photosViewPagerCloseButton.setOnClickListener { dismiss() }
+        binding.photosViewPagerCloseButton.setOnClickListener { viewModel.onCloseButtonClicked() }
 
         // Photos ViewPager
         val viewPagerAdapter = PhotosViewPagerAdapter()
@@ -50,7 +52,7 @@ class PhotosFragment @Inject constructor() : DialogFragment(R.layout.fragment_ph
         val snapHelper = LinearSnapHelper()
         snapHelper.attachToRecyclerView(binding.photosThumbnailsRecyclerView)
 
-        viewModel.photosViewStateLiveData.observe(viewLifecycleOwner) { viewState ->
+        viewModel.viewStateLiveData.observe(viewLifecycleOwner) { viewState ->
 
             viewPagerAdapter.updateData(viewState.photosUrls)
             if (viewState.currentPhotoId != -1 && isViewPagerFirstOpening) {
@@ -66,6 +68,18 @@ class PhotosFragment @Inject constructor() : DialogFragment(R.layout.fragment_ph
                 thumbnailsAdapter.setSelectedItem(viewState.currentPhotoId)
             }
         }
+
+        viewModel.viewActionLiveData.observeEvent(viewLifecycleOwner) {
+            if (it is PhotosDialogViewAction.ClosePhotosDialog) {
+                dismiss()
+            }
+        }
+    }
+
+    override fun onCancel(dialog: DialogInterface) {
+        super.onCancel(dialog)
+
+        viewModel.onCloseButtonClicked()
     }
 
     private fun setDialogWindow() {

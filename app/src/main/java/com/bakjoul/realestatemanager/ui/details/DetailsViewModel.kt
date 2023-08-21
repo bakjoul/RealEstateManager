@@ -8,10 +8,12 @@ import com.bakjoul.realestatemanager.BuildConfig
 import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.domain.currency_rate.GetEuroRateUseCase
 import com.bakjoul.realestatemanager.domain.current_photo.SetCurrentPhotoIdUseCase
+import com.bakjoul.realestatemanager.domain.current_photo.SetPhotosDialogViewActionUseCase
 import com.bakjoul.realestatemanager.domain.property.GetCurrentPropertyUseCase
 import com.bakjoul.realestatemanager.domain.property.model.PhotoEntity
 import com.bakjoul.realestatemanager.domain.settings.currency.GetCurrentCurrencyUseCase
 import com.bakjoul.realestatemanager.domain.settings.surface_unit.GetCurrentSurfaceUnitUseCase
+import com.bakjoul.realestatemanager.ui.photos.PhotosDialogViewAction
 import com.bakjoul.realestatemanager.ui.utils.EquatableCallback
 import com.bakjoul.realestatemanager.ui.utils.ViewModelUtils.Companion.formatPrice
 import com.bakjoul.realestatemanager.ui.utils.ViewModelUtils.Companion.formatSurface
@@ -30,6 +32,7 @@ class DetailsViewModel @Inject constructor(
     private val getCurrentCurrencyUseCase: GetCurrentCurrencyUseCase,
     private val getEuroRateUseCase: GetEuroRateUseCase,
     private val setCurrentPhotoIdUseCase: SetCurrentPhotoIdUseCase,
+    private val setPhotosDialogViewActionUseCase: SetPhotosDialogViewActionUseCase,
     private val getCurrentSurfaceUnitUseCase: GetCurrentSurfaceUnitUseCase
 ) : ViewModel() {
 
@@ -102,7 +105,10 @@ class DetailsViewModel @Inject constructor(
                 id = photoEntity.id,
                 url = photoEntity.url,
                 description = photoEntity.description,
-                onPhotoClicked = EquatableCallback { setCurrentPhotoIdUseCase.invoke(photoEntity.id.toInt()) }
+                onPhotoClicked = EquatableCallback {
+                    setCurrentPhotoIdUseCase.invoke(photoEntity.id.toInt())
+                    setPhotosDialogViewActionUseCase.invoke(PhotosDialogViewAction.ShowPhotosDialog)
+                }
             )
         }
     }

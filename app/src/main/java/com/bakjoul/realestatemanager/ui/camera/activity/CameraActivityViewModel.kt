@@ -10,9 +10,7 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 @HiltViewModel
-class CameraActivityViewModel @Inject constructor(
-    getCameraViewActionUseCase: GetCameraViewActionUseCase
-) : ViewModel() {
+class CameraActivityViewModel @Inject constructor(getCameraViewActionUseCase: GetCameraViewActionUseCase) : ViewModel() {
 
     val viewActionLiveData: LiveData<Event<CameraActivityViewAction>> =
         getCameraViewActionUseCase.invoke()

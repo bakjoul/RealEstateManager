@@ -8,11 +8,12 @@ import com.bakjoul.realestatemanager.domain.agent.AgentRepository
 import com.bakjoul.realestatemanager.domain.auth.GetCurrentUserUseCase
 import com.bakjoul.realestatemanager.domain.auth.IsUserAuthenticatedUseCase
 import com.bakjoul.realestatemanager.domain.auth.LogOutUseCase
-import com.bakjoul.realestatemanager.domain.current_photo.GetCurrentPhotoIdAsEventUseCase
+import com.bakjoul.realestatemanager.domain.current_photo.GetPhotosDialogViewActionUseCase
 import com.bakjoul.realestatemanager.domain.current_property.GetCurrentPropertyIdAsEventUseCase
 import com.bakjoul.realestatemanager.domain.property.GetAddPropertyViewActionUseCase
 import com.bakjoul.realestatemanager.domain.resources.IsTabletUseCase
 import com.bakjoul.realestatemanager.domain.resources.RefreshOrientationUseCase
+import com.bakjoul.realestatemanager.ui.photos.PhotosDialogViewAction
 import com.bakjoul.realestatemanager.ui.utils.Event
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.coroutineScope
@@ -25,7 +26,7 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     getCurrentPropertyIdAsEventUseCase: GetCurrentPropertyIdAsEventUseCase,
     isTabletUseCase: IsTabletUseCase,
-    getCurrentPhotoIdAsEventUseCase: GetCurrentPhotoIdAsEventUseCase,
+    getPhotosDialogViewActionUseCase: GetPhotosDialogViewActionUseCase,
     isUserAuthenticatedUseCase: IsUserAuthenticatedUseCase,
     getCurrentUserUseCase: GetCurrentUserUseCase,
     agentRepository: AgentRepository,
@@ -59,9 +60,16 @@ class MainViewModel @Inject constructor(
             }
 
             launch {
-                getCurrentPhotoIdAsEventUseCase.invoke().collect {
-                    emit(Event(MainViewAction.ShowPhotosDialog))
-                }
+                combine(
+                    getPhotosDialogViewActionUseCase.invoke(),
+                    isTabletUseCase.invoke()
+                ) { viewAction, isTablet ->
+                    if (isTablet) {
+                        if (viewAction is PhotosDialogViewAction.ShowPhotosDialog) {
+                            emit(Event(MainViewAction.ShowPhotosDialog))
+                        }
+                    }
+                }.collect()
             }
 
             launch {
