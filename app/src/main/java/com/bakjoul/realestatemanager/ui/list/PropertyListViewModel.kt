@@ -130,7 +130,7 @@ class PropertyListViewModel @Inject constructor(
         viewModelScope.launch {
             val isTablet = isTabletUseCase.invoke().first()
             if (isTablet) {
-                setAddPropertyViewActionUseCase.invoke(MainViewAction.ShowAddPropertyFragment)
+                setAddPropertyViewActionUseCase.invoke(MainViewAction.ShowAddPropertyDialog)
             } else {
                 setAddPropertyViewActionUseCase.invoke(MainViewAction.ShowAddPropertyActivity)
             }

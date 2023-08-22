@@ -17,11 +17,9 @@ import com.bakjoul.realestatemanager.domain.autocomplete.model.AutocompleteWrapp
 import com.bakjoul.realestatemanager.domain.autocomplete.model.PredictionEntity
 import com.bakjoul.realestatemanager.domain.geocoding.GetAddressDetailsUseCase
 import com.bakjoul.realestatemanager.domain.geocoding.model.GeocodingWrapper
-import com.bakjoul.realestatemanager.domain.property.SetAddPropertyViewActionUseCase
 import com.bakjoul.realestatemanager.domain.resources.IsTabletUseCase
 import com.bakjoul.realestatemanager.domain.settings.currency.GetCurrentCurrencyUseCase
 import com.bakjoul.realestatemanager.domain.settings.surface_unit.GetCurrentSurfaceUnitUseCase
-import com.bakjoul.realestatemanager.ui.main.MainViewAction
 import com.bakjoul.realestatemanager.ui.utils.EquatableCallback
 import com.bakjoul.realestatemanager.ui.utils.Event
 import com.bakjoul.realestatemanager.ui.utils.combine
@@ -46,7 +44,6 @@ class AddPropertyViewModel @Inject constructor(
     private val getCurrentSurfaceUnitUseCase: GetCurrentSurfaceUnitUseCase,
     private val getAddressPredictionsUseCase: GetAddressPredictionsUseCase,
     private val getAddressDetailsUseCase: GetAddressDetailsUseCase,
-    private val setAddPropertyViewActionUseCase: SetAddPropertyViewActionUseCase,
     private val isTabletUseCase: IsTabletUseCase
 ) : ViewModel() {
 
@@ -364,7 +361,7 @@ class AddPropertyViewModel @Inject constructor(
         viewModelScope.launch {
             val isTablet = isTabletUseCase.invoke().first()
             if (isTablet) {
-                setAddPropertyViewActionUseCase.invoke(MainViewAction.CloseAddPropertyFragment)
+                _viewActionLiveData.value = Event(AddPropertyViewAction.CloseDialog)
             } else {
                 _viewActionLiveData.value = Event(AddPropertyViewAction.CloseActivity)
             }

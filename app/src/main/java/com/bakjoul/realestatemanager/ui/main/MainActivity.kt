@@ -32,7 +32,7 @@ class MainActivity : AppCompatActivity() {
 
     private companion object {
         private const val PHOTOS_DIALOG_TAG = "PhotosDialogFragment"
-        private const val ADD_PROPERTY_FRAGMENT_TAG = "AddPropertyFragment"
+        private const val ADD_PROPERTY_DIALOG_TAG = "AddPropertyDialogFragment"
     }
 
     private val binding by viewBinding { ActivityMainBinding.inflate(it) }
@@ -54,10 +54,11 @@ class MainActivity : AppCompatActivity() {
                 .commitNow()
         }
 
+        val containerMainId = binding.mainFrameLayoutContainer.id
         if (savedInstanceState == null) {
             // List of properties
             supportFragmentManager.beginTransaction()
-                .replace(binding.mainFrameLayoutContainerList.id, PropertyListFragment())
+                .replace(containerMainId, PropertyListFragment())
                 .commitNow()
         }
 
@@ -66,36 +67,21 @@ class MainActivity : AppCompatActivity() {
                 MainViewAction.ShowDetails -> startActivity(Intent(this, DetailsActivity::class.java))
 
                 MainViewAction.ShowPhotosDialog -> {
-                    val existingDialog = supportFragmentManager.findFragmentByTag(PHOTOS_DIALOG_TAG) as? PhotosFragment
-                    if (existingDialog == null) {
-                        val dialog = PhotosFragment()
-                        dialog.show(supportFragmentManager, PHOTOS_DIALOG_TAG)
-                    }
-                }
-
-                MainViewAction.ShowAddPropertyFragment -> {
-                    val existingFragment = supportFragmentManager.findFragmentByTag(ADD_PROPERTY_FRAGMENT_TAG) as? AddPropertyFragment
-                    if (containerDetailsId != null && existingFragment == null) {
-                        supportFragmentManager.beginTransaction()
-                            .setCustomAnimations(R.anim.slide_in_bottom, 0)
-                            .add(containerDetailsId, AddPropertyFragment(), ADD_PROPERTY_FRAGMENT_TAG)
-                            .addToBackStack(null)
-                            .commit()
-                    }
-                }
-
-                MainViewAction.CloseAddPropertyFragment -> {
-                    if (containerDetailsId != null) {
-                        val fragmentManager = supportFragmentManager
-                        val existingFragment = fragmentManager.findFragmentByTag(ADD_PROPERTY_FRAGMENT_TAG)
-                        if (existingFragment != null) {
-                            closeAddPropertyFragment(fragmentManager, existingFragment)
-                        }
+                    val existingFragment = supportFragmentManager.findFragmentByTag(PHOTOS_DIALOG_TAG) as? PhotosFragment
+                    if (existingFragment == null) {
+                        PhotosFragment().show(supportFragmentManager, PHOTOS_DIALOG_TAG)
                     }
                 }
 
                 MainViewAction.ShowAddPropertyActivity -> {
                     startActivity(Intent(this, AddPropertyActivity::class.java))
+                }
+
+                MainViewAction.ShowAddPropertyDialog -> {
+                    val existingFragment = supportFragmentManager.findFragmentByTag(ADD_PROPERTY_DIALOG_TAG) as? AddPropertyFragment
+                    if (existingFragment == null) {
+                        AddPropertyFragment().show(supportFragmentManager, ADD_PROPERTY_DIALOG_TAG)
+                    }
                 }
             }
         }
@@ -146,7 +132,7 @@ class MainActivity : AppCompatActivity() {
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 val fragmentManager = supportFragmentManager
-                val existingFragment = fragmentManager.findFragmentByTag(ADD_PROPERTY_FRAGMENT_TAG)
+                val existingFragment = fragmentManager.findFragmentByTag(ADD_PROPERTY_DIALOG_TAG)
 
                 if (existingFragment != null) {
                     closeAddPropertyFragment(fragmentManager, existingFragment)

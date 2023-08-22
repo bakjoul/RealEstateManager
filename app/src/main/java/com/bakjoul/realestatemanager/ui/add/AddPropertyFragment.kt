@@ -13,7 +13,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.widget.doAfterTextChanged
-import androidx.fragment.app.Fragment
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import com.bakjoul.realestatemanager.R
@@ -28,12 +28,27 @@ import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class AddPropertyFragment : Fragment(R.layout.fragment_add_property) {
+class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
+
+    private companion object {
+        private const val DIALOG_WINDOW_WIDTH = 0.5
+        private const val DIALOG_WINDOW_HEIGHT = 0.9
+    }
 
     private val binding by viewBinding { FragmentAddPropertyBinding.bind(it) }
     private val viewModel by viewModels<AddPropertyViewModel>()
 
     private val requestCameraPermissionLauncher = activityResultLauncher()
+
+    override fun onStart() {
+        super.onStart()
+
+        if (resources.getBoolean(R.bool.isTablet)) {
+            val width = (resources.displayMetrics.widthPixels * DIALOG_WINDOW_WIDTH).toInt()
+            val height = (resources.displayMetrics.heightPixels * DIALOG_WINDOW_HEIGHT).toInt()
+            dialog?.window?.setLayout(width, height)
+        }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -373,6 +388,8 @@ class AddPropertyFragment : Fragment(R.layout.fragment_add_property) {
                 }
 
                 AddPropertyViewAction.CloseActivity -> requireActivity().finish()
+
+                AddPropertyViewAction.CloseDialog -> dismiss()
             }
         }
     }
