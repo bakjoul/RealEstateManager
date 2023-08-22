@@ -83,6 +83,8 @@ class MainActivity : AppCompatActivity() {
                         AddPropertyFragment().show(supportFragmentManager, ADD_PROPERTY_DIALOG_TAG)
                     }
                 }
+
+                else -> {}
             }
         }
     }

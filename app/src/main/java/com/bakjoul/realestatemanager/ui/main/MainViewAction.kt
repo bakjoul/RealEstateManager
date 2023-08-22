@@ -5,4 +5,5 @@ sealed class MainViewAction {
     object ShowPhotosDialog: MainViewAction()
     object ShowAddPropertyActivity: MainViewAction()
     object ShowAddPropertyDialog: MainViewAction()
+    object DoNothing: MainViewAction()
 }
