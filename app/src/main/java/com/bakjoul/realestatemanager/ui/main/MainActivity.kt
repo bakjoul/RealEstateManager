@@ -44,6 +44,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         setToolbar()
+        setMenu()
         setNavigationView()
         handleOnBackPressed()
 
@@ -170,8 +171,8 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean = when (menuItem.itemId) {
-                R.id.menu_settings -> {
-                    startActivity(Intent(applicationContext, SettingsActivity::class.java))
+                R.id.actions_menu -> {
+                    binding.mainDrawerLayout.openDrawer(GravityCompat.END)
                     true
                 }
 
