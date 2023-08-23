@@ -7,6 +7,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
 import android.view.View
+import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import android.view.inputmethod.EditorInfo
 import androidx.activity.result.contract.ActivityResultContracts
@@ -40,6 +41,14 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
 
     private val requestCameraPermissionLauncher = activityResultLauncher()
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        if (!resources.getBoolean(R.bool.isTablet)) {
+            setStyle(STYLE_NORMAL, R.style.FullScreenDialog)
+        }
+    }
+
     override fun onStart() {
         super.onStart()
 
@@ -47,6 +56,8 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
             val width = (resources.displayMetrics.widthPixels * DIALOG_WINDOW_WIDTH).toInt()
             val height = (resources.displayMetrics.heightPixels * DIALOG_WINDOW_HEIGHT).toInt()
             dialog?.window?.setLayout(width, height)
+        } else {
+            dialog?.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
         }
     }
 

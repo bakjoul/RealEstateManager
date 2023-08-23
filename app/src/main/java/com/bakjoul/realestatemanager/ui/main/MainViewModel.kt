@@ -9,7 +9,7 @@ import com.bakjoul.realestatemanager.domain.auth.GetCurrentUserUseCase
 import com.bakjoul.realestatemanager.domain.auth.IsUserAuthenticatedUseCase
 import com.bakjoul.realestatemanager.domain.auth.LogOutUseCase
 import com.bakjoul.realestatemanager.domain.current_photo.GetPhotosDialogViewActionUseCase
-import com.bakjoul.realestatemanager.domain.current_property.GetCurrentPropertyIdAsEventUseCase
+import com.bakjoul.realestatemanager.domain.current_property.GetDetailsViewActionUseCase
 import com.bakjoul.realestatemanager.domain.property.GetAddPropertyViewActionUseCase
 import com.bakjoul.realestatemanager.domain.resources.IsTabletUseCase
 import com.bakjoul.realestatemanager.domain.resources.RefreshOrientationUseCase
@@ -24,7 +24,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    getCurrentPropertyIdAsEventUseCase: GetCurrentPropertyIdAsEventUseCase,
+    getDetailsViewActionUseCase: GetDetailsViewActionUseCase,
     isTabletUseCase: IsTabletUseCase,
     getPhotosDialogViewActionUseCase: GetPhotosDialogViewActionUseCase,
     isUserAuthenticatedUseCase: IsUserAuthenticatedUseCase,
@@ -50,11 +50,21 @@ class MainViewModel @Inject constructor(
         coroutineScope {
             launch {
                 combine(
-                    getCurrentPropertyIdAsEventUseCase.invoke(),
-                    isTabletUseCase.invoke()
-                ) { _, isTablet ->
-                    if (!isTablet) {
-                        emit(Event(MainViewAction.ShowDetails))
+                    isTabletUseCase.invoke(),
+                    getDetailsViewActionUseCase.invoke()
+                ) { isTablet, viewAction ->
+                    if (isTablet) {
+                        if (viewAction is MainViewAction.ShowTabletDetails || viewAction is MainViewAction.ClearDetailsTablet) {
+                            emit(Event(viewAction))
+                        } else if (viewAction is MainViewAction.ShowPortraitDetails) {
+                            emit(Event(MainViewAction.ShowTabletDetails))
+                        }
+                    } else {
+                        if (viewAction is MainViewAction.ShowPortraitDetails) {
+                            emit(Event(viewAction))
+                        } else if (viewAction is MainViewAction.ShowTabletDetails) {
+                            emit(Event(MainViewAction.ShowPortraitDetails))
+                        }
                     }
                 }.collect()
             }
@@ -73,20 +83,11 @@ class MainViewModel @Inject constructor(
             }
 
             launch {
-               combine(
-                   getAddPropertyViewActionUseCase.invoke(),
-                   isTabletUseCase.invoke()
-               ) { viewAction, isTablet ->
-                   if (isTablet) {
-                       if (viewAction is MainViewAction.ShowAddPropertyDialog) {
-                           emit(Event(viewAction))
-                       }
-                   } else {
-                       if (viewAction is MainViewAction.ShowAddPropertyActivity) {
-                           emit(Event(viewAction))
-                       }
-                   }
-               }.collect()
+                getAddPropertyViewActionUseCase.invoke().collect {
+                    if (it is MainViewAction.ShowAddPropertyDialog) {
+                        emit(Event(it))
+                    }
+                }
             }
         }
     }

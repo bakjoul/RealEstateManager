@@ -14,7 +14,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.databinding.ActivityMainBinding
-import com.bakjoul.realestatemanager.ui.add.AddPropertyActivity
 import com.bakjoul.realestatemanager.ui.add.AddPropertyFragment
 import com.bakjoul.realestatemanager.ui.details.DetailsFragment
 import com.bakjoul.realestatemanager.ui.details.activity.DetailsActivity
@@ -32,7 +31,9 @@ class MainActivity : AppCompatActivity() {
 
     private companion object {
         private const val PHOTOS_DIALOG_TAG = "PhotosDialogFragment"
-        private const val ADD_PROPERTY_DIALOG_TAG = "AddPropertyDialogFragment"
+        private const val DETAILS_TABLET_TAG = "DetailsFragmentPortrait"
+        private const val ADD_PROPERTY_FLOATING_DIALOG_TAG = "AddPropertyDialogFragment"
+        private const val ADD_PROPERTY_CONTAINER_DIALOG_TAG = "AddPropertyContainerDialogFragment"
     }
 
     private val binding by viewBinding { ActivityMainBinding.inflate(it) }
@@ -48,11 +49,11 @@ class MainActivity : AppCompatActivity() {
 
         val containerDetailsId = binding.mainFrameLayoutContainerDetails?.id
         // Empty fragment if in tablet mode
-        if (containerDetailsId != null &&  supportFragmentManager.findFragmentById(containerDetailsId) == null) {
+        /*if (containerDetailsId != null &&  supportFragmentManager.findFragmentById(containerDetailsId) == null) {
             supportFragmentManager.beginTransaction()
                 .replace(containerDetailsId, DetailsFragment())
                 .commitNow()
-        }
+        }*/
 
         val containerMainId = binding.mainFrameLayoutContainer.id
         if (savedInstanceState == null) {
@@ -64,7 +65,21 @@ class MainActivity : AppCompatActivity() {
 
         viewModel.mainViewActionLiveData.observeEvent(this) {
             when (it) {
-                MainViewAction.ShowDetails -> startActivity(Intent(this, DetailsActivity::class.java))
+                MainViewAction.ShowPortraitDetails -> {
+                    val addPropertyFragment = supportFragmentManager.findFragmentByTag(ADD_PROPERTY_FLOATING_DIALOG_TAG)
+                    if (addPropertyFragment == null) {
+                        startActivity(Intent(this, DetailsActivity::class.java))
+                    }
+                }
+
+                MainViewAction.ShowTabletDetails -> {
+                    val existingFragment = supportFragmentManager.findFragmentByTag(DETAILS_TABLET_TAG)
+                    if (containerDetailsId != null && existingFragment == null) {
+                        supportFragmentManager.beginTransaction()
+                            .replace(containerDetailsId, DetailsFragment(), DETAILS_TABLET_TAG)
+                            .commitNow()
+                    }
+                }
 
                 MainViewAction.ShowPhotosDialog -> {
                     val existingFragment = supportFragmentManager.findFragmentByTag(PHOTOS_DIALOG_TAG) as? PhotosFragment
@@ -73,18 +88,21 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
 
-                MainViewAction.ShowAddPropertyActivity -> {
-                    startActivity(Intent(this, AddPropertyActivity::class.java))
-                }
-
                 MainViewAction.ShowAddPropertyDialog -> {
-                    val existingFragment = supportFragmentManager.findFragmentByTag(ADD_PROPERTY_DIALOG_TAG) as? AddPropertyFragment
+                    val existingFragment = supportFragmentManager.findFragmentByTag(ADD_PROPERTY_FLOATING_DIALOG_TAG) as? AddPropertyFragment
                     if (existingFragment == null) {
-                        AddPropertyFragment().show(supportFragmentManager, ADD_PROPERTY_DIALOG_TAG)
+                        AddPropertyFragment().show(supportFragmentManager, ADD_PROPERTY_FLOATING_DIALOG_TAG)
                     }
                 }
 
-                else -> {}
+                MainViewAction.ClearDetailsTablet -> {
+                    val existingFragment = supportFragmentManager.findFragmentByTag(DETAILS_TABLET_TAG)
+                    if (existingFragment != null) {
+                        supportFragmentManager.beginTransaction()
+                            .remove(existingFragment)
+                            .commitNow()
+                    }
+                }
             }
         }
     }
@@ -134,7 +152,7 @@ class MainActivity : AppCompatActivity() {
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 val fragmentManager = supportFragmentManager
-                val existingFragment = fragmentManager.findFragmentByTag(ADD_PROPERTY_DIALOG_TAG)
+                val existingFragment = fragmentManager.findFragmentByTag(ADD_PROPERTY_CONTAINER_DIALOG_TAG) as? AddPropertyFragment
 
                 if (existingFragment != null) {
                     closeAddPropertyFragment(fragmentManager, existingFragment)

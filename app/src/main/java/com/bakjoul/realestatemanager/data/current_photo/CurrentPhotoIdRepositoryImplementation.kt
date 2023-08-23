@@ -13,17 +13,17 @@ import javax.inject.Singleton
 class CurrentPhotoIdRepositoryImplementation @Inject constructor() : CurrentPhotoIdRepository {
 
     private val currentPhotoIdMutableSharedFlow: MutableSharedFlow<Int?> = MutableSharedFlow(replay = 1)
-    private val photosDialogMutableSharedFlow: MutableSharedFlow<PhotosDialogViewAction> = MutableSharedFlow(replay = 1)
+    private val photosDialogViewActionMutableSharedFlow: MutableSharedFlow<PhotosDialogViewAction> = MutableSharedFlow(replay = 1)
 
     override fun setCurrentPhotoId(currentId: Int) {
         currentPhotoIdMutableSharedFlow.tryEmit(currentId)
     }
 
-    override fun getCurrentPhotoIdFlow(): Flow<Int> = currentPhotoIdMutableSharedFlow.filterNotNull()
+    override fun getCurrentPhotoIdFlow(): Flow<Int> = currentPhotoIdMutableSharedFlow.asSharedFlow().filterNotNull()
 
     override fun setPhotosDialogViewAction(viewAction: PhotosDialogViewAction) {
-        photosDialogMutableSharedFlow.tryEmit(viewAction)
+        photosDialogViewActionMutableSharedFlow.tryEmit(viewAction)
     }
 
-    override fun getPhotosDialogViewActionFlow(): Flow<PhotosDialogViewAction> = photosDialogMutableSharedFlow.asSharedFlow()
+    override fun getPhotosDialogViewActionFlow(): Flow<PhotosDialogViewAction> = photosDialogViewActionMutableSharedFlow.asSharedFlow()
 }

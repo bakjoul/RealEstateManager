@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import android.widget.PopupWindow
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.bakjoul.realestatemanager.R
@@ -38,12 +39,15 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
             setToolbarInfoAnimation()
         }
 
+        handleOnBackPressed()
+
         // Medias RecyclerView
         val recyclerViewAdapter = DetailsAdapter()
         binding.detailsMediaRecyclerView.adapter = recyclerViewAdapter
 
         binding.detailsFabBack?.setOnClickListener {
-            requireActivity().onBackPressedDispatcher.onBackPressed()
+            viewModel.onBackButtonPressed()
+            requireActivity().finish()
         }
 
         viewModel.detailsLiveData.observe(viewLifecycleOwner) { details ->
@@ -145,5 +149,14 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
             height = ViewGroup.LayoutParams.WRAP_CONTENT
             isOutsideTouchable = true
         }
+    }
+
+    private fun handleOnBackPressed() {
+        requireActivity().onBackPressedDispatcher.addCallback(requireActivity(), object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                viewModel.onBackButtonPressed()
+                requireActivity().finish()
+            }
+        })
     }
 }

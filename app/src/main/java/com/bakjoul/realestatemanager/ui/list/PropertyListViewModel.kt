@@ -8,12 +8,12 @@ import android.text.style.StyleSpan
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
-import androidx.lifecycle.viewModelScope
 import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.data.settings.model.AppCurrency
 import com.bakjoul.realestatemanager.data.settings.model.SurfaceUnit
 import com.bakjoul.realestatemanager.domain.currency_rate.GetEuroRateUseCase
 import com.bakjoul.realestatemanager.domain.current_property.SetCurrentPropertyIdUseCase
+import com.bakjoul.realestatemanager.domain.current_property.SetDetailsViewActionUseCase
 import com.bakjoul.realestatemanager.domain.property.GetPropertiesFlowUseCase
 import com.bakjoul.realestatemanager.domain.property.SetAddPropertyViewActionUseCase
 import com.bakjoul.realestatemanager.domain.resources.IsTabletUseCase
@@ -25,9 +25,7 @@ import com.bakjoul.realestatemanager.ui.utils.ViewModelUtils.Companion.formatPri
 import com.bakjoul.realestatemanager.ui.utils.ViewModelUtils.Companion.formatSurface
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.launch
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.time.format.DateTimeFormatter
@@ -40,6 +38,7 @@ class PropertyListViewModel @Inject constructor(
     private val application: Application,
     private val getPropertiesFlowUseCase: GetPropertiesFlowUseCase,
     private val setCurrentPropertyIdUseCase: SetCurrentPropertyIdUseCase,
+    private val setDetailsViewActionUseCase: SetDetailsViewActionUseCase,
     private val getCurrentCurrencyUseCase: GetCurrentCurrencyUseCase,
     private val getEuroRateUseCase: GetEuroRateUseCase,
     private val getCurrentSurfaceUnitUseCase: GetCurrentSurfaceUnitUseCase,
@@ -71,7 +70,13 @@ class PropertyListViewModel @Inject constructor(
                         euroRateWrapper.currencyRateEntity.updateDate.format(dateFormatter)
                     ),
                     isSold = it.soldDate != null,
-                    onPropertyClicked = EquatableCallback { setCurrentPropertyIdUseCase.invoke(it.id) }
+                    onPropertyClicked = EquatableCallback {
+                        setCurrentPropertyIdUseCase.invoke(it.id)
+                        setDetailsViewActionUseCase.invoke(
+                            if (isTablet) MainViewAction.ShowTabletDetails
+                            else MainViewAction.ShowPortraitDetails
+                        )
+                    }
                 )
             }
         }.collect { propertiesItemViewStates ->
@@ -126,14 +131,5 @@ class PropertyListViewModel @Inject constructor(
         return date?.let { outputFormat.format(it) }
     }
 
-    fun onAddPropertyClicked() {
-        viewModelScope.launch {
-            val isTablet = isTabletUseCase.invoke().first()
-            if (isTablet) {
-                setAddPropertyViewActionUseCase.invoke(MainViewAction.ShowAddPropertyDialog)
-            } else {
-                setAddPropertyViewActionUseCase.invoke(MainViewAction.ShowAddPropertyActivity)
-            }
-        }
-    }
+    fun onAddPropertyClicked() = setAddPropertyViewActionUseCase.invoke(MainViewAction.ShowAddPropertyDialog)
 }
