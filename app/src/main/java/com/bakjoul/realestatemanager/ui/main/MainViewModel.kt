@@ -36,6 +36,7 @@ class MainViewModel @Inject constructor(
 ) : ViewModel() {
 
     init {
+        // TODO Bakjoul repenser cette partie
         viewModelScope.launch {
             isUserAuthenticatedUseCase.invoke().collect { isAuthenticated ->
                 if (isAuthenticated) {
@@ -92,7 +93,11 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun onResume(isTablet: Boolean) = refreshOrientationUseCase.invoke(isTablet)
+    fun onResume(isTablet: Boolean) {
+        refreshOrientationUseCase.invoke(isTablet)
+    }
 
-    fun logOut() = logOutUseCase.invoke()
+    fun onLogOut() {
+        logOutUseCase.invoke()
+    }
 }

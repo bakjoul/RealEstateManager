@@ -6,8 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import com.bakjoul.realestatemanager.domain.camera.DeleteCapturedPhotoUseCase
 import com.bakjoul.realestatemanager.domain.camera.GetCapturedPhotoUriUseCase
-import com.bakjoul.realestatemanager.domain.camera.SetCameraViewActionUseCase
-import com.bakjoul.realestatemanager.ui.camera.activity.CameraActivityViewAction
+import com.bakjoul.realestatemanager.domain.navigation.NavigateUseCase
+import com.bakjoul.realestatemanager.domain.navigation.model.To
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -15,7 +15,7 @@ import javax.inject.Inject
 class PhotoPreviewViewModel @Inject constructor(
     private val getCapturedPhotoUriUseCase: GetCapturedPhotoUriUseCase,
     private val deleteCapturedPhotoUseCase: DeleteCapturedPhotoUseCase,
-    private val setCameraViewActionUseCase: SetCameraViewActionUseCase
+    private val navigateUseCase: NavigateUseCase
 ) : ViewModel() {
 
     val viewStateLiveData: LiveData<PhotoPreviewViewState> = liveData {
@@ -26,10 +26,10 @@ class PhotoPreviewViewModel @Inject constructor(
 
     fun onCancelButtonClicked(photoUri: String) {
         deleteCapturedPhotoUseCase.invoke(photoUri.toUri())
-        setCameraViewActionUseCase.invoke(CameraActivityViewAction.ClosePhotoPreview)
+        navigateUseCase.invoke(To.ClosePhotoPreview)
     }
 
     fun onDoneButtonClicked() {
-        setCameraViewActionUseCase.invoke(CameraActivityViewAction.ClosePhotoPreview)
+        navigateUseCase.invoke(To.ClosePhotoPreview)
     }
 }

@@ -10,9 +10,5 @@ interface CameraRepository {
 
     fun getCapturedPhotoUriFlowAsState(): Flow<String>
 
-    fun setCameraViewAction(viewAction: CameraActivityViewAction)
-
-    fun getViewActionFlow(): Flow<CameraActivityViewAction>
-
     fun deleteCapturedPhoto(photoUri: Uri)
 }

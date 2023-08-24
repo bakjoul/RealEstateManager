@@ -8,6 +8,7 @@ import com.bakjoul.realestatemanager.data.currency_rate.CurrencyRateRepositoryIm
 import com.bakjoul.realestatemanager.data.current_photo.CurrentPhotoIdRepositoryImplementation
 import com.bakjoul.realestatemanager.data.current_property.CurrentPropertyIdRepositoryImplementation
 import com.bakjoul.realestatemanager.data.geocoding.GeocodingRepositoryImplementation
+import com.bakjoul.realestatemanager.data.navigation.NavigationRepositoryInMemory
 import com.bakjoul.realestatemanager.data.property.PropertyRepositoryImplementation
 import com.bakjoul.realestatemanager.data.resources.ResourcesRepositoryImplementation
 import com.bakjoul.realestatemanager.data.settings.SettingsRepositoryImplementation
@@ -19,6 +20,7 @@ import com.bakjoul.realestatemanager.domain.currency_rate.CurrencyRateRepository
 import com.bakjoul.realestatemanager.domain.current_photo.CurrentPhotoIdRepository
 import com.bakjoul.realestatemanager.domain.current_property.CurrentPropertyIdRepository
 import com.bakjoul.realestatemanager.domain.geocoding.GeocodingRepository
+import com.bakjoul.realestatemanager.domain.navigation.NavigationRepository
 import com.bakjoul.realestatemanager.domain.property.PropertyRepository
 import com.bakjoul.realestatemanager.domain.resources.ResourcesRepository
 import com.bakjoul.realestatemanager.domain.settings.SettingsRepository
@@ -75,4 +77,8 @@ abstract class DataBindingModule {
     @Singleton
     @Binds
     abstract fun bindCameraRepository(cameraRepositoryImplementation: CameraRepositoryImplementation): CameraRepository
+
+    @Singleton
+    @Binds
+    abstract fun bindNavigationRepository(navigationRepositoryInMemory: NavigationRepositoryInMemory): NavigationRepository
 }

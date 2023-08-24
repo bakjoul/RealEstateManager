@@ -12,6 +12,7 @@ import androidx.core.view.GravityCompat
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.commitNow
 import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.databinding.ActivityMainBinding
 import com.bakjoul.realestatemanager.ui.add.AddPropertyFragment
@@ -127,20 +128,22 @@ class MainActivity : AppCompatActivity() {
         binding.mainNavigationView.setNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.main_drawer_logout -> {
-                    viewModel.logOut()
+                    viewModel.onLogOut()
+                    // TODO Bakjoul être passif sur les actions "générale"
                     startActivity(Intent(this, DispatcherActivity::class.java))
                     finish()
                 }
 
                 R.id.main_drawer_settings -> {
+                    binding.mainDrawerLayout.closeDrawer(GravityCompat.END)
+
+                    // TODO Bakjoul côté VM
                     if (resources.getBoolean(R.bool.isTablet) && containerSettingsId != null) {
-                        binding.mainDrawerLayout.closeDrawer(GravityCompat.END)
-                        supportFragmentManager.beginTransaction()
-                            .setCustomAnimations(R.anim.slide_in_right, 0)
-                            .replace(containerSettingsId, SettingsFragment())
-                            .commitNow()
+                        supportFragmentManager.commitNow {
+                            setCustomAnimations(R.anim.slide_in_right, 0)
+                            replace(containerSettingsId, SettingsFragment())
+                        }
                     } else {
-                        binding.mainDrawerLayout.closeDrawer(GravityCompat.END)
                         startActivity(Intent(this, SettingsActivity::class.java))
                     }
                 }

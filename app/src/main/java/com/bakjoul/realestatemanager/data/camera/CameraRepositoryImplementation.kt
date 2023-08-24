@@ -16,20 +16,12 @@ import javax.inject.Singleton
 class CameraRepositoryImplementation @Inject constructor(@ApplicationContext private val context: Context) : CameraRepository {
 
     private val capturedPhotoUriMutableSharedFlow: MutableSharedFlow<String> = MutableSharedFlow(replay = 1)
-    private val cameraViewActionMutableSharedFlow: MutableSharedFlow<CameraActivityViewAction> = MutableSharedFlow(replay = 1)
 
     override fun setCapturedPhotoUri(uri: String) {
         capturedPhotoUriMutableSharedFlow.tryEmit(uri)
     }
 
     override fun getCapturedPhotoUriFlowAsState(): Flow<String> = capturedPhotoUriMutableSharedFlow.asSharedFlow()
-
-    override fun setCameraViewAction(viewAction: CameraActivityViewAction) {
-        cameraViewActionMutableSharedFlow.tryEmit(viewAction)
-        Log.d("test", "setCameraViewAction: $viewAction")
-    }
-
-    override fun getViewActionFlow(): Flow<CameraActivityViewAction> = cameraViewActionMutableSharedFlow.asSharedFlow()
 
     override fun deleteCapturedPhoto(photoUri: Uri) {
         context.contentResolver.delete(photoUri, null, null)
