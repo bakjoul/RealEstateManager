@@ -158,7 +158,11 @@ class MainActivity : AppCompatActivity() {
                 if (existingFragment != null) {
                     closeAddPropertyFragment(fragmentManager, existingFragment)
                 } else {
-                    onBackPressedDispatcher.onBackPressed()
+                    if (fragmentManager.backStackEntryCount > 0) {
+                        fragmentManager.popBackStack()
+                    } else {
+                        finish()
+                    }
                 }
             }
         })
