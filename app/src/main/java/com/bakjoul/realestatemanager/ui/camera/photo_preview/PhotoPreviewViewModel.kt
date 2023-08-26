@@ -30,6 +30,6 @@ class PhotoPreviewViewModel @Inject constructor(
     }
 
     fun onDoneButtonClicked() {
-        navigateUseCase.invoke(To.ClosePhotoPreview)
+        navigateUseCase.invoke(To.CloseCamera)
     }
 }
