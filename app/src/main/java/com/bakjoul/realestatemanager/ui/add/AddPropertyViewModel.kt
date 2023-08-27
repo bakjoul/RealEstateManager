@@ -3,8 +3,8 @@ package com.bakjoul.realestatemanager.ui.add
 import android.app.Application
 import android.widget.CompoundButton
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.liveData
 import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.data.property.PropertyPoi
@@ -16,6 +16,9 @@ import com.bakjoul.realestatemanager.domain.autocomplete.model.AutocompleteWrapp
 import com.bakjoul.realestatemanager.domain.autocomplete.model.PredictionEntity
 import com.bakjoul.realestatemanager.domain.geocoding.GetAddressDetailsUseCase
 import com.bakjoul.realestatemanager.domain.geocoding.model.GeocodingWrapper
+import com.bakjoul.realestatemanager.domain.navigation.GetCurrentNavigationUseCase
+import com.bakjoul.realestatemanager.domain.navigation.NavigateUseCase
+import com.bakjoul.realestatemanager.domain.navigation.model.To
 import com.bakjoul.realestatemanager.domain.settings.currency.GetCurrentCurrencyUseCase
 import com.bakjoul.realestatemanager.domain.settings.surface_unit.GetCurrentSurfaceUnitUseCase
 import com.bakjoul.realestatemanager.ui.utils.EquatableCallback
@@ -25,6 +28,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.transformLatest
 import java.time.Instant
 import java.time.LocalDate
@@ -39,7 +43,9 @@ class AddPropertyViewModel @Inject constructor(
     private val getCurrentCurrencyUseCase: GetCurrentCurrencyUseCase,
     private val getCurrentSurfaceUnitUseCase: GetCurrentSurfaceUnitUseCase,
     private val getAddressPredictionsUseCase: GetAddressPredictionsUseCase,
-    private val getAddressDetailsUseCase: GetAddressDetailsUseCase
+    private val getAddressDetailsUseCase: GetAddressDetailsUseCase,
+    private val navigateUseCase: NavigateUseCase,
+    getCurrentNavigationUseCase: GetCurrentNavigationUseCase
 ) : ViewModel() {
 
     private val propertyTypeMutableStateFlow: MutableStateFlow<PropertyType?> = MutableStateFlow(null)
@@ -113,8 +119,18 @@ class AddPropertyViewModel @Inject constructor(
         }
     }
 
-    private val _viewActionLiveData = MutableLiveData<Event<AddPropertyViewAction>>()
-    val viewActionLiveData: LiveData<Event<AddPropertyViewAction>> get() = _viewActionLiveData
+    val viewActionLiveData: LiveData<Event<AddPropertyViewAction>> =
+        getCurrentNavigationUseCase.invoke()
+            .mapNotNull {
+                when (it) {
+                    is To.HideAddressSuggestions -> Event(AddPropertyViewAction.HideSuggestions)
+                    is To.Camera -> Event(AddPropertyViewAction.OpenCamera)
+                    is To.CloseAddProperty -> Event(AddPropertyViewAction.CloseDialog)
+                    is To.Settings -> Event(AddPropertyViewAction.OpenSettings)
+                    else -> null
+                }
+            }
+            .asLiveData()
 
     private fun formatDateHint(isForSale: Boolean): String {
         return if (isForSale) {
@@ -145,7 +161,7 @@ class AddPropertyViewModel @Inject constructor(
                 id = predictionEntity.placeId,
                 address = predictionEntity.address,
                 onSuggestionClicked = EquatableCallback {
-                    _viewActionLiveData.value = Event(AddPropertyViewAction.HideSuggestions)
+                    navigateUseCase.invoke(To.HideAddressSuggestions)
                     selectedAddressMutableStateFlow.value = predictionEntity
                 }
             )
@@ -351,8 +367,20 @@ class AddPropertyViewModel @Inject constructor(
         descriptionInputMutableStateFlow.value = null
     }
 
+    fun onCameraPermissionGranted() {
+        navigateUseCase.invoke(To.Camera)
+    }
+
+    fun onChangeSettingsClicked() {
+        navigateUseCase.invoke(To.Settings)
+    }
+
+    fun onCancel() {
+        navigateUseCase.invoke(To.CloseAddProperty)
+    }
+
     fun onDoneButtonClicked() {
         // TODO check everything
-        _viewActionLiveData.value = Event(AddPropertyViewAction.CloseDialog)
+        navigateUseCase.invoke(To.CloseAddProperty)
     }
 }

@@ -15,7 +15,7 @@ class CameraViewModel @Inject constructor(
 
     fun onImageSaved(uri: String?) = uri?.let {
         setCapturedPhotoUriUseCase.invoke(it)
-        navigateUseCase.invoke(To.Preview)
+        navigateUseCase.invoke(To.PhotoPreview)
     }
 
     fun onCloseButtonClicked() {

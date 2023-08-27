@@ -1,11 +1,15 @@
 package com.bakjoul.realestatemanager.ui.add
 
 import android.Manifest
+import android.app.Dialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
+import android.util.Log
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
@@ -49,6 +53,18 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
         }
     }
 
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        return object : Dialog(requireContext()) {
+            override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
+                if (currentFocus != null) {
+                    hideKeyboard()
+                    currentFocus!!.clearFocus()
+                }
+                return super.dispatchTouchEvent(ev)
+            }
+        }
+    }
+
     override fun onStart() {
         super.onStart()
 
@@ -59,6 +75,8 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
         } else {
             dialog?.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
         }
+
+        dialog?.window?.setWindowAnimations(R.style.AddPropertyDialogAnimation)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -349,7 +367,7 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
         }
 
         // Camera
-        binding.addPropertyCameraImageButton.setOnClickListener { requestCameraPermission() }
+        binding.addPropertyCameraImageButton.setOnClickListener { onCameraButtonClicked() }
 
         // Done button
         binding.addPropertyDoneFab.setOnClickListener { viewModel.onDoneButtonClicked() }
@@ -391,6 +409,7 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
         }
 
         viewModel.viewActionLiveData.observeEvent(viewLifecycleOwner) {
+            Log.d("test", "add property fragment observed event: $it")
             when (it) {
                 AddPropertyViewAction.HideSuggestions -> {
                     binding.addPropertyAddressSuggestionsContainer.visibility = View.GONE
@@ -398,57 +417,63 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
                     hideKeyboard()
                 }
 
-                AddPropertyViewAction.CloseActivity -> requireActivity().finish()
+                AddPropertyViewAction.OpenCamera -> {
+                    startActivity(Intent(requireContext(), CameraActivity::class.java))
+                }
 
                 AddPropertyViewAction.CloseDialog -> dismiss()
+
+                AddPropertyViewAction.OpenSettings -> {
+                    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                    val uri = Uri.fromParts("package", requireContext().packageName, null)
+                    intent.data = uri
+                    startActivity(intent)
+                }
             }
         }
+    }
+
+    override fun onCancel(dialog: DialogInterface) {
+        super.onCancel(dialog)
+
+        viewModel.onCancel()
     }
 
     private fun activityResultLauncher() =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
             if (isGranted) {
-                startCameraActivity()
+                viewModel.onCameraPermissionGranted()
             } else {
                 Snackbar
                     .make(binding.root, getString(R.string.add_property_camera_permission_denied), Snackbar.LENGTH_LONG)
                     .setAction(getString(R.string.snackbar_settings)) {
-                        openSettings()
+                        onChangeSettingsClicked()
                     }.show()
             }
         }
 
-    private fun openSettings() {
-        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-        val uri = Uri.fromParts("package", requireContext().packageName, null)
-        intent.data = uri
-        startActivity(intent)
-    }
+    private fun onChangeSettingsClicked() = viewModel.onChangeSettingsClicked()
 
-    private fun startCameraActivity() {
-        startActivity(Intent(requireContext(), CameraActivity::class.java))
-    }
-
-    private fun requestCameraPermission() {
+    private fun onCameraButtonClicked() {
         when {
-            ContextCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.CAMERA
-            ) == PackageManager.PERMISSION_GRANTED -> {
-                startCameraActivity()
+            // If permission already granted, start camera activity
+            ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED -> {
+                viewModel.onCameraPermissionGranted()
             }
 
+            // If permission denied but not permanently, show rationale
             ActivityCompat.shouldShowRequestPermissionRationale(requireActivity(), Manifest.permission.CAMERA) -> {
                 MaterialAlertDialogBuilder(requireContext())
                     .setTitle(getString(R.string.dialog_permission_required))
                     .setMessage(getString(R.string.add_property_camera_dialog_message))
                     .setPositiveButton(getString(R.string.snackbar_settings)) { _, _ ->
-                        openSettings()
+                        onChangeSettingsClicked()
                     }
                     .setNegativeButton(getString(R.string.dialog_dismiss), null)
                     .show()
             }
 
+            // Else, request permission
             else -> requestCameraPermissionLauncher.launch(Manifest.permission.CAMERA)
         }
     }

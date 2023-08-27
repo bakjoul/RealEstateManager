@@ -1,6 +1,5 @@
 package com.bakjoul.realestatemanager.data.navigation
 
-import android.util.Log
 import com.bakjoul.realestatemanager.domain.navigation.NavigationRepository
 import com.bakjoul.realestatemanager.domain.navigation.model.To
 import kotlinx.coroutines.flow.Flow
@@ -15,7 +14,6 @@ class NavigationRepositoryInMemory @Inject constructor(): NavigationRepository {
 
     override fun setCurrentDestination(to: To) {
         destinationMutableSharedFlow.tryEmit(to)
-        Log.d("test", "setCameraViewAction: $to")
     }
 
     override fun getCurrentDestination(): Flow<To> = destinationMutableSharedFlow.asSharedFlow()

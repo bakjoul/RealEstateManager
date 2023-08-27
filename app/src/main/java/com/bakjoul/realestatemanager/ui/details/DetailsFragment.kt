@@ -45,10 +45,7 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
         val recyclerViewAdapter = DetailsAdapter()
         binding.detailsMediaRecyclerView.adapter = recyclerViewAdapter
 
-        binding.detailsFabBack?.setOnClickListener {
-            viewModel.onBackButtonPressed()
-            requireActivity().finish()
-        }
+        binding.detailsFabBack?.setOnClickListener { viewModel.onBackButtonPressed() }
 
         viewModel.detailsLiveData.observe(viewLifecycleOwner) { details ->
             Glide.with(binding.detailsToolbarPhoto).load(details.mainPhotoUrl).into(binding.detailsToolbarPhoto)
@@ -155,7 +152,6 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
         requireActivity().onBackPressedDispatcher.addCallback(requireActivity(), object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 viewModel.onBackButtonPressed()
-                requireActivity().finish()
             }
         })
     }

@@ -289,6 +289,7 @@
                     android:id="@+id/add_property_address_TextInputEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:imeOptions="actionDone"
                     android:inputType="textNoSuggestions"
                     android:lines="1" />
             </com.google.android.material.textfield.TextInputLayout>
@@ -319,6 +320,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:hint="@string/add_property_city_hint"
+                app:boxBackgroundColor="@color/grey_light"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/add_property_complementary_address_TextInputLayout">
@@ -339,6 +341,7 @@
                 android:layout_marginTop="4dp"
                 android:layout_marginEnd="4dp"
                 android:hint="@string/add_property_state_region_hint"
+                app:boxBackgroundColor="@color/grey_light"
                 app:layout_constraintEnd_toStartOf="@id/add_property_zipcode_TextInputLayout"
                 app:layout_constraintHorizontal_weight="0.5"
                 app:layout_constraintStart_toStartOf="parent"
@@ -359,6 +362,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
                 android:hint="@string/add_property_zip_code_hint"
+                app:boxBackgroundColor="@color/grey_light"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_weight="0.5"
                 app:layout_constraintStart_toEndOf="@id/add_property_state_region_TextInputLayout"

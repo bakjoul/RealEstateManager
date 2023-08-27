@@ -6,6 +6,8 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.bakjoul.realestatemanager.data.settings.model.AppCurrency
 import com.bakjoul.realestatemanager.data.settings.model.SurfaceUnit
+import com.bakjoul.realestatemanager.domain.navigation.NavigateUseCase
+import com.bakjoul.realestatemanager.domain.navigation.model.To
 import com.bakjoul.realestatemanager.domain.settings.currency.GetCurrentCurrencyUseCase
 import com.bakjoul.realestatemanager.domain.settings.currency.SetCurrencyUseCase
 import com.bakjoul.realestatemanager.domain.settings.surface_unit.GetCurrentSurfaceUnitUseCase
@@ -19,7 +21,8 @@ class SettingsViewModel @Inject constructor(
     private val getCurrentCurrencyUseCase: GetCurrentCurrencyUseCase,
     private val setCurrencyUseCase: SetCurrencyUseCase,
     private val getCurrentSurfaceUnitUseCase: GetCurrentSurfaceUnitUseCase,
-    private val setSurfaceUnitUseCase: SetSurfaceUnitUseCase
+    private val setSurfaceUnitUseCase: SetSurfaceUnitUseCase,
+    private val navigateUseCase: NavigateUseCase
 ) : ViewModel() {
 
     fun getCurrencyLiveData(): LiveData<AppCurrency> = getCurrentCurrencyUseCase.invoke().asLiveData()
@@ -35,5 +38,9 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             setSurfaceUnitUseCase.invoke(unit)
         }
+    }
+
+    fun onCloseButtonClicked() {
+        navigateUseCase.invoke(To.CloseSettings)
     }
 }

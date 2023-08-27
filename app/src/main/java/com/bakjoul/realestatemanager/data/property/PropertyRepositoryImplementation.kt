@@ -3,12 +3,9 @@ package com.bakjoul.realestatemanager.data.property
 import com.bakjoul.realestatemanager.domain.property.PropertyRepository
 import com.bakjoul.realestatemanager.domain.property.model.PhotoEntity
 import com.bakjoul.realestatemanager.domain.property.model.PropertyEntity
-import com.bakjoul.realestatemanager.ui.main.MainViewAction
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
@@ -125,18 +122,10 @@ class PropertyRepositoryImplementation @Inject constructor() : PropertyRepositor
             )
         )
 
-    private val addPropertyViewActionMutableSharedFlow: MutableSharedFlow<MainViewAction> = MutableSharedFlow(replay = 1)
-
     override fun getPropertiesFlow(): Flow<List<PropertyEntity>> =
         propertiesMutableStateFlow.asStateFlow()
 
     override suspend fun getPropertyById(id: Long): PropertyEntity? = withContext(Dispatchers.IO) {
         propertiesMutableStateFlow.value.find { it.id == id }
     }
-
-    override fun setAddPropertyViewAction(action: MainViewAction) {
-        addPropertyViewActionMutableSharedFlow.tryEmit(action)
-    }
-
-    override fun getAddPropertyViewActionFlow(): Flow<MainViewAction> = addPropertyViewActionMutableSharedFlow.asSharedFlow()
 }

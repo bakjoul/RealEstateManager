@@ -8,15 +8,13 @@ import com.bakjoul.realestatemanager.domain.agent.AgentRepository
 import com.bakjoul.realestatemanager.domain.auth.GetCurrentUserUseCase
 import com.bakjoul.realestatemanager.domain.auth.IsUserAuthenticatedUseCase
 import com.bakjoul.realestatemanager.domain.auth.LogOutUseCase
-import com.bakjoul.realestatemanager.domain.current_photo.GetPhotosDialogViewActionUseCase
-import com.bakjoul.realestatemanager.domain.current_property.GetDetailsViewActionUseCase
-import com.bakjoul.realestatemanager.domain.property.GetAddPropertyViewActionUseCase
+import com.bakjoul.realestatemanager.domain.navigation.GetCurrentNavigationUseCase
+import com.bakjoul.realestatemanager.domain.navigation.NavigateUseCase
+import com.bakjoul.realestatemanager.domain.navigation.model.To
 import com.bakjoul.realestatemanager.domain.resources.IsTabletUseCase
 import com.bakjoul.realestatemanager.domain.resources.RefreshOrientationUseCase
-import com.bakjoul.realestatemanager.ui.photos.PhotosDialogViewAction
 import com.bakjoul.realestatemanager.ui.utils.Event
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
@@ -24,15 +22,14 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    getDetailsViewActionUseCase: GetDetailsViewActionUseCase,
-    isTabletUseCase: IsTabletUseCase,
-    getPhotosDialogViewActionUseCase: GetPhotosDialogViewActionUseCase,
     isUserAuthenticatedUseCase: IsUserAuthenticatedUseCase,
     getCurrentUserUseCase: GetCurrentUserUseCase,
     agentRepository: AgentRepository,
-    getAddPropertyViewActionUseCase: GetAddPropertyViewActionUseCase,
+    private val isTabletUseCase: IsTabletUseCase,
     private val refreshOrientationUseCase: RefreshOrientationUseCase,
-    private val logOutUseCase: LogOutUseCase
+    private val logOutUseCase: LogOutUseCase,
+    private val getCurrentNavigationUseCase: GetCurrentNavigationUseCase,
+    private val navigateUseCase: NavigateUseCase
 ) : ViewModel() {
 
     init {
@@ -48,49 +45,24 @@ class MainViewModel @Inject constructor(
     }
 
     val mainViewActionLiveData: LiveData<Event<MainViewAction>> = liveData {
-        coroutineScope {
-            launch {
-                combine(
-                    isTabletUseCase.invoke(),
-                    getDetailsViewActionUseCase.invoke()
-                ) { isTablet, viewAction ->
-                    if (isTablet) {
-                        if (viewAction is MainViewAction.ShowTabletDetails || viewAction is MainViewAction.ClearDetailsTablet) {
-                            emit(Event(viewAction))
-                        } else if (viewAction is MainViewAction.ShowPortraitDetails) {
-                            emit(Event(MainViewAction.ShowTabletDetails))
-                        }
-                    } else {
-                        if (viewAction is MainViewAction.ShowPortraitDetails) {
-                            emit(Event(viewAction))
-                        } else if (viewAction is MainViewAction.ShowTabletDetails) {
-                            emit(Event(MainViewAction.ShowPortraitDetails))
-                        }
-                    }
-                }.collect()
+        combine(
+            isTabletUseCase.invoke(),
+            getCurrentNavigationUseCase.invoke()
+        ) { isTablet, navigation ->
+            val viewAction = when (navigation) {
+                is To.Details -> if (isTablet) MainViewAction.ShowDetailsTablet else MainViewAction.ShowDetailsPortrait
+                is To.CloseDetails -> if (isTablet) MainViewAction.CloseDetailsTablet else null
+                is To.PhotosDialog -> if (isTablet) MainViewAction.ShowPhotosDialog else null
+                is To.AddProperty -> MainViewAction.ShowAddPropertyDialog
+                is To.Dispatcher -> MainViewAction.ReturnToDispatcher
+                is To.Settings -> if (isTablet) MainViewAction.ShowSettingsTablet else MainViewAction.ShowSettings
+                is To.CloseSettings -> if (isTablet) MainViewAction.CloseSettingsTablet else null
+                else -> null
             }
-
-            launch {
-                combine(
-                    getPhotosDialogViewActionUseCase.invoke(),
-                    isTabletUseCase.invoke()
-                ) { viewAction, isTablet ->
-                    if (isTablet) {
-                        if (viewAction is PhotosDialogViewAction.ShowPhotosDialog) {
-                            emit(Event(MainViewAction.ShowPhotosDialog))
-                        }
-                    }
-                }.collect()
+            viewAction?.let {
+                emit(Event(it))
             }
-
-            launch {
-                getAddPropertyViewActionUseCase.invoke().collect {
-                    if (it is MainViewAction.ShowAddPropertyDialog) {
-                        emit(Event(it))
-                    }
-                }
-            }
-        }
+        }.collect()
     }
 
     fun onResume(isTablet: Boolean) {
@@ -99,5 +71,10 @@ class MainViewModel @Inject constructor(
 
     fun onLogOut() {
         logOutUseCase.invoke()
+        navigateUseCase.invoke(To.Dispatcher)
+    }
+
+    fun onSettingsClicked() {
+        navigateUseCase.invoke(To.Settings)
     }
 }

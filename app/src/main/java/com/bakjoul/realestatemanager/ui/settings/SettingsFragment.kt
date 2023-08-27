@@ -68,16 +68,8 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
     private fun setToolbar() {
         val toolbar = binding.settingsToolbar
         toolbar.setTitle(R.string.settings)
+        // TODO refacto
         (activity as AppCompatActivity).setSupportActionBar(toolbar)
-        toolbar.setNavigationOnClickListener {
-            if (resources.getBoolean(R.bool.isTablet)) {
-                activity?.supportFragmentManager?.beginTransaction()
-                    ?.setCustomAnimations(0, R.anim.slide_out_right)
-                    ?.remove(this)
-                    ?.commit()
-            } else {
-                requireActivity().onBackPressedDispatcher.onBackPressed()
-            }
-        }
+        toolbar.setNavigationOnClickListener { viewModel.onCloseButtonClicked() }
     }
 }

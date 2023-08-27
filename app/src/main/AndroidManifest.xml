@@ -22,15 +22,6 @@
             android:name=".ui.camera.activity.CameraActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.add.AddPropertyActivity"
-            android:exported="true">
-<!--            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>-->
-        </activity>
-        <activity
             android:name=".ui.auth.AuthActivity"
             android:exported="false" />
         <activity
@@ -43,7 +34,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.settings.SettingsActivity"
+            android:name=".ui.settings.activity.SettingsActivity"
             android:exported="false"
             android:theme="@style/Theme.RealEstateManager" />
         <activity

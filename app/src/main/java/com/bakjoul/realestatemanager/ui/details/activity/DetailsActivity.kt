@@ -1,6 +1,7 @@
 package com.bakjoul.realestatemanager.ui.details.activity
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.bakjoul.realestatemanager.R
@@ -37,6 +38,7 @@ class DetailsActivity : AppCompatActivity() {
         }
 
         viewModel.detailsActivityViewActionLiveData.observeEvent(this) {
+            Log.d("test", "details activity observed event: $it")
             when (it) {
                 DetailsActivityViewAction.ShowPhotosDialog -> {
                     val existingDialog = supportFragmentManager.findFragmentByTag(PHOTOS_DIALOG_TAG) as? PhotosFragment
@@ -44,6 +46,10 @@ class DetailsActivity : AppCompatActivity() {
                         val dialog = PhotosFragment()
                         dialog.show(supportFragmentManager, PHOTOS_DIALOG_TAG)
                     }
+                }
+
+                DetailsActivityViewAction.CloseActivity -> {
+                    finish()
                 }
             }
         }

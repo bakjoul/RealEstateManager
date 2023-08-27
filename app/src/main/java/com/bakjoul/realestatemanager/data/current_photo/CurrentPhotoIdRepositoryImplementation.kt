@@ -1,7 +1,6 @@
 package com.bakjoul.realestatemanager.data.current_photo
 
 import com.bakjoul.realestatemanager.domain.current_photo.CurrentPhotoIdRepository
-import com.bakjoul.realestatemanager.ui.photos.PhotosDialogViewAction
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -13,17 +12,10 @@ import javax.inject.Singleton
 class CurrentPhotoIdRepositoryImplementation @Inject constructor() : CurrentPhotoIdRepository {
 
     private val currentPhotoIdMutableSharedFlow: MutableSharedFlow<Int?> = MutableSharedFlow(replay = 1)
-    private val photosDialogViewActionMutableSharedFlow: MutableSharedFlow<PhotosDialogViewAction> = MutableSharedFlow(replay = 1)
 
     override fun setCurrentPhotoId(currentId: Int) {
         currentPhotoIdMutableSharedFlow.tryEmit(currentId)
     }
 
     override fun getCurrentPhotoIdFlow(): Flow<Int> = currentPhotoIdMutableSharedFlow.asSharedFlow().filterNotNull()
-
-    override fun setPhotosDialogViewAction(viewAction: PhotosDialogViewAction) {
-        photosDialogViewActionMutableSharedFlow.tryEmit(viewAction)
-    }
-
-    override fun getPhotosDialogViewActionFlow(): Flow<PhotosDialogViewAction> = photosDialogViewActionMutableSharedFlow.asSharedFlow()
 }

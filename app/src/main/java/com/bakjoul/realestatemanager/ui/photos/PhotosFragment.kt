@@ -4,6 +4,7 @@ import android.content.DialogInterface
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.InsetDrawable
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
@@ -70,7 +71,8 @@ class PhotosFragment @Inject constructor() : DialogFragment(R.layout.fragment_ph
         }
 
         viewModel.viewActionLiveData.observeEvent(viewLifecycleOwner) {
-            if (it is PhotosDialogViewAction.ClosePhotosDialog) {
+            Log.d("test", "photos fragment observed event: $it")
+            if (it is PhotosViewAction.CloseDialog) {
                 dismiss()
             }
         }

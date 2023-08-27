@@ -5,9 +5,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.liveData
 import com.bakjoul.realestatemanager.domain.current_photo.GetCurrentPhotoIdUseCase
-import com.bakjoul.realestatemanager.domain.current_photo.GetPhotosDialogViewActionUseCase
 import com.bakjoul.realestatemanager.domain.current_photo.SetCurrentPhotoIdUseCase
-import com.bakjoul.realestatemanager.domain.current_photo.SetPhotosDialogViewActionUseCase
+import com.bakjoul.realestatemanager.domain.navigation.GetCurrentNavigationUseCase
+import com.bakjoul.realestatemanager.domain.navigation.NavigateUseCase
+import com.bakjoul.realestatemanager.domain.navigation.model.To
 import com.bakjoul.realestatemanager.domain.property.GetCurrentPropertyUseCase
 import com.bakjoul.realestatemanager.domain.property.model.PhotoEntity
 import com.bakjoul.realestatemanager.ui.details.DetailsMediaItemViewState
@@ -15,17 +16,17 @@ import com.bakjoul.realestatemanager.ui.utils.EquatableCallback
 import com.bakjoul.realestatemanager.ui.utils.Event
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 import javax.inject.Inject
 
 @HiltViewModel
 class PhotosViewModel @Inject constructor(
-    private val setCurrentPhotoIdUseCase: SetCurrentPhotoIdUseCase,
-    private val setPhotosDialogViewActionUseCase: SetPhotosDialogViewActionUseCase,
-    getPhotosDialogViewActionUseCase: GetPhotosDialogViewActionUseCase,
     getCurrentPropertyUseCase: GetCurrentPropertyUseCase,
-    getCurrentPhotoIdUseCase: GetCurrentPhotoIdUseCase
-    ) : ViewModel() {
+    getCurrentPhotoIdUseCase: GetCurrentPhotoIdUseCase,
+    getCurrentNavigationUseCase: GetCurrentNavigationUseCase,
+    private val setCurrentPhotoIdUseCase: SetCurrentPhotoIdUseCase,
+    private val navigateUseCase: NavigateUseCase
+) : ViewModel() {
 
     val viewStateLiveData: LiveData<PhotosViewState> = liveData {
         combine(
@@ -42,10 +43,14 @@ class PhotosViewModel @Inject constructor(
         }
     }
 
-    val viewActionLiveData: LiveData<Event<PhotosDialogViewAction>> =
-        getPhotosDialogViewActionUseCase.invoke().map {
-            Event(it)
-        }.asLiveData()
+    val viewActionLiveData: LiveData<Event<PhotosViewAction>> =
+        getCurrentNavigationUseCase.invoke()
+            .mapNotNull {
+                when (it) {
+                    is To.ClosePhotosDialog -> Event(PhotosViewAction.CloseDialog)
+                    else -> null
+                }
+            }.asLiveData()
 
     private fun mapPhotosToMediaItemViewStates(photoEntities: List<PhotoEntity>): List<DetailsMediaItemViewState> {
         return photoEntities.map { photoEntity ->
@@ -59,8 +64,10 @@ class PhotosViewModel @Inject constructor(
     }
 
     fun onCloseButtonClicked() {
-        setPhotosDialogViewActionUseCase.invoke(PhotosDialogViewAction.ClosePhotosDialog)
+        navigateUseCase.invoke(To.ClosePhotosDialog)
     }
 
-    fun updateCurrentPhotoId(position: Int) = setCurrentPhotoIdUseCase.invoke(position)
+    fun updateCurrentPhotoId(position: Int) {
+        setCurrentPhotoIdUseCase.invoke(position)
+    }
 }

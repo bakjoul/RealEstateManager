@@ -8,15 +8,13 @@ import com.bakjoul.realestatemanager.BuildConfig
 import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.domain.currency_rate.GetEuroRateUseCase
 import com.bakjoul.realestatemanager.domain.current_photo.SetCurrentPhotoIdUseCase
-import com.bakjoul.realestatemanager.domain.current_photo.SetPhotosDialogViewActionUseCase
 import com.bakjoul.realestatemanager.domain.current_property.ResetCurrentPropertyIdUseCase
-import com.bakjoul.realestatemanager.domain.current_property.SetDetailsViewActionUseCase
+import com.bakjoul.realestatemanager.domain.navigation.NavigateUseCase
+import com.bakjoul.realestatemanager.domain.navigation.model.To
 import com.bakjoul.realestatemanager.domain.property.GetCurrentPropertyUseCase
 import com.bakjoul.realestatemanager.domain.property.model.PhotoEntity
 import com.bakjoul.realestatemanager.domain.settings.currency.GetCurrentCurrencyUseCase
 import com.bakjoul.realestatemanager.domain.settings.surface_unit.GetCurrentSurfaceUnitUseCase
-import com.bakjoul.realestatemanager.ui.main.MainViewAction
-import com.bakjoul.realestatemanager.ui.photos.PhotosDialogViewAction
 import com.bakjoul.realestatemanager.ui.utils.EquatableCallback
 import com.bakjoul.realestatemanager.ui.utils.ViewModelUtils.Companion.formatPrice
 import com.bakjoul.realestatemanager.ui.utils.ViewModelUtils.Companion.formatSurface
@@ -35,10 +33,9 @@ class DetailsViewModel @Inject constructor(
     private val getCurrentCurrencyUseCase: GetCurrentCurrencyUseCase,
     private val getEuroRateUseCase: GetEuroRateUseCase,
     private val resetCurrentPropertyIdUseCase: ResetCurrentPropertyIdUseCase,
-    private val setDetailsViewActionUseCase: SetDetailsViewActionUseCase,
     private val setCurrentPhotoIdUseCase: SetCurrentPhotoIdUseCase,
-    private val setPhotosDialogViewActionUseCase: SetPhotosDialogViewActionUseCase,
-    private val getCurrentSurfaceUnitUseCase: GetCurrentSurfaceUnitUseCase
+    private val getCurrentSurfaceUnitUseCase: GetCurrentSurfaceUnitUseCase,
+    private val navigateUseCase: NavigateUseCase
 ) : ViewModel() {
 
     private companion object {
@@ -112,7 +109,7 @@ class DetailsViewModel @Inject constructor(
                 description = photoEntity.description,
                 onPhotoClicked = EquatableCallback {
                     setCurrentPhotoIdUseCase.invoke(photoEntity.id.toInt())
-                    setPhotosDialogViewActionUseCase.invoke(PhotosDialogViewAction.ShowPhotosDialog)
+                    navigateUseCase.invoke(To.PhotosDialog)
                 }
             )
         }
@@ -153,6 +150,6 @@ class DetailsViewModel @Inject constructor(
 
     fun onBackButtonPressed() {
         resetCurrentPropertyIdUseCase.invoke()
-        setDetailsViewActionUseCase.invoke(MainViewAction.ClearDetailsTablet)
+        navigateUseCase.invoke(To.CloseDetails)
     }
 }
