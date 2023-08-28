@@ -180,11 +180,11 @@ class MainActivity : AppCompatActivity() {
     private fun setMenu() {
         addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                menuInflater.inflate(R.menu.actions, menu)
+                menuInflater.inflate(R.menu.main_menu_button, menu)
             }
 
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean = when (menuItem.itemId) {
-                R.id.actions_menu -> {
+                R.id.main_menu_button -> {
                     binding.mainDrawerLayout.openDrawer(GravityCompat.END)
                     true
                 }

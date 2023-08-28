@@ -67,9 +67,10 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
 
     private fun setToolbar() {
         val toolbar = binding.settingsToolbar
-        toolbar.setTitle(R.string.settings)
-        // TODO refacto
+        toolbar?.setTitle(R.string.settings)
         (activity as AppCompatActivity).setSupportActionBar(toolbar)
-        toolbar.setNavigationOnClickListener { viewModel.onCloseButtonClicked() }
+
+        toolbar?.setNavigationOnClickListener { viewModel.onCloseButtonClicked() }
+        binding.settingsCustomToolbarCloseButton?.setOnClickListener { viewModel.onCloseButtonClicked() }
     }
 }
