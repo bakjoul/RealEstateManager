@@ -11,7 +11,6 @@ import android.provider.Settings
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
-import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import android.view.inputmethod.EditorInfo
 import androidx.activity.result.contract.ActivityResultContracts
@@ -24,6 +23,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.databinding.FragmentAddPropertyBinding
 import com.bakjoul.realestatemanager.ui.camera.activity.CameraActivity
+import com.bakjoul.realestatemanager.ui.utils.CustomThemeDialog
 import com.bakjoul.realestatemanager.ui.utils.Event.Companion.observeEvent
 import com.bakjoul.realestatemanager.ui.utils.hideKeyboard
 import com.bakjoul.realestatemanager.ui.utils.viewBinding
@@ -45,16 +45,8 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
 
     private val requestCameraPermissionLauncher = activityResultLauncher()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        if (!resources.getBoolean(R.bool.isTablet)) {
-            setStyle(STYLE_NORMAL, R.style.FullScreenDialog)
-        }
-    }
-
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        return object : Dialog(requireContext()) {
+        return object : CustomThemeDialog(requireContext(), R.style.FullScreenDialog) {
             override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
                 if (currentFocus != null) {
                     hideKeyboard()
@@ -72,8 +64,6 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
             val width = (resources.displayMetrics.widthPixels * DIALOG_WINDOW_WIDTH).toInt()
             val height = (resources.displayMetrics.heightPixels * DIALOG_WINDOW_HEIGHT).toInt()
             dialog?.window?.setLayout(width, height)
-        } else {
-            dialog?.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
         }
 
         dialog?.window?.setWindowAnimations(R.style.AddPropertyDialogAnimation)
