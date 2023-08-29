@@ -1,11 +1,14 @@
 package com.bakjoul.realestatemanager.ui.main
 
+import android.animation.Animator
+import android.animation.ObjectAnimator
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
+import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -63,6 +66,8 @@ class MainActivity : AppCompatActivity() {
                 .commitNow()
         }
 
+        binding.mainSettingsShade?.setOnClickListener { viewModel.onSettingsShadeClicked() }
+
         viewModel.mainViewActionLiveData.observeEvent(this) {
             Log.d("test", "main activity observed event: $it")
             when (it) {
@@ -70,7 +75,7 @@ class MainActivity : AppCompatActivity() {
                     val existingFragment = supportFragmentManager.findFragmentByTag(DETAILS_TABLET_TAG)
                     if (containerDetailsId != null && existingFragment == null) {
                         supportFragmentManager.beginTransaction()
-                            .setCustomAnimations(R.anim.slide_in_right, 0)
+                            .setCustomAnimations(R.anim.slide_in_left, 0)
                             .replace(containerDetailsId, DetailsFragment(), DETAILS_TABLET_TAG)
                             .commitNow()
                     }
@@ -121,6 +126,10 @@ class MainActivity : AppCompatActivity() {
                             .replace(containerSettingsId, SettingsFragment(), SETTINGS_TAG)
                             .commitNow()
                     }
+                    binding.mainSettingsShade?.visibility = View.VISIBLE
+                    ObjectAnimator.ofFloat(binding.mainSettingsShade, "alpha", 0f, 1f)
+                        .apply { duration = 300 }
+                        .start()
                 }
 
                 MainViewAction.CloseSettingsTablet -> {
@@ -130,6 +139,15 @@ class MainActivity : AppCompatActivity() {
                             .setCustomAnimations(0, R.anim.slide_out_right)
                             .remove(existingFragment)
                             .commitNow()
+
+                        val reverseAnimator = ObjectAnimator.ofFloat(binding.mainSettingsShade, "alpha", 1f, 0f)
+                        reverseAnimator.addListener(object : Animator.AnimatorListener {
+                            override fun onAnimationStart(animation: Animator) {}
+                            override fun onAnimationEnd(animation: Animator) { binding.mainSettingsShade?.visibility = View.GONE }
+                            override fun onAnimationCancel(animation: Animator) {}
+                            override fun onAnimationRepeat(animation: Animator) {}
+                        })
+                        reverseAnimator.start()
                     }
                 }
 
@@ -147,6 +165,23 @@ class MainActivity : AppCompatActivity() {
         val toolbar = binding.mainToolbar
         toolbar.setTitle(R.string.app_name)
         setSupportActionBar(toolbar)
+    }
+
+    private fun setMenu() {
+        addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.main_menu_button, menu)
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean = when (menuItem.itemId) {
+                R.id.main_menu_button -> {
+                    binding.mainDrawerLayout.openDrawer(GravityCompat.END)
+                    true
+                }
+
+                else -> false
+            }
+        })
     }
 
     private fun setNavigationView() {
@@ -173,23 +208,6 @@ class MainActivity : AppCompatActivity() {
                         finish()
                     }
                 }
-            }
-        })
-    }
-
-    private fun setMenu() {
-        addMenuProvider(object : MenuProvider {
-            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                menuInflater.inflate(R.menu.main_menu_button, menu)
-            }
-
-            override fun onMenuItemSelected(menuItem: MenuItem): Boolean = when (menuItem.itemId) {
-                R.id.main_menu_button -> {
-                    binding.mainDrawerLayout.openDrawer(GravityCompat.END)
-                    true
-                }
-
-                else -> false
             }
         })
     }

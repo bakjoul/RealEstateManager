@@ -77,4 +77,8 @@ class MainViewModel @Inject constructor(
     fun onSettingsClicked() {
         navigateUseCase.invoke(To.Settings)
     }
+
+    fun onSettingsShadeClicked() {
+        navigateUseCase.invoke(To.CloseSettings)
+    }
 }

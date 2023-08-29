@@ -16,5 +16,6 @@
     <color name="blue_toolbar">#903944BC</color>
     <color name="pink">#FFFF9997</color>
     <color name="yellow">#FFFFCB00</color>
+    <color name="grey_background_dialog">#88000000</color>
 
 </resources>

@@ -64,9 +64,9 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
             val width = (resources.displayMetrics.widthPixels * DIALOG_WINDOW_WIDTH).toInt()
             val height = (resources.displayMetrics.heightPixels * DIALOG_WINDOW_HEIGHT).toInt()
             dialog?.window?.setLayout(width, height)
+        } else {
+            dialog?.window?.setWindowAnimations(R.style.AddPropertyDialogAnimation)
         }
-
-        dialog?.window?.setWindowAnimations(R.style.AddPropertyDialogAnimation)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
