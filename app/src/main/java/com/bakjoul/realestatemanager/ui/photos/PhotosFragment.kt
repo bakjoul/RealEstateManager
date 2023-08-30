@@ -87,10 +87,13 @@ class PhotosFragment @Inject constructor() : DialogFragment(R.layout.fragment_ph
     private fun setDialogWindow() {
         val backgroundColor = ColorDrawable(ContextCompat.getColor(requireContext(), android.R.color.transparent))
         val inset = InsetDrawable(backgroundColor, DensityUtil.dip2px(requireContext(), 4f))
-        dialog?.window?.setBackgroundDrawable(inset)
-        dialog?.window?.setLayout(
-            ViewGroup.LayoutParams.MATCH_PARENT,
+        val height = if (resources.getBoolean(R.bool.isTablet)) {
+            ViewGroup.LayoutParams.MATCH_PARENT
+        } else {
             ViewGroup.LayoutParams.WRAP_CONTENT
-        )
+        }
+
+        dialog?.window?.setBackgroundDrawable(inset)
+        dialog?.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, height)
     }
 }

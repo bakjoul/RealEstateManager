@@ -9,7 +9,7 @@
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/photos_ViewPager"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@id/photos_thumbnails_RecyclerView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -55,7 +55,7 @@
         android:background="@drawable/round_button_background"
         android:contentDescription="@string/close_button_desc"
         android:padding="2dp"
-        android:src="@drawable/baseline_close_24_white"
+        android:src="@drawable/close_32"
         app:layout_constraintEnd_toEndOf="@id/photos_ViewPager"
         app:layout_constraintTop_toTopOf="@id/photos_ViewPager" />
 
