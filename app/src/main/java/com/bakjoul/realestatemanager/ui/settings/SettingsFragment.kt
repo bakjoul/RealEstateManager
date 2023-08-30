@@ -48,7 +48,7 @@ class SettingsFragment : DialogFragment(R.layout.fragment_settings) {
             dialog?.window?.setLayout(width, height)
         }
 
-        dialog?.window?.setWindowAnimations(R.style.DialogAnimation)
+        dialog?.window?.setWindowAnimations(R.style.SlideInRightAnimation)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

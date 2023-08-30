@@ -64,7 +64,12 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
             val width = (resources.displayMetrics.widthPixels * DIALOG_WINDOW_WIDTH).toInt()
             val height = (resources.displayMetrics.heightPixels * DIALOG_WINDOW_HEIGHT).toInt()
             dialog?.window?.setLayout(width, height)
+            dialog?.window?.setWindowAnimations(R.style.SlideInBottomAnimation)
+        } else {
+            dialog?.window?.setWindowAnimations(R.style.SlideInRightAnimation)
         }
+
+        setToolbar()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -424,7 +429,7 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
     override fun onCancel(dialog: DialogInterface) {
         super.onCancel(dialog)
 
-        viewModel.onCancel()
+        viewModel.closeDialog()
     }
 
     private fun activityResultLauncher() =
@@ -439,6 +444,14 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
                     }.show()
             }
         }
+
+    private fun setToolbar() {
+        val toolbar = binding.addPropertyToolbar
+        toolbar?.setTitle(R.string.add_property_title)
+
+        toolbar?.setNavigationOnClickListener { viewModel.closeDialog() }
+        binding.addPropertyAppbarCloseButton?.setOnClickListener { viewModel.closeDialog() }
+    }
 
     private fun onChangeSettingsClicked() = viewModel.onChangeSettingsClicked()
 

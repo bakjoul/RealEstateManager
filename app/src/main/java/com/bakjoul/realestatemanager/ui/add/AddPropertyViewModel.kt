@@ -377,7 +377,7 @@ class AddPropertyViewModel @Inject constructor(
         navigateUseCase.invoke(To.Settings)
     }
 
-    fun onCancel() {
+    fun closeDialog() {
         navigateUseCase.invoke(To.CloseAddProperty)
     }
 
