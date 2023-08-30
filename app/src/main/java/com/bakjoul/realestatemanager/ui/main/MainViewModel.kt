@@ -55,8 +55,7 @@ class MainViewModel @Inject constructor(
                 is To.PhotosDialog -> if (isTablet) MainViewAction.ShowPhotosDialog else null
                 is To.AddProperty -> MainViewAction.ShowAddPropertyDialog
                 is To.Dispatcher -> MainViewAction.ReturnToDispatcher
-                is To.Settings -> if (isTablet) MainViewAction.ShowSettingsTablet else MainViewAction.ShowSettings
-                is To.CloseSettings -> if (isTablet) MainViewAction.CloseSettingsTablet else null
+                is To.Settings -> MainViewAction.ShowSettings
                 else -> null
             }
             viewAction?.let {
@@ -76,9 +75,5 @@ class MainViewModel @Inject constructor(
 
     fun onSettingsClicked() {
         navigateUseCase.invoke(To.Settings)
-    }
-
-    fun onSettingsShadeClicked() {
-        navigateUseCase.invoke(To.CloseSettings)
     }
 }

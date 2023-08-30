@@ -1,14 +1,11 @@
 package com.bakjoul.realestatemanager.ui.main
 
-import android.animation.Animator
-import android.animation.ObjectAnimator
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
-import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -23,7 +20,6 @@ import com.bakjoul.realestatemanager.ui.dispatcher.DispatcherActivity
 import com.bakjoul.realestatemanager.ui.list.PropertyListFragment
 import com.bakjoul.realestatemanager.ui.photos.PhotosFragment
 import com.bakjoul.realestatemanager.ui.settings.SettingsFragment
-import com.bakjoul.realestatemanager.ui.settings.activity.SettingsActivity
 import com.bakjoul.realestatemanager.ui.utils.Event.Companion.observeEvent
 import com.bakjoul.realestatemanager.ui.utils.viewBinding
 import dagger.hilt.android.AndroidEntryPoint
@@ -32,11 +28,11 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     private companion object {
-        private const val PHOTOS_DIALOG_TAG = "PhotosDialogFragment"
         private const val DETAILS_TABLET_TAG = "DetailsFragmentTablet"
         private const val DETAILS_PORTRAIT_TAG = "DetailsFragmentPortrait"
+        private const val PHOTOS_DIALOG_TAG = "PhotosDialogFragment"
         private const val ADD_PROPERTY_DIALOG_TAG = "AddPropertyDialogFragment"
-        private const val SETTINGS_TAG = "SettingsFragment"
+        private const val SETTINGS_DIALOG_TAG = "SettingsDialogFragment"
     }
 
     private val binding by viewBinding { ActivityMainBinding.inflate(it) }
@@ -65,8 +61,6 @@ class MainActivity : AppCompatActivity() {
                 .replace(containerMainId, PropertyListFragment())
                 .commitNow()
         }
-
-        binding.mainSettingsShade?.setOnClickListener { viewModel.onSettingsShadeClicked() }
 
         viewModel.mainViewActionLiveData.observeEvent(this) {
             Log.d("test", "main activity observed event: $it")
@@ -98,14 +92,14 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 MainViewAction.ShowPhotosDialog -> {
-                    val existingFragment = supportFragmentManager.findFragmentByTag(PHOTOS_DIALOG_TAG) as? PhotosFragment
+                    val existingFragment = supportFragmentManager.findFragmentByTag(PHOTOS_DIALOG_TAG)
                     if (existingFragment == null) {
                         PhotosFragment().show(supportFragmentManager, PHOTOS_DIALOG_TAG)
                     }
                 }
 
                 MainViewAction.ShowAddPropertyDialog -> {
-                    val existingFragment = supportFragmentManager.findFragmentByTag(ADD_PROPERTY_DIALOG_TAG) as? AddPropertyFragment
+                    val existingFragment = supportFragmentManager.findFragmentByTag(ADD_PROPERTY_DIALOG_TAG)
                     if (existingFragment == null) {
                         AddPropertyFragment().show(supportFragmentManager, ADD_PROPERTY_DIALOG_TAG)
                     }
@@ -116,47 +110,13 @@ class MainActivity : AppCompatActivity() {
                     finish()
                 }
 
-                MainViewAction.ShowSettingsTablet -> {
-                    binding.mainDrawerLayout.closeDrawer(GravityCompat.END)
-                    val existingFragment = supportFragmentManager.findFragmentByTag(SETTINGS_TAG)
-                    val containerSettingsId = binding.mainFrameLayoutContainerSettings?.id
-                    if (containerSettingsId != null && existingFragment == null) {
-                        supportFragmentManager.beginTransaction()
-                            .setCustomAnimations(R.anim.slide_in_right, 0)
-                            .replace(containerSettingsId, SettingsFragment(), SETTINGS_TAG)
-                            .commitNow()
-                    }
-                    binding.mainSettingsShade?.visibility = View.VISIBLE
-                    ObjectAnimator.ofFloat(binding.mainSettingsShade, "alpha", 0f, 1f)
-                        .apply { duration = 300 }
-                        .start()
-                }
-
-                MainViewAction.CloseSettingsTablet -> {
-                    val existingFragment = supportFragmentManager.findFragmentByTag(SETTINGS_TAG)
-                    if (existingFragment != null) {
-                        supportFragmentManager.beginTransaction()
-                            .setCustomAnimations(0, R.anim.slide_out_right)
-                            .remove(existingFragment)
-                            .commitNow()
-
-                        val reverseAnimator = ObjectAnimator.ofFloat(binding.mainSettingsShade, "alpha", 1f, 0f)
-                        reverseAnimator.addListener(object : Animator.AnimatorListener {
-                            override fun onAnimationStart(animation: Animator) {}
-                            override fun onAnimationEnd(animation: Animator) { binding.mainSettingsShade?.visibility = View.GONE }
-                            override fun onAnimationCancel(animation: Animator) {}
-                            override fun onAnimationRepeat(animation: Animator) {}
-                        })
-                        reverseAnimator.start()
-                    }
-                }
-
                 MainViewAction.ShowSettings -> {
                     binding.mainDrawerLayout.closeDrawer(GravityCompat.END)
-                    startActivity(Intent(this, SettingsActivity::class.java))
+                    val existingFragment = supportFragmentManager.findFragmentByTag(SETTINGS_DIALOG_TAG)
+                    if (existingFragment == null) {
+                        SettingsFragment().show(supportFragmentManager, SETTINGS_DIALOG_TAG)
+                    }
                 }
-
-                MainViewAction.CloseSettings -> {}
             }
         }
     }

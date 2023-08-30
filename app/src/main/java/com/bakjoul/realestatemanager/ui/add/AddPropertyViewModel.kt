@@ -28,6 +28,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.transformLatest
 import java.time.Instant
@@ -123,13 +124,14 @@ class AddPropertyViewModel @Inject constructor(
         getCurrentNavigationUseCase.invoke()
             .mapNotNull {
                 when (it) {
-                    is To.HideAddressSuggestions -> Event(AddPropertyViewAction.HideSuggestions)
-                    is To.Camera -> Event(AddPropertyViewAction.OpenCamera)
-                    is To.CloseAddProperty -> Event(AddPropertyViewAction.CloseDialog)
-                    is To.Settings -> Event(AddPropertyViewAction.OpenSettings)
+                    is To.HideAddressSuggestions -> AddPropertyViewAction.HideSuggestions
+                    is To.Camera -> AddPropertyViewAction.OpenCamera
+                    is To.CloseAddProperty -> AddPropertyViewAction.CloseDialog
+                    is To.Settings -> AddPropertyViewAction.OpenSettings
                     else -> null
                 }
             }
+            .map { Event(it) }
             .asLiveData()
 
     private fun formatDateHint(isForSale: Boolean): String {

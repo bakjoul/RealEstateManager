@@ -1,34 +1,60 @@
 package com.bakjoul.realestatemanager.ui.settings
 
+import android.app.Dialog
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
+import android.view.Gravity
 import android.view.View
+import android.view.ViewGroup
 import android.widget.AdapterView
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.MenuProvider
-import androidx.fragment.app.Fragment
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
 import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.databinding.FragmentSettingsBinding
+import com.bakjoul.realestatemanager.ui.utils.Event.Companion.observeEvent
 import com.bakjoul.realestatemanager.ui.utils.viewBinding
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class SettingsFragment : Fragment(R.layout.fragment_settings) {
+class SettingsFragment : DialogFragment(R.layout.fragment_settings) {
+
+    private companion object {
+        private const val DIALOG_WINDOW_WIDTH = 0.5
+    }
 
     private val binding by viewBinding { FragmentSettingsBinding.bind(it) }
     private val viewModel by viewModels<SettingsViewModel>()
+
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        val dialog = super.onCreateDialog(savedInstanceState)
+        val params = dialog.window?.attributes
+        params?.gravity = Gravity.END
+        dialog.window?.attributes = params
+
+        return dialog
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        setStyle(STYLE_NORMAL, R.style.FullScreenDialog)
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        if (resources.getBoolean(R.bool.isTablet)) {
+            val width = (resources.displayMetrics.widthPixels * DIALOG_WINDOW_WIDTH).toInt()
+            val height = ViewGroup.LayoutParams.MATCH_PARENT
+            dialog?.window?.setLayout(width, height)
+        }
+
+        dialog?.window?.setWindowAnimations(R.style.DialogAnimation)
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         setToolbar()
-        if (resources.getBoolean(R.bool.isTablet)) {
-            setMenu()
-        }
 
         val currencySpinner = binding.settingsCurrencySpinner.getSpinner()
         val currencyOptions = binding.settingsCurrencySpinner.getEntries()
@@ -71,35 +97,19 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
 
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
+
+        viewModel.viewActionLiveData.observeEvent(viewLifecycleOwner) {
+            if (it is SettingsViewAction.CloseSettings) {
+                dismiss()
+            }
+        }
     }
 
     private fun setToolbar() {
         val toolbar = binding.settingsToolbar
-        toolbar.setTitle(R.string.settings)
-        (activity as AppCompatActivity).setSupportActionBar(toolbar)
+        toolbar?.setTitle(R.string.settings)
 
-        toolbar.setNavigationOnClickListener { viewModel.onCloseButtonClicked() }
-    }
-
-    private fun setMenu() {
-        requireActivity().addMenuProvider(object : MenuProvider {
-            override fun onPrepareMenu(menu: Menu) {
-                super.onPrepareMenu(menu)
-                menu.findItem(R.id.main_menu_button)?.isVisible = false
-            }
-
-            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                menuInflater.inflate(R.menu.settings_menu, menu)
-            }
-
-            override fun onMenuItemSelected(menuItem: MenuItem): Boolean = when (menuItem.itemId) {
-                R.id.settings_menu_close -> {
-                    viewModel.onCloseButtonClicked()
-                    true
-                }
-
-                else -> false
-            }
-        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
+        toolbar?.setNavigationOnClickListener { viewModel.onCloseButtonClicked() }
+        binding.settingsAppbarCloseButton?.setOnClickListener { viewModel.onCloseButtonClicked() }
     }
 }

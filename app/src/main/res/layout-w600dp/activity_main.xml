@@ -69,16 +69,6 @@
             android:orientation="vertical"
             app:layout_constraintGuide_percent="0.66" />
 
-        <View
-            android:id="@+id/main_settings_shade"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:alpha="0"
-            android:background="@color/grey_background_dialog"
-            android:clickable="true"
-            android:focusable="true"
-            android:visibility="gone" />
-
         <FrameLayout
             android:id="@+id/main_FrameLayout_container_settings"
             android:layout_width="0dp"
@@ -87,7 +77,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@id/main_settings_guideline"
             app:layout_constraintTop_toTopOf="parent" />
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <com.google.android.material.navigation.NavigationView

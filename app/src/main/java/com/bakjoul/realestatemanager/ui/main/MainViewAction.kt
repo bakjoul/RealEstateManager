@@ -7,8 +7,5 @@ sealed class MainViewAction {
     object ShowPhotosDialog : MainViewAction()
     object ShowAddPropertyDialog : MainViewAction()
     object ReturnToDispatcher : MainViewAction()
-    object ShowSettingsTablet : MainViewAction()
-    object CloseSettingsTablet : MainViewAction()
     object ShowSettings : MainViewAction()
-    object CloseSettings : MainViewAction()
 }
