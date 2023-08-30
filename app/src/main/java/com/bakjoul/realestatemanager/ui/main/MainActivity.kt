@@ -170,7 +170,7 @@ class MainActivity : AppCompatActivity() {
     private fun setMenu() {
         addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                menuInflater.inflate(R.menu.main_menu_button, menu)
+                menuInflater.inflate(R.menu.main_menu, menu)
             }
 
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean = when (menuItem.itemId) {
