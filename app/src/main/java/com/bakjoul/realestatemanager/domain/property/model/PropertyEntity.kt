@@ -23,7 +23,6 @@ data class PropertyEntity(
     val country: String,
     val latitude: Double,
     val longitude: Double,
-    val photos: List<PhotoEntity>,
     @ColumnInfo(name = "poi_park") val poiPark: Boolean,
     @ColumnInfo(name = "poi_restaurant") val poiRestaurant: Boolean,
     @ColumnInfo(name = "poi_school") val poiSchool: Boolean,

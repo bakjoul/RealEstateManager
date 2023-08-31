@@ -50,9 +50,21 @@ class MainViewModel @Inject constructor(
             getCurrentNavigationUseCase.invoke()
         ) { isTablet, navigation ->
             val viewAction = when (navigation) {
-                is To.Details -> if (isTablet) MainViewAction.ShowDetailsTablet else MainViewAction.ShowDetailsPortrait
-                is To.CloseDetails -> if (isTablet) MainViewAction.CloseDetailsTablet else null
-                is To.PhotosDialog -> if (isTablet) MainViewAction.ShowPhotosDialog else null
+                is To.Details -> if (isTablet) {
+                    MainViewAction.ShowDetailsTablet
+                } else {
+                    MainViewAction.ShowDetailsPortrait
+                }
+                is To.CloseDetails -> if (isTablet) {
+                    MainViewAction.CloseDetailsTablet
+                } else {
+                    null
+                }
+                is To.PhotosDialog -> if (isTablet) {
+                    MainViewAction.ShowPhotosDialog
+                } else {
+                    null
+                }
                 is To.AddProperty -> MainViewAction.ShowAddPropertyDialog
                 is To.Dispatcher -> MainViewAction.ReturnToDispatcher
                 is To.Settings -> MainViewAction.ShowSettings
@@ -70,7 +82,6 @@ class MainViewModel @Inject constructor(
 
     fun onLogOut() {
         logOutUseCase.invoke()
-        navigateUseCase.invoke(To.Dispatcher)
     }
 
     fun onSettingsClicked() {

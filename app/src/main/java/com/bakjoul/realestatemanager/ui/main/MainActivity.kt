@@ -11,6 +11,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.core.view.MenuProvider
+import androidx.fragment.app.commitNow
 import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.databinding.ActivityMainBinding
 import com.bakjoul.realestatemanager.ui.add.AddPropertyFragment
@@ -68,10 +69,10 @@ class MainActivity : AppCompatActivity() {
                 MainViewAction.ShowDetailsTablet -> {
                     val existingFragment = supportFragmentManager.findFragmentByTag(DETAILS_TABLET_TAG)
                     if (containerDetailsId != null && existingFragment == null) {
-                        supportFragmentManager.beginTransaction()
-                            .setCustomAnimations(R.anim.slide_in_left, 0)
-                            .replace(containerDetailsId, DetailsFragment(), DETAILS_TABLET_TAG)
-                            .commitNow()
+                        supportFragmentManager.commitNow {
+                            setCustomAnimations(R.anim.slide_in_left, 0)
+                            replace(containerDetailsId, DetailsFragment(), DETAILS_TABLET_TAG)
+                        }
                     }
                 }
 
