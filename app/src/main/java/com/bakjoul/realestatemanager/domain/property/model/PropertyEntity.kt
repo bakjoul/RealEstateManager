@@ -5,7 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import java.time.LocalDate
 
-@Entity(tableName = "real_estate")
+@Entity(tableName = "properties")
 data class PropertyEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val type: String,

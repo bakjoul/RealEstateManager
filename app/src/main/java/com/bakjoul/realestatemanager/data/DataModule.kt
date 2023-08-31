@@ -1,8 +1,11 @@
 package com.bakjoul.realestatemanager.data
 
+import android.app.Application
+import androidx.work.WorkManager
 import com.bakjoul.realestatemanager.BuildConfig
 import com.bakjoul.realestatemanager.data.api.CurrencyApi
 import com.bakjoul.realestatemanager.data.api.GoogleApi
+import com.bakjoul.realestatemanager.data.property.PropertyDao
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.gson.Gson
@@ -101,6 +104,22 @@ class DataModule {
     @Singleton
     @Provides
     fun provideFirebaseAuth(): FirebaseAuth = FirebaseAuth.getInstance()
+
+    @Singleton
+    @Provides
+    fun provideWorkManager(application: Application): WorkManager = WorkManager.getInstance(application)
+
+    @Singleton
+    @Provides
+    fun provideAppDatabase(
+        application: Application,
+        workManager: WorkManager,
+        gson: Gson
+    ): AppDatabase = AppDatabase.create(application, workManager, gson)
+
+    @Singleton
+    @Provides
+    fun providePropertyDao(appDatabase: AppDatabase): PropertyDao = appDatabase.getPropertyDao()
 }
 
 @Qualifier
