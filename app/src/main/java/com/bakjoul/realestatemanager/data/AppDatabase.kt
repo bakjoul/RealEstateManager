@@ -46,7 +46,7 @@ abstract class AppDatabase : RoomDatabase() {
                     val propertiesAsJson = gson.toJson(
                         listOf(
                             PropertyEntity(
-                                id = 0,
+                                id = 1,
                                 type = PropertyType.Flat.name,
                                 price = 100000.toDouble(),
                                 surface = 100.0,
@@ -62,38 +62,6 @@ abstract class AppDatabase : RoomDatabase() {
                                 country = "United States",
                                 latitude = 48.856614,
                                 longitude = 2.3522219,
-                                /*photos = listOf(
-                                    PhotoEntity(
-                                        0,
-                                        0,
-                                        "android.resource://com.bakjoul.realestatemanager/drawable/penthouse_upper_east_side",
-                                        "Lounge"
-                                    ),
-                                    PhotoEntity(
-                                        1,
-                                        0,
-                                        "android.resource://com.bakjoul.realestatemanager/drawable/penthouse_upper_east_side",
-                                        "Lounge 2"
-                                    ),
-                                    PhotoEntity(
-                                        2,
-                                        0,
-                                        "android.resource://com.bakjoul.realestatemanager/drawable/penthouse_upper_east_side",
-                                        "Lounge 3"
-                                    ),
-                                    PhotoEntity(
-                                        3,
-                                        0,
-                                        "android.resource://com.bakjoul.realestatemanager/drawable/penthouse_upper_east_side",
-                                        "Lounge 4"
-                                    ),
-                                    PhotoEntity(
-                                        4,
-                                        0,
-                                        "android.resource://com.bakjoul.realestatemanager/drawable/penthouse_upper_east_side",
-                                        "Lounge 5"
-                                    )
-                                ),*/
                                 poiPark = true,
                                 poiRestaurant = true,
                                 poiSchool = true,
@@ -109,7 +77,7 @@ abstract class AppDatabase : RoomDatabase() {
                                 agent = "John Doe"
                             ),
                             PropertyEntity(
-                                id = 1,
+                                id = 2,
                                 type = PropertyType.House.name,
                                 price = 200000.toDouble(),
                                 surface = 200.0,
@@ -125,14 +93,37 @@ abstract class AppDatabase : RoomDatabase() {
                                 country = "France",
                                 latitude = 48.856614,
                                 longitude = 2.3522219,
-                                /*photos = listOf(
-                                    PhotoEntity(
-                                        0,
-                                        0,
-                                        "android.resource://com.bakjoul.realestatemanager/drawable/penthouse_upper_east_side",
-                                        "Lounge"
-                                    )
-                                ),*/
+                                poiPark = true,
+                                poiRestaurant = true,
+                                poiSchool = true,
+                                poiStore = true,
+                                poiHospital = true,
+                                poiAirport = true,
+                                poiBus = true,
+                                poiSubway = true,
+                                poiTramway = true,
+                                poiTrain = true,
+                                entryDate = LocalDate.parse("2023-02-01"),
+                                soldDate = null,
+                                agent = "Jane Doe"
+                            ),
+                            PropertyEntity(
+                                id = 3,
+                                type = PropertyType.Duplex.name,
+                                price = 300000.toDouble(),
+                                surface = 300.0,
+                                rooms = 10,
+                                bedrooms = 5,
+                                bathrooms = 3,
+                                description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec euismod, nisl eget ultricies ultrices, nisl nisl aliquam",
+                                address = "2 rue de la paix",
+                                apartment = "2",
+                                zipcode = "75000",
+                                city = "Paris",
+                                state = "Ile de France",
+                                country = "France",
+                                latitude = 48.856614,
+                                longitude = 2.3522219,
                                 poiPark = true,
                                 poiRestaurant = true,
                                 poiSchool = true,

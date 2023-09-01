@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.liveData
+import com.bakjoul.realestatemanager.domain.CoroutineDispatcherProvider
 import com.bakjoul.realestatemanager.domain.current_photo.GetCurrentPhotoIdUseCase
 import com.bakjoul.realestatemanager.domain.current_photo.SetCurrentPhotoIdUseCase
 import com.bakjoul.realestatemanager.domain.navigation.GetCurrentNavigationUseCase
@@ -21,6 +22,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PhotosViewModel @Inject constructor(
+    coroutineDispatcherProvider: CoroutineDispatcherProvider,
     getCurrentPropertyUseCase: GetCurrentPropertyUseCase,
     getCurrentPhotoIdUseCase: GetCurrentPhotoIdUseCase,
     getCurrentNavigationUseCase: GetCurrentNavigationUseCase,
@@ -28,7 +30,7 @@ class PhotosViewModel @Inject constructor(
     private val navigateUseCase: NavigateUseCase
 ) : ViewModel() {
 
-    val viewStateLiveData: LiveData<PhotosViewState> = liveData {
+    val viewStateLiveData: LiveData<PhotosViewState> = liveData(coroutineDispatcherProvider.io) {
         combine(
             getCurrentPropertyUseCase.invoke(),
             getCurrentPhotoIdUseCase.invoke()

@@ -34,10 +34,6 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.settings.activity.SettingsActivity"
-            android:exported="false"
-            android:theme="@style/Theme.RealEstateManager" />
-        <activity
             android:name=".ui.main.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.RealEstateManager" />
@@ -46,6 +42,11 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="${GOOGLE_API_KEY}" />
+
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            tools:node="remove" />
     </application>
 
 </manifest>

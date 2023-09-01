@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import com.bakjoul.realestatemanager.BuildConfig
 import com.bakjoul.realestatemanager.R
+import com.bakjoul.realestatemanager.domain.CoroutineDispatcherProvider
 import com.bakjoul.realestatemanager.domain.currency_rate.GetEuroRateUseCase
 import com.bakjoul.realestatemanager.domain.current_photo.SetCurrentPhotoIdUseCase
 import com.bakjoul.realestatemanager.domain.current_property.ResetCurrentPropertyIdUseCase
@@ -28,6 +29,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DetailsViewModel @Inject constructor(
+    coroutineDispatcherProvider: CoroutineDispatcherProvider,
     private val application: Application,
     private val getCurrentPropertyUseCase: GetCurrentPropertyUseCase,
     private val getCurrentCurrencyUseCase: GetCurrentCurrencyUseCase,
@@ -43,42 +45,43 @@ class DetailsViewModel @Inject constructor(
         private const val STATIC_MAP_ZOOM = "17"
     }
 
-    val detailsLiveData: LiveData<DetailsViewState> = liveData {
+    val detailsLiveData: LiveData<DetailsViewState> = liveData(coroutineDispatcherProvider.io) {
         combine(
             getCurrentPropertyUseCase.invoke(),
             getCurrentCurrencyUseCase.invoke(),
             flow { emit(getEuroRateUseCase.invoke()) },
             getCurrentSurfaceUnitUseCase.invoke()
         ) { property, currency, euroRateWrapper, surfaceUnit ->
-            val formattedSurface = formatSurface(property.surface, surfaceUnit)
+            val details = property.propertyEntity
+            val formattedSurface = formatSurface(details.surface, surfaceUnit)
 
             DetailsViewState(
                 mainPhotoUrl = "",//property.photos.first().url,
-                type = property.type,
-                price = formatPrice(property.price, currency, euroRateWrapper.currencyRateEntity.rate),
-                isSold = property.soldDate != null,
-                city = property.city,
-                sale_status = getSaleStatus(property.soldDate, property.entryDate),
-                description = property.description,
+                type = details.type,
+                price = formatPrice(details.price, currency, euroRateWrapper.currencyRateEntity.rate),
+                isSold = details.soldDate != null,
+                city = details.city,
+                sale_status = getSaleStatus(details.soldDate, details.entryDate),
+                description = details.description,
                 surface = "${formattedSurface.first} ${formattedSurface.second}",
-                rooms = property.rooms.toString(),
-                bedrooms = property.bedrooms.toString(),
-                bathrooms = property.bathrooms.toString(),
-                poiSchool = property.poiSchool,
-                poiStore = property.poiStore,
-                poiPark = property.poiPark,
-                poiRestaurant = property.poiRestaurant,
-                poiHospital = property.poiHospital,
-                poiBus = property.poiBus,
-                poiSubway = property.poiSubway,
-                poiTramway = property.poiTramway,
-                poiTrain = property.poiTrain,
-                poiAirport = property.poiAirport,
-                location = formatLocation(property.address, formatApartment(property.apartment), property.city, property.zipcode, property.country),
+                rooms = details.rooms.toString(),
+                bedrooms = details.bedrooms.toString(),
+                bathrooms = details.bathrooms.toString(),
+                poiSchool = details.poiSchool,
+                poiStore = details.poiStore,
+                poiPark = details.poiPark,
+                poiRestaurant = details.poiRestaurant,
+                poiHospital = details.poiHospital,
+                poiBus = details.poiBus,
+                poiSubway = details.poiSubway,
+                poiTramway = details.poiTramway,
+                poiTrain = details.poiTrain,
+                poiAirport = details.poiAirport,
+                location = formatLocation(details.address, formatApartment(details.apartment), details.city, details.zipcode, details.country),
                 medias = emptyList(),//mapPhotosToMediaItemViewStates(property.photos),
-                clipboardAddress = getClipboardAddress(property.address, property.city, property.country),
-                staticMapUrl = getMapUrl(property.address, property.city, property.country),
-                mapsAddress = getAddress(property.address, property.city, property.country)
+                clipboardAddress = getClipboardAddress(details.address, details.city, details.country),
+                staticMapUrl = getMapUrl(details.address, details.city, details.country),
+                mapsAddress = getAddress(details.address, details.city, details.country)
             )
         }.collect {
             emit(it)

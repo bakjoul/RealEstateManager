@@ -19,5 +19,5 @@ interface PropertyDao {
 
     @Query("SELECT * FROM properties WHERE id = :propertyId")
     @Transaction
-    fun getPropertyById(propertyId: Long): Flow<PropertyWithPhotosEntity>
+    fun getPropertyById(propertyId: Long): PropertyWithPhotosEntity
 }

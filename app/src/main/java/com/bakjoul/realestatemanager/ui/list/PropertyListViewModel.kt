@@ -11,6 +11,7 @@ import androidx.lifecycle.liveData
 import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.data.settings.model.AppCurrency
 import com.bakjoul.realestatemanager.data.settings.model.SurfaceUnit
+import com.bakjoul.realestatemanager.domain.CoroutineDispatcherProvider
 import com.bakjoul.realestatemanager.domain.currency_rate.GetEuroRateUseCase
 import com.bakjoul.realestatemanager.domain.current_property.SetCurrentPropertyIdUseCase
 import com.bakjoul.realestatemanager.domain.navigation.NavigateUseCase
@@ -34,6 +35,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PropertyListViewModel @Inject constructor(
+    coroutineDispatcherProvider: CoroutineDispatcherProvider,
     private val application: Application,
     private val getPropertiesFlowUseCase: GetPropertiesFlowUseCase,
     private val setCurrentPropertyIdUseCase: SetCurrentPropertyIdUseCase,
@@ -46,7 +48,7 @@ class PropertyListViewModel @Inject constructor(
 
     private val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
-    val propertiesLiveData: LiveData<List<PropertyItemViewState>> = liveData {
+    val propertiesLiveData: LiveData<List<PropertyItemViewState>> = liveData(coroutineDispatcherProvider.io) {
         combine(
             getPropertiesFlowUseCase.invoke(),
             getCurrentCurrencyUseCase.invoke(),
