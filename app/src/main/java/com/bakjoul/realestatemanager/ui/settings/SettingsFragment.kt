@@ -2,6 +2,7 @@ package com.bakjoul.realestatemanager.ui.settings
 
 import android.app.Dialog
 import android.os.Bundle
+import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
@@ -99,6 +100,7 @@ class SettingsFragment : DialogFragment(R.layout.fragment_settings) {
         }
 
         viewModel.viewActionLiveData.observeEvent(viewLifecycleOwner) {
+            Log.d("test", "settings fragment observed event: $it")
             if (it is SettingsViewAction.CloseSettings) {
                 dismiss()
             }

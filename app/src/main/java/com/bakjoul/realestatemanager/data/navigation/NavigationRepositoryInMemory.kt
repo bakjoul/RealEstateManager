@@ -10,7 +10,7 @@ import javax.inject.Singleton
 
 @Singleton
 class NavigationRepositoryInMemory @Inject constructor(): NavigationRepository {
-    private val destinationMutableSharedFlow: MutableSharedFlow<To> = MutableSharedFlow(replay = 1)
+    private val destinationMutableSharedFlow: MutableSharedFlow<To> = MutableSharedFlow(extraBufferCapacity = 1)
 
     override fun setCurrentDestination(to: To) {
         destinationMutableSharedFlow.tryEmit(to)
