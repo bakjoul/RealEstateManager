@@ -57,7 +57,7 @@ class PropertyListViewModel @Inject constructor(
             properties.map {
                 PropertyItemViewState(
                     id = it.id,
-                    photoUrl = it.photos.firstOrNull()?.url ?: "",
+                    photoUrl = "",//it.photos.firstOrNull()?.url ?: "",
                     type = it.type,
                     city = it.city,
                     features = formatFeatures(it.bedrooms, it.bathrooms, it.surface, surfaceUnit, isTablet),

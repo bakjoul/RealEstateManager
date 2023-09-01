@@ -62,7 +62,7 @@ abstract class AppDatabase : RoomDatabase() {
                                 country = "United States",
                                 latitude = 48.856614,
                                 longitude = 2.3522219,
-                                photos = listOf(
+                                /*photos = listOf(
                                     PhotoEntity(
                                         0,
                                         0,
@@ -93,7 +93,7 @@ abstract class AppDatabase : RoomDatabase() {
                                         "android.resource://com.bakjoul.realestatemanager/drawable/penthouse_upper_east_side",
                                         "Lounge 5"
                                     )
-                                ),
+                                ),*/
                                 poiPark = true,
                                 poiRestaurant = true,
                                 poiSchool = true,
@@ -125,14 +125,14 @@ abstract class AppDatabase : RoomDatabase() {
                                 country = "France",
                                 latitude = 48.856614,
                                 longitude = 2.3522219,
-                                photos = listOf(
+                                /*photos = listOf(
                                     PhotoEntity(
                                         0,
                                         0,
                                         "android.resource://com.bakjoul.realestatemanager/drawable/penthouse_upper_east_side",
                                         "Lounge"
                                     )
-                                ),
+                                ),*/
                                 poiPark = true,
                                 poiRestaurant = true,
                                 poiSchool = true,

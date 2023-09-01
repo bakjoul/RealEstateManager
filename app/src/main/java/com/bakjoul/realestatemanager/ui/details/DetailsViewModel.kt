@@ -53,7 +53,7 @@ class DetailsViewModel @Inject constructor(
             val formattedSurface = formatSurface(property.surface, surfaceUnit)
 
             DetailsViewState(
-                mainPhotoUrl = property.photos.first().url,
+                mainPhotoUrl = "",//property.photos.first().url,
                 type = property.type,
                 price = formatPrice(property.price, currency, euroRateWrapper.currencyRateEntity.rate),
                 isSold = property.soldDate != null,
@@ -75,7 +75,7 @@ class DetailsViewModel @Inject constructor(
                 poiTrain = property.poiTrain,
                 poiAirport = property.poiAirport,
                 location = formatLocation(property.address, formatApartment(property.apartment), property.city, property.zipcode, property.country),
-                medias = mapPhotosToMediaItemViewStates(property.photos),
+                medias = emptyList(),//mapPhotosToMediaItemViewStates(property.photos),
                 clipboardAddress = getClipboardAddress(property.address, property.city, property.country),
                 staticMapUrl = getMapUrl(property.address, property.city, property.country),
                 mapsAddress = getAddress(property.address, property.city, property.country)

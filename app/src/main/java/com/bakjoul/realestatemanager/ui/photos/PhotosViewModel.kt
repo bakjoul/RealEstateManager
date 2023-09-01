@@ -34,8 +34,8 @@ class PhotosViewModel @Inject constructor(
             getCurrentPhotoIdUseCase.invoke()
         ) { property, currentPhotoId ->
             PhotosViewState(
-                photosUrls = property.photos.map { it.url },
-                thumbnails = mapPhotosToMediaItemViewStates(property.photos),
+                photosUrls = emptyList(),//property.photos.map { it.url },
+                thumbnails = emptyList(),//mapPhotosToMediaItemViewStates(property.photos),
                 currentPhotoId = currentPhotoId
             )
         }.collect {
