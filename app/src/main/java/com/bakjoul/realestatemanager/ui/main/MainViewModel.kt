@@ -68,6 +68,13 @@ class MainViewModel @Inject constructor(
                 is To.AddProperty -> MainViewAction.ShowAddPropertyDialog
                 is To.Dispatcher -> MainViewAction.ReturnToDispatcher
                 is To.Settings -> MainViewAction.ShowSettings
+                is To.CloseSettings -> {
+                    if (!isTablet) {
+                        MainViewAction.CloseDetailsTablet
+                    } else {
+                        null
+                    }
+                }
                 else -> null
             }
             viewAction?.let {
