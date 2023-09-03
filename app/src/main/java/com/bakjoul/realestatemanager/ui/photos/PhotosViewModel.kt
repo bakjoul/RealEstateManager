@@ -36,8 +36,8 @@ class PhotosViewModel @Inject constructor(
             getCurrentPhotoIdUseCase.invoke()
         ) { property, currentPhotoId ->
             PhotosViewState(
-                photosUrls = emptyList(),//property.photos.map { it.url },
-                thumbnails = emptyList(),//mapPhotosToMediaItemViewStates(property.photos),
+                photosUrls = property.photos.map { it.url },
+                thumbnails = mapPhotosToMediaItemViewStates(property.photos),
                 currentPhotoId = currentPhotoId
             )
         }.collect {
@@ -55,12 +55,12 @@ class PhotosViewModel @Inject constructor(
             }.asLiveData()
 
     private fun mapPhotosToMediaItemViewStates(photoEntities: List<PhotoEntity>): List<DetailsMediaItemViewState> {
-        return photoEntities.map { photoEntity ->
+        return photoEntities.mapIndexed { index, photoEntity ->
             DetailsMediaItemViewState(
-                id = photoEntity.id,
+                id = index.toLong(),
                 url = photoEntity.url,
                 description = photoEntity.description,
-                onPhotoClicked = EquatableCallback { setCurrentPhotoIdUseCase.invoke(photoEntity.id.toInt()) }
+                onPhotoClicked = EquatableCallback { setCurrentPhotoIdUseCase.invoke(index) }
             )
         }
     }

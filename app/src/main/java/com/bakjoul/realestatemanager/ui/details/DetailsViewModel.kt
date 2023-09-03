@@ -56,7 +56,7 @@ class DetailsViewModel @Inject constructor(
             val formattedSurface = formatSurface(details.surface, surfaceUnit)
 
             DetailsViewState(
-                mainPhotoUrl = "",//property.photos.first().url,
+                mainPhotoUrl = property.photos.first().url,
                 type = details.type,
                 price = formatPrice(details.price, currency, euroRateWrapper.currencyRateEntity.rate),
                 isSold = details.soldDate != null,
@@ -78,7 +78,7 @@ class DetailsViewModel @Inject constructor(
                 poiTrain = details.poiTrain,
                 poiAirport = details.poiAirport,
                 location = formatLocation(details.address, formatApartment(details.apartment), details.city, details.zipcode, details.country),
-                medias = emptyList(),//mapPhotosToMediaItemViewStates(property.photos),
+                medias = mapPhotosToMediaItemViewStates(property.photos),
                 clipboardAddress = getClipboardAddress(details.address, details.city, details.country),
                 staticMapUrl = getMapUrl(details.address, details.city, details.country),
                 mapsAddress = getAddress(details.address, details.city, details.country)
@@ -105,13 +105,13 @@ class DetailsViewModel @Inject constructor(
     }
 
     private fun mapPhotosToMediaItemViewStates(photoEntities: List<PhotoEntity>): List<DetailsMediaItemViewState> {
-        return photoEntities.map { photoEntity ->
+        return photoEntities.mapIndexed { index, photoEntity ->
             DetailsMediaItemViewState(
-                id = photoEntity.id,
+                id = index.toLong(),
                 url = photoEntity.url,
                 description = photoEntity.description,
                 onPhotoClicked = EquatableCallback {
-                    setCurrentPhotoIdUseCase.invoke(photoEntity.id.toInt())
+                    setCurrentPhotoIdUseCase.invoke(index)
                     navigateUseCase.invoke(To.PhotosDialog)
                 }
             )

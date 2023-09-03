@@ -57,24 +57,37 @@ class PropertyListViewModel @Inject constructor(
             isTabletUseCase.invoke(),
         ) { properties, currency, euroRateWrapper, surfaceUnit, isTablet ->
             properties.map {
+                val details = it.propertyEntity
+
                 PropertyItemViewState(
-                    id = it.id,
-                    photoUrl = "",//it.photos.firstOrNull()?.url ?: "",
-                    type = it.type,
-                    city = it.city,
-                    features = formatFeatures(it.bedrooms, it.bathrooms, it.surface, surfaceUnit, isTablet),
-                    price = formatPrice(it.price, currency, euroRateWrapper.currencyRateEntity.rate),
+                    id = details.id,
+                    photoUrl = it.photos.first().url,
+                    type = details.type,
+                    city = details.city,
+                    features = formatFeatures(
+                        details.bedrooms,
+                        details.bathrooms,
+                        details.surface,
+                        surfaceUnit,
+                        isTablet
+                    ),
+                    price = formatPrice(
+                        details.price,
+                        currency,
+                        euroRateWrapper.currencyRateEntity.rate
+                    ),
                     currencyRate = formatRate(
                         currency,
                         euroRateWrapper.currencyRateEntity.rate,
                         euroRateWrapper.currencyRateEntity.updateDate.format(dateFormatter)
                     ),
-                    isSold = it.soldDate != null,
+                    isSold = details.soldDate != null,
                     onPropertyClicked = EquatableCallback {
-                        setCurrentPropertyIdUseCase.invoke(it.id)
+                        setCurrentPropertyIdUseCase.invoke(details.id)
                         navigateUseCase.invoke(To.Details)
                     }
                 )
+
             }
         }.collect { propertiesItemViewStates ->
             emit(propertiesItemViewStates)

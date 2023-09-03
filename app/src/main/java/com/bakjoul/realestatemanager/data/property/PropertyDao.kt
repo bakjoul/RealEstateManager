@@ -15,7 +15,8 @@ interface PropertyDao {
     suspend fun insert(propertyEntity: PropertyEntity): Long
 
     @Query("SELECT * FROM properties")
-    fun getProperties(): Flow<List<PropertyEntity>>
+    @Transaction
+    fun getProperties(): Flow<List<PropertyWithPhotosEntity>>
 
     @Query("SELECT * FROM properties WHERE id = :propertyId")
     @Transaction

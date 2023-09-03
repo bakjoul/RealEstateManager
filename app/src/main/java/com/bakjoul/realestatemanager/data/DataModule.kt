@@ -5,6 +5,7 @@ import androidx.work.WorkManager
 import com.bakjoul.realestatemanager.BuildConfig
 import com.bakjoul.realestatemanager.data.api.CurrencyApi
 import com.bakjoul.realestatemanager.data.api.GoogleApi
+import com.bakjoul.realestatemanager.data.photos.PhotoDao
 import com.bakjoul.realestatemanager.data.property.PropertyDao
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -120,6 +121,10 @@ class DataModule {
     @Singleton
     @Provides
     fun providePropertyDao(appDatabase: AppDatabase): PropertyDao = appDatabase.getPropertyDao()
+
+    @Singleton
+    @Provides
+    fun providePhotoDao(appDatabase: AppDatabase): PhotoDao = appDatabase.getPhotoDao()
 }
 
 @Qualifier

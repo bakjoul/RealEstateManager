@@ -1,7 +1,6 @@
 package com.bakjoul.realestatemanager.data.property
 
 import com.bakjoul.realestatemanager.domain.property.PropertyRepository
-import com.bakjoul.realestatemanager.domain.property.model.PhotoEntity
 import com.bakjoul.realestatemanager.domain.property.model.PropertyEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow

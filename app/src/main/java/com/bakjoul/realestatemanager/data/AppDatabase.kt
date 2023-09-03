@@ -9,6 +9,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.workDataOf
+import com.bakjoul.realestatemanager.data.photos.PhotoDao
 import com.bakjoul.realestatemanager.data.property.PropertyDao
 import com.bakjoul.realestatemanager.data.property.PropertyType
 import com.bakjoul.realestatemanager.data.utils.LocalDateTypeConverter
@@ -26,6 +27,7 @@ import java.time.LocalDate
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun getPropertyDao(): PropertyDao
+    abstract fun getPhotoDao(): PhotoDao
 
     companion object {
         private const val DATABASE_NAME = "RealEstateManager_database"
@@ -33,7 +35,7 @@ abstract class AppDatabase : RoomDatabase() {
         fun create(
             application: Application,
             workManager: WorkManager,
-            gson: Gson
+            gson: Gson,
         ): AppDatabase {
             val builder = Room.databaseBuilder(
                 application,
@@ -46,7 +48,7 @@ abstract class AppDatabase : RoomDatabase() {
                     val propertiesAsJson = gson.toJson(
                         listOf(
                             PropertyEntity(
-                                id = 1,
+                                id = 0,
                                 type = PropertyType.Flat.name,
                                 price = 100000.toDouble(),
                                 surface = 100.0,
@@ -77,7 +79,7 @@ abstract class AppDatabase : RoomDatabase() {
                                 agent = "John Doe"
                             ),
                             PropertyEntity(
-                                id = 2,
+                                id = 0,
                                 type = PropertyType.House.name,
                                 price = 200000.toDouble(),
                                 surface = 200.0,
@@ -108,7 +110,7 @@ abstract class AppDatabase : RoomDatabase() {
                                 agent = "Jane Doe"
                             ),
                             PropertyEntity(
-                                id = 3,
+                                id = 0,
                                 type = PropertyType.Duplex.name,
                                 price = 300000.toDouble(),
                                 surface = 300.0,
@@ -141,9 +143,54 @@ abstract class AppDatabase : RoomDatabase() {
                         )
                     )
 
+                    val photosAsJson = gson.toJson(
+                        listOf(
+                            PhotoEntity(
+                                propertyId = 1,
+                                url = "android.resource://com.bakjoul.realestatemanager/drawable/penthouse_upper_east_side",
+                                description = "Lounge"
+                            ),
+                            PhotoEntity(
+                                propertyId = 1,
+                                url = "android.resource://com.bakjoul.realestatemanager/drawable/penthouse_upper_east_side",
+                                description = "Lounge"
+                            ),
+                            PhotoEntity(
+                                propertyId = 1,
+                                url = "android.resource://com.bakjoul.realestatemanager/drawable/penthouse_upper_east_side",
+                                description = "Lounge"
+                            ),
+                            PhotoEntity(
+                                propertyId = 1,
+                                url = "android.resource://com.bakjoul.realestatemanager/drawable/penthouse_upper_east_side",
+                                description = "Lounge"
+                            ),
+                            PhotoEntity(
+                                propertyId = 1,
+                                url = "android.resource://com.bakjoul.realestatemanager/drawable/penthouse_upper_east_side",
+                                description = "Lounge"
+                            ),
+                            PhotoEntity(
+                                propertyId = 2,
+                                url = "android.resource://com.bakjoul.realestatemanager/drawable/penthouse_upper_east_side",
+                                description = "Lounge"
+                            ),
+                            PhotoEntity(
+                                propertyId = 3,
+                                url = "android.resource://com.bakjoul.realestatemanager/drawable/penthouse_upper_east_side",
+                                description = "Lounge"
+                            ),
+                        )
+                    )
+
                     workManager.enqueue(
                         OneTimeWorkRequestBuilder<InitializeDatabaseWorker>()
-                            .setInputData(workDataOf(InitializeDatabaseWorker.KEY_INPUT_DATA to propertiesAsJson))
+                            .setInputData(
+                                workDataOf(
+                                    InitializeDatabaseWorker.KEY_INPUT_DATA_PROPERTIES to propertiesAsJson,
+                                    InitializeDatabaseWorker.KEY_INPUT_DATA_PHOTOS to photosAsJson
+                                )
+                            )
                             .build()
                     )
                 }
