@@ -48,7 +48,7 @@ abstract class AppDatabase : RoomDatabase() {
                     val propertiesAsJson = gson.toJson(
                         listOf(
                             PropertyEntity(
-                                id = 0,
+                                id = 1,
                                 type = PropertyType.Flat.name,
                                 price = 100000.toDouble(),
                                 surface = 100.0,
@@ -79,7 +79,7 @@ abstract class AppDatabase : RoomDatabase() {
                                 agent = "John Doe"
                             ),
                             PropertyEntity(
-                                id = 0,
+                                id = 2,
                                 type = PropertyType.House.name,
                                 price = 200000.toDouble(),
                                 surface = 200.0,
@@ -110,7 +110,7 @@ abstract class AppDatabase : RoomDatabase() {
                                 agent = "Jane Doe"
                             ),
                             PropertyEntity(
-                                id = 0,
+                                id = 3,
                                 type = PropertyType.Duplex.name,
                                 price = 300000.toDouble(),
                                 surface = 300.0,
