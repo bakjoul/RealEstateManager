@@ -136,7 +136,7 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
     }
 
     private fun createPopupWindow(context: Context, text: String): PopupWindow {
-        val tooltipView = LayoutInflater.from(context).inflate(R.layout.tooltip_layout, null)
+        val tooltipView = LayoutInflater.from(context).inflate(R.layout.fragment_list_tooltip, null)
         val tooltipTextView = tooltipView.findViewById<TextView>(R.id.tooltip_text)
         tooltipTextView.text = text
 

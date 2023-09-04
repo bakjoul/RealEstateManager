@@ -4,14 +4,14 @@ import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.bakjoul.realestatemanager.databinding.PhotosViewpagerItemBinding
+import com.bakjoul.realestatemanager.databinding.FragmentPhotosViewpagerItemBinding
 import com.bumptech.glide.Glide
 
 class PhotosViewPagerAdapter : RecyclerView.Adapter<PhotosViewPagerAdapter.ViewHolder>() {
     private var photoUrls: List<String> = emptyList()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder = ViewHolder(
-        PhotosViewpagerItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        FragmentPhotosViewpagerItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
     )
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -20,9 +20,9 @@ class PhotosViewPagerAdapter : RecyclerView.Adapter<PhotosViewPagerAdapter.ViewH
 
     override fun getItemCount(): Int = photoUrls.size
 
-    class ViewHolder(private val binding: PhotosViewpagerItemBinding) : RecyclerView.ViewHolder(binding.root) {
+    class ViewHolder(private val binding: FragmentPhotosViewpagerItemBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(photoUrl: String) {
-            Glide.with(binding.photoItemImageView.context).load(photoUrl).into(binding.photoItemImageView)
+            Glide.with(binding.photosViewpagerItemImageView.context).load(photoUrl).into(binding.photosViewpagerItemImageView)
         }
     }
 

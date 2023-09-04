@@ -6,7 +6,7 @@
     android:layout_height="match_parent">
 
     <com.github.chrisbanes.photoview.PhotoView
-        android:id="@+id/photo_item_ImageView"
+        android:id="@+id/photos_viewpager_item_ImageView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"

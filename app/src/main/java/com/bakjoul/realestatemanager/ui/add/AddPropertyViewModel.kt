@@ -19,6 +19,7 @@ import com.bakjoul.realestatemanager.domain.geocoding.model.GeocodingWrapper
 import com.bakjoul.realestatemanager.domain.navigation.GetCurrentNavigationUseCase
 import com.bakjoul.realestatemanager.domain.navigation.NavigateUseCase
 import com.bakjoul.realestatemanager.domain.navigation.model.To
+import com.bakjoul.realestatemanager.domain.photos.GetPhotosInMemoryUseCase
 import com.bakjoul.realestatemanager.domain.settings.currency.GetCurrentCurrencyUseCase
 import com.bakjoul.realestatemanager.domain.settings.surface_unit.GetCurrentSurfaceUnitUseCase
 import com.bakjoul.realestatemanager.ui.utils.EquatableCallback
@@ -45,6 +46,7 @@ class AddPropertyViewModel @Inject constructor(
     private val getCurrentSurfaceUnitUseCase: GetCurrentSurfaceUnitUseCase,
     private val getAddressPredictionsUseCase: GetAddressPredictionsUseCase,
     private val getAddressDetailsUseCase: GetAddressDetailsUseCase,
+    private val getPhotosInMemoryUseCase: GetPhotosInMemoryUseCase,
     private val navigateUseCase: NavigateUseCase,
     getCurrentNavigationUseCase: GetCurrentNavigationUseCase
 ) : ViewModel() {
@@ -97,8 +99,9 @@ class AddPropertyViewModel @Inject constructor(
             numberOfBathroomsMutableStateFlow,
             numberOfBedroomsMutableStateFlow,
             addressPredictionsFlow,
-            selectedAddressDetailsFlow
-        ) { currency, surfaceUnit, propertyType, isForSale, surface, numberOfRooms, numberOfBathrooms, numberOfBedrooms, address, addressDetails ->
+            selectedAddressDetailsFlow,
+            getPhotosInMemoryUseCase.invoke()
+        ) { currency, surfaceUnit, propertyType, isForSale, surface, numberOfRooms, numberOfBathrooms, numberOfBedrooms, address, addressDetails, photos ->
             updateAddressData(addressDetails)
             AddPropertyViewState(
                 propertyType = propertyType,
@@ -113,10 +116,27 @@ class AddPropertyViewModel @Inject constructor(
                 address = currentAddress,
                 state = state,
                 city = city,
-                zipcode = zipcode
+                zipcode = zipcode,
+                photos = mapPhotosToItemViewStates(photos)
             )
         }.collect {
             emit(it)
+        }
+    }
+
+    private fun mapPhotosToItemViewStates(photos: Map<String, String>): List<AddPropertyPhotoItemViewState> {
+        return photos.entries.mapIndexed { index, entry ->
+            AddPropertyPhotoItemViewState(
+                id = index.toLong(),
+                url = entry.key,
+                description = entry.value,
+                onPhotoClicked = EquatableCallback {
+                    // TODO
+                },
+                onDeletePhotoClicked = EquatableCallback {
+                    // TODO
+                }
+            )
         }
     }
 

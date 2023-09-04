@@ -16,6 +16,7 @@ import com.bakjoul.realestatemanager.domain.property.GetCurrentPropertyUseCase
 import com.bakjoul.realestatemanager.domain.property.model.PhotoEntity
 import com.bakjoul.realestatemanager.domain.settings.currency.GetCurrentCurrencyUseCase
 import com.bakjoul.realestatemanager.domain.settings.surface_unit.GetCurrentSurfaceUnitUseCase
+import com.bakjoul.realestatemanager.ui.common_model.PhotoItemViewState
 import com.bakjoul.realestatemanager.ui.utils.EquatableCallback
 import com.bakjoul.realestatemanager.ui.utils.ViewModelUtils.Companion.formatPrice
 import com.bakjoul.realestatemanager.ui.utils.ViewModelUtils.Companion.formatSurface
@@ -78,7 +79,7 @@ class DetailsViewModel @Inject constructor(
                 poiTrain = details.poiTrain,
                 poiAirport = details.poiAirport,
                 location = formatLocation(details.address, formatApartment(details.apartment), details.city, details.zipcode, details.country),
-                medias = mapPhotosToMediaItemViewStates(property.photos),
+                medias = mapPhotosToItemViewStates(property.photos),
                 clipboardAddress = getClipboardAddress(details.address, details.city, details.country),
                 staticMapUrl = getMapUrl(details.address, details.city, details.country),
                 mapsAddress = getAddress(details.address, details.city, details.country)
@@ -104,9 +105,9 @@ class DetailsViewModel @Inject constructor(
         }
     }
 
-    private fun mapPhotosToMediaItemViewStates(photoEntities: List<PhotoEntity>): List<DetailsMediaItemViewState> {
+    private fun mapPhotosToItemViewStates(photoEntities: List<PhotoEntity>): List<PhotoItemViewState> {
         return photoEntities.mapIndexed { index, photoEntity ->
-            DetailsMediaItemViewState(
+            PhotoItemViewState(
                 id = index.toLong(),
                 url = photoEntity.url,
                 description = photoEntity.description,

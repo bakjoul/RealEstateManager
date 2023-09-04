@@ -194,7 +194,7 @@
                         app:layout_constraintStart_toStartOf="@id/details_description_text"
                         app:layout_constraintTop_toBottomOf="@id/details_description_text"
                         tools:itemCount="5"
-                        tools:listitem="@layout/photos_item" />
+                        tools:listitem="@layout/fragment_photos_thumbnail_item" />
 
                     <com.bakjoul.realestatemanager.designsystem.atome.DetailsFieldView
                         android:id="@+id/details_item_surface"

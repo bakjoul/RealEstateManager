@@ -2,12 +2,12 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/details_photo_item"
+    android:id="@+id/photos_thumbnail_item"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
 
     <FrameLayout
-        android:id="@+id/details_photo_item_frame"
+        android:id="@+id/photos_thumbnail_item_frame"
         android:layout_width="@dimen/photo_frame_width"
         android:layout_height="@dimen/photo_frame_height"
         android:padding="2dp"
@@ -16,7 +16,7 @@
         tools:background="@drawable/photo_frame_bkg">
 
         <ImageView
-            android:id="@+id/details_photo_item_ImageView"
+            android:id="@+id/photos_thumbnail_item_ImageView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:importantForAccessibility="no"
@@ -24,7 +24,7 @@
             tools:src="@drawable/penthouse_upper_east_side" />
 
         <TextView
-            android:id="@+id/details_photo_item_description"
+            android:id="@+id/photos_thumbnail_item_description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
@@ -38,7 +38,7 @@
             tools:text="Facade" />
 
         <View
-            android:id="@+id/details_photo_item_overlay"
+            android:id="@+id/photos_thumbnail_item_overlay"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="#50000000"

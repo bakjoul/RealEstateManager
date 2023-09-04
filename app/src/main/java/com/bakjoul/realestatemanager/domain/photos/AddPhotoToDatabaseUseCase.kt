@@ -4,6 +4,6 @@ import com.bakjoul.realestatemanager.data.photos.PhotoDao
 import com.bakjoul.realestatemanager.domain.property.model.PhotoEntity
 import javax.inject.Inject
 
-class AddPhotoUseCase @Inject constructor(private val photoDao: PhotoDao) {
+class AddPhotoToDatabaseUseCase @Inject constructor(private val photoDao: PhotoDao) {
     suspend fun invoke(photo: PhotoEntity) = photoDao.insert(photo)
 }

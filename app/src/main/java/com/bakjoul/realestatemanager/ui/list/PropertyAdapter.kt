@@ -41,7 +41,7 @@ class PropertyAdapter : ListAdapter<PropertyItemViewState, PropertyAdapter.ViewH
             } else {
                 binding.listItemInfo.visibility = View.VISIBLE
                 binding.listItemInfo.setOnClickListener {
-                    val tooltipView = LayoutInflater.from(binding.root.context).inflate(R.layout.tooltip_layout, null)
+                    val tooltipView = LayoutInflater.from(binding.root.context).inflate(R.layout.fragment_list_tooltip, null)
                     val tooltipTextView = tooltipView.findViewById<TextView>(R.id.tooltip_text)
 
                     tooltipTextView.text = SpannableString.valueOf(item.currencyRate)

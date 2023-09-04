@@ -75,11 +75,17 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val suggestionsRVAdapter = AddPropertySuggestionAdapter()
-        binding.addPropertyAddressSuggestionsRecyclerView.adapter = suggestionsRVAdapter
-        val divider = DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
-        divider.setDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.divider)!!)
-        binding.addPropertyAddressSuggestionsRecyclerView.addItemDecoration(divider)
+        val suggestionsAdapter = AddPropertySuggestionAdapter()
+        binding.addPropertyAddressSuggestionsRecyclerView.adapter = suggestionsAdapter
+        val suggestionsDivider = DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
+        suggestionsDivider.setDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.suggestions_divider)!!)
+        binding.addPropertyAddressSuggestionsRecyclerView.addItemDecoration(suggestionsDivider)
+
+        val photosAdapter = AddPropertyPhotoAdapter()
+        binding.addPropertyPhotosRecyclerView.adapter = photosAdapter
+        val photosDivider = DividerItemDecoration(requireContext(), DividerItemDecoration.HORIZONTAL)
+        photosDivider.setDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.photos_divider)!!)
+        binding.addPropertyPhotosRecyclerView.addItemDecoration(photosDivider)
 
         // Property type radio group
         binding.addPropertyTypeRadioGroup.setOnCheckedChangeListener { _, checkedId ->
@@ -394,7 +400,7 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
             } else {
                 binding.addPropertyAddressSuggestionsContainer.visibility = View.VISIBLE
             }
-            suggestionsRVAdapter.submitList(it.addressPredictions)
+            suggestionsAdapter.submitList(it.addressPredictions)
 
             binding.addPropertyStateRegionTextInputEditText.setText(it.state ?: "")
             binding.addPropertyCityTextInputEditText.setText(it.city ?: "")

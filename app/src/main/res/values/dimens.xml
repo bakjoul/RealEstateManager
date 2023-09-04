@@ -3,6 +3,8 @@
     <bool name="isTablet">false</bool>
     <dimen name="photo_frame_width">114dp</dimen>
     <dimen name="photo_frame_height">86.5dp</dimen>
+    <dimen name="photo_width">112dp</dimen>
+    <dimen name="photo_height">84.5dp</dimen>
     <dimen name="camera_separator_percent">0.75</dimen>
     <dimen name="camera_margin_top">64dp</dimen>
     <dimen name="camera_shutter_margin_bottom">48dp</dimen>

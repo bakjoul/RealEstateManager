@@ -1,5 +1,6 @@
-package com.bakjoul.realestatemanager.data.property
+package com.bakjoul.realestatemanager.domain.property
 
+import com.bakjoul.realestatemanager.data.property.PropertyDao
 import com.bakjoul.realestatemanager.domain.property.model.PropertyEntity
 import javax.inject.Inject
 

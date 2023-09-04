@@ -8,35 +8,35 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bakjoul.realestatemanager.R
-import com.bakjoul.realestatemanager.databinding.PhotosItemBinding
-import com.bakjoul.realestatemanager.ui.details.DetailsMediaItemViewState
+import com.bakjoul.realestatemanager.databinding.FragmentPhotosThumbnailItemBinding
+import com.bakjoul.realestatemanager.ui.common_model.PhotoItemViewState
 import com.bumptech.glide.Glide
 
-class PhotosPagerAdapter : ListAdapter<DetailsMediaItemViewState, PhotosPagerAdapter.ViewHolder>(PhotosDiffCallback) {
+class PhotosPagerAdapter : ListAdapter<PhotoItemViewState, PhotosPagerAdapter.ViewHolder>(PhotosDiffCallback) {
 
     private var selectedItem: Int = RecyclerView.NO_POSITION
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder = ViewHolder(
-        PhotosItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        FragmentPhotosThumbnailItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
     )
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(getItem(position), position == selectedItem)
     }
 
-    class ViewHolder(private val binding: PhotosItemBinding) :
+    class ViewHolder(private val binding: FragmentPhotosThumbnailItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(item: DetailsMediaItemViewState, isSelected: Boolean) {
-            Glide.with(binding.detailsPhotoItemImageView.context).load(item.url).into(binding.detailsPhotoItemImageView)
-            binding.detailsPhotoItemDescription.text = item.description
-            binding.detailsPhotoItem.setOnClickListener { item.onPhotoClicked() }
+        fun bind(item: PhotoItemViewState, isSelected: Boolean) {
+            Glide.with(binding.photosThumbnailItemImageView.context).load(item.url).into(binding.photosThumbnailItemImageView)
+            binding.photosThumbnailItemDescription.text = item.description
+            binding.photosThumbnailItem.setOnClickListener { item.onPhotoClicked() }
 
             if (isSelected) {
-                binding.detailsPhotoItemOverlay.visibility = View.GONE
-                binding.detailsPhotoItemFrame.setBackgroundResource(R.drawable.photo_frame_bkg)
+                binding.photosThumbnailItemOverlay.visibility = View.GONE
+                binding.photosThumbnailItemFrame.setBackgroundResource(R.drawable.photo_frame_bkg)
             } else {
-                binding.detailsPhotoItemFrame.setBackgroundResource(android.R.color.transparent)
-                binding.detailsPhotoItemOverlay.visibility = View.VISIBLE
+                binding.photosThumbnailItemFrame.setBackgroundResource(android.R.color.transparent)
+                binding.photosThumbnailItemOverlay.visibility = View.VISIBLE
             }
         }
     }
@@ -47,9 +47,9 @@ class PhotosPagerAdapter : ListAdapter<DetailsMediaItemViewState, PhotosPagerAda
         notifyDataSetChanged()
     }
 
-    object PhotosDiffCallback : DiffUtil.ItemCallback<DetailsMediaItemViewState>() {
-        override fun areItemsTheSame(oldItem: DetailsMediaItemViewState, newItem: DetailsMediaItemViewState): Boolean = oldItem.id == newItem.id
+    object PhotosDiffCallback : DiffUtil.ItemCallback<PhotoItemViewState>() {
+        override fun areItemsTheSame(oldItem: PhotoItemViewState, newItem: PhotoItemViewState): Boolean = oldItem.id == newItem.id
 
-        override fun areContentsTheSame(oldItem: DetailsMediaItemViewState, newItem: DetailsMediaItemViewState): Boolean = oldItem == newItem
+        override fun areContentsTheSame(oldItem: PhotoItemViewState, newItem: PhotoItemViewState): Boolean = oldItem == newItem
     }
 }

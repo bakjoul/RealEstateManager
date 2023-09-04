@@ -5,10 +5,10 @@ import android.util.Log
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.bakjoul.realestatemanager.data.property.AddPropertyUseCase
+import com.bakjoul.realestatemanager.domain.property.AddPropertyUseCase
 import com.bakjoul.realestatemanager.data.utils.fromJson
 import com.bakjoul.realestatemanager.domain.CoroutineDispatcherProvider
-import com.bakjoul.realestatemanager.domain.photos.AddPhotoUseCase
+import com.bakjoul.realestatemanager.domain.photos.AddPhotoToDatabaseUseCase
 import com.bakjoul.realestatemanager.domain.property.model.PhotoEntity
 import com.bakjoul.realestatemanager.domain.property.model.PropertyEntity
 import com.google.gson.Gson
@@ -23,7 +23,7 @@ class InitializeDatabaseWorker @AssistedInject constructor(
     @Assisted context: Context,
     @Assisted workerParams: WorkerParameters,
     private val addPropertyUseCase: AddPropertyUseCase,
-    private val addPhotoUseCase: AddPhotoUseCase,
+    private val addPhotoToDatabaseUseCase: AddPhotoToDatabaseUseCase,
     private val gson: Gson,
     private val coroutineDispatcherProvider: CoroutineDispatcherProvider
 ) : CoroutineWorker(context, workerParams) {
@@ -47,7 +47,7 @@ class InitializeDatabaseWorker @AssistedInject constructor(
                 }
 
                 val photoJobs = photosEntities.map { photoEntity ->
-                    async { addPhotoUseCase.invoke(photoEntity) }
+                    async { addPhotoToDatabaseUseCase.invoke(photoEntity) }
                 }
 
                 val jobs = propertyJobs + photoJobs

@@ -16,4 +16,5 @@ data class AddPropertyViewState(
     val city: String?,
     val state: String?,
     val zipcode: String?,
+    val photos: List<AddPropertyPhotoItemViewState>
 )
