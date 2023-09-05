@@ -1,4 +1,4 @@
-package com.bakjoul.realestatemanager.data.property
+package com.bakjoul.realestatemanager.data.property.model
 
 enum class PropertyType {
     Flat,

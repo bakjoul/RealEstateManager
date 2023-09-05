@@ -7,8 +7,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.liveData
 import com.bakjoul.realestatemanager.R
-import com.bakjoul.realestatemanager.data.property.PropertyPoi
-import com.bakjoul.realestatemanager.data.property.PropertyType
+import com.bakjoul.realestatemanager.data.property.model.PropertyPoi
+import com.bakjoul.realestatemanager.data.property.model.PropertyType
 import com.bakjoul.realestatemanager.data.settings.model.AppCurrency
 import com.bakjoul.realestatemanager.data.settings.model.SurfaceUnit
 import com.bakjoul.realestatemanager.domain.autocomplete.GetAddressPredictionsUseCase
@@ -19,7 +19,6 @@ import com.bakjoul.realestatemanager.domain.geocoding.model.GeocodingWrapper
 import com.bakjoul.realestatemanager.domain.navigation.GetCurrentNavigationUseCase
 import com.bakjoul.realestatemanager.domain.navigation.NavigateUseCase
 import com.bakjoul.realestatemanager.domain.navigation.model.To
-import com.bakjoul.realestatemanager.domain.photos.GetPhotosInMemoryUseCase
 import com.bakjoul.realestatemanager.domain.settings.currency.GetCurrentCurrencyUseCase
 import com.bakjoul.realestatemanager.domain.settings.surface_unit.GetCurrentSurfaceUnitUseCase
 import com.bakjoul.realestatemanager.ui.utils.EquatableCallback
@@ -46,7 +45,6 @@ class AddPropertyViewModel @Inject constructor(
     private val getCurrentSurfaceUnitUseCase: GetCurrentSurfaceUnitUseCase,
     private val getAddressPredictionsUseCase: GetAddressPredictionsUseCase,
     private val getAddressDetailsUseCase: GetAddressDetailsUseCase,
-    private val getPhotosInMemoryUseCase: GetPhotosInMemoryUseCase,
     private val navigateUseCase: NavigateUseCase,
     getCurrentNavigationUseCase: GetCurrentNavigationUseCase
 ) : ViewModel() {
@@ -99,9 +97,8 @@ class AddPropertyViewModel @Inject constructor(
             numberOfBathroomsMutableStateFlow,
             numberOfBedroomsMutableStateFlow,
             addressPredictionsFlow,
-            selectedAddressDetailsFlow,
-            getPhotosInMemoryUseCase.invoke()
-        ) { currency, surfaceUnit, propertyType, isForSale, surface, numberOfRooms, numberOfBathrooms, numberOfBedrooms, address, addressDetails, photos ->
+            selectedAddressDetailsFlow
+        ) { currency, surfaceUnit, propertyType, isForSale, surface, numberOfRooms, numberOfBathrooms, numberOfBedrooms, address, addressDetails ->
             updateAddressData(addressDetails)
             AddPropertyViewState(
                 propertyType = propertyType,
@@ -117,7 +114,7 @@ class AddPropertyViewModel @Inject constructor(
                 state = state,
                 city = city,
                 zipcode = zipcode,
-                photos = mapPhotosToItemViewStates(photos)
+                photos = emptyList()//mapPhotosToItemViewStates(photos)
             )
         }.collect {
             emit(it)

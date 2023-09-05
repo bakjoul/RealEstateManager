@@ -1,12 +1,11 @@
 package com.bakjoul.realestatemanager.domain.photos
 
+import com.bakjoul.realestatemanager.domain.photos.model.PhotoEntity
 import kotlinx.coroutines.flow.Flow
 
 interface PhotoRepository {
 
-    fun addPhoto(photoUrl: String, description: String)
+    suspend fun addPhoto(photoEntity: PhotoEntity)
 
-    fun getPhotos(): Flow<Map<String, String>>
-
-    fun clearPhotos()
+    fun getPhotosForPropertyIdFlow(propertyId: Long): Flow<List<PhotoEntity>>
 }

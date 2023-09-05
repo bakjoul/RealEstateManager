@@ -1,7 +1,8 @@
 package com.bakjoul.realestatemanager.domain.property.model
 
-import com.bakjoul.realestatemanager.data.property.PropertyAddress
-import com.bakjoul.realestatemanager.data.property.PropertyPoi
+import com.bakjoul.realestatemanager.data.property.model.PropertyAddress
+import com.bakjoul.realestatemanager.data.property.model.PropertyPoi
+import com.bakjoul.realestatemanager.domain.photos.model.PhotoEntity
 import java.math.BigDecimal
 import java.time.LocalDate
 

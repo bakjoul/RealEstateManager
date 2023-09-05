@@ -1,6 +1,6 @@
 package com.bakjoul.realestatemanager.ui.add
 
-import com.bakjoul.realestatemanager.data.property.PropertyType
+import com.bakjoul.realestatemanager.data.property.model.PropertyType
 
 data class AddPropertyViewState(
     val propertyType: PropertyType?,

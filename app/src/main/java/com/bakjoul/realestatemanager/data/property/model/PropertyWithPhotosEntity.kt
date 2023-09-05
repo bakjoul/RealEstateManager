@@ -1,8 +1,8 @@
-package com.bakjoul.realestatemanager.domain.property.model
+package com.bakjoul.realestatemanager.data.property.model
 
 import androidx.room.Embedded
 import androidx.room.Relation
-import com.bakjoul.realestatemanager.data.property.PropertyDtoEntity
+import com.bakjoul.realestatemanager.data.photos.model.PhotoDtoEntity
 
 data class PropertyWithPhotosEntity(
     @Embedded
@@ -11,5 +11,6 @@ data class PropertyWithPhotosEntity(
         parentColumn = "id",
         entityColumn = "property_id"
     )
-    val photos: List<PhotoEntity>
+    val photos: List<PhotoDtoEntity>
 )
+

@@ -1,4 +1,4 @@
-package com.bakjoul.realestatemanager.data.property
+package com.bakjoul.realestatemanager.data.property.model
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

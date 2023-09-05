@@ -9,7 +9,7 @@ import com.bakjoul.realestatemanager.data.current_photo.CurrentPhotoIdRepository
 import com.bakjoul.realestatemanager.data.current_property.CurrentPropertyIdRepositoryImplementation
 import com.bakjoul.realestatemanager.data.geocoding.GeocodingRepositoryImplementation
 import com.bakjoul.realestatemanager.data.navigation.NavigationRepositoryInMemory
-import com.bakjoul.realestatemanager.data.photos.PhotoRepositoryInMemory
+import com.bakjoul.realestatemanager.data.photos.PhotoRepositoryRoom
 import com.bakjoul.realestatemanager.data.property.PropertyRepositoryRoom
 import com.bakjoul.realestatemanager.data.resources.ResourcesRepositoryImplementation
 import com.bakjoul.realestatemanager.data.settings.SettingsRepositoryImplementation
@@ -86,5 +86,5 @@ abstract class DataBindingModule {
 
     @Singleton
     @Binds
-    abstract fun bindPhotoRepository(photoRepositoryInMemory: PhotoRepositoryInMemory): PhotoRepository
+    abstract fun bindPhotoRepository(photoRepositoryRoom: PhotoRepositoryRoom): PhotoRepository
 }

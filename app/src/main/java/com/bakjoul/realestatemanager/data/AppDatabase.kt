@@ -11,17 +11,17 @@ import androidx.work.WorkManager
 import androidx.work.workDataOf
 import com.bakjoul.realestatemanager.data.photos.PhotoDao
 import com.bakjoul.realestatemanager.data.property.PropertyDao
-import com.bakjoul.realestatemanager.data.property.PropertyDtoEntity
-import com.bakjoul.realestatemanager.data.property.PropertyType
+import com.bakjoul.realestatemanager.data.property.model.PropertyDtoEntity
+import com.bakjoul.realestatemanager.data.photos.model.PhotoDtoEntity
+import com.bakjoul.realestatemanager.data.property.model.PropertyType
 import com.bakjoul.realestatemanager.data.utils.type_converters.BigDecimalTypeConverter
 import com.bakjoul.realestatemanager.data.utils.type_converters.LocalDateTypeConverter
-import com.bakjoul.realestatemanager.domain.property.model.PhotoEntity
 import com.google.gson.Gson
 import java.math.BigDecimal
 import java.time.LocalDate
 
 @Database(
-    entities = [PropertyDtoEntity::class, PhotoEntity::class],
+    entities = [PropertyDtoEntity::class, PhotoDtoEntity::class],
     version = 1,
     exportSchema = false
 )
@@ -150,37 +150,37 @@ abstract class AppDatabase : RoomDatabase() {
 
                     val photosAsJson = gson.toJson(
                         listOf(
-                            PhotoEntity(
+                            PhotoDtoEntity(
                                 propertyId = 1,
                                 url = "android.resource://com.bakjoul.realestatemanager/drawable/penthouse_upper_east_side",
                                 description = "Lounge"
                             ),
-                            PhotoEntity(
+                            PhotoDtoEntity(
                                 propertyId = 1,
                                 url = "android.resource://com.bakjoul.realestatemanager/drawable/penthouse_upper_east_side",
                                 description = "Lounge"
                             ),
-                            PhotoEntity(
+                            PhotoDtoEntity(
                                 propertyId = 1,
                                 url = "android.resource://com.bakjoul.realestatemanager/drawable/penthouse_upper_east_side",
                                 description = "Lounge"
                             ),
-                            PhotoEntity(
+                            PhotoDtoEntity(
                                 propertyId = 1,
                                 url = "android.resource://com.bakjoul.realestatemanager/drawable/penthouse_upper_east_side",
                                 description = "Lounge"
                             ),
-                            PhotoEntity(
+                            PhotoDtoEntity(
                                 propertyId = 1,
                                 url = "android.resource://com.bakjoul.realestatemanager/drawable/penthouse_upper_east_side",
                                 description = "Lounge"
                             ),
-                            PhotoEntity(
+                            PhotoDtoEntity(
                                 propertyId = 2,
                                 url = "android.resource://com.bakjoul.realestatemanager/drawable/penthouse_upper_east_side",
                                 description = "Lounge"
                             ),
-                            PhotoEntity(
+                            PhotoDtoEntity(
                                 propertyId = 3,
                                 url = "android.resource://com.bakjoul.realestatemanager/drawable/penthouse_upper_east_side",
                                 description = "Lounge"

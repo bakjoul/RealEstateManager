@@ -1,9 +1,14 @@
 package com.bakjoul.realestatemanager.data.property
 
+import com.bakjoul.realestatemanager.data.photos.model.PhotoDtoEntity
+import com.bakjoul.realestatemanager.data.property.model.PropertyAddress
+import com.bakjoul.realestatemanager.data.property.model.PropertyDtoEntity
+import com.bakjoul.realestatemanager.data.property.model.PropertyPoi
 import com.bakjoul.realestatemanager.domain.CoroutineDispatcherProvider
 import com.bakjoul.realestatemanager.domain.property.PropertyRepository
 import com.bakjoul.realestatemanager.domain.property.model.PropertyEntity
-import com.bakjoul.realestatemanager.domain.property.model.PropertyWithPhotosEntity
+import com.bakjoul.realestatemanager.data.property.model.PropertyWithPhotosEntity
+import com.bakjoul.realestatemanager.domain.photos.model.PhotoEntity
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
@@ -16,7 +21,7 @@ class PropertyRepositoryRoom @Inject constructor(
     private val coroutineDispatcherProvider: CoroutineDispatcherProvider
 ) : PropertyRepository {
 
-    override suspend fun add(propertyEntity: PropertyEntity): Long = withContext(coroutineDispatcherProvider.io) {
+    override suspend fun addProperty(propertyEntity: PropertyEntity): Long = withContext(coroutineDispatcherProvider.io) {
         propertyDao.insert(mapToDtoEntity(propertyEntity))
     }
 
@@ -91,7 +96,7 @@ class PropertyRepositoryRoom @Inject constructor(
             latitude = details.latitude,
             longitude = details.longitude,
             description = details.description,
-            photos = propertyWithPhotosEntity.photos,
+            photos = mapPhotos(propertyWithPhotosEntity.photos),
             agent = details.agent
         )
     }
@@ -111,5 +116,15 @@ class PropertyRepositoryRoom @Inject constructor(
             if (details.poiTramway) add(PropertyPoi.Tramway)
         }
     }
+
+    private fun mapPhotos(photos: List<PhotoDtoEntity>): List<PhotoEntity> =
+        photos.map {
+            PhotoEntity(
+                id = it.id,
+                propertyId = it.propertyId,
+                url = it.url,
+                description = it.description
+            )
+        }
     // endregion Mapping
 }

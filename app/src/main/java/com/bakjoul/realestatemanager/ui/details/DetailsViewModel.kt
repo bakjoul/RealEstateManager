@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import com.bakjoul.realestatemanager.BuildConfig
 import com.bakjoul.realestatemanager.R
-import com.bakjoul.realestatemanager.data.property.PropertyPoi
+import com.bakjoul.realestatemanager.data.property.model.PropertyPoi
 import com.bakjoul.realestatemanager.domain.CoroutineDispatcherProvider
 import com.bakjoul.realestatemanager.domain.currency_rate.GetEuroRateUseCase
 import com.bakjoul.realestatemanager.domain.current_photo.SetCurrentPhotoIdUseCase
@@ -14,7 +14,7 @@ import com.bakjoul.realestatemanager.domain.current_property.ResetCurrentPropert
 import com.bakjoul.realestatemanager.domain.navigation.NavigateUseCase
 import com.bakjoul.realestatemanager.domain.navigation.model.To
 import com.bakjoul.realestatemanager.domain.property.GetCurrentPropertyUseCase
-import com.bakjoul.realestatemanager.domain.property.model.PhotoEntity
+import com.bakjoul.realestatemanager.domain.photos.model.PhotoEntity
 import com.bakjoul.realestatemanager.domain.settings.currency.GetCurrentCurrencyUseCase
 import com.bakjoul.realestatemanager.domain.settings.surface_unit.GetCurrentSurfaceUnitUseCase
 import com.bakjoul.realestatemanager.ui.common_model.PhotoItemViewState
