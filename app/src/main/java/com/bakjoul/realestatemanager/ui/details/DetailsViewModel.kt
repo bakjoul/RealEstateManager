@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import com.bakjoul.realestatemanager.BuildConfig
 import com.bakjoul.realestatemanager.R
+import com.bakjoul.realestatemanager.data.property.PropertyPoi
 import com.bakjoul.realestatemanager.domain.CoroutineDispatcherProvider
 import com.bakjoul.realestatemanager.domain.currency_rate.GetEuroRateUseCase
 import com.bakjoul.realestatemanager.domain.current_photo.SetCurrentPhotoIdUseCase
@@ -53,36 +54,35 @@ class DetailsViewModel @Inject constructor(
             flow { emit(getEuroRateUseCase.invoke()) },
             getCurrentSurfaceUnitUseCase.invoke()
         ) { property, currency, euroRateWrapper, surfaceUnit ->
-            val details = property.propertyEntity
-            val formattedSurface = formatSurface(details.surface, surfaceUnit)
+            val formattedSurface = formatSurface(property.surface, surfaceUnit)
 
             DetailsViewState(
                 mainPhotoUrl = property.photos.first().url,
-                type = details.type,
-                price = formatPrice(details.price, currency, euroRateWrapper.currencyRateEntity.rate),
-                isSold = details.soldDate != null,
-                city = details.city,
-                sale_status = getSaleStatus(details.soldDate, details.entryDate),
-                description = details.description,
+                type = property.type,
+                price = formatPrice(property.price.toDouble(), currency, euroRateWrapper.currencyRateEntity.rate),  // TODO price
+                isSold = property.saleDate != null,
+                city = property.fullAddress.city,
+                sale_status = getSaleStatus(property.saleDate, property.entryDate),
+                description = property.description,
                 surface = "${formattedSurface.first} ${formattedSurface.second}",
-                rooms = details.rooms.toString(),
-                bedrooms = details.bedrooms.toString(),
-                bathrooms = details.bathrooms.toString(),
-                poiSchool = details.poiSchool,
-                poiStore = details.poiStore,
-                poiPark = details.poiPark,
-                poiRestaurant = details.poiRestaurant,
-                poiHospital = details.poiHospital,
-                poiBus = details.poiBus,
-                poiSubway = details.poiSubway,
-                poiTramway = details.poiTramway,
-                poiTrain = details.poiTrain,
-                poiAirport = details.poiAirport,
-                location = formatLocation(details.address, formatApartment(details.apartment), details.city, details.zipcode, details.country),
+                rooms = property.rooms.toString(),
+                bedrooms = property.bedrooms.toString(),
+                bathrooms = property.bathrooms.toString(),
+                poiSchool = property.amenities.contains(PropertyPoi.School),
+                poiStore = property.amenities.contains(PropertyPoi.Store),
+                poiPark = property.amenities.contains(PropertyPoi.Park),
+                poiRestaurant = property.amenities.contains(PropertyPoi.Restaurant),
+                poiHospital = property.amenities.contains(PropertyPoi.Hospital),
+                poiBus = property.amenities.contains(PropertyPoi.Bus),
+                poiSubway = property.amenities.contains(PropertyPoi.Subway),
+                poiTramway = property.amenities.contains(PropertyPoi.Tramway),
+                poiTrain = property.amenities.contains(PropertyPoi.Train),
+                poiAirport = property.amenities.contains(PropertyPoi.Airport),
+                location = formatLocation(property.fullAddress.address, formatApartment(property.fullAddress.apartment), property.fullAddress.city, property.fullAddress.zipcode, property.fullAddress.country),
                 medias = mapPhotosToItemViewStates(property.photos),
-                clipboardAddress = getClipboardAddress(details.address, details.city, details.country),
-                staticMapUrl = getMapUrl(details.address, details.city, details.country),
-                mapsAddress = getAddress(details.address, details.city, details.country)
+                clipboardAddress = getClipboardAddress(property.fullAddress.address, property.fullAddress.city, property.fullAddress.country),
+                staticMapUrl = getMapUrl(property.fullAddress.address, property.fullAddress.city, property.fullAddress.country),
+                mapsAddress = getAddress(property.fullAddress.address, property.fullAddress.city, property.fullAddress.country)
             )
         }.collect {
             emit(it)

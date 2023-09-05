@@ -5,12 +5,12 @@ import android.util.Log
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.bakjoul.realestatemanager.domain.property.AddPropertyUseCase
+import com.bakjoul.realestatemanager.data.property.PropertyDao
+import com.bakjoul.realestatemanager.data.property.PropertyDtoEntity
 import com.bakjoul.realestatemanager.data.utils.fromJson
 import com.bakjoul.realestatemanager.domain.CoroutineDispatcherProvider
 import com.bakjoul.realestatemanager.domain.photos.AddPhotoToDatabaseUseCase
 import com.bakjoul.realestatemanager.domain.property.model.PhotoEntity
-import com.bakjoul.realestatemanager.domain.property.model.PropertyEntity
 import com.google.gson.Gson
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -22,7 +22,7 @@ import kotlinx.coroutines.withContext
 class InitializeDatabaseWorker @AssistedInject constructor(
     @Assisted context: Context,
     @Assisted workerParams: WorkerParameters,
-    private val addPropertyUseCase: AddPropertyUseCase,
+    private val propertyDao: PropertyDao,
     private val addPhotoToDatabaseUseCase: AddPhotoToDatabaseUseCase,
     private val gson: Gson,
     private val coroutineDispatcherProvider: CoroutineDispatcherProvider
@@ -38,12 +38,12 @@ class InitializeDatabaseWorker @AssistedInject constructor(
         val photosAsJson = inputData.getString(KEY_INPUT_DATA_PHOTOS)
 
         if (propertiesAsJson != null && photosAsJson != null) {
-            val propertyEntities = gson.fromJson<List<PropertyEntity>>(json = propertiesAsJson)
+            val propertyEntities = gson.fromJson<List<PropertyDtoEntity>>(json = propertiesAsJson)
             val photosEntities = gson.fromJson<List<PhotoEntity>>(json = photosAsJson)
 
             if (propertyEntities != null && photosEntities != null) {
                 val propertyJobs = propertyEntities.map { propertyEntity ->
-                    async { addPropertyUseCase.invoke(propertyEntity) }
+                    async { propertyDao.insert(propertyEntity) }
                 }
 
                 val photoJobs = photosEntities.map { photoEntity ->

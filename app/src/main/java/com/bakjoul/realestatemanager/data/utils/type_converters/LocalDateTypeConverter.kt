@@ -1,4 +1,4 @@
-package com.bakjoul.realestatemanager.data.utils
+package com.bakjoul.realestatemanager.data.utils.type_converters
 
 import androidx.room.TypeConverter
 import java.time.LocalDate

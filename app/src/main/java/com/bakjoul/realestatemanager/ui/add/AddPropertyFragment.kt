@@ -82,10 +82,10 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
         binding.addPropertyAddressSuggestionsRecyclerView.addItemDecoration(suggestionsDivider)
 
         val photosAdapter = AddPropertyPhotoAdapter()
-        binding.addPropertyPhotosRecyclerView.adapter = photosAdapter
+        binding.addPropertyPhotosRecyclerView?.adapter = photosAdapter  // TODO update other layout
         val photosDivider = DividerItemDecoration(requireContext(), DividerItemDecoration.HORIZONTAL)
         photosDivider.setDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.photos_divider)!!)
-        binding.addPropertyPhotosRecyclerView.addItemDecoration(photosDivider)
+        binding.addPropertyPhotosRecyclerView?.addItemDecoration(photosDivider)
 
         // Property type radio group
         binding.addPropertyTypeRadioGroup.setOnCheckedChangeListener { _, checkedId ->

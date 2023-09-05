@@ -1,14 +1,14 @@
 package com.bakjoul.realestatemanager.data.property
 
 enum class PropertyPoi {
-    School,
-    Store,
+    Airport,
+    Bus,
+    Hospital,
     Park,
     Restaurant,
-    Hospital,
-    Bus,
+    School,
+    Store,
     Subway,
-    Tramway,
     Train,
-    Airport
+    Tramway,
 }

@@ -5,6 +5,7 @@ import android.graphics.Typeface
 import android.text.SpannableString
 import android.text.SpannableStringBuilder
 import android.text.style.StyleSpan
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
@@ -57,22 +58,20 @@ class PropertyListViewModel @Inject constructor(
             isTabletUseCase.invoke(),
         ) { properties, currency, euroRateWrapper, surfaceUnit, isTablet ->
             properties.map {
-                val details = it.propertyEntity
-
                 PropertyItemViewState(
-                    id = details.id,
+                    id = it.id,
                     photoUrl = it.photos.first().url,
-                    type = details.type,
-                    city = details.city,
+                    type = it.type,
+                    city = it.fullAddress.city,
                     features = formatFeatures(
-                        details.bedrooms,
-                        details.bathrooms,
-                        details.surface,
+                        it.bedrooms,
+                        it.bathrooms,
+                        it.surface,
                         surfaceUnit,
                         isTablet
                     ),
                     price = formatPrice(
-                        details.price,
+                        it.price.toDouble(),    // TODO price format
                         currency,
                         euroRateWrapper.currencyRateEntity.rate
                     ),
@@ -81,9 +80,10 @@ class PropertyListViewModel @Inject constructor(
                         euroRateWrapper.currencyRateEntity.rate,
                         euroRateWrapper.currencyRateEntity.updateDate.format(dateFormatter)
                     ),
-                    isSold = details.soldDate != null,
+                    isSold = it.saleDate != null,
                     onPropertyClicked = EquatableCallback {
-                        setCurrentPropertyIdUseCase.invoke(details.id)
+                        setCurrentPropertyIdUseCase.invoke(it.id)
+                        Log.d("test", "it.id: ${it.id}")
                         navigateUseCase.invoke(To.Details)
                     }
                 )

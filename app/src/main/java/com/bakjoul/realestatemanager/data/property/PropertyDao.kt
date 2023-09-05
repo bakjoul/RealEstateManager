@@ -4,7 +4,6 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
-import com.bakjoul.realestatemanager.domain.property.model.PropertyEntity
 import com.bakjoul.realestatemanager.domain.property.model.PropertyWithPhotosEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -12,7 +11,7 @@ import kotlinx.coroutines.flow.Flow
 interface PropertyDao {
 
     @Insert
-    suspend fun insert(propertyEntity: PropertyEntity): Long
+    suspend fun insert(propertyDtoEntity: PropertyDtoEntity): Long
 
     @Query("SELECT * FROM properties")
     @Transaction
@@ -20,5 +19,5 @@ interface PropertyDao {
 
     @Query("SELECT * FROM properties WHERE id = :propertyId")
     @Transaction
-    fun getPropertyById(propertyId: Long): PropertyWithPhotosEntity
+    fun getPropertyById(propertyId: Long): PropertyWithPhotosEntity?
 }
