@@ -48,7 +48,7 @@ class PhotosFragment @Inject constructor() : DialogFragment(R.layout.fragment_ph
         })
 
         // ViewPager thumbnails RecyclerView
-        val thumbnailsAdapter = PhotosPagerAdapter()
+        val thumbnailsAdapter = PhotosAdapter()
         binding.photosThumbnailsRecyclerView.adapter = thumbnailsAdapter
         val snapHelper = LinearSnapHelper()
         snapHelper.attachToRecyclerView(binding.photosThumbnailsRecyclerView)

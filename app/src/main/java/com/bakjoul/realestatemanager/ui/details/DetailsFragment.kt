@@ -14,8 +14,10 @@ import android.widget.PopupWindow
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.DividerItemDecoration
 import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.databinding.FragmentDetailsBinding
 import com.bakjoul.realestatemanager.ui.utils.DensityUtil
@@ -44,6 +46,9 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
         // Medias RecyclerView
         val recyclerViewAdapter = DetailsAdapter()
         binding.detailsMediaRecyclerView.adapter = recyclerViewAdapter
+        val divider = DividerItemDecoration(requireContext(), DividerItemDecoration.HORIZONTAL)
+        divider.setDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.photos_divider)!!)
+        binding.detailsMediaRecyclerView.addItemDecoration(divider)
 
         binding.detailsFabBack?.setOnClickListener { viewModel.onBackButtonPressed() }
 
@@ -94,7 +99,7 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
 
     private fun setToolbarInfoAnimation() {
         val toolbarInfo = binding.detailsToolbarTypePriceStatusContainer
-        val xMargin = DensityUtil.dip2px(requireContext(), 30f)
+        val xMargin = DensityUtil.dip2px(requireContext(), 34f)
         val startAnimationY = DensityUtil.dip2px(requireContext(), 56f)
         val layoutParams = toolbarInfo.layoutParams as ViewGroup.MarginLayoutParams
         layoutParams.marginStart = 0

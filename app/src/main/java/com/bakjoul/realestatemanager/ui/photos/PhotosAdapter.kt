@@ -12,7 +12,7 @@ import com.bakjoul.realestatemanager.databinding.FragmentPhotosThumbnailItemBind
 import com.bakjoul.realestatemanager.ui.common_model.PhotoItemViewState
 import com.bumptech.glide.Glide
 
-class PhotosPagerAdapter : ListAdapter<PhotoItemViewState, PhotosPagerAdapter.ViewHolder>(PhotosDiffCallback) {
+class PhotosAdapter : ListAdapter<PhotoItemViewState, PhotosAdapter.ViewHolder>(PhotosDiffCallback) {
 
     private var selectedItem: Int = RecyclerView.NO_POSITION
 
@@ -35,7 +35,7 @@ class PhotosPagerAdapter : ListAdapter<PhotoItemViewState, PhotosPagerAdapter.Vi
                 binding.photosThumbnailItemOverlay.visibility = View.GONE
                 binding.photosThumbnailItemFrame.setBackgroundResource(R.drawable.photo_frame_bkg)
             } else {
-                binding.photosThumbnailItemFrame.setBackgroundResource(android.R.color.transparent)
+                binding.photosThumbnailItemFrame.setBackgroundResource(R.color.grey_transparent)
                 binding.photosThumbnailItemOverlay.visibility = View.VISIBLE
             }
         }

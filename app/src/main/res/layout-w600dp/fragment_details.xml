@@ -33,6 +33,7 @@
                 android:layout_height="80dp"
                 android:layout_gravity="bottom"
                 android:paddingVertical="4dp"
+                app:contentInsetStart="12dp"
                 app:layout_collapseMode="pin">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
@@ -156,8 +157,7 @@
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingHorizontal="12dp"
-                    android:paddingVertical="8dp">
+                    android:padding="8dp">
 
                     <TextView
                         android:id="@+id/details_description_label"
