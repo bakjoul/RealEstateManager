@@ -61,14 +61,9 @@ class MainViewModel @Inject constructor(
                     null
                 }
                 is To.PhotosDialog -> if (isTablet) {
-                    MainViewAction.ShowDetailsTabletAndPhotosDialog
+                    MainViewAction.ShowPhotosDialog
                 } else {
-                    MainViewAction.ShowDetailsPortraitAndPhotosDialog
-                }
-                is To.ClosePhotosDialog -> if (isTablet) {
-                    MainViewAction.ClosePhotosDialogAndOpenDetailsPortrait
-                } else {
-                    MainViewAction.ClosePhotosDialog
+                    null
                 }
                 is To.AddProperty -> MainViewAction.ShowAddPropertyDialog
                 is To.Dispatcher -> MainViewAction.ReturnToDispatcher
