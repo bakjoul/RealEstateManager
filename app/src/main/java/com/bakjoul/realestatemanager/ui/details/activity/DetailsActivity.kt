@@ -37,21 +37,25 @@ class DetailsActivity : AppCompatActivity() {
                 .commitNow()
         }
 
+        val reopenPhotosDialog = intent.getBooleanExtra("showPhotosDialog", false)
+        if (reopenPhotosDialog) {
+            showPhotosDialog()
+        }
+
         viewModel.detailsActivityViewActionLiveData.observeEvent(this) {
             Log.d("test", "details activity observed event: $it")
             when (it) {
-                DetailsActivityViewAction.ShowPhotosDialog -> {
-                    val existingDialog = supportFragmentManager.findFragmentByTag(PHOTOS_DIALOG_TAG) as? PhotosFragment
-                    if (existingDialog == null) {
-                        val dialog = PhotosFragment()
-                        dialog.show(supportFragmentManager, PHOTOS_DIALOG_TAG)
-                    }
-                }
-
-                DetailsActivityViewAction.CloseActivity -> {
-                    finish()
-                }
+                DetailsActivityViewAction.ShowPhotosDialog -> showPhotosDialog()
+                DetailsActivityViewAction.CloseActivity -> finish()
             }
+        }
+    }
+
+    private fun showPhotosDialog() {
+        val existingDialog = supportFragmentManager.findFragmentByTag(PHOTOS_DIALOG_TAG)
+        if (existingDialog == null) {
+            val dialog = PhotosFragment()
+            dialog.show(supportFragmentManager, PHOTOS_DIALOG_TAG)
         }
     }
 

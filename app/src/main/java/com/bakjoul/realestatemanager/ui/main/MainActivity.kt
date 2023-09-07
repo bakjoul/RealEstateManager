@@ -85,19 +85,36 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
 
-                MainViewAction.ShowDetailsPortrait -> {
-                    val addPropertyFragment = supportFragmentManager.findFragmentByTag(DETAILS_PORTRAIT_TAG)
-                    if (addPropertyFragment == null) {
-                        startActivity(Intent(this, DetailsActivity::class.java))
+                MainViewAction.ShowDetailsPortrait -> showDetailsPortrait()
+
+                MainViewAction.ShowDetailsPortraitAndPhotosDialog -> {
+                    val detailsFragment = supportFragmentManager.findFragmentByTag(DETAILS_PORTRAIT_TAG)
+                    if (detailsFragment == null) {
+                        val intent = (Intent(this, DetailsActivity::class.java)).apply {
+                            putExtra("showPhotosDialog", true)
+                        }
+                        startActivity(intent)
                     }
                 }
 
-                MainViewAction.ShowPhotosDialog -> {
-                    val existingFragment = supportFragmentManager.findFragmentByTag(PHOTOS_DIALOG_TAG)
-                    if (existingFragment == null) {
+                MainViewAction.ShowDetailsTabletAndPhotosDialog -> {
+                    val existingDetailsFragment = supportFragmentManager.findFragmentByTag(DETAILS_TABLET_TAG)
+                    if (containerDetailsId != null && existingDetailsFragment == null) {
+                        supportFragmentManager.commitNow {
+                            setCustomAnimations(R.anim.slide_in_left, 0)
+                            replace(containerDetailsId, DetailsFragment(), DETAILS_TABLET_TAG)
+                        }
+                    }
+
+                    val existingPhotoFragment = supportFragmentManager.findFragmentByTag(PHOTOS_DIALOG_TAG)
+                    if (existingPhotoFragment == null) {
                         PhotosFragment().show(supportFragmentManager, PHOTOS_DIALOG_TAG)
                     }
                 }
+
+                MainViewAction.ClosePhotosDialogAndOpenDetailsPortrait -> showDetailsPortrait()
+
+                MainViewAction.ClosePhotosDialog -> {}
 
                 MainViewAction.ShowAddPropertyDialog -> {
                     val existingFragment = supportFragmentManager.findFragmentByTag(ADD_PROPERTY_DIALOG_TAG)
@@ -119,6 +136,13 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
             }
+        }
+    }
+
+    private fun showDetailsPortrait() {
+        val existingFragment = supportFragmentManager.findFragmentByTag(DETAILS_PORTRAIT_TAG)
+        if (existingFragment == null) {
+            startActivity(Intent(this, DetailsActivity::class.java))
         }
     }
 
