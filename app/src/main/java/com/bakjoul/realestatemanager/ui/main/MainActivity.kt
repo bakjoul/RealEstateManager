@@ -1,6 +1,7 @@
 package com.bakjoul.realestatemanager.ui.main
 
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -11,7 +12,6 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.core.view.MenuProvider
-import androidx.fragment.app.commitNow
 import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.databinding.ActivityMainBinding
 import com.bakjoul.realestatemanager.ui.add.AddPropertyFragment
@@ -49,12 +49,11 @@ class MainActivity : AppCompatActivity() {
         handleOnBackPressed()
 
         val containerDetailsId = binding.mainFrameLayoutContainerDetails?.id
-        // Empty fragment if in tablet mode
-        /*if (containerDetailsId != null &&  supportFragmentManager.findFragmentById(containerDetailsId) == null) {
+        if (containerDetailsId != null &&  supportFragmentManager.findFragmentById(containerDetailsId) == null) {
             supportFragmentManager.beginTransaction()
                 .replace(containerDetailsId, DetailsFragment())
                 .commitNow()
-        }*/
+        }
 
         val containerMainId = binding.mainFrameLayoutContainer.id
         if (savedInstanceState == null) {
@@ -66,7 +65,7 @@ class MainActivity : AppCompatActivity() {
         viewModel.mainViewActionLiveData.observeEvent(this) {
             Log.d("test", "main activity observed event: $it")
             when (it) {
-                MainViewAction.ShowDetailsTablet -> {
+                /*MainViewAction.ShowDetailsTablet -> {
                     val existingFragment = supportFragmentManager.findFragmentByTag(DETAILS_TABLET_TAG)
                     if (containerDetailsId != null && existingFragment == null) {
                         supportFragmentManager.commitNow {
@@ -83,7 +82,7 @@ class MainActivity : AppCompatActivity() {
                             .remove(existingFragment)
                             .commitNow()
                     }
-                }
+                }*/
 
                 MainViewAction.ShowDetailsPortrait -> {
                     val addPropertyFragment = supportFragmentManager.findFragmentByTag(DETAILS_PORTRAIT_TAG)
@@ -171,6 +170,13 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         })
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+
+        (supportFragmentManager.findFragmentByTag(PHOTOS_DIALOG_TAG) as PhotosFragment?)?.dismiss()
+        recreate()
     }
 
     override fun onResume() {

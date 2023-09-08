@@ -51,12 +51,12 @@ class MainViewModel @Inject constructor(
         ) { isTablet, navigation ->
             val viewAction = when (navigation) {
                 is To.Details -> if (isTablet) {
-                    MainViewAction.ShowDetailsTablet
+                    null//MainViewAction.ShowDetailsTablet
                 } else {
                     MainViewAction.ShowDetailsPortrait
                 }
                 is To.CloseDetails -> if (isTablet) {
-                    MainViewAction.CloseDetailsTablet
+                    null//MainViewAction.CloseDetailsTablet
                 } else {
                     null
                 }
@@ -70,7 +70,7 @@ class MainViewModel @Inject constructor(
                 is To.Settings -> MainViewAction.ShowSettings
                 is To.CloseSettings -> {
                     if (!isTablet) {
-                        MainViewAction.CloseDetailsTablet
+                        null//MainViewAction.CloseDetailsTablet
                     } else {
                         null
                     }

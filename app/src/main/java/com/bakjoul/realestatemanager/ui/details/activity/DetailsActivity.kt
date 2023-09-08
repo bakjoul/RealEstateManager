@@ -1,5 +1,6 @@
 package com.bakjoul.realestatemanager.ui.details.activity
 
+import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.viewModels
@@ -25,9 +26,9 @@ class DetailsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        if (resources.getBoolean(R.bool.isTablet)) {
+        /*if (resources.getBoolean(R.bool.isTablet)) {
             finish()
-        }
+        }*/
 
         setContentView(binding.root)
 
@@ -52,6 +53,15 @@ class DetailsActivity : AppCompatActivity() {
                     finish()
                 }
             }
+        }
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            Log.d("test", "onConfigurationChanged: ")
+            viewModel.onConfigurationChanged()
         }
     }
 

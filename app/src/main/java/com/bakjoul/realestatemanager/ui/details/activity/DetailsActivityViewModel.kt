@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import com.bakjoul.realestatemanager.domain.navigation.GetCurrentNavigationUseCase
+import com.bakjoul.realestatemanager.domain.navigation.NavigateUseCase
 import com.bakjoul.realestatemanager.domain.navigation.model.To
 import com.bakjoul.realestatemanager.domain.resources.IsTabletUseCase
 import com.bakjoul.realestatemanager.domain.resources.RefreshOrientationUseCase
@@ -18,7 +19,8 @@ import javax.inject.Inject
 class DetailsActivityViewModel @Inject constructor(
     isTabletUseCase: IsTabletUseCase,
     getCurrentNavigationUseCase: GetCurrentNavigationUseCase,
-    private val refreshOrientationUseCase: RefreshOrientationUseCase
+    private val refreshOrientationUseCase: RefreshOrientationUseCase,
+    private val navigateUseCase: NavigateUseCase
 ) : ViewModel() {
 
     val detailsActivityViewActionLiveData: LiveData<Event<DetailsActivityViewAction>> =
@@ -41,5 +43,9 @@ class DetailsActivityViewModel @Inject constructor(
 
     fun onResume(isTablet: Boolean) {
         refreshOrientationUseCase.invoke(isTablet)
+    }
+
+    fun onConfigurationChanged() {
+        navigateUseCase.invoke(To.CloseDetails)
     }
 }
