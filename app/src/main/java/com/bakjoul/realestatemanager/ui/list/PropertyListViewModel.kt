@@ -5,7 +5,6 @@ import android.graphics.Typeface
 import android.text.SpannableString
 import android.text.SpannableStringBuilder
 import android.text.style.StyleSpan
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
@@ -83,7 +82,6 @@ class PropertyListViewModel @Inject constructor(
                     isSold = it.saleDate != null,
                     onPropertyClicked = EquatableCallback {
                         setCurrentPropertyIdUseCase.invoke(it.id)
-                        Log.d("test", "it.id: ${it.id}")
                         navigateUseCase.invoke(To.Details)
                     }
                 )
