@@ -35,12 +35,8 @@
         </activity>
         <activity
             android:name=".ui.main.MainActivity"
-            android:configChanges="orientation|screenSize"
             android:exported="true"
             android:theme="@style/Theme.RealEstateManager" />
-        <activity
-            android:name=".ui.details.activity.DetailsActivity"
-            android:configChanges="orientation|screenSize" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"

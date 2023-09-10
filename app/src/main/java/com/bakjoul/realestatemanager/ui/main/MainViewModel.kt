@@ -51,29 +51,27 @@ class MainViewModel @Inject constructor(
         ) { isTablet, navigation ->
             val viewAction = when (navigation) {
                 is To.Details -> if (isTablet) {
-                    null//MainViewAction.ShowDetailsTablet
+                    MainViewAction.ShowDetailsTablet
                 } else {
                     MainViewAction.ShowDetailsPortrait
                 }
                 is To.CloseDetails -> if (isTablet) {
-                    null//MainViewAction.CloseDetailsTablet
+                    MainViewAction.CloseDetailsTablet
                 } else {
-                    null
+                    MainViewAction.CloseDetailsPortrait
                 }
-                is To.PhotosDialog -> if (isTablet) {
-                    MainViewAction.ShowPhotosDialog
-                } else {
-                    null
-                }
+                is To.PhotosDialog -> MainViewAction.ShowPhotosDialog
                 is To.AddProperty -> MainViewAction.ShowAddPropertyDialog
                 is To.Dispatcher -> MainViewAction.ReturnToDispatcher
-                is To.Settings -> MainViewAction.ShowSettings
-                is To.CloseSettings -> {
-                    if (!isTablet) {
-                        null//MainViewAction.CloseDetailsTablet
-                    } else {
-                        null
-                    }
+                is To.Settings -> if (isTablet) {
+                    MainViewAction.ShowSettingsAndHideDetailsPortrait
+                } else {
+                    MainViewAction.ShowSettings
+                }
+                is To.CloseSettings -> if (isTablet) {
+                    null
+                } else {
+                    MainViewAction.CloseSettingsAndShowDetailsPortrait
                 }
                 else -> null
             }
