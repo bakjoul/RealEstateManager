@@ -126,6 +126,8 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 MainViewAction.ShowAddPropertyDialog -> {
+                    showDetailsPortraitIfNeeded(containerMainId)
+
                     val existingFragment = supportFragmentManager.findFragmentByTag(ADD_PROPERTY_DIALOG_TAG)
                     if (existingFragment == null) {
                         AddPropertyFragment().show(supportFragmentManager, ADD_PROPERTY_DIALOG_TAG)
@@ -171,19 +173,36 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 MainViewAction.CloseSettingsAndShowDetailsPortrait -> {
+                    showDetailsPortraitIfNeeded(containerMainId)
+                }
+
+                MainViewAction.CloseAddPropertyDialogAndShowDetailsPortrait -> {
+                    showDetailsPortraitIfNeeded(containerMainId)
+                }
+
+                MainViewAction.CloseAddPropertyDialogAndHideDetailsPortrait -> {
                     val detailsPortraitFragment = supportFragmentManager.findFragmentByTag(DETAILS_PORTRAIT_TAG)
-                    val detailsTabletFragment = supportFragmentManager.findFragmentByTag(DETAILS_TABLET_TAG)
-                    Log.d("test", "onCreate: $detailsPortraitFragment $detailsTabletFragment")
-                    if (detailsPortraitFragment == null && detailsTabletFragment != null) {
-                        supportFragmentManager.commit {
-                            add(containerMainId, DetailsFragment(), DETAILS_PORTRAIT_TAG)
-                            addToBackStack(DETAILS_PORTRAIT_TAG)
-                        }
-                    } else if (detailsPortraitFragment != null && detailsPortraitFragment.isHidden) {
-                        supportFragmentManager.commit { show(detailsPortraitFragment) }
+                    if (detailsPortraitFragment != null) {
+                        supportFragmentManager.commit { hide(detailsPortraitFragment) }
                     }
                 }
             }
+        }
+    }
+
+    private fun showDetailsPortraitIfNeeded(containerMainId: Int) {
+        val detailsPortraitFragment = supportFragmentManager.findFragmentByTag(DETAILS_PORTRAIT_TAG)
+        val detailsTabletFragment = supportFragmentManager.findFragmentByTag(DETAILS_TABLET_TAG)
+
+        if (detailsPortraitFragment == null && detailsTabletFragment != null && !detailsTabletFragment.isVisible) {
+            Log.d("test", "showDetailsPortraitIfNeeded: CAS 1")
+            supportFragmentManager.commit {
+                add(containerMainId, DetailsFragment(), DETAILS_PORTRAIT_TAG)
+                addToBackStack(DETAILS_PORTRAIT_TAG)
+            }
+        } else if (detailsPortraitFragment != null && detailsPortraitFragment.isHidden && detailsTabletFragment != null && !detailsTabletFragment.isVisible) {
+            Log.d("test", "showDetailsPortraitIfNeeded: CAS 2")
+            supportFragmentManager.commit { show(detailsPortraitFragment) }
         }
     }
 
