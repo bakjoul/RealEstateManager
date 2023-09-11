@@ -1,6 +1,7 @@
 package com.bakjoul.realestatemanager.ui.settings
 
 import android.app.Dialog
+import android.content.DialogInterface
 import android.os.Bundle
 import android.util.Log
 import android.view.Gravity
@@ -105,6 +106,12 @@ class SettingsFragment : DialogFragment(R.layout.fragment_settings) {
                 dismiss()
             }
         }
+    }
+
+    override fun onCancel(dialog: DialogInterface) {
+        super.onCancel(dialog)
+
+        viewModel.onCloseButtonClicked()
     }
 
     private fun setToolbar() {

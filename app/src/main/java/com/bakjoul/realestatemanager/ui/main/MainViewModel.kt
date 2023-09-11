@@ -60,7 +60,11 @@ class MainViewModel @Inject constructor(
                 } else {
                     MainViewAction.CloseDetailsPortrait
                 }
-                is To.PhotosDialog -> MainViewAction.ShowPhotosDialog
+                is To.PhotosDialog -> if (isTablet) {
+                    MainViewAction.ShowPhotosDialogAndHideDetailsPortrait
+                } else {
+                    MainViewAction.ShowPhotosDialog
+                }
                 is To.AddProperty -> MainViewAction.ShowAddPropertyDialog
                 is To.CloseAddProperty -> if (isTablet) {
                     MainViewAction.HideDetailsPortrait

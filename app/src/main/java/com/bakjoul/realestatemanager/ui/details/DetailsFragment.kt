@@ -15,6 +15,8 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -156,7 +158,12 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
     private fun handleOnBackPressed() {
         requireActivity().onBackPressedDispatcher.addCallback(requireActivity(), object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                viewModel.onBackButtonPressed()
+                val drawer: DrawerLayout = requireActivity().findViewById(R.id.main_DrawerLayout)
+                if (drawer.isDrawerOpen(GravityCompat.END)) {
+                    drawer.closeDrawer(GravityCompat.END)
+                } else {
+                    viewModel.onBackButtonPressed()
+                }
             }
         })
     }

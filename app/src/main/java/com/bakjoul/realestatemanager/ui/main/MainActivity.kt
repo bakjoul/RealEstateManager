@@ -78,7 +78,11 @@ class MainActivity : AppCompatActivity() {
                 MainViewAction.CloseDetailsTablet -> {
                     val existingFragment = supportFragmentManager.findFragmentByTag(DETAILS_TABLET_TAG)
                     if (existingFragment != null) {
-                        supportFragmentManager.commit { remove(existingFragment) }
+                        supportFragmentManager.commit {
+                            setCustomAnimations(0, R.anim.slide_out_left)
+                            remove(existingFragment)
+                        }
+                        handleOnBackPressed()
                     }
                 }
 
@@ -106,6 +110,7 @@ class MainActivity : AppCompatActivity() {
                             setCustomAnimations(0, R.anim.slide_out_right)
                             remove(detailsPortraitFragment)
                         }
+                        handleOnBackPressed()
                     }
 
                     val detailsTabletFragment = supportFragmentManager.findFragmentByTag(DETAILS_TABLET_TAG)
@@ -115,10 +120,14 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 MainViewAction.ShowPhotosDialog -> {
-                    val existingFragment = supportFragmentManager.findFragmentByTag(PHOTOS_DIALOG_TAG)
-                    if (existingFragment == null) {
-                        PhotosFragment().show(supportFragmentManager, PHOTOS_DIALOG_TAG)
-                    }
+                    showDetailsPortraitIfNeeded(containerMainId)
+                    showPhotosDialog()
+                }
+
+                MainViewAction.ShowPhotosDialogAndHideDetailsPortrait -> {
+                    val detailsPortraitFragment = hideDetailsPortrait()
+                    showDetailsTabletIfNeeded(containerDetailsId, detailsPortraitFragment)
+                    showPhotosDialog()
                 }
 
                 MainViewAction.ShowAddPropertyDialog -> {
@@ -143,19 +152,8 @@ class MainActivity : AppCompatActivity() {
                 MainViewAction.ShowSettingsAndHideDetailsPortrait -> {
                     binding.mainDrawerLayout.closeDrawer(GravityCompat.END)
 
-                    // Hide details portrait to show properties list
                     val detailsPortraitFragment = hideDetailsPortrait()
-
-                    // Show details tablet if needed
-                    val detailsTabletFragment = supportFragmentManager.findFragmentByTag(DETAILS_TABLET_TAG)
-                    if (containerDetailsId != null && detailsPortraitFragment != null && detailsTabletFragment == null) {
-                        supportFragmentManager.commit {
-                            setCustomAnimations(R.anim.slide_in_left, 0)
-                            replace(containerDetailsId, DetailsFragment(), DETAILS_TABLET_TAG)
-                        }
-                    }
-
-                    // Show settings
+                    showDetailsTabletIfNeeded(containerDetailsId, detailsPortraitFragment)
                     showSettings()
                 }
 
@@ -174,6 +172,16 @@ class MainActivity : AppCompatActivity() {
         return detailsPortraitFragment
     }
 
+    private fun showDetailsTabletIfNeeded(containerDetailsId: Int?, detailsPortraitFragment: Fragment?) {
+        val detailsTabletFragment = supportFragmentManager.findFragmentByTag(DETAILS_TABLET_TAG)
+        if (containerDetailsId != null && detailsPortraitFragment != null && detailsTabletFragment == null) {
+            supportFragmentManager.commit {
+                setCustomAnimations(R.anim.slide_in_left, 0)
+                replace(containerDetailsId, DetailsFragment(), DETAILS_TABLET_TAG)
+            }
+        }
+    }
+
     private fun showDetailsPortraitIfNeeded(containerMainId: Int) {
         val detailsPortraitFragment = supportFragmentManager.findFragmentByTag(DETAILS_PORTRAIT_TAG)
         val detailsTabletFragment = supportFragmentManager.findFragmentByTag(DETAILS_TABLET_TAG)
@@ -185,6 +193,13 @@ class MainActivity : AppCompatActivity() {
             }
         } else if (detailsPortraitFragment != null && detailsPortraitFragment.isHidden && detailsTabletFragment != null && !detailsTabletFragment.isVisible) {
             supportFragmentManager.commit { show(detailsPortraitFragment) }
+        }
+    }
+
+    private fun showPhotosDialog() {
+        val existingFragment = supportFragmentManager.findFragmentByTag(PHOTOS_DIALOG_TAG)
+        if (existingFragment == null) {
+            PhotosFragment().show(supportFragmentManager, PHOTOS_DIALOG_TAG)
         }
     }
 
