@@ -9,5 +9,5 @@ interface PropertyRepository {
 
     fun getPropertiesFlow(): Flow<List<PropertyEntity>>
 
-    fun getPropertyById(id: Long): PropertyEntity?
+    fun getPropertyById(id: Long): Flow<PropertyEntity?>
 }

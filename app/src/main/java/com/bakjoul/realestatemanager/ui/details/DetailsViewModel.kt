@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import com.bakjoul.realestatemanager.BuildConfig
 import com.bakjoul.realestatemanager.R
-import com.bakjoul.realestatemanager.data.property.model.PropertyPoi
+import com.bakjoul.realestatemanager.domain.property.model.PropertyPoiEntity
 import com.bakjoul.realestatemanager.domain.CoroutineDispatcherProvider
 import com.bakjoul.realestatemanager.domain.currency_rate.GetEuroRateUseCase
 import com.bakjoul.realestatemanager.domain.current_photo.SetCurrentPhotoIdUseCase
@@ -24,6 +24,7 @@ import com.bakjoul.realestatemanager.ui.utils.ViewModelUtils.Companion.formatSur
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.onStart
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -68,16 +69,16 @@ class DetailsViewModel @Inject constructor(
                 rooms = property.rooms.toString(),
                 bedrooms = property.bedrooms.toString(),
                 bathrooms = property.bathrooms.toString(),
-                poiSchool = property.amenities.contains(PropertyPoi.School),
-                poiStore = property.amenities.contains(PropertyPoi.Store),
-                poiPark = property.amenities.contains(PropertyPoi.Park),
-                poiRestaurant = property.amenities.contains(PropertyPoi.Restaurant),
-                poiHospital = property.amenities.contains(PropertyPoi.Hospital),
-                poiBus = property.amenities.contains(PropertyPoi.Bus),
-                poiSubway = property.amenities.contains(PropertyPoi.Subway),
-                poiTramway = property.amenities.contains(PropertyPoi.Tramway),
-                poiTrain = property.amenities.contains(PropertyPoi.Train),
-                poiAirport = property.amenities.contains(PropertyPoi.Airport),
+                poiSchool = property.amenities.contains(PropertyPoiEntity.School),
+                poiStore = property.amenities.contains(PropertyPoiEntity.Store),
+                poiPark = property.amenities.contains(PropertyPoiEntity.Park),
+                poiRestaurant = property.amenities.contains(PropertyPoiEntity.Restaurant),
+                poiHospital = property.amenities.contains(PropertyPoiEntity.Hospital),
+                poiBus = property.amenities.contains(PropertyPoiEntity.Bus),
+                poiSubway = property.amenities.contains(PropertyPoiEntity.Subway),
+                poiTramway = property.amenities.contains(PropertyPoiEntity.Tramway),
+                poiTrain = property.amenities.contains(PropertyPoiEntity.Train),
+                poiAirport = property.amenities.contains(PropertyPoiEntity.Airport),
                 location = formatLocation(property.fullAddress.address, formatApartment(property.fullAddress.apartment), property.fullAddress.city, property.fullAddress.zipcode, property.fullAddress.country),
                 medias = mapPhotosToItemViewStates(property.photos),
                 clipboardAddress = getClipboardAddress(property.fullAddress.address, property.fullAddress.city, property.fullAddress.country),

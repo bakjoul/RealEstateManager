@@ -8,8 +8,8 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
 import com.bakjoul.realestatemanager.R
-import com.bakjoul.realestatemanager.data.property.model.PropertyPoi
-import com.bakjoul.realestatemanager.data.property.model.PropertyType
+import com.bakjoul.realestatemanager.domain.property.model.PropertyPoiEntity
+import com.bakjoul.realestatemanager.domain.property.model.PropertyTypeEntity
 import com.bakjoul.realestatemanager.data.settings.model.AppCurrency
 import com.bakjoul.realestatemanager.data.settings.model.SurfaceUnit
 import com.bakjoul.realestatemanager.domain.autocomplete.GetAddressPredictionsUseCase
@@ -60,7 +60,7 @@ class AddPropertyViewModel @Inject constructor(
     getCurrentNavigationUseCase: GetCurrentNavigationUseCase
 ) : ViewModel() {
 
-    private val propertyTypeMutableStateFlow: MutableStateFlow<PropertyType?> = MutableStateFlow(null)
+    private val propertyTypeEntityMutableStateFlow: MutableStateFlow<PropertyTypeEntity?> = MutableStateFlow(null)
     private val dateMutableStateFlow: MutableStateFlow<LocalDate?> = MutableStateFlow(null)
     private val isForSaleMutableStateFlow: MutableStateFlow<Boolean> = MutableStateFlow(true)
     private val priceMutableStateFlow: MutableStateFlow<BigDecimal> = MutableStateFlow(BigDecimal.ZERO)
@@ -68,7 +68,7 @@ class AddPropertyViewModel @Inject constructor(
     private val numberOfRoomsMutableStateFlow: MutableStateFlow<Int> = MutableStateFlow(0)
     private val numberOfBathroomsMutableStateFlow: MutableStateFlow<Int> = MutableStateFlow(0)
     private val numberOfBedroomsMutableStateFlow: MutableStateFlow<Int> = MutableStateFlow(0)
-    private val poiListMutableStateFlow: MutableStateFlow<Collection<PropertyPoi>> = MutableStateFlow(emptyList())
+    private val poiListMutableStateFlow: MutableStateFlow<Collection<PropertyPoiEntity>> = MutableStateFlow(emptyList())
     private val currentAddressInputMutableStateFlow: MutableStateFlow<String?> = MutableStateFlow(null)
     private val addressPredictionsFlow: Flow<AutocompleteWrapper?> = currentAddressInputMutableStateFlow
         .transformLatest { input ->
@@ -102,7 +102,7 @@ class AddPropertyViewModel @Inject constructor(
         combine(
             getCurrentCurrencyUseCase.invoke(),
             getCurrentSurfaceUnitUseCase.invoke(),
-            propertyTypeMutableStateFlow,
+            propertyTypeEntityMutableStateFlow,
             isForSaleMutableStateFlow,
             surfaceMutableStateFlow,
             numberOfRoomsMutableStateFlow,
@@ -114,7 +114,7 @@ class AddPropertyViewModel @Inject constructor(
         ) { currency, surfaceUnit, propertyType, isForSale, surface, numberOfRooms, numberOfBathrooms, numberOfBedrooms, address, addressDetails, photos ->
             updateAddressData(addressDetails)
             AddPropertyViewState(
-                propertyType = propertyType,
+                propertyTypeEntity = propertyType,
                 dateHint = formatDateHint(isForSale),
                 priceHint = formatPriceHint(currency),
                 currencyFormat = getCurrencyFormat(currency),
@@ -255,13 +255,13 @@ class AddPropertyViewModel @Inject constructor(
     }
 
     fun onPropertyTypeChanged(checkedId: Int) {
-        propertyTypeMutableStateFlow.value = when (checkedId) {
-            R.id.add_property_type_flat_RadioButton -> PropertyType.Flat
-            R.id.add_property_type_house_RadioButton -> PropertyType.House
-            R.id.add_property_type_duplex_RadioButton -> PropertyType.Duplex
-            R.id.add_property_type_penthouse_RadioButton -> PropertyType.Penthouse
-            R.id.add_property_type_loft_RadioButton -> PropertyType.Loft
-            R.id.add_property_type_other_RadioButton -> PropertyType.Other
+        propertyTypeEntityMutableStateFlow.value = when (checkedId) {
+            R.id.add_property_type_flat_RadioButton -> PropertyTypeEntity.Flat
+            R.id.add_property_type_house_RadioButton -> PropertyTypeEntity.House
+            R.id.add_property_type_duplex_RadioButton -> PropertyTypeEntity.Duplex
+            R.id.add_property_type_penthouse_RadioButton -> PropertyTypeEntity.Penthouse
+            R.id.add_property_type_loft_RadioButton -> PropertyTypeEntity.Loft
+            R.id.add_property_type_other_RadioButton -> PropertyTypeEntity.Other
             else -> null
         }
     }
@@ -342,16 +342,16 @@ class AddPropertyViewModel @Inject constructor(
 
     fun onChipCheckedChanged(chip: CompoundButton, isChecked: Boolean) {
         val poi = when (chip.text) {
-            PropertyPoi.School.name -> PropertyPoi.School
-            PropertyPoi.Store.name -> PropertyPoi.Store
-            PropertyPoi.Park.name -> PropertyPoi.Park
-            PropertyPoi.Restaurant.name -> PropertyPoi.Restaurant
-            PropertyPoi.Hospital.name -> PropertyPoi.Hospital
-            PropertyPoi.Bus.name -> PropertyPoi.Bus
-            PropertyPoi.Subway.name -> PropertyPoi.Subway
-            PropertyPoi.Tramway.name -> PropertyPoi.Tramway
-            PropertyPoi.Train.name -> PropertyPoi.Train
-            PropertyPoi.Airport.name -> PropertyPoi.Airport
+            PropertyPoiEntity.School.name -> PropertyPoiEntity.School
+            PropertyPoiEntity.Store.name -> PropertyPoiEntity.Store
+            PropertyPoiEntity.Park.name -> PropertyPoiEntity.Park
+            PropertyPoiEntity.Restaurant.name -> PropertyPoiEntity.Restaurant
+            PropertyPoiEntity.Hospital.name -> PropertyPoiEntity.Hospital
+            PropertyPoiEntity.Bus.name -> PropertyPoiEntity.Bus
+            PropertyPoiEntity.Subway.name -> PropertyPoiEntity.Subway
+            PropertyPoiEntity.Tramway.name -> PropertyPoiEntity.Tramway
+            PropertyPoiEntity.Train.name -> PropertyPoiEntity.Train
+            PropertyPoiEntity.Airport.name -> PropertyPoiEntity.Airport
             else -> null
         }
 

@@ -7,8 +7,8 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.bakjoul.realestatemanager.data.photos.PhotoDao
 import com.bakjoul.realestatemanager.data.property.PropertyDao
-import com.bakjoul.realestatemanager.data.property.model.PropertyDtoEntity
-import com.bakjoul.realestatemanager.data.photos.model.PhotoDtoEntity
+import com.bakjoul.realestatemanager.data.property.model.PropertyDto
+import com.bakjoul.realestatemanager.data.photos.model.PhotoDto
 import com.bakjoul.realestatemanager.data.utils.fromJson
 import com.bakjoul.realestatemanager.domain.CoroutineDispatcherProvider
 import com.google.gson.Gson
@@ -38,8 +38,8 @@ class InitializeDatabaseWorker @AssistedInject constructor(
         val photosAsJson = inputData.getString(KEY_INPUT_DATA_PHOTOS)
 
         if (propertiesAsJson != null && photosAsJson != null) {
-            val propertyEntities = gson.fromJson<List<PropertyDtoEntity>>(json = propertiesAsJson)
-            val photosEntities = gson.fromJson<List<PhotoDtoEntity>>(json = photosAsJson)
+            val propertyEntities = gson.fromJson<List<PropertyDto>>(json = propertiesAsJson)
+            val photosEntities = gson.fromJson<List<PhotoDto>>(json = photosAsJson)
 
             if (propertyEntities != null && photosEntities != null) {
                 val propertyJobs = propertyEntities.map { propertyEntity ->

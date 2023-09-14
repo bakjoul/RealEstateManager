@@ -1,6 +1,7 @@
-package com.bakjoul.realestatemanager.data.property.model
+package com.bakjoul.realestatemanager.domain.property.model
 
-enum class PropertyPoi {
+// TODO Majs
+enum class PropertyPoiEntity {
     Airport,
     Bus,
     Hospital,

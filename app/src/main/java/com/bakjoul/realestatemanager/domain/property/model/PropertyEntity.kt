@@ -1,7 +1,5 @@
 package com.bakjoul.realestatemanager.domain.property.model
 
-import com.bakjoul.realestatemanager.data.property.model.PropertyAddress
-import com.bakjoul.realestatemanager.data.property.model.PropertyPoi
 import com.bakjoul.realestatemanager.domain.photos.model.PhotoEntity
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -16,8 +14,8 @@ data class PropertyEntity(
     val rooms: Int,
     val bathrooms: Int,
     val bedrooms: Int,
-    val amenities: List<PropertyPoi>,
-    val fullAddress: PropertyAddress,
+    val amenities: List<PropertyPoiEntity>,
+    val fullAddress: PropertyAddressEntity,
     val latitude: Double,
     val longitude: Double,
     val description: String,

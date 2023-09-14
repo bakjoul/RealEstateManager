@@ -1,6 +1,6 @@
-package com.bakjoul.realestatemanager.data.property.model
+package com.bakjoul.realestatemanager.domain.property.model
 
-data class PropertyAddress (
+data class PropertyAddressEntity (
     val address: String,
     val apartment: String,
     val zipcode: String,

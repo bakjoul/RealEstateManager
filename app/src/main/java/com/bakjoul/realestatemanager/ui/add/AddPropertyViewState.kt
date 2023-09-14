@@ -1,10 +1,10 @@
 package com.bakjoul.realestatemanager.ui.add
 
-import com.bakjoul.realestatemanager.data.property.model.PropertyType
+import com.bakjoul.realestatemanager.domain.property.model.PropertyTypeEntity
 import java.text.DecimalFormat
 
 data class AddPropertyViewState(
-    val propertyType: PropertyType?,
+    val propertyTypeEntity: PropertyTypeEntity?,
     val dateHint: String,
     val priceHint: String,
     val currencyFormat: DecimalFormat,

@@ -77,10 +77,10 @@ class MainViewModel @Inject constructor(
                 } else {
                     MainViewAction.ShowSettings
                 }
-                is To.CloseSettings -> if (isTablet) {
-                    null
-                } else {
+                is To.CloseSettings -> if (!isTablet) {
                     MainViewAction.ShowDetailsPortraitIfNeeded
+                } else {
+                    null
                 }
                 else -> null
             }

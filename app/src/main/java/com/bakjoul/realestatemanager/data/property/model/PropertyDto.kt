@@ -7,7 +7,7 @@ import java.math.BigDecimal
 import java.time.LocalDate
 
 @Entity(tableName = "properties")
-data class PropertyDtoEntity(
+data class PropertyDto(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val type: String,
     @ColumnInfo("on_sale_since") val entryDate: LocalDate,

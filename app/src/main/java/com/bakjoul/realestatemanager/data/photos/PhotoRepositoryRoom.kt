@@ -1,7 +1,7 @@
 package com.bakjoul.realestatemanager.data.photos
 
 import com.bakjoul.realestatemanager.data.photos.model.PendingPhotoDtoEntity
-import com.bakjoul.realestatemanager.data.photos.model.PhotoDtoEntity
+import com.bakjoul.realestatemanager.data.photos.model.PhotoDto
 import com.bakjoul.realestatemanager.domain.CoroutineDispatcherProvider
 import com.bakjoul.realestatemanager.domain.photos.PhotoRepository
 import com.bakjoul.realestatemanager.domain.photos.model.PhotoEntity
@@ -47,15 +47,15 @@ class PhotoRepositoryRoom @Inject constructor(
     }
 
     // region Mapping
-    private fun mapToPhotoDtoEntity(photoEntity: PhotoEntity): PhotoDtoEntity =
-        PhotoDtoEntity(
+    private fun mapToPhotoDtoEntity(photoEntity: PhotoEntity): PhotoDto =
+        PhotoDto(
             propertyId = photoEntity.propertyId,
             url = photoEntity.url,
             description = photoEntity.description
         )
 
-    private fun mapPhotoDtoToDomainEntities(photoDtoEntityList: List<PhotoDtoEntity>) =
-        photoDtoEntityList.mapIndexed { index, photoDtoEntity ->
+    private fun mapPhotoDtoToDomainEntities(photoDtoList: List<PhotoDto>) =
+        photoDtoList.mapIndexed { index, photoDtoEntity ->
             PhotoEntity(
                 id = index.toLong(),
                 propertyId = photoDtoEntity.propertyId,

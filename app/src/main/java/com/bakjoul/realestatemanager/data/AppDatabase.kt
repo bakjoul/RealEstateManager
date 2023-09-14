@@ -13,9 +13,9 @@ import com.bakjoul.realestatemanager.data.photos.PendingPhotoDao
 import com.bakjoul.realestatemanager.data.photos.PhotoDao
 import com.bakjoul.realestatemanager.data.photos.model.PendingPhotoDtoEntity
 import com.bakjoul.realestatemanager.data.property.PropertyDao
-import com.bakjoul.realestatemanager.data.property.model.PropertyDtoEntity
-import com.bakjoul.realestatemanager.data.photos.model.PhotoDtoEntity
-import com.bakjoul.realestatemanager.data.property.model.PropertyType
+import com.bakjoul.realestatemanager.data.property.model.PropertyDto
+import com.bakjoul.realestatemanager.data.photos.model.PhotoDto
+import com.bakjoul.realestatemanager.domain.property.model.PropertyTypeEntity
 import com.bakjoul.realestatemanager.data.utils.type_converters.BigDecimalTypeConverter
 import com.bakjoul.realestatemanager.data.utils.type_converters.LocalDateTypeConverter
 import com.google.gson.Gson
@@ -24,8 +24,8 @@ import java.time.LocalDate
 
 @Database(
     entities = [
-        PropertyDtoEntity::class,
-        PhotoDtoEntity::class,
+        PropertyDto::class,
+        PhotoDto::class,
         PendingPhotoDtoEntity::class
     ],
     version = 1,
@@ -59,9 +59,9 @@ abstract class AppDatabase : RoomDatabase() {
                 override fun onCreate(db: SupportSQLiteDatabase) {
                     val propertiesAsJson = gson.toJson(
                         listOf(
-                            PropertyDtoEntity(
+                            PropertyDto(
                                 id = 1,
-                                type = PropertyType.Flat.name,
+                                type = PropertyTypeEntity.Flat.name,
                                 entryDate = LocalDate.parse("2023-01-01"),
                                 saleDate = LocalDate.parse("2023-01-02"),
                                 price = BigDecimal(100000),
@@ -90,9 +90,9 @@ abstract class AppDatabase : RoomDatabase() {
                                 description = "Anchored by a vast marble gallery with sweeping staircase, the entertaining floor includes a baronial living room facing Park Avenue, handsome library with original paneling, and tremendous dining room; all of which enjoy fireplaces. The state-of-the-art St. Charles designed kitchen includes a sunny breakfast room and staff quarters. Upstairs, the expansive master suite overlooks Park Avenue and includes two marble baths, two dressing rooms, and two offices. Additionally there are three large bedrooms with en-suite baths and a media room.",
                                 agent = "John Doe"
                             ),
-                            PropertyDtoEntity(
+                            PropertyDto(
                                 id = 2,
-                                type = PropertyType.House.name,
+                                type = PropertyTypeEntity.House.name,
                                 entryDate = LocalDate.parse("2023-02-01"),
                                 saleDate = null,
                                 price = BigDecimal(200000),
@@ -121,9 +121,9 @@ abstract class AppDatabase : RoomDatabase() {
                                 description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec euismod, nisl eget ultricies ultrices, nisl nisl aliquam",
                                 agent = "Jane Doe"
                             ),
-                            PropertyDtoEntity(
+                            PropertyDto(
                                 id = 3,
-                                type = PropertyType.Duplex.name,
+                                type = PropertyTypeEntity.Duplex.name,
                                 entryDate = LocalDate.parse("2023-04-01"),
                                 saleDate = null,
                                 price = BigDecimal(300000),
@@ -157,37 +157,37 @@ abstract class AppDatabase : RoomDatabase() {
 
                     val photosAsJson = gson.toJson(
                         listOf(
-                            PhotoDtoEntity(
+                            PhotoDto(
                                 propertyId = 1,
                                 url = "android.resource://com.bakjoul.realestatemanager/drawable/penthouse_upper_east_side",
                                 description = "Lounge"
                             ),
-                            PhotoDtoEntity(
+                            PhotoDto(
                                 propertyId = 1,
                                 url = "android.resource://com.bakjoul.realestatemanager/drawable/penthouse_upper_east_side",
                                 description = "Lounge"
                             ),
-                            PhotoDtoEntity(
+                            PhotoDto(
                                 propertyId = 1,
                                 url = "android.resource://com.bakjoul.realestatemanager/drawable/penthouse_upper_east_side",
                                 description = "Lounge"
                             ),
-                            PhotoDtoEntity(
+                            PhotoDto(
                                 propertyId = 1,
                                 url = "android.resource://com.bakjoul.realestatemanager/drawable/penthouse_upper_east_side",
                                 description = "Lounge"
                             ),
-                            PhotoDtoEntity(
+                            PhotoDto(
                                 propertyId = 1,
                                 url = "android.resource://com.bakjoul.realestatemanager/drawable/penthouse_upper_east_side",
                                 description = "Lounge"
                             ),
-                            PhotoDtoEntity(
+                            PhotoDto(
                                 propertyId = 2,
                                 url = "android.resource://com.bakjoul.realestatemanager/drawable/penthouse_upper_east_side",
                                 description = "Lounge"
                             ),
-                            PhotoDtoEntity(
+                            PhotoDto(
                                 propertyId = 3,
                                 url = "android.resource://com.bakjoul.realestatemanager/drawable/penthouse_upper_east_side",
                                 description = "Lounge"
