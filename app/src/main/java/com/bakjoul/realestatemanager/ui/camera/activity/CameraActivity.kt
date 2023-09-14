@@ -3,6 +3,7 @@ package com.bakjoul.realestatemanager.ui.camera.activity
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.view.MotionEvent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -10,6 +11,7 @@ import com.bakjoul.realestatemanager.databinding.ActivityCameraBinding
 import com.bakjoul.realestatemanager.ui.camera.CameraFragment
 import com.bakjoul.realestatemanager.ui.camera.photo_preview.PhotoPreviewFragment
 import com.bakjoul.realestatemanager.ui.utils.Event.Companion.observeEvent
+import com.bakjoul.realestatemanager.ui.utils.hideKeyboard
 import com.bakjoul.realestatemanager.ui.utils.viewBinding
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -46,5 +48,13 @@ class CameraActivity : AppCompatActivity() {
                 CameraActivityViewAction.CloseCamera -> finish()
             }
         }
+    }
+
+    override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
+        if (currentFocus != null) {
+            hideKeyboard()
+            currentFocus!!.clearFocus()
+        }
+        return super.dispatchTouchEvent(ev)
     }
 }

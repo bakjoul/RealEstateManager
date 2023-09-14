@@ -62,30 +62,15 @@ class PropertyListViewModel @Inject constructor(
                     photoUrl = it.photos.first().url,
                     type = it.type,
                     city = it.fullAddress.city,
-                    features = formatFeatures(
-                        it.bedrooms,
-                        it.bathrooms,
-                        it.surface,
-                        surfaceUnit,
-                        isTablet
-                    ),
-                    price = formatPrice(
-                        it.price.toDouble(),    // TODO price format
-                        currency,
-                        euroRateWrapper.currencyRateEntity.rate
-                    ),
-                    currencyRate = formatRate(
-                        currency,
-                        euroRateWrapper.currencyRateEntity.rate,
-                        euroRateWrapper.currencyRateEntity.updateDate.format(dateFormatter)
-                    ),
+                    features = formatFeatures(it.bedrooms, it.bathrooms, it.surface, surfaceUnit, isTablet),
+                    price = formatPrice(it.price, currency, euroRateWrapper.currencyRateEntity.rate),
+                    currencyRate = formatRate(currency, euroRateWrapper.currencyRateEntity.rate, euroRateWrapper.currencyRateEntity.updateDate.format(dateFormatter)),
                     isSold = it.saleDate != null,
                     onPropertyClicked = EquatableCallback {
                         setCurrentPropertyIdUseCase.invoke(it.id)
                         navigateUseCase.invoke(To.Details)
                     }
                 )
-
             }
         }.collect { propertiesItemViewStates ->
             emit(propertiesItemViewStates)

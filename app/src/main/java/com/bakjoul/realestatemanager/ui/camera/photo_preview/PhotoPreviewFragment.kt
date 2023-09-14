@@ -2,7 +2,7 @@ package com.bakjoul.realestatemanager.ui.camera.photo_preview
 
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
+import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.bakjoul.realestatemanager.R
@@ -20,14 +20,18 @@ class PhotoPreviewFragment : Fragment(R.layout.fragment_photo_preview) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.photoPreviewDescriptionEditText.doAfterTextChanged {
+            viewModel.onDescriptionChanged(it)
+        }
+
         viewModel.viewStateLiveData.observe(viewLifecycleOwner) { viewState ->
             Glide.with(binding.photoPreview).load(viewState.photoUri).into(binding.photoPreview)
+            binding.photoPreviewDescription.error = viewState.descriptionError
 
-            binding.photoPreviewCancelButton.setOnClickListener { viewModel.onCancelButtonClicked(viewState.photoUri) }
+            binding.photoPreviewCancelButton.setOnClickListener { viewModel.onCancelButtonClicked() }
 
             binding.photoPreviewDoneButton.setOnClickListener {
-                // TODO CHECK IF DESCRIPTION IS NOT EMPTY
-                Toast.makeText(requireContext(), "Photo successfully added", Toast.LENGTH_SHORT).show()
+                //Toast.makeText(requireContext(), "Photo successfully added", Toast.LENGTH_SHORT).show()
 
                 viewModel.onDoneButtonClicked()
             }

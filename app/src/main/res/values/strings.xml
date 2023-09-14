@@ -85,4 +85,5 @@
     <string name="close_button">Close</string>
     <string name="add_property_title">Add a property</string>
     <string name="add_property_delete_photo_desc">Delete photo</string>
+    <string name="photo_preview_description_error">Please enter a description</string>
 </resources>

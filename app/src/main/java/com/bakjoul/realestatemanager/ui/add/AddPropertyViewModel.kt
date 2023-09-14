@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.liveData
+import androidx.lifecycle.viewModelScope
 import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.data.property.model.PropertyPoi
 import com.bakjoul.realestatemanager.data.property.model.PropertyType
@@ -19,6 +20,9 @@ import com.bakjoul.realestatemanager.domain.geocoding.model.GeocodingWrapper
 import com.bakjoul.realestatemanager.domain.navigation.GetCurrentNavigationUseCase
 import com.bakjoul.realestatemanager.domain.navigation.NavigateUseCase
 import com.bakjoul.realestatemanager.domain.navigation.model.To
+import com.bakjoul.realestatemanager.domain.photos.DeletePendingPhotoUseCase
+import com.bakjoul.realestatemanager.domain.photos.GetPendingPhotosUseCase
+import com.bakjoul.realestatemanager.domain.photos.model.PhotoEntity
 import com.bakjoul.realestatemanager.domain.settings.currency.GetCurrentCurrencyUseCase
 import com.bakjoul.realestatemanager.domain.settings.surface_unit.GetCurrentSurfaceUnitUseCase
 import com.bakjoul.realestatemanager.ui.utils.EquatableCallback
@@ -31,10 +35,15 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.transformLatest
+import kotlinx.coroutines.launch
+import java.math.BigDecimal
+import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.ZonedDateTime
+import java.util.Locale
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -45,6 +54,8 @@ class AddPropertyViewModel @Inject constructor(
     private val getCurrentSurfaceUnitUseCase: GetCurrentSurfaceUnitUseCase,
     private val getAddressPredictionsUseCase: GetAddressPredictionsUseCase,
     private val getAddressDetailsUseCase: GetAddressDetailsUseCase,
+    private val getPendingPhotosUseCase: GetPendingPhotosUseCase,
+    private val deletePendingPhotoUseCase: DeletePendingPhotoUseCase,
     private val navigateUseCase: NavigateUseCase,
     getCurrentNavigationUseCase: GetCurrentNavigationUseCase
 ) : ViewModel() {
@@ -52,6 +63,7 @@ class AddPropertyViewModel @Inject constructor(
     private val propertyTypeMutableStateFlow: MutableStateFlow<PropertyType?> = MutableStateFlow(null)
     private val dateMutableStateFlow: MutableStateFlow<LocalDate?> = MutableStateFlow(null)
     private val isForSaleMutableStateFlow: MutableStateFlow<Boolean> = MutableStateFlow(true)
+    private val priceMutableStateFlow: MutableStateFlow<BigDecimal> = MutableStateFlow(BigDecimal.ZERO)
     private val surfaceMutableStateFlow: MutableStateFlow<Double> = MutableStateFlow(0.0)
     private val numberOfRoomsMutableStateFlow: MutableStateFlow<Int> = MutableStateFlow(0)
     private val numberOfBathroomsMutableStateFlow: MutableStateFlow<Int> = MutableStateFlow(0)
@@ -97,13 +109,15 @@ class AddPropertyViewModel @Inject constructor(
             numberOfBathroomsMutableStateFlow,
             numberOfBedroomsMutableStateFlow,
             addressPredictionsFlow,
-            selectedAddressDetailsFlow
-        ) { currency, surfaceUnit, propertyType, isForSale, surface, numberOfRooms, numberOfBathrooms, numberOfBedrooms, address, addressDetails ->
+            selectedAddressDetailsFlow,
+            getPendingPhotosUseCase.invoke()
+        ) { currency, surfaceUnit, propertyType, isForSale, surface, numberOfRooms, numberOfBathrooms, numberOfBedrooms, address, addressDetails, photos ->
             updateAddressData(addressDetails)
             AddPropertyViewState(
                 propertyType = propertyType,
                 dateHint = formatDateHint(isForSale),
                 priceHint = formatPriceHint(currency),
+                currencyFormat = getCurrencyFormat(currency),
                 surfaceLabel = formatSurfaceLabel(surfaceUnit),
                 surface = formatSurfaceValue(surface),
                 numberOfRooms = numberOfRooms.toString(),
@@ -114,24 +128,34 @@ class AddPropertyViewModel @Inject constructor(
                 state = state,
                 city = city,
                 zipcode = zipcode,
-                photos = emptyList()//mapPhotosToItemViewStates(photos)
+                photos = mapPhotosToItemViewStates(photos)
             )
         }.collect {
             emit(it)
         }
     }
 
-    private fun mapPhotosToItemViewStates(photos: Map<String, String>): List<AddPropertyPhotoItemViewState> {
-        return photos.entries.mapIndexed { index, entry ->
+    private fun getCurrencyFormat(currency: AppCurrency): DecimalFormat {
+        val symbols = DecimalFormatSymbols(Locale.getDefault())
+        symbols.groupingSeparator = if (currency == AppCurrency.EUR) ' ' else ','
+        symbols.decimalSeparator = if (currency == AppCurrency.EUR) ',' else '.'
+
+        return DecimalFormat("#,###.##", symbols)
+    }
+
+    private fun mapPhotosToItemViewStates(photos: List<PhotoEntity>): List<AddPropertyPhotoItemViewState> {
+        return photos.map {
             AddPropertyPhotoItemViewState(
-                id = index.toLong(),
-                url = entry.key,
-                description = entry.value,
+                id = it.id,
+                url = it.url,
+                description = it.description,
                 onPhotoClicked = EquatableCallback {
                     // TODO
                 },
                 onDeletePhotoClicked = EquatableCallback {
-                    // TODO
+                    viewModelScope.launch {
+                        deletePendingPhotoUseCase.invoke(it.id)
+                    }
                 }
             )
         }

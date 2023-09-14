@@ -13,8 +13,8 @@ import com.bakjoul.realestatemanager.domain.current_photo.SetCurrentPhotoIdUseCa
 import com.bakjoul.realestatemanager.domain.current_property.ResetCurrentPropertyIdUseCase
 import com.bakjoul.realestatemanager.domain.navigation.NavigateUseCase
 import com.bakjoul.realestatemanager.domain.navigation.model.To
-import com.bakjoul.realestatemanager.domain.property.GetCurrentPropertyUseCase
 import com.bakjoul.realestatemanager.domain.photos.model.PhotoEntity
+import com.bakjoul.realestatemanager.domain.property.GetCurrentPropertyUseCase
 import com.bakjoul.realestatemanager.domain.settings.currency.GetCurrentCurrencyUseCase
 import com.bakjoul.realestatemanager.domain.settings.surface_unit.GetCurrentSurfaceUnitUseCase
 import com.bakjoul.realestatemanager.ui.common_model.PhotoItemViewState
@@ -59,7 +59,7 @@ class DetailsViewModel @Inject constructor(
             DetailsViewState(
                 mainPhotoUrl = property.photos.first().url,
                 type = property.type,
-                price = formatPrice(property.price.toDouble(), currency, euroRateWrapper.currencyRateEntity.rate),  // TODO price
+                price = formatPrice(property.price, currency, euroRateWrapper.currencyRateEntity.rate),
                 isSold = property.saleDate != null,
                 city = property.fullAddress.city,
                 sale_status = getSaleStatus(property.saleDate, property.entryDate),

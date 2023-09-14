@@ -35,9 +35,11 @@
         android:id="@+id/photo_preview_description"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="12dp"
-        android:layout_marginTop="12dp"
+        android:layout_marginHorizontal="8dp"
+        android:layout_marginTop="4dp"
         android:hint="@string/description_label"
+        android:textColorHint="@color/white"
+        app:boxStrokeColor="@drawable/photo_description_box_color"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/photo_preview_separator_Guideline">
@@ -46,8 +48,10 @@
             android:id="@+id/photo_preview_description_editText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:imeOptions="actionDone"
             android:inputType="textAutoCorrect|textCapSentences"
-            android:lines="1" />
+            android:lines="1"
+            android:textColor="@color/white" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <View
