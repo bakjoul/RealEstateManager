@@ -4,20 +4,20 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
-import com.bakjoul.realestatemanager.data.photos.model.PendingPhotoDtoEntity
+import com.bakjoul.realestatemanager.data.photos.model.PendingPhotoDto
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface PendingPhotoDao {
 
     @Insert
-    suspend fun insert(photo: PendingPhotoDtoEntity)
+    suspend fun insert(photo: PendingPhotoDto)
 
     @Query("SELECT EXISTS(SELECT id FROM pending_photos)")
     suspend fun hasPendingPhotos(): Boolean
 
     @Query("SELECT * FROM pending_photos")
-    fun getPendingPhotos(): Flow<List<PendingPhotoDtoEntity>>
+    fun getPendingPhotos(): Flow<List<PendingPhotoDto>>
 
     @Query("DELETE FROM pending_photos WHERE id = :id")
     suspend fun delete(id: Long)

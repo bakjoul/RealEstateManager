@@ -5,7 +5,6 @@ import com.bakjoul.realestatemanager.domain.property.model.PropertyEntity
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.mapLatest
 import javax.inject.Inject
 
 class GetCurrentPropertyUseCase @Inject constructor(
@@ -14,5 +13,5 @@ class GetCurrentPropertyUseCase @Inject constructor(
 ) {
     fun invoke(): Flow<PropertyEntity> = getCurrentPropertyIdUseCase.invoke().flatMapLatest {
         getPropertyByIdUseCase.invoke(it)
-    }.filterNotNull() // TODO Bakjoul null or not ?
+    }.filterNotNull()
 }

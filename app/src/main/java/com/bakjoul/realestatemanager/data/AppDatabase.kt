@@ -11,13 +11,13 @@ import androidx.work.WorkManager
 import androidx.work.workDataOf
 import com.bakjoul.realestatemanager.data.photos.PendingPhotoDao
 import com.bakjoul.realestatemanager.data.photos.PhotoDao
-import com.bakjoul.realestatemanager.data.photos.model.PendingPhotoDtoEntity
+import com.bakjoul.realestatemanager.data.photos.model.PendingPhotoDto
+import com.bakjoul.realestatemanager.data.photos.model.PhotoDto
 import com.bakjoul.realestatemanager.data.property.PropertyDao
 import com.bakjoul.realestatemanager.data.property.model.PropertyDto
-import com.bakjoul.realestatemanager.data.photos.model.PhotoDto
-import com.bakjoul.realestatemanager.domain.property.model.PropertyTypeEntity
 import com.bakjoul.realestatemanager.data.utils.type_converters.BigDecimalTypeConverter
 import com.bakjoul.realestatemanager.data.utils.type_converters.LocalDateTypeConverter
+import com.bakjoul.realestatemanager.domain.property.model.PropertyTypeEntity
 import com.google.gson.Gson
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -26,7 +26,7 @@ import java.time.LocalDate
     entities = [
         PropertyDto::class,
         PhotoDto::class,
-        PendingPhotoDtoEntity::class
+        PendingPhotoDto::class
     ],
     version = 1,
     exportSchema = false
@@ -61,7 +61,7 @@ abstract class AppDatabase : RoomDatabase() {
                         listOf(
                             PropertyDto(
                                 id = 1,
-                                type = PropertyTypeEntity.Flat.name,
+                                type = PropertyTypeEntity.FLAT.name,
                                 entryDate = LocalDate.parse("2023-01-01"),
                                 saleDate = LocalDate.parse("2023-01-02"),
                                 price = BigDecimal(100000),
@@ -92,7 +92,7 @@ abstract class AppDatabase : RoomDatabase() {
                             ),
                             PropertyDto(
                                 id = 2,
-                                type = PropertyTypeEntity.House.name,
+                                type = PropertyTypeEntity.HOUSE.name,
                                 entryDate = LocalDate.parse("2023-02-01"),
                                 saleDate = null,
                                 price = BigDecimal(200000),
@@ -123,7 +123,7 @@ abstract class AppDatabase : RoomDatabase() {
                             ),
                             PropertyDto(
                                 id = 3,
-                                type = PropertyTypeEntity.Duplex.name,
+                                type = PropertyTypeEntity.DUPLEX.name,
                                 entryDate = LocalDate.parse("2023-04-01"),
                                 saleDate = null,
                                 price = BigDecimal(300000),

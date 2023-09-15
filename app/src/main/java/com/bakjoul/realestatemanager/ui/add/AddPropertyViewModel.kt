@@ -8,8 +8,6 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
 import com.bakjoul.realestatemanager.R
-import com.bakjoul.realestatemanager.domain.property.model.PropertyPoiEntity
-import com.bakjoul.realestatemanager.domain.property.model.PropertyTypeEntity
 import com.bakjoul.realestatemanager.data.settings.model.AppCurrency
 import com.bakjoul.realestatemanager.data.settings.model.SurfaceUnit
 import com.bakjoul.realestatemanager.domain.autocomplete.GetAddressPredictionsUseCase
@@ -23,6 +21,8 @@ import com.bakjoul.realestatemanager.domain.navigation.model.To
 import com.bakjoul.realestatemanager.domain.photos.DeletePendingPhotoUseCase
 import com.bakjoul.realestatemanager.domain.photos.GetPendingPhotosUseCase
 import com.bakjoul.realestatemanager.domain.photos.model.PhotoEntity
+import com.bakjoul.realestatemanager.domain.property.model.PropertyPoiEntity
+import com.bakjoul.realestatemanager.domain.property.model.PropertyTypeEntity
 import com.bakjoul.realestatemanager.domain.settings.currency.GetCurrentCurrencyUseCase
 import com.bakjoul.realestatemanager.domain.settings.surface_unit.GetCurrentSurfaceUnitUseCase
 import com.bakjoul.realestatemanager.ui.utils.EquatableCallback
@@ -256,12 +256,12 @@ class AddPropertyViewModel @Inject constructor(
 
     fun onPropertyTypeChanged(checkedId: Int) {
         propertyTypeEntityMutableStateFlow.value = when (checkedId) {
-            R.id.add_property_type_flat_RadioButton -> PropertyTypeEntity.Flat
-            R.id.add_property_type_house_RadioButton -> PropertyTypeEntity.House
-            R.id.add_property_type_duplex_RadioButton -> PropertyTypeEntity.Duplex
-            R.id.add_property_type_penthouse_RadioButton -> PropertyTypeEntity.Penthouse
-            R.id.add_property_type_loft_RadioButton -> PropertyTypeEntity.Loft
-            R.id.add_property_type_other_RadioButton -> PropertyTypeEntity.Other
+            R.id.add_property_type_flat_RadioButton -> PropertyTypeEntity.FLAT
+            R.id.add_property_type_house_RadioButton -> PropertyTypeEntity.HOUSE
+            R.id.add_property_type_duplex_RadioButton -> PropertyTypeEntity.DUPLEX
+            R.id.add_property_type_penthouse_RadioButton -> PropertyTypeEntity.PENTHOUSE
+            R.id.add_property_type_loft_RadioButton -> PropertyTypeEntity.LOFT
+            R.id.add_property_type_other_RadioButton -> PropertyTypeEntity.OTHER
             else -> null
         }
     }
@@ -342,16 +342,16 @@ class AddPropertyViewModel @Inject constructor(
 
     fun onChipCheckedChanged(chip: CompoundButton, isChecked: Boolean) {
         val poi = when (chip.text) {
-            PropertyPoiEntity.School.name -> PropertyPoiEntity.School
-            PropertyPoiEntity.Store.name -> PropertyPoiEntity.Store
-            PropertyPoiEntity.Park.name -> PropertyPoiEntity.Park
-            PropertyPoiEntity.Restaurant.name -> PropertyPoiEntity.Restaurant
-            PropertyPoiEntity.Hospital.name -> PropertyPoiEntity.Hospital
-            PropertyPoiEntity.Bus.name -> PropertyPoiEntity.Bus
-            PropertyPoiEntity.Subway.name -> PropertyPoiEntity.Subway
-            PropertyPoiEntity.Tramway.name -> PropertyPoiEntity.Tramway
-            PropertyPoiEntity.Train.name -> PropertyPoiEntity.Train
-            PropertyPoiEntity.Airport.name -> PropertyPoiEntity.Airport
+            PropertyPoiEntity.SCHOOL.name -> PropertyPoiEntity.SCHOOL
+            PropertyPoiEntity.STORE.name -> PropertyPoiEntity.STORE
+            PropertyPoiEntity.PARK.name -> PropertyPoiEntity.PARK
+            PropertyPoiEntity.RESTAURANT.name -> PropertyPoiEntity.RESTAURANT
+            PropertyPoiEntity.HOSPITAL.name -> PropertyPoiEntity.HOSPITAL
+            PropertyPoiEntity.BUS.name -> PropertyPoiEntity.BUS
+            PropertyPoiEntity.SUBWAY.name -> PropertyPoiEntity.SUBWAY
+            PropertyPoiEntity.TRAMWAY.name -> PropertyPoiEntity.TRAMWAY
+            PropertyPoiEntity.TRAIN.name -> PropertyPoiEntity.TRAIN
+            PropertyPoiEntity.AIRPORT.name -> PropertyPoiEntity.AIRPORT
             else -> null
         }
 

@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import com.bakjoul.realestatemanager.BuildConfig
 import com.bakjoul.realestatemanager.R
-import com.bakjoul.realestatemanager.domain.property.model.PropertyPoiEntity
 import com.bakjoul.realestatemanager.domain.CoroutineDispatcherProvider
 import com.bakjoul.realestatemanager.domain.currency_rate.GetEuroRateUseCase
 import com.bakjoul.realestatemanager.domain.current_photo.SetCurrentPhotoIdUseCase
@@ -15,6 +14,7 @@ import com.bakjoul.realestatemanager.domain.navigation.NavigateUseCase
 import com.bakjoul.realestatemanager.domain.navigation.model.To
 import com.bakjoul.realestatemanager.domain.photos.model.PhotoEntity
 import com.bakjoul.realestatemanager.domain.property.GetCurrentPropertyUseCase
+import com.bakjoul.realestatemanager.domain.property.model.PropertyPoiEntity
 import com.bakjoul.realestatemanager.domain.settings.currency.GetCurrentCurrencyUseCase
 import com.bakjoul.realestatemanager.domain.settings.surface_unit.GetCurrentSurfaceUnitUseCase
 import com.bakjoul.realestatemanager.ui.common_model.PhotoItemViewState
@@ -24,7 +24,6 @@ import com.bakjoul.realestatemanager.ui.utils.ViewModelUtils.Companion.formatSur
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.onStart
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -63,22 +62,22 @@ class DetailsViewModel @Inject constructor(
                 price = formatPrice(property.price, currency, euroRateWrapper.currencyRateEntity.rate),
                 isSold = property.saleDate != null,
                 city = property.fullAddress.city,
-                sale_status = getSaleStatus(property.saleDate, property.entryDate),
+                saleStatus = getSaleStatus(property.saleDate, property.entryDate),
                 description = property.description,
                 surface = "${formattedSurface.first} ${formattedSurface.second}",
                 rooms = property.rooms.toString(),
                 bedrooms = property.bedrooms.toString(),
                 bathrooms = property.bathrooms.toString(),
-                poiSchool = property.amenities.contains(PropertyPoiEntity.School),
-                poiStore = property.amenities.contains(PropertyPoiEntity.Store),
-                poiPark = property.amenities.contains(PropertyPoiEntity.Park),
-                poiRestaurant = property.amenities.contains(PropertyPoiEntity.Restaurant),
-                poiHospital = property.amenities.contains(PropertyPoiEntity.Hospital),
-                poiBus = property.amenities.contains(PropertyPoiEntity.Bus),
-                poiSubway = property.amenities.contains(PropertyPoiEntity.Subway),
-                poiTramway = property.amenities.contains(PropertyPoiEntity.Tramway),
-                poiTrain = property.amenities.contains(PropertyPoiEntity.Train),
-                poiAirport = property.amenities.contains(PropertyPoiEntity.Airport),
+                poiSchool = property.amenities.contains(PropertyPoiEntity.SCHOOL),
+                poiStore = property.amenities.contains(PropertyPoiEntity.STORE),
+                poiPark = property.amenities.contains(PropertyPoiEntity.PARK),
+                poiRestaurant = property.amenities.contains(PropertyPoiEntity.RESTAURANT),
+                poiHospital = property.amenities.contains(PropertyPoiEntity.HOSPITAL),
+                poiBus = property.amenities.contains(PropertyPoiEntity.BUS),
+                poiSubway = property.amenities.contains(PropertyPoiEntity.SUBWAY),
+                poiTramway = property.amenities.contains(PropertyPoiEntity.TRAMWAY),
+                poiTrain = property.amenities.contains(PropertyPoiEntity.TRAIN),
+                poiAirport = property.amenities.contains(PropertyPoiEntity.AIRPORT),
                 location = formatLocation(property.fullAddress.address, formatApartment(property.fullAddress.apartment), property.fullAddress.city, property.fullAddress.zipcode, property.fullAddress.country),
                 medias = mapPhotosToItemViewStates(property.photos),
                 clipboardAddress = getClipboardAddress(property.fullAddress.address, property.fullAddress.city, property.fullAddress.country),

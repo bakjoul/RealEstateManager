@@ -8,7 +8,7 @@ data class DetailsViewState(
     val price: String,
     val isSold: Boolean,
     val city: String,
-    val sale_status: String,
+    val saleStatus: String,
     val description: String,
     val surface: String,
     val rooms: String,
