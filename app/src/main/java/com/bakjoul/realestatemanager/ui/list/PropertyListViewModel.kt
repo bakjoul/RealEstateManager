@@ -17,6 +17,7 @@ import com.bakjoul.realestatemanager.domain.current_property.SetCurrentPropertyI
 import com.bakjoul.realestatemanager.domain.navigation.NavigateUseCase
 import com.bakjoul.realestatemanager.domain.navigation.model.To
 import com.bakjoul.realestatemanager.domain.property.GetPropertiesFlowUseCase
+import com.bakjoul.realestatemanager.domain.property.model.PropertyTypeEntity
 import com.bakjoul.realestatemanager.domain.resources.IsTabletUseCase
 import com.bakjoul.realestatemanager.domain.settings.currency.GetCurrentCurrencyUseCase
 import com.bakjoul.realestatemanager.domain.settings.surface_unit.GetCurrentSurfaceUnitUseCase
@@ -60,7 +61,7 @@ class PropertyListViewModel @Inject constructor(
                 PropertyItemViewState(
                     id = it.id,
                     photoUrl = it.photos.first().url,
-                    type = it.type,
+                    type = formatType(it.type),
                     city = it.fullAddress.city,
                     features = formatFeatures(it.bedrooms, it.bathrooms, it.surface, surfaceUnit, isTablet),
                     price = formatPrice(it.price, currency, euroRateWrapper.currencyRateEntity.rate),
@@ -75,6 +76,16 @@ class PropertyListViewModel @Inject constructor(
         }.collect { propertiesItemViewStates ->
             emit(propertiesItemViewStates)
         }
+    }
+
+    private fun formatType(type: String): String = when (type) {
+        PropertyTypeEntity.DUPLEX.name -> application.resources.getString(PropertyTypeEntity.DUPLEX.stringRes)
+        PropertyTypeEntity.FLAT.name -> application.resources.getString(PropertyTypeEntity.FLAT.stringRes)
+        PropertyTypeEntity.HOUSE.name -> application.resources.getString(PropertyTypeEntity.HOUSE.stringRes)
+        PropertyTypeEntity.LOFT.name -> application.resources.getString(PropertyTypeEntity.LOFT.stringRes)
+        PropertyTypeEntity.OTHER.name -> application.resources.getString(PropertyTypeEntity.OTHER.stringRes)
+        PropertyTypeEntity.PENTHOUSE.name -> application.resources.getString(PropertyTypeEntity.PENTHOUSE.stringRes)
+        else -> ""
     }
 
     private fun formatFeatures(bedrooms: Int, bathrooms: Int, surface: Double, surfaceUnit: SurfaceUnit, isTablet: Boolean): String {

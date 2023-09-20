@@ -15,6 +15,7 @@ import com.bakjoul.realestatemanager.domain.navigation.model.To
 import com.bakjoul.realestatemanager.domain.photos.model.PhotoEntity
 import com.bakjoul.realestatemanager.domain.property.GetCurrentPropertyUseCase
 import com.bakjoul.realestatemanager.domain.property.model.PropertyPoiEntity
+import com.bakjoul.realestatemanager.domain.property.model.PropertyTypeEntity
 import com.bakjoul.realestatemanager.domain.settings.currency.GetCurrentCurrencyUseCase
 import com.bakjoul.realestatemanager.domain.settings.surface_unit.GetCurrentSurfaceUnitUseCase
 import com.bakjoul.realestatemanager.ui.common_model.PhotoItemViewState
@@ -58,7 +59,7 @@ class DetailsViewModel @Inject constructor(
 
             DetailsViewState(
                 mainPhotoUrl = property.photos.first().url,
-                type = property.type,
+                type = formatType(property.type),
                 price = formatPrice(property.price, currency, euroRateWrapper.currencyRateEntity.rate),
                 isSold = property.saleDate != null,
                 city = property.fullAddress.city,
@@ -78,7 +79,7 @@ class DetailsViewModel @Inject constructor(
                 poiTramway = property.amenities.contains(PropertyPoiEntity.TRAMWAY),
                 poiTrain = property.amenities.contains(PropertyPoiEntity.TRAIN),
                 poiAirport = property.amenities.contains(PropertyPoiEntity.AIRPORT),
-                location = formatLocation(property.fullAddress.address, formatApartment(property.fullAddress.apartment), property.fullAddress.city, property.fullAddress.zipcode, property.fullAddress.country),
+                location = formatLocation(property.fullAddress.address, formatApartment(property.fullAddress.complementaryAddress), property.fullAddress.city, property.fullAddress.zipcode, property.fullAddress.country),
                 medias = mapPhotosToItemViewStates(property.photos),
                 clipboardAddress = getClipboardAddress(property.fullAddress.address, property.fullAddress.city, property.fullAddress.country),
                 staticMapUrl = getMapUrl(property.fullAddress.address, property.fullAddress.city, property.fullAddress.country),
@@ -95,6 +96,16 @@ class DetailsViewModel @Inject constructor(
         DateTimeFormatter.ofPattern("d/MM/yy", locale)
     } else {
         DateTimeFormatter.ofPattern("M/d/yy", locale)
+    }
+
+    private fun formatType(type: String): String = when (type) {
+        PropertyTypeEntity.DUPLEX.name -> application.resources.getString(PropertyTypeEntity.DUPLEX.stringRes)
+        PropertyTypeEntity.FLAT.name -> application.resources.getString(PropertyTypeEntity.FLAT.stringRes)
+        PropertyTypeEntity.HOUSE.name -> application.resources.getString(PropertyTypeEntity.HOUSE.stringRes)
+        PropertyTypeEntity.LOFT.name -> application.resources.getString(PropertyTypeEntity.LOFT.stringRes)
+        PropertyTypeEntity.OTHER.name -> application.resources.getString(PropertyTypeEntity.OTHER.stringRes)
+        PropertyTypeEntity.PENTHOUSE.name -> application.resources.getString(PropertyTypeEntity.PENTHOUSE.stringRes)
+        else -> ""
     }
 
     private fun getSaleStatus(soldDate: LocalDate?, entryDate: LocalDate): String {
@@ -130,9 +141,9 @@ class DetailsViewModel @Inject constructor(
         return location
     }
 
-    private fun formatApartment(apartment: String): String {
-        return if (apartment.isNotEmpty()) {
-            "Apt $apartment"
+    private fun formatApartment(complementaryAddress: String?): String {
+        return if (complementaryAddress != null) {
+            "$complementaryAddress"
         } else {
             ""
         }

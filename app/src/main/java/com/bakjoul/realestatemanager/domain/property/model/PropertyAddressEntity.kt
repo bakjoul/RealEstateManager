@@ -2,7 +2,7 @@ package com.bakjoul.realestatemanager.domain.property.model
 
 data class PropertyAddressEntity (
     val address: String,
-    val apartment: String,
+    val complementaryAddress: String?,
     val zipcode: String,
     val city: String,
     val state: String,

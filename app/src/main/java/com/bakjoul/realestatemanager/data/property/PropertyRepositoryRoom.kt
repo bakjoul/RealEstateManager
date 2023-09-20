@@ -58,7 +58,7 @@ class PropertyRepositoryRoom @Inject constructor(
             poiTrain = propertyEntity.amenities.contains(PropertyPoiEntity.TRAIN),
             poiTramway = propertyEntity.amenities.contains(PropertyPoiEntity.TRAMWAY),
             address = propertyEntity.fullAddress.address,
-            apartment = propertyEntity.fullAddress.apartment,
+            complementaryAddress = propertyEntity.fullAddress.complementaryAddress,
             zipcode = propertyEntity.fullAddress.zipcode,
             city = propertyEntity.fullAddress.city,
             state = propertyEntity.fullAddress.state,
@@ -70,31 +70,29 @@ class PropertyRepositoryRoom @Inject constructor(
         )
 
     private fun mapToDomainEntity(propertyWithPhotosDto: PropertyWithPhotosDto) : PropertyEntity {
-        val details = propertyWithPhotosDto.propertyDto
-
         return PropertyEntity(
-            id = details.id,
-            type = details.type,
-            entryDate = details.entryDate,
-            saleDate = details.saleDate,
-            price = details.price,
-            surface = details.surface,
-            rooms = details.rooms,
-            bathrooms = details.bathrooms,
-            bedrooms = details.bedrooms,
+            id = propertyWithPhotosDto.propertyDto.id,
+            type = propertyWithPhotosDto.propertyDto.type,
+            entryDate = propertyWithPhotosDto.propertyDto.entryDate,
+            saleDate = propertyWithPhotosDto.propertyDto.saleDate,
+            price = propertyWithPhotosDto.propertyDto.price,
+            surface = propertyWithPhotosDto.propertyDto.surface,
+            rooms = propertyWithPhotosDto.propertyDto.rooms,
+            bathrooms = propertyWithPhotosDto.propertyDto.bathrooms,
+            bedrooms = propertyWithPhotosDto.propertyDto.bedrooms,
             amenities = mapAmenities(propertyWithPhotosDto),
             fullAddress = PropertyAddressEntity(
-                address = details.address,
-                apartment = details.apartment,
-                zipcode = details.zipcode,
-                city = details.city,
-                state = details.state,
-                country = details.country),
-            latitude = details.latitude,
-            longitude = details.longitude,
-            description = details.description,
+                address = propertyWithPhotosDto.propertyDto.address,
+                complementaryAddress = propertyWithPhotosDto.propertyDto.complementaryAddress,
+                zipcode = propertyWithPhotosDto.propertyDto.zipcode,
+                city = propertyWithPhotosDto.propertyDto.city,
+                state = propertyWithPhotosDto.propertyDto.state,
+                country = propertyWithPhotosDto.propertyDto.country),
+            latitude = propertyWithPhotosDto.propertyDto.latitude,
+            longitude = propertyWithPhotosDto.propertyDto.longitude,
+            description = propertyWithPhotosDto.propertyDto.description,
             photos = mapPhotos(propertyWithPhotosDto.photos),
-            agent = details.agent
+            agent = propertyWithPhotosDto.propertyDto.agent
         )
     }
 

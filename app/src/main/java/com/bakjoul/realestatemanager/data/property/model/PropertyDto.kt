@@ -28,7 +28,7 @@ data class PropertyDto(
     @ColumnInfo(name = "poi_train") val poiTrain: Boolean,
     @ColumnInfo(name = "poi_tramway") val poiTramway: Boolean,
     val address: String,
-    val apartment: String,
+    val complementaryAddress: String?,
     val zipcode: String,
     val city: String,
     val state: String,

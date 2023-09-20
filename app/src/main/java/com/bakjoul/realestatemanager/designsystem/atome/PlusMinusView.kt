@@ -11,6 +11,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.withStyledAttributes
 import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.databinding.ViewPlusMinusBinding
+import java.math.BigDecimal
 
 class PlusMinusView @JvmOverloads constructor(
     context: Context,
@@ -44,6 +45,10 @@ class PlusMinusView @JvmOverloads constructor(
                 binding.viewPlusMinusValueEditText.layoutParams = layoutParams
             }
         }
+
+        // Disables the decrement button by default
+        binding.viewPlusMinusDecrementButton.isEnabled = false
+        binding.viewPlusMinusDecrementButton.alpha = 0.5f
     }
 
     private fun setDrawableStart(drawable: Drawable) {
@@ -73,8 +78,8 @@ class PlusMinusView @JvmOverloads constructor(
         return binding.viewPlusMinusValueEditText.text.toString().toInt()
     }
 
-    fun getDoubleValue(): Double {
-        return binding.viewPlusMinusValueEditText.text.toString().toDouble()
+    fun getBigDecimalValue(): BigDecimal {
+        return BigDecimal(binding.viewPlusMinusValueEditText.text.toString())
     }
 
     fun getFormattedIntValue(): String {
@@ -88,11 +93,11 @@ class PlusMinusView @JvmOverloads constructor(
         }
     }
 
-    fun getFormattedDoubleValue(): String {
+    fun getFormattedBigDecimalValue(): String {
         val inputText = binding.viewPlusMinusValueEditText.text.toString()
         return if (inputText.isNotBlank()) {
-            val value = inputText.toDouble()
-            if (value == value.toInt().toDouble()) {
+            val value = BigDecimal(inputText)
+            if (value == value.toInt().toBigDecimal()) {
                 value.toInt().toString()
             } else {
                 value.toString()

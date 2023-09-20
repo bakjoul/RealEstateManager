@@ -33,6 +33,8 @@ import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import java.math.BigDecimal
+import java.text.DecimalFormat
 
 @AndroidEntryPoint
 class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
@@ -46,6 +48,8 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
     private val viewModel by viewModels<AddPropertyViewModel>()
 
     private val requestCameraPermissionLauncher = activityResultLauncher()
+    private val materialDateBuilder: MaterialDatePicker.Builder<*> = MaterialDatePicker.Builder.datePicker()
+    private var currentCurrency: DecimalFormat? = null
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return object : CustomThemeDialog(requireContext(), R.style.FullScreenDialog) {
@@ -94,23 +98,28 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
             viewModel.onPropertyTypeChanged(checkedId)
         }
 
-        // Date picker for sale status
-        val materialDateBuilder: MaterialDatePicker.Builder<*> =
-            MaterialDatePicker.Builder.datePicker()
-        val materialDatePicker: MaterialDatePicker<*> = materialDateBuilder.build()
+        // Date picker for sale since
+        val forSaleSinceDatePicker: MaterialDatePicker<*> = materialDateBuilder.build()
 
-        binding.addPropertyDateTextInputEditText.setOnClickListener {
-            materialDatePicker.show(childFragmentManager, "DATE_PICKER")
+        binding.addPropertyForSaleSinceTextInputEditText.setOnClickListener {
+            forSaleSinceDatePicker.show(childFragmentManager, "FOR_SALE_DATE_PICKER")
         }
 
-        materialDatePicker.addOnPositiveButtonClickListener {
-            viewModel.onDateChanged(it)
-            binding.addPropertyDateTextInputEditText.setText(materialDatePicker.headerText)
+        forSaleSinceDatePicker.addOnPositiveButtonClickListener {
+            viewModel.onForSaleSinceDateChanged(it)
+            binding.addPropertyForSaleSinceTextInputEditText.setText(forSaleSinceDatePicker.headerText)
         }
 
         // Sale status toggle
         binding.addPropertyTypeSaleStatusToggle.setOnCheckedChangeListener { _, isChecked ->
             viewModel.onSaleStatusChanged(isChecked)
+        }
+
+        // Price text input end icon
+        binding.addPropertyPriceTextInputLayout.isEndIconVisible = false
+        binding.addPropertyPriceTextInputLayout.setEndIconOnClickListener {
+            viewModel.onPriceTextCleared()
+            binding.addPropertyPriceTextInputEditText.setText("")
         }
 
         // Surface plus minus view
@@ -132,26 +141,29 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
             }
 
         // Disable surface minus button when value is 0
-        binding.addPropertySurfacePlusMinusView.getValueEditText().doAfterTextChanged { editable ->
-            val surfaceText = editable?.toString()
-            val surface = surfaceText?.toDoubleOrNull() ?: 0.0
+        binding.addPropertySurfacePlusMinusView.getValueEditText()
+            .doAfterTextChanged { editable ->
+                val surfaceText = editable?.toString()
+                val surface = surfaceText?.toBigDecimalOrNull() ?: BigDecimal.ZERO
 
-            if (surfaceText.isNullOrEmpty()) {
-                binding.addPropertySurfacePlusMinusView.setValueEditText("0")
-            } else {
-                binding.addPropertySurfacePlusMinusView.isEnabled = surface != 0.0
-                binding.addPropertySurfacePlusMinusView.decrementButton().alpha = if (surface == 0.0) 0.5f else 1f
+                if (surfaceText.isNullOrEmpty()) {
+                    binding.addPropertySurfacePlusMinusView.setValueEditText("0")
+                } else {
+                    binding.addPropertySurfacePlusMinusView.decrementButton().isEnabled =
+                        surface != BigDecimal.ZERO
+                    binding.addPropertySurfacePlusMinusView.decrementButton().alpha =
+                        if (surface == BigDecimal.ZERO) 0.5f else 1f
 
-                viewModel.onSurfaceValueChanged(surface)
+                    viewModel.onSurfaceValueChanged(surface)
+                }
             }
-        }
 
         binding.addPropertySurfacePlusMinusView.decrementButton().setOnClickListener {
-            viewModel.decrementSurface(binding.addPropertySurfacePlusMinusView.getDoubleValue())
+            viewModel.decrementSurface(binding.addPropertySurfacePlusMinusView.getBigDecimalValue())
         }
 
         binding.addPropertySurfacePlusMinusView.incrementButton().setOnClickListener {
-            viewModel.incrementSurface(binding.addPropertySurfacePlusMinusView.getDoubleValue())
+            viewModel.incrementSurface(binding.addPropertySurfacePlusMinusView.getBigDecimalValue())
         }
 
         // Rooms plus minus view
@@ -173,20 +185,21 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
             }
 
         // Disable rooms minus button when value is 0
-        binding.addPropertyRoomsPlusMinusView.getValueEditText().doAfterTextChanged { editable ->
-            val roomsText = editable?.toString()
-            val rooms = roomsText?.toIntOrNull() ?: 0
+        binding.addPropertyRoomsPlusMinusView.getValueEditText()
+            .doAfterTextChanged { editable ->
+                val roomsText = editable?.toString()
+                val rooms = roomsText?.toIntOrNull() ?: 0
 
-            if (roomsText.isNullOrEmpty()) {
-                binding.addPropertyRoomsPlusMinusView.setValueEditText("0")
-            } else {
-                binding.addPropertyRoomsPlusMinusView.isEnabled = rooms != 0
-                binding.addPropertyRoomsPlusMinusView.decrementButton().alpha =
-                    if (rooms == 0) 0.5f else 1f
+                if (roomsText.isNullOrEmpty()) {
+                    binding.addPropertyRoomsPlusMinusView.setValueEditText("0")
+                } else {
+                    binding.addPropertyRoomsPlusMinusView.decrementButton().isEnabled = rooms != 0
+                    binding.addPropertyRoomsPlusMinusView.decrementButton().alpha =
+                        if (rooms == 0) 0.5f else 1f
 
-                viewModel.onRoomsValueChanged(rooms)
+                    viewModel.onRoomsValueChanged(rooms)
+                }
             }
-        }
 
         binding.addPropertyRoomsPlusMinusView.decrementButton().setOnClickListener {
             viewModel.decrementRooms(binding.addPropertyRoomsPlusMinusView.getIntValue())
@@ -223,7 +236,7 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
                 if (bathroomsText.isNullOrEmpty()) {
                     binding.addPropertyBathroomsPlusMinusView.setValueEditText("0")
                 } else {
-                    binding.addPropertyBathroomsPlusMinusView.isEnabled = bathrooms != 0
+                    binding.addPropertyBathroomsPlusMinusView.decrementButton().isEnabled = bathrooms != 0
                     binding.addPropertyBathroomsPlusMinusView.decrementButton().alpha =
                         if (bathrooms == 0) 0.5f else 1f
 
@@ -258,20 +271,21 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
             }
 
         // Disable bedrooms minus button when value is 0
-        binding.addPropertyBedroomsPlusMinusView.getValueEditText().doAfterTextChanged { editable ->
-            val bedroomsText = editable?.toString()
-            val bedrooms = bedroomsText?.toIntOrNull() ?: 0
+        binding.addPropertyBedroomsPlusMinusView.getValueEditText()
+            .doAfterTextChanged { editable ->
+                val bedroomsText = editable?.toString()
+                val bedrooms = bedroomsText?.toIntOrNull() ?: 0
 
-            if (bedroomsText.isNullOrEmpty()) {
-                binding.addPropertyBedroomsPlusMinusView.setValueEditText("0")
-            } else {
-                binding.addPropertyBedroomsPlusMinusView.isEnabled = bedrooms != 0
-                binding.addPropertyBedroomsPlusMinusView.decrementButton().alpha =
-                    if (bedrooms == 0) 0.5f else 1f
+                if (bedroomsText.isNullOrEmpty()) {
+                    binding.addPropertyBedroomsPlusMinusView.setValueEditText("0")
+                } else {
+                    binding.addPropertyBedroomsPlusMinusView.decrementButton().isEnabled = bedrooms != 0
+                    binding.addPropertyBedroomsPlusMinusView.decrementButton().alpha =
+                        if (bedrooms == 0) 0.5f else 1f
 
-                viewModel.onBedroomsValueChanged(bedrooms)
+                    viewModel.onBedroomsValueChanged(bedrooms)
+                }
             }
-        }
 
         // Hides keyboard and clear focus when done is pressed
         binding.addPropertyBedroomsPlusMinusView.getValueEditText().imeOptions = EditorInfo.IME_ACTION_DONE
@@ -373,67 +387,92 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
         // Done button
         binding.addPropertyDoneFab.setOnClickListener { viewModel.onDoneButtonClicked() }
 
-        viewModel.viewStateLiveData.observe(viewLifecycleOwner) {
-            binding.addPropertyDateTextInputLayout.hint = it.dateHint
-            binding.addPropertyPriceTextInputLayout.hint = it.priceHint
+        viewModel.viewStateLiveData.observe(viewLifecycleOwner) { viewState ->
+            // Sale date picker
+            if (viewState.isSold) {
+                binding.addPropertySoldOnTextInputLayout.visibility = View.VISIBLE
+                val soldOnDatePicker: MaterialDatePicker<*> = materialDateBuilder.build()
 
-            // Price
-            binding.addPropertyPriceTextInputEditText.addTextChangedListener(object : TextWatcher {
-                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+                binding.addPropertySoldOnTextInputEditText.setOnClickListener {
+                    soldOnDatePicker.show(childFragmentManager, "SOLD_ON_DATE_PICKER")
+                }
 
-                override fun afterTextChanged(s: Editable?) {
-                    s?.let { price ->
-                        val originalText = price.toString()
-                        if (originalText.isNotEmpty()) {
-                            try {
-                                val parsed = it.currencyFormat.parse(originalText)
-                                val formatted = it.currencyFormat.format(parsed)
-                                if (formatted != originalText) {
-                                    binding.addPropertyPriceTextInputEditText.setText(formatted)
-                                    binding.addPropertyPriceTextInputEditText.setSelection(formatted.length)
+                soldOnDatePicker.addOnPositiveButtonClickListener {
+                    viewModel.onSoldOnDateChanged(it)
+                    binding.addPropertySoldOnTextInputEditText.setText(soldOnDatePicker.headerText)
+                }
+            } else {
+                binding.addPropertySoldOnTextInputLayout.visibility = View.GONE
+            }
+
+            // Price formatting
+            binding.addPropertyPriceTextInputLayout.hint = viewState.priceHint
+            if (currentCurrency != viewState.currencyFormat) {
+                binding.addPropertyPriceTextInputEditText.addTextChangedListener(object : TextWatcher {
+                    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+                    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+
+                    override fun afterTextChanged(s: Editable?) {
+                        s?.let { price ->
+                            val originalText = price.toString()
+                            binding.addPropertyPriceTextInputLayout.isEndIconVisible = originalText.isNotEmpty()
+
+                            if (originalText.isNotEmpty()) {
+                                val bigDecimalPrice = BigDecimal(originalText.replace(",", "").replace(" ", ""))
+                                viewModel.onPriceChanged(bigDecimalPrice)
+
+                                try {
+                                    val parsed = viewState.currencyFormat.parse(originalText)
+                                    val formatted = viewState.currencyFormat.format(parsed)
+                                    if (formatted != originalText) {
+                                        binding.addPropertyPriceTextInputEditText.removeTextChangedListener(this)
+                                        binding.addPropertyPriceTextInputEditText.setText(formatted)
+                                        binding.addPropertyPriceTextInputEditText.setSelection(formatted.length)
+                                        binding.addPropertyPriceTextInputEditText.addTextChangedListener(this)
+                                    }
+                                } catch (e: Exception) {
+                                    e.printStackTrace()
                                 }
-                            } catch (e: Exception) {
-                                e.printStackTrace()
                             }
                         }
                     }
-                }
-            })
+                })
+            }
+            currentCurrency = viewState.currencyFormat
 
-            binding.addPropertySurfacePlusMinusView.setLabel(it.surfaceLabel)
-            if (binding.addPropertySurfacePlusMinusView.getFormattedDoubleValue() != it.surface) {
-                binding.addPropertySurfacePlusMinusView.setValueEditText(it.surface)
+            binding.addPropertySurfacePlusMinusView.setLabel(viewState.surfaceLabel)
+            if (binding.addPropertySurfacePlusMinusView.getFormattedBigDecimalValue() != viewState.surface) {
+                binding.addPropertySurfacePlusMinusView.setValueEditText(viewState.surface)
             }
-            if (binding.addPropertyRoomsPlusMinusView.getFormattedIntValue() != it.numberOfRooms) {
-                binding.addPropertyRoomsPlusMinusView.setValueEditText(it.numberOfRooms)
+            if (binding.addPropertyRoomsPlusMinusView.getFormattedIntValue() != viewState.numberOfRooms) {
+                binding.addPropertyRoomsPlusMinusView.setValueEditText(viewState.numberOfRooms)
             }
-            if (binding.addPropertyBathroomsPlusMinusView.getFormattedIntValue() != it.numberOfBathrooms) {
-                binding.addPropertyBathroomsPlusMinusView.setValueEditText(it.numberOfBathrooms)
+            if (binding.addPropertyBathroomsPlusMinusView.getFormattedIntValue() != viewState.numberOfBathrooms) {
+                binding.addPropertyBathroomsPlusMinusView.setValueEditText(viewState.numberOfBathrooms)
             }
-            if (binding.addPropertyBedroomsPlusMinusView.getFormattedIntValue() != it.numberOfBedrooms) {
-                binding.addPropertyBedroomsPlusMinusView.setValueEditText(it.numberOfBedrooms)
+            if (binding.addPropertyBedroomsPlusMinusView.getFormattedIntValue() != viewState.numberOfBedrooms) {
+                binding.addPropertyBedroomsPlusMinusView.setValueEditText(viewState.numberOfBedrooms)
             }
 
             // Updates address fields on autocomplete selection
-            if (it.address != null && it.address != binding.addPropertyAddressTextInputEditText.text.toString()) {
+            if (viewState.address != null && viewState.address != binding.addPropertyAddressTextInputEditText.text.toString()) {
                 viewModel.onAddressTextUpdatedByAutocomplete()
-                binding.addPropertyAddressTextInputEditText.setText(it.address)
+                binding.addPropertyAddressTextInputEditText.setText(viewState.address)
             }
 
             // Hides suggestions when a suggestion is selected
-            if (it.addressPredictions.isEmpty() || (it.address != null && it.address == binding.addPropertyAddressTextInputEditText.text.toString())) {
+            if (viewState.addressPredictions.isEmpty() || (viewState.address != null && viewState.address == binding.addPropertyAddressTextInputEditText.text.toString())) {
                 binding.addPropertyAddressSuggestionsContainer.visibility = View.GONE
             } else {
                 binding.addPropertyAddressSuggestionsContainer.visibility = View.VISIBLE
             }
-            suggestionsAdapter.submitList(it.addressPredictions)
+            suggestionsAdapter.submitList(viewState.addressPredictions)
 
-            binding.addPropertyStateRegionTextInputEditText.setText(it.state ?: "")
-            binding.addPropertyCityTextInputEditText.setText(it.city ?: "")
-            binding.addPropertyZipcodeTextInputEditText.setText(it.zipcode ?: "")
+            binding.addPropertyStateRegionTextInputEditText.setText(viewState.state ?: "")
+            binding.addPropertyCityTextInputEditText.setText(viewState.city ?: "")
+            binding.addPropertyZipcodeTextInputEditText.setText(viewState.zipcode ?: "")
 
-            photosAdapter.submitList(it.photos)
+            photosAdapter.submitList(viewState.photos)
         }
 
         viewModel.viewActionLiveData.observeEvent(viewLifecycleOwner) {
