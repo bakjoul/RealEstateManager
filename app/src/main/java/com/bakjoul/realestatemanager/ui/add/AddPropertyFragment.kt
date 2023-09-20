@@ -309,7 +309,7 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
         }
 
         // Chip listeners
-        val poiChips = listOf(
+        listOf(
             binding.addPropertyAmenitiesSchoolChip,
             binding.addPropertyAmenitiesStoreChip,
             binding.addPropertyAmenitiesParkChip,
@@ -320,11 +320,9 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
             binding.addPropertyTransportationTramwayChip,
             binding.addPropertyTransportationTrainChip,
             binding.addPropertyTransportationAirportChip
-        )
-
-        poiChips.forEach {
+        ).forEach {
             it.setOnCheckedChangeListener { chip, isChecked ->
-                viewModel.onChipCheckedChanged(chip, isChecked)
+                viewModel.onChipCheckedChanged(chip.toString(), isChecked)
             }
         }
 
@@ -388,6 +386,7 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
         binding.addPropertyDoneFab.setOnClickListener { viewModel.onDoneButtonClicked() }
 
         viewModel.viewStateLiveData.observe(viewLifecycleOwner) { viewState ->
+
             // Sale date picker
             if (viewState.isSold) {
                 binding.addPropertySoldOnTextInputLayout.visibility = View.VISIBLE
@@ -473,6 +472,7 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
             binding.addPropertyZipcodeTextInputEditText.setText(viewState.zipcode ?: "")
 
             photosAdapter.submitList(viewState.photos)
+            isUpdating = false
         }
 
         viewModel.viewActionLiveData.observeEvent(viewLifecycleOwner) {

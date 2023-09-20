@@ -1,6 +1,8 @@
 package com.bakjoul.realestatemanager.ui.add
 
 import com.bakjoul.realestatemanager.domain.property.model.PropertyTypeEntity
+import com.bakjoul.realestatemanager.ui.utils.EquatableCallback
+import com.bakjoul.realestatemanager.ui.utils.EquatableCallbackWithTwoParams
 import java.text.DecimalFormat
 
 data class AddPropertyViewState(
@@ -18,5 +20,5 @@ data class AddPropertyViewState(
     val city: String?,
     val state: String?,
     val zipcode: String?,
-    val photos: List<AddPropertyPhotoItemViewState>
+    val photos: List<AddPropertyPhotoItemViewState>,
 )

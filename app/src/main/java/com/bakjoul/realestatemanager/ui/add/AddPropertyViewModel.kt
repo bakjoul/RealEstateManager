@@ -1,9 +1,7 @@
 package com.bakjoul.realestatemanager.ui.add
 
-import android.widget.CompoundButton
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
 import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
 import com.bakjoul.realestatemanager.R
@@ -26,14 +24,13 @@ import com.bakjoul.realestatemanager.domain.property.model.PropertyTypeEntity
 import com.bakjoul.realestatemanager.domain.settings.currency.GetCurrentCurrencyUseCase
 import com.bakjoul.realestatemanager.domain.settings.surface_unit.GetCurrentSurfaceUnitUseCase
 import com.bakjoul.realestatemanager.ui.utils.EquatableCallback
+import com.bakjoul.realestatemanager.ui.utils.EquatableCallbackWithTwoParams
 import com.bakjoul.realestatemanager.ui.utils.Event
 import com.bakjoul.realestatemanager.ui.utils.combine
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -111,7 +108,7 @@ class AddPropertyViewModel @Inject constructor(
                 state = propertyForm.address.state,
                 city = propertyForm.address.city,
                 zipcode = propertyForm.address.zipcode,
-                photos = mapPhotosToItemViewStates(photos)
+                photos = mapPhotosToItemViewStates(photos),
             )
         }.collect {
             emit(it)
@@ -126,132 +123,130 @@ class AddPropertyViewModel @Inject constructor(
         return DecimalFormat("#,###.##", symbols)
     }
 
-    private fun mapPhotosToItemViewStates(photos: List<PhotoEntity>): List<AddPropertyPhotoItemViewState> {
-        return photos.map {
-            AddPropertyPhotoItemViewState(
-                id = it.id,
-                url = it.url,
-                description = it.description,
-                onPhotoClicked = EquatableCallback {
-                    // TODO
-                },
-                onDeletePhotoClicked = EquatableCallback {
-                    viewModelScope.launch {
-                        deletePendingPhotoUseCase.invoke(it.id)
-                    }
-                }
-            )
-        }
-    }
-
-    val viewActionLiveData: LiveData<Event<AddPropertyViewAction>> =
-        getCurrentNavigationUseCase.invoke()
-            .mapNotNull {
-                when (it) {
-                    is To.HideAddressSuggestions -> AddPropertyViewAction.HideSuggestions
-                    is To.Camera -> AddPropertyViewAction.OpenCamera
-                    is To.CloseAddProperty -> AddPropertyViewAction.CloseDialog
-                    is To.Settings -> AddPropertyViewAction.OpenSettings
-                    else -> null
+    private fun mapPhotosToItemViewStates(photos: List<PhotoEntity>): List<AddPropertyPhotoItemViewState> = photos.map {
+        AddPropertyPhotoItemViewState(
+            id = it.id,
+            url = it.url,
+            description = it.description,
+            onPhotoClicked = EquatableCallback {
+                // TODO
+            },
+            onDeletePhotoClicked = EquatableCallback {
+                viewModelScope.launch {
+                    deletePendingPhotoUseCase.invoke(it.id)
                 }
             }
-            .map { Event(it) }
-            .asLiveData()
+        )
+    }
+
+    val viewActionLiveData: LiveData<Event<AddPropertyViewAction>> = liveData {
+        getCurrentNavigationUseCase.invoke().collect {
+            when (it) {
+                is To.HideAddressSuggestions -> emit(Event(AddPropertyViewAction.HideSuggestions))
+                is To.Camera -> emit(Event(AddPropertyViewAction.OpenCamera))
+                is To.CloseAddProperty -> emit(Event(AddPropertyViewAction.CloseDialog))
+                is To.Settings -> emit(Event(AddPropertyViewAction.OpenSettings))
+                else -> Unit
+            }
+        }
+    }
 
     private fun formatPriceHint(currency: AppCurrency): String = "Price (${currency.symbol})"
 
     private fun formatSurfaceLabel(surfaceUnit: SurfaceUnit): String = "Surface (${surfaceUnit.unit})"
 
-    private fun formatSurfaceValue(surface: BigDecimal): String {
-        return if (surface.scale() <= 0) {
-            surface.toBigInteger().toString()
-        } else {
-            surface.toString()
-        }
+    private fun formatSurfaceValue(surface: BigDecimal): String = if (surface.scale() <= 0) {
+        surface.toBigInteger().toString()
+    } else {
+        surface.toString()
     }
 
-    private fun mapAddressPredictions(wrapper: AutocompleteWrapper?): List<AddPropertySuggestionItemViewState> = when (wrapper) {
-        is AutocompleteWrapper.Error,
-        is AutocompleteWrapper.Failure -> emptyList()
-        is AutocompleteWrapper.NoResults -> emptyList()
-        is AutocompleteWrapper.Success -> wrapper.predictions.map { predictionEntity ->
-            AddPropertySuggestionItemViewState(
-                id = predictionEntity.placeId,
-                address = predictionEntity.address,
-                onSuggestionClicked = EquatableCallback {
-                    navigateUseCase.invoke(To.HideAddressSuggestions)
-                    selectedAddressMutableStateFlow.value = predictionEntity
-                }
-            )
-        }
+    private fun mapAddressPredictions(wrapper: AutocompleteWrapper?): List<AddPropertySuggestionItemViewState> =
+        (wrapper as? AutocompleteWrapper.Success)?.let {
+            wrapper.predictions.map { predictionEntity ->
+                AddPropertySuggestionItemViewState(
+                    id = predictionEntity.placeId,
+                    address = predictionEntity.address,
+                    onSuggestionClicked = EquatableCallback {
+                        navigateUseCase.invoke(To.HideAddressSuggestions)
+                        selectedAddressMutableStateFlow.value = predictionEntity
+                    }
+                )
+            }
+        } ?: emptyList()
 
-        null -> emptyList()
-    }
+    private fun updateAddressData(wrapper: GeocodingWrapper?) {
+        when (wrapper) {
+            is GeocodingWrapper.Error,
+            is GeocodingWrapper.Failure,
+            is GeocodingWrapper.NoResults -> return
+            is GeocodingWrapper.Success -> {
+                val result = wrapper.results.firstOrNull()
+                if (result != null) {
+                    val streetNumberComponent = result.addressComponents.find { it.types.contains("street_number") }
+                    val routeComponent = result.addressComponents.find { it.types.contains("route") }
+                    val stateComponent = result.addressComponents.find { it.types.contains("administrative_area_level_1") }
+                    val cityComponent = result.addressComponents.find { it.types.contains("locality") }
+                    val zipcodeComponent = result.addressComponents.find { it.types.contains("postal_code") }
 
-    private fun updateAddressData(wrapper: GeocodingWrapper?) = when (wrapper) {
-        is GeocodingWrapper.Error,
-        is GeocodingWrapper.Failure -> null // TODO
-        is GeocodingWrapper.NoResults -> null // TODO
-        is GeocodingWrapper.Success -> {
-            val result = wrapper.results.firstOrNull()
-            if (result != null) {
-                val streetNumberComponent = result.addressComponents.find { it.types.contains("street_number") }
-                val routeComponent = result.addressComponents.find { it.types.contains("route") }
-                val stateComponent = result.addressComponents.find { it.types.contains("administrative_area_level_1") }
-                val cityComponent = result.addressComponents.find { it.types.contains("locality") }
-                val zipcodeComponent = result.addressComponents.find { it.types.contains("postal_code") }
-
-                if (streetNumberComponent != null
-                    && routeComponent != null
-                    && stateComponent != null
-                    && cityComponent != null
-                    && zipcodeComponent != null
-                ) {
-                    currentAddress = streetNumberComponent.longName + " " + routeComponent.longName
-                    propertyFormMutableStateFlow.update {
-                        it.copy(address = it.address.copy(
-                            address = streetNumberComponent.longName + " " + routeComponent.longName,
-                            complementaryAddress = it.address.complementaryAddress,
-                            state = stateComponent.longName,
-                            city = cityComponent.longName,
-                            zipcode = zipcodeComponent.longName
-                        ))
+                    if (streetNumberComponent != null
+                        && routeComponent != null
+                        && stateComponent != null
+                        && cityComponent != null
+                        && zipcodeComponent != null
+                    ) {
+                        currentAddress = "${streetNumberComponent.longName} ${routeComponent.longName}"
+                        propertyFormMutableStateFlow.update {
+                            it.copy(
+                                address = it.address.copy(
+                                    address = streetNumberComponent.longName + " " + routeComponent.longName,
+                                    complementaryAddress = it.address.complementaryAddress,
+                                    state = stateComponent.longName,
+                                    city = cityComponent.longName,
+                                    zipcode = zipcodeComponent.longName
+                                )
+                            )
+                        }
+                    } else {
+                        resetAddressFields()
                     }
                 } else {
                     resetAddressFields()
                 }
-            } else {
-                resetAddressFields()
             }
-        }
 
-        null -> resetAddressFields()
+            null -> resetAddressFields()
+        }
     }
 
     private fun resetAddressFields() {
         currentAddress = null
         propertyFormMutableStateFlow.update {
-            it.copy(address = it.address.copy(
-                address = null,
-                complementaryAddress = null,
-                state = null,
-                city = null,
-                zipcode = null
-            ))
+            it.copy(
+                address = it.address.copy(
+                    address = null,
+                    complementaryAddress = null,
+                    state = null,
+                    city = null,
+                    zipcode = null
+                )
+            )
         }
     }
 
     fun onPropertyTypeChanged(checkedId: Int) {
         propertyFormMutableStateFlow.update {
-            it.copy(type = when (checkedId) {
-                R.id.add_property_type_flat_RadioButton -> PropertyTypeEntity.FLAT
-                R.id.add_property_type_house_RadioButton -> PropertyTypeEntity.HOUSE
-                R.id.add_property_type_duplex_RadioButton -> PropertyTypeEntity.DUPLEX
-                R.id.add_property_type_penthouse_RadioButton -> PropertyTypeEntity.PENTHOUSE
-                R.id.add_property_type_loft_RadioButton -> PropertyTypeEntity.LOFT
-                R.id.add_property_type_other_RadioButton -> PropertyTypeEntity.OTHER
-                else -> null
-            })
+            it.copy(
+                type = when (checkedId) {
+                    R.id.add_property_type_flat_RadioButton -> PropertyTypeEntity.FLAT
+                    R.id.add_property_type_house_RadioButton -> PropertyTypeEntity.HOUSE
+                    R.id.add_property_type_duplex_RadioButton -> PropertyTypeEntity.DUPLEX
+                    R.id.add_property_type_penthouse_RadioButton -> PropertyTypeEntity.PENTHOUSE
+                    R.id.add_property_type_loft_RadioButton -> PropertyTypeEntity.LOFT
+                    R.id.add_property_type_other_RadioButton -> PropertyTypeEntity.OTHER
+                    else -> null
+                }
+            )
         }
     }
 
@@ -381,28 +376,18 @@ class AddPropertyViewModel @Inject constructor(
         }
     }
 
-    fun onChipCheckedChanged(chip: CompoundButton, isChecked: Boolean) {
-        val poi = when (chip.text) {
-            PropertyPoiEntity.SCHOOL.name -> PropertyPoiEntity.SCHOOL
-            PropertyPoiEntity.STORE.name -> PropertyPoiEntity.STORE
-            PropertyPoiEntity.PARK.name -> PropertyPoiEntity.PARK
-            PropertyPoiEntity.RESTAURANT.name -> PropertyPoiEntity.RESTAURANT
-            PropertyPoiEntity.HOSPITAL.name -> PropertyPoiEntity.HOSPITAL
-            PropertyPoiEntity.BUS.name -> PropertyPoiEntity.BUS
-            PropertyPoiEntity.SUBWAY.name -> PropertyPoiEntity.SUBWAY
-            PropertyPoiEntity.TRAMWAY.name -> PropertyPoiEntity.TRAMWAY
-            PropertyPoiEntity.TRAIN.name -> PropertyPoiEntity.TRAIN
-            PropertyPoiEntity.AIRPORT.name -> PropertyPoiEntity.AIRPORT
-            else -> null
-        }
+    fun onChipCheckedChanged(chipText: String, isChecked: Boolean) {
+        val poiEntity = PropertyPoiEntity.values().find { it.name.equals(chipText, ignoreCase = true) }
 
-        poi?.let {
-            val currentList = propertyFormMutableStateFlow.value.pointsOfInterest.toMutableList().apply {
-                if (isChecked) add(it) else remove(it)
-            }
-
+        if (poiEntity != null) {
             propertyFormMutableStateFlow.update {
-                it.copy(pointsOfInterest = currentList)
+                it.copy(
+                    pointsOfInterest = if (isChecked) {
+                        propertyFormMutableStateFlow.value.pointsOfInterest + poiEntity
+                    } else {
+                        propertyFormMutableStateFlow.value.pointsOfInterest - poiEntity
+                    }
+                )
             }
         }
     }
