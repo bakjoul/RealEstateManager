@@ -62,7 +62,7 @@ class DetailsViewModel @Inject constructor(
                 type = formatType(property.type),
                 price = formatPrice(property.price, currency, euroRateWrapper.currencyRateEntity.rate),
                 isSold = property.saleDate != null,
-                city = property.fullAddress.city,
+                city = property.address.city,
                 saleStatus = getSaleStatus(property.saleDate, property.entryDate),
                 description = property.description,
                 surface = "${formattedSurface.first} ${formattedSurface.second}",
@@ -79,11 +79,11 @@ class DetailsViewModel @Inject constructor(
                 poiTramway = property.amenities.contains(PropertyPoiEntity.TRAMWAY),
                 poiTrain = property.amenities.contains(PropertyPoiEntity.TRAIN),
                 poiAirport = property.amenities.contains(PropertyPoiEntity.AIRPORT),
-                location = formatLocation(property.fullAddress.address, formatApartment(property.fullAddress.complementaryAddress), property.fullAddress.city, property.fullAddress.zipcode, property.fullAddress.country),
+                location = formatLocation(property.address.streetNumber, property.address.route, formatApartment(property.address.complementaryAddress), property.address.city, property.address.zipcode, property.address.country),
                 medias = mapPhotosToItemViewStates(property.photos),
-                clipboardAddress = getClipboardAddress(property.fullAddress.address, property.fullAddress.city, property.fullAddress.country),
-                staticMapUrl = getMapUrl(property.fullAddress.address, property.fullAddress.city, property.fullAddress.country),
-                mapsAddress = getAddress(property.fullAddress.address, property.fullAddress.city, property.fullAddress.country)
+                clipboardAddress = getClipboardAddress(property.address.streetNumber, property.address.route, property.address.city, property.address.country),
+                staticMapUrl = getMapUrl(property.address.streetNumber, property.address.route, property.address.city, property.address.country),
+                mapsAddress = getAddress(property.address.streetNumber, property.address.route, property.address.city, property.address.country)
             )
         }.collect {
             emit(it)
@@ -130,13 +130,24 @@ class DetailsViewModel @Inject constructor(
         }
     }
 
-    private fun formatLocation(address: String, apartment: String, city: String, zipcode: String, country: String): String {
+    private fun formatLocation(
+        streetNumber: String,
+        route: String,
+        apartment: String,
+        city: String,
+        zipcode: String,
+        country: String
+    ): String {
         val location = buildString {
-            append(address)
+            append("$streetNumber $route")
             if (apartment.isNotEmpty()) {
                 append("\n$apartment")
             }
-            append("\n$city\n$zipcode\n$country")
+            if (Locale.getDefault() == Locale.FRANCE) {
+                append("\n$zipcode $city\n$country")
+            } else {
+                append("\n$city\n$zipcode\n$country")
+            }
         }
         return location
     }
@@ -149,16 +160,16 @@ class DetailsViewModel @Inject constructor(
         }
     }
 
-    private fun getClipboardAddress(address: String, city: String, country: String): String =
-        "$address $city $country"
+    private fun getClipboardAddress(streetNumber: String, route: String, city: String, country: String): String =
+        "$streetNumber $route $city $country"
 
-    private fun getMapUrl(address: String, city: String, country: String): String {
-        val formattedAddress = formatAddress("$address,$city,$country")
+    private fun getMapUrl(streetNumber: String, route: String, city: String, country: String): String {
+        val formattedAddress = formatAddress("$streetNumber $route,$city,$country")
         return "https://maps.googleapis.com/maps/api/staticmap?&size=$STATIC_MAP_SIZE&zoom=$STATIC_MAP_ZOOM&markers=$formattedAddress&key=${BuildConfig.GOOGLE_API_KEY}"
     }
 
-    private fun getAddress(address: String, city: String, country: String): String {
-        return formatAddress("$address $city $country")
+    private fun getAddress(streetNumber: String, route: String, city: String, country: String): String {
+        return formatAddress("$streetNumber $route $city $country")
     }
 
     private fun formatAddress(address: String) = address.replace(" ", "%20")

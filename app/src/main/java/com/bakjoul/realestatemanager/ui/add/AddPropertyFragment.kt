@@ -15,6 +15,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewTreeObserver
 import android.view.inputmethod.EditorInfo
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -386,7 +387,6 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
         binding.addPropertyDoneFab.setOnClickListener { viewModel.onDoneButtonClicked() }
 
         viewModel.viewStateLiveData.observe(viewLifecycleOwner) { viewState ->
-
             // Sale date picker
             if (viewState.isSold) {
                 binding.addPropertySoldOnTextInputLayout.visibility = View.VISIBLE
@@ -472,7 +472,6 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
             binding.addPropertyZipcodeTextInputEditText.setText(viewState.zipcode ?: "")
 
             photosAdapter.submitList(viewState.photos)
-            isUpdating = false
         }
 
         viewModel.viewActionLiveData.observeEvent(viewLifecycleOwner) {
@@ -496,6 +495,8 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
                     intent.data = uri
                     startActivity(intent)
                 }
+
+                is AddPropertyViewAction.ShowToast -> Toast.makeText(requireContext(), it.message, Toast.LENGTH_SHORT).show()
             }
         }
     }

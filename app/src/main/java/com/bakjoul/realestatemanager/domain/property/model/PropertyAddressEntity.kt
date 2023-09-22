@@ -1,10 +1,13 @@
 package com.bakjoul.realestatemanager.domain.property.model
 
 data class PropertyAddressEntity (
-    val address: String,
+    val streetNumber: String,
+    val route: String,
     val complementaryAddress: String?,
     val zipcode: String,
     val city: String,
     val state: String,
-    val country: String
+    val country: String,
+    val latitude: Double,
+    val longitude: Double
 )

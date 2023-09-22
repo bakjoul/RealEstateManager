@@ -62,7 +62,7 @@ class PropertyListViewModel @Inject constructor(
                     id = it.id,
                     photoUrl = it.photos.first().url,
                     type = formatType(it.type),
-                    city = it.fullAddress.city,
+                    city = it.address.city,
                     features = formatFeatures(it.bedrooms, it.bathrooms, it.surface, surfaceUnit, isTablet),
                     price = formatPrice(it.price, currency, euroRateWrapper.currencyRateEntity.rate),
                     currencyRate = formatRate(currency, euroRateWrapper.currencyRateEntity.rate, euroRateWrapper.currencyRateEntity.updateDate.format(dateFormatter)),

@@ -15,4 +15,5 @@ sealed class To {
     object Dispatcher: To()
     object Settings : To()
     object CloseSettings : To()
+    data class Toast(val message: String) : To()
 }

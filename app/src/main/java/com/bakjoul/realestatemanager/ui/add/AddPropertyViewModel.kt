@@ -1,5 +1,6 @@
 package com.bakjoul.realestatemanager.ui.add
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
@@ -7,7 +8,6 @@ import androidx.lifecycle.viewModelScope
 import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.data.settings.model.AppCurrency
 import com.bakjoul.realestatemanager.data.settings.model.SurfaceUnit
-import com.bakjoul.realestatemanager.domain.add.model.AddPropertyFormEntity
 import com.bakjoul.realestatemanager.domain.autocomplete.GetAddressPredictionsUseCase
 import com.bakjoul.realestatemanager.domain.autocomplete.model.AutocompleteWrapper
 import com.bakjoul.realestatemanager.domain.autocomplete.model.PredictionEntity
@@ -24,7 +24,6 @@ import com.bakjoul.realestatemanager.domain.property.model.PropertyTypeEntity
 import com.bakjoul.realestatemanager.domain.settings.currency.GetCurrentCurrencyUseCase
 import com.bakjoul.realestatemanager.domain.settings.surface_unit.GetCurrentSurfaceUnitUseCase
 import com.bakjoul.realestatemanager.ui.utils.EquatableCallback
-import com.bakjoul.realestatemanager.ui.utils.EquatableCallbackWithTwoParams
 import com.bakjoul.realestatemanager.ui.utils.Event
 import com.bakjoul.realestatemanager.ui.utils.combine
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -38,6 +37,7 @@ import java.math.BigDecimal
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.time.Instant
+import java.time.LocalDate
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.util.Locale
@@ -56,7 +56,11 @@ class AddPropertyViewModel @Inject constructor(
     private val navigateUseCase: NavigateUseCase
 ) : ViewModel() {
 
-    private val propertyFormMutableStateFlow: MutableStateFlow<AddPropertyFormEntity> = MutableStateFlow(AddPropertyFormEntity())
+    private companion object {
+        private const val TAG = "AddPropertyViewModel"
+    }
+
+    private val propertyFormMutableStateFlow: MutableStateFlow<AddPropertyForm> = MutableStateFlow(AddPropertyForm())
 
     private val currentAddressInputMutableStateFlow: MutableStateFlow<String?> = MutableStateFlow(null)
     private val addressPredictionsFlow: Flow<AutocompleteWrapper?> = currentAddressInputMutableStateFlow
@@ -81,6 +85,7 @@ class AddPropertyViewModel @Inject constructor(
     private var isAddressTextCleared = false
     private var isAddressTextUpdatedByAutocomplete = false
     private var currentAddress: String? = null
+    private var hasUpdatedPropertyForm = false
 
     val viewStateLiveData: LiveData<AddPropertyViewState> = liveData {
         combine(
@@ -105,13 +110,26 @@ class AddPropertyViewModel @Inject constructor(
                 numberOfBedrooms = propertyForm.bedrooms.toString(),
                 addressPredictions = mapAddressPredictions(addressPredictions),
                 address = currentAddress,
-                state = propertyForm.address.state,
                 city = propertyForm.address.city,
+                state = propertyForm.address.state,
                 zipcode = propertyForm.address.zipcode,
                 photos = mapPhotosToItemViewStates(photos),
             )
         }.collect {
             emit(it)
+        }
+    }
+
+    val viewActionLiveData: LiveData<Event<AddPropertyViewAction>> = liveData {
+        getCurrentNavigationUseCase.invoke().collect {
+            when (it) {
+                is To.HideAddressSuggestions -> emit(Event(AddPropertyViewAction.HideSuggestions))
+                is To.Camera -> emit(Event(AddPropertyViewAction.OpenCamera))
+                is To.CloseAddProperty -> emit(Event(AddPropertyViewAction.CloseDialog))
+                is To.Settings -> emit(Event(AddPropertyViewAction.OpenSettings))
+                is To.Toast -> emit(Event(AddPropertyViewAction.ShowToast(it.message)))
+                else -> Unit
+            }
         }
     }
 
@@ -137,18 +155,6 @@ class AddPropertyViewModel @Inject constructor(
                 }
             }
         )
-    }
-
-    val viewActionLiveData: LiveData<Event<AddPropertyViewAction>> = liveData {
-        getCurrentNavigationUseCase.invoke().collect {
-            when (it) {
-                is To.HideAddressSuggestions -> emit(Event(AddPropertyViewAction.HideSuggestions))
-                is To.Camera -> emit(Event(AddPropertyViewAction.OpenCamera))
-                is To.CloseAddProperty -> emit(Event(AddPropertyViewAction.CloseDialog))
-                is To.Settings -> emit(Event(AddPropertyViewAction.OpenSettings))
-                else -> Unit
-            }
-        }
     }
 
     private fun formatPriceHint(currency: AppCurrency): String = "Price (${currency.symbol})"
@@ -177,41 +183,40 @@ class AddPropertyViewModel @Inject constructor(
 
     private fun updateAddressData(wrapper: GeocodingWrapper?) {
         when (wrapper) {
-            is GeocodingWrapper.Error,
-            is GeocodingWrapper.Failure,
-            is GeocodingWrapper.NoResults -> return
-            is GeocodingWrapper.Success -> {
-                val result = wrapper.results.firstOrNull()
-                if (result != null) {
-                    val streetNumberComponent = result.addressComponents.find { it.types.contains("street_number") }
-                    val routeComponent = result.addressComponents.find { it.types.contains("route") }
-                    val stateComponent = result.addressComponents.find { it.types.contains("administrative_area_level_1") }
-                    val cityComponent = result.addressComponents.find { it.types.contains("locality") }
-                    val zipcodeComponent = result.addressComponents.find { it.types.contains("postal_code") }
+            is GeocodingWrapper.Error -> {
+                navigateUseCase.invoke(To.Toast("An error occurred while trying to get selected address details"))
+                Log.d(TAG, "Geocoding error: ${wrapper.exception.message}")
+            }
 
-                    if (streetNumberComponent != null
-                        && routeComponent != null
-                        && stateComponent != null
-                        && cityComponent != null
-                        && zipcodeComponent != null
-                    ) {
-                        currentAddress = "${streetNumberComponent.longName} ${routeComponent.longName}"
-                        propertyFormMutableStateFlow.update {
-                            it.copy(
-                                address = it.address.copy(
-                                    address = streetNumberComponent.longName + " " + routeComponent.longName,
-                                    complementaryAddress = it.address.complementaryAddress,
-                                    state = stateComponent.longName,
-                                    city = cityComponent.longName,
-                                    zipcode = zipcodeComponent.longName
-                                )
+            is GeocodingWrapper.Failure -> {
+                navigateUseCase.invoke(To.Toast("Failed to get selected address details"))
+                Log.d(TAG, "Geocoding failure: ${wrapper.message}")
+            }
+
+            is GeocodingWrapper.NoResults -> navigateUseCase.invoke(To.Toast("No results found for selected address"))
+
+            is GeocodingWrapper.Success -> {
+                if (!hasUpdatedPropertyForm) {
+                    hasUpdatedPropertyForm = true
+
+                    currentAddress = "${wrapper.result.streetNumber} ${wrapper.result.route}"
+                    propertyFormMutableStateFlow.update {
+                        it.copy(
+                            address = it.address.copy(
+                                streetNumber = wrapper.result.streetNumber,
+                                route = wrapper.result.route,
+                                complementaryAddress = it.address.complementaryAddress,
+                                zipcode = wrapper.result.zipcode,
+                                city = wrapper.result.city,
+                                state = wrapper.result.state,
+                                country = wrapper.result.country,
+                                latitude = wrapper.result.latitude,
+                                longitude = wrapper.result.longitude
                             )
-                        }
-                    } else {
-                        resetAddressFields()
+                        )
                     }
-                } else {
-                    resetAddressFields()
+                    Log.d(TAG, "updateAddressData: ON EST là")
+                    navigateUseCase.invoke(To.Toast("Test"))
                 }
             }
 
@@ -224,11 +229,13 @@ class AddPropertyViewModel @Inject constructor(
         propertyFormMutableStateFlow.update {
             it.copy(
                 address = it.address.copy(
-                    address = null,
+                    streetNumber = null,
+                    route = null,
                     complementaryAddress = null,
-                    state = null,
+                    zipcode = null,
                     city = null,
-                    zipcode = null
+                    state = null,
+                    country = null,
                 )
             )
         }
@@ -401,6 +408,8 @@ class AddPropertyViewModel @Inject constructor(
             propertyFormMutableStateFlow.update {
                 it.copy(address = it.address.copy(complementaryAddress = null))
             }
+
+            hasUpdatedPropertyForm = false
             return
         }
 
@@ -412,6 +421,8 @@ class AddPropertyViewModel @Inject constructor(
                 selectedAddressMutableStateFlow.value = null
                 resetAddressFields()
             }
+
+            hasUpdatedPropertyForm = false
         } else {
             isAddressTextUpdatedByAutocomplete = false
         }
@@ -465,4 +476,36 @@ class AddPropertyViewModel @Inject constructor(
         // TODO check everything
         navigateUseCase.invoke(To.CloseAddProperty)
     }
+
+    // region Private data classes
+    private data class AddPropertyForm(
+        val type: PropertyTypeEntity? = null,
+        val isSold: Boolean = false,
+        val forSaleSince: LocalDate? = null,
+        val dateOfSale: LocalDate? = null,
+        val price: BigDecimal = BigDecimal.ZERO,
+        val surface: BigDecimal = BigDecimal.ZERO,
+        val rooms: Int = 0,
+        val bathrooms: Int = 0,
+        val bedrooms: Int = 0,
+        val pointsOfInterest: List<PropertyPoiEntity> = emptyList(),
+        val autoCompleteAddress: AddPropertyAddress? = null,
+        val address: AddPropertyAddress = AddPropertyAddress(),
+        val description: String? = null,
+        val photos: List<PhotoEntity> = emptyList(),
+        val agent: String? = null,
+    )
+
+    private data class AddPropertyAddress (
+        val streetNumber: String? = null,
+        val route: String? = null,
+        val complementaryAddress: String? = null,
+        val zipcode: String? = null,
+        val city: String? = null,
+        val state: String? = null,
+        val country: String? = null,
+        val latitude: Double? = null,
+        val longitude: Double? = null
+    )
+    // endregion
 }

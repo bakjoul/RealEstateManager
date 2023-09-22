@@ -5,4 +5,5 @@ sealed class AddPropertyViewAction {
     object OpenCamera : AddPropertyViewAction()
     object CloseDialog : AddPropertyViewAction()
     object OpenSettings : AddPropertyViewAction()
+    data class ShowToast(val message: String) : AddPropertyViewAction()
 }
