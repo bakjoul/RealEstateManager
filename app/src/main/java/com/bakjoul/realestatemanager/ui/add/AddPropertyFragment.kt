@@ -202,13 +202,17 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
                 }
             }
 
-        binding.addPropertyRoomsPlusMinusView.decrementButton().setOnClickListener {
-            viewModel.decrementRooms(binding.addPropertyRoomsPlusMinusView.getIntValue())
+        binding.addPropertyRoomsPlusMinusView.addOnValueChangedListener {
+            viewModel.updateRoomCount(it)
         }
 
-        binding.addPropertyRoomsPlusMinusView.incrementButton().setOnClickListener {
-            viewModel.incrementRooms(binding.addPropertyRoomsPlusMinusView.getIntValue())
-        }
+//        binding.addPropertyRoomsPlusMinusView.decrementButton().setOnClickListener {
+//            viewModel.updateRoomCount(binding.addPropertyRoomsPlusMinusView.getIntValue())
+//        }
+//
+//        binding.addPropertyRoomsPlusMinusView.incrementButton().setOnClickListener {
+//            viewModel.incrementRooms(binding.addPropertyRoomsPlusMinusView.getIntValue())
+//        }
 
         // Bathrooms plus minus view
         binding.addPropertyBathroomsPlusMinusView.getValueEditText()
@@ -455,7 +459,7 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
 
             // Updates address fields on autocomplete selection
             if (viewState.address != null && viewState.address != binding.addPropertyAddressTextInputEditText.text.toString()) {
-                viewModel.onAddressTextUpdatedByAutocomplete()
+//                viewModel.onAddressTextUpdatedByAutocomplete() TODO NINO
                 binding.addPropertyAddressTextInputEditText.setText(viewState.address)
             }
 

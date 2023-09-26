@@ -61,19 +61,25 @@ class AddPropertyViewModel @Inject constructor(
 
     private val propertyFormMutableStateFlow: MutableStateFlow<AddPropertyForm> = MutableStateFlow(AddPropertyForm())
 
-    private val currentAddressInputMutableStateFlow: MutableStateFlow<String?> = MutableStateFlow(null)
+    private val currentAddressInputMutableStateFlow: MutableStateFlow<Pair<String, Boolean>?> = MutableStateFlow(null)
     private val addressPredictionsFlow: Flow<AutocompleteWrapper?> = currentAddressInputMutableStateFlow
-        .transformLatest { input ->
-            if (input.isNullOrEmpty() || input.length < 5) {
+        .transformLatest { addressData ->
+            if (addressData == null) {
                 emit(null)
             } else {
-                delay(300.milliseconds)
-                emit(getAddressPredictionsUseCase.invoke(input))
+                val (input, fromUser) = addressData
+                if (fromUser) {
+                    if (input.isEmpty() || input.length < 5) {
+                        emit(null)
+                    } else {
+                        delay(300.milliseconds)
+                        emit(getAddressPredictionsUseCase.invoke(input))
+                    }
+                }
             }
         }
 
     private var isAddressTextCleared = false
-    private var isAddressTextUpdatedByAutocomplete = false
 
     val viewStateLiveData: LiveData<AddPropertyViewState> = liveData {
         combine(
@@ -90,7 +96,7 @@ class AddPropertyViewModel @Inject constructor(
                 currencyFormat = getCurrencyFormat(currency),
                 surfaceLabel = formatSurfaceLabel(surfaceUnit),
                 surface = formatSurfaceValue(propertyForm.surface),
-                numberOfRooms = propertyForm.rooms.toString(),
+                numberOfRooms = (propertyForm.rooms ?: 0).toString(),
                 numberOfBathrooms = propertyForm.bathrooms.toString(),
                 numberOfBedrooms = propertyForm.bedrooms.toString(),
                 addressPredictions = mapAddressPredictions(addressPredictions),
@@ -184,6 +190,12 @@ class AddPropertyViewModel @Inject constructor(
                                 is GeocodingWrapper.NoResults -> navigateUseCase.invoke(To.Toast("No results found for selected address"))
 
                                 is GeocodingWrapper.Success -> {
+                                    currentAddressInputMutableStateFlow.update {
+                                        it?.copy(
+                                            first = "${geocodingResult.result.streetNumber} ${geocodingResult.result.route}",
+                                            second = false,
+                                        )
+                                    }
                                     propertyFormMutableStateFlow.update {
                                         it.copy(
                                             autoCompleteAddress = it.address.copy(
@@ -311,17 +323,9 @@ class AddPropertyViewModel @Inject constructor(
         }
     }
 
-    fun decrementRooms(rooms: Int) {
-        if (rooms > 0) {
-            propertyFormMutableStateFlow.update {
-                it.copy(rooms = rooms - 1)
-            }
-        }
-    }
-
-    fun incrementRooms(rooms: Int) {
+    fun updateRoomCount(rooms: Int) {
         propertyFormMutableStateFlow.update {
-            it.copy(rooms = rooms + 1)
+            it.copy(rooms = rooms)
         }
     }
 
@@ -392,26 +396,20 @@ class AddPropertyViewModel @Inject constructor(
             return
         }
 
-        if (!isAddressTextUpdatedByAutocomplete) {
-            currentAddressInputMutableStateFlow.value = address
-
-            if (propertyFormMutableStateFlow.value.autoCompleteAddress != null
-                && formatAddress(propertyFormMutableStateFlow.value.address) != address
-            ) {
-                resetAddressFields()
-            }
-        } else {
-            isAddressTextUpdatedByAutocomplete = false
+        if (currentAddressInputMutableStateFlow.value?.first != address) {
+            currentAddressInputMutableStateFlow.value = address to true
         }
-    }
 
-    fun onAddressTextUpdatedByAutocomplete() {
-        isAddressTextUpdatedByAutocomplete = true
+        if (propertyFormMutableStateFlow.value.autoCompleteAddress != null
+            && formatAddress(propertyFormMutableStateFlow.value.address) != address
+        ) {
+            resetAddressFields()
+        }
     }
 
     fun onAddressTextCleared() {
         isAddressTextCleared = true
-        currentAddressInputMutableStateFlow.value = ""
+        currentAddressInputMutableStateFlow.value = "" to true
     }
 
     fun onComplementaryAddressChanged(complementaryAddress: String) {
@@ -463,7 +461,7 @@ class AddPropertyViewModel @Inject constructor(
         val dateOfSale: LocalDate? = null,
         val price: BigDecimal = BigDecimal.ZERO,
         val surface: BigDecimal = BigDecimal.ZERO,
-        val rooms: Int = 0,
+        val rooms: Int? = null,
         val bathrooms: Int = 0,
         val bedrooms: Int = 0,
         val pointsOfInterest: List<PropertyPoiEntity> = emptyList(),
@@ -474,7 +472,7 @@ class AddPropertyViewModel @Inject constructor(
         val agent: String? = null,
     )
 
-    private data class AddPropertyAddress (
+    private data class AddPropertyAddress(
         val streetNumber: String? = null,
         val route: String? = null,
         val complementaryAddress: String? = null,

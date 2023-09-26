@@ -2,6 +2,7 @@ package com.bakjoul.realestatemanager.designsystem.atome
 
 import android.content.Context
 import android.graphics.drawable.Drawable
+import android.os.Parcelable
 import android.text.SpannableStringBuilder
 import android.util.AttributeSet
 import android.view.LayoutInflater
@@ -20,6 +21,8 @@ class PlusMinusView @JvmOverloads constructor(
 ) : ConstraintLayout(context, attrs, defStyleAttr) {
 
     private val binding = ViewPlusMinusBinding.inflate(LayoutInflater.from(context), this, true)
+
+    private var count : Int? = null // 3
 
     init {
         context.withStyledAttributes(attrs, R.styleable.PlusMinusView) {
@@ -93,6 +96,10 @@ class PlusMinusView @JvmOverloads constructor(
         }
     }
 
+    fun addOnValueChangedListener(listener : (Int) -> Unit) {
+
+    }
+
     fun getFormattedBigDecimalValue(): String {
         val inputText = binding.viewPlusMinusValueEditText.text.toString()
         return if (inputText.isNotBlank()) {
@@ -111,4 +118,13 @@ class PlusMinusView @JvmOverloads constructor(
     fun decrementButton(): ImageButton = binding.viewPlusMinusDecrementButton
 
     fun incrementButton(): ImageButton = binding.viewPlusMinusIncrementButton
+
+    override fun onSaveInstanceState(): Parcelable? {
+        return count
+    }
+
+    override fun onRestoreInstanceState(state: Parcelable?) {
+        super.onRestoreInstanceState(state)
+        count = state.
+    }
 }
