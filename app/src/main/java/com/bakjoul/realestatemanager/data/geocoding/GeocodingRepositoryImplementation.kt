@@ -20,9 +20,7 @@ class GeocodingRepositoryImplementation @Inject constructor(private val googleAp
 
     override suspend fun getAddressDetails(placeId: String): GeocodingWrapper = withContext(Dispatchers.IO) {
         lruCache.get(placeId) ?: try {
-            val response = googleApi.getAddressDetails(
-                placeId = placeId
-            )
+            val response = googleApi.getAddressDetails(placeId = placeId)
 
             when (response.status) {
                 "OK" -> {
@@ -58,7 +56,6 @@ class GeocodingRepositoryImplementation @Inject constructor(private val googleAp
         if (streetNumber != null
             && route != null
             && zipcode != null
-            && city != null
             && state != null
             && country != null
             && latitude != null
@@ -69,7 +66,7 @@ class GeocodingRepositoryImplementation @Inject constructor(private val googleAp
                 route = route,
                 complementaryAddress = null,
                 zipcode = zipcode,
-                city = city,
+                city = city ?: "",
                 state = state,
                 country = country,
                 latitude = latitude,

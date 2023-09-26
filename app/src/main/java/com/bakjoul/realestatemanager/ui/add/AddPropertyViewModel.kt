@@ -10,7 +10,6 @@ import com.bakjoul.realestatemanager.data.settings.model.AppCurrency
 import com.bakjoul.realestatemanager.data.settings.model.SurfaceUnit
 import com.bakjoul.realestatemanager.domain.autocomplete.GetAddressPredictionsUseCase
 import com.bakjoul.realestatemanager.domain.autocomplete.model.AutocompleteWrapper
-import com.bakjoul.realestatemanager.domain.autocomplete.model.PredictionEntity
 import com.bakjoul.realestatemanager.domain.geocoding.GetAddressDetailsUseCase
 import com.bakjoul.realestatemanager.domain.geocoding.model.GeocodingWrapper
 import com.bakjoul.realestatemanager.domain.navigation.GetCurrentNavigationUseCase
@@ -25,11 +24,11 @@ import com.bakjoul.realestatemanager.domain.settings.currency.GetCurrentCurrency
 import com.bakjoul.realestatemanager.domain.settings.surface_unit.GetCurrentSurfaceUnitUseCase
 import com.bakjoul.realestatemanager.ui.utils.EquatableCallback
 import com.bakjoul.realestatemanager.ui.utils.Event
-import com.bakjoul.realestatemanager.ui.utils.combine
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -72,20 +71,9 @@ class AddPropertyViewModel @Inject constructor(
                 emit(getAddressPredictionsUseCase.invoke(input))
             }
         }
-    private val selectedAddressMutableStateFlow: MutableStateFlow<PredictionEntity?> = MutableStateFlow(null)
-    private val selectedAddressDetailsFlow: Flow<GeocodingWrapper?> = selectedAddressMutableStateFlow
-        .transformLatest { prediction ->
-            if (prediction == null) {
-                emit(null)
-            } else {
-                emit(getAddressDetailsUseCase.invoke(prediction.placeId))
-            }
-        }
 
     private var isAddressTextCleared = false
     private var isAddressTextUpdatedByAutocomplete = false
-    private var currentAddress: String? = null
-    private var hasUpdatedPropertyForm = false
 
     val viewStateLiveData: LiveData<AddPropertyViewState> = liveData {
         combine(
@@ -93,11 +81,8 @@ class AddPropertyViewModel @Inject constructor(
             getCurrentCurrencyUseCase.invoke(),
             getCurrentSurfaceUnitUseCase.invoke(),
             addressPredictionsFlow,
-            selectedAddressDetailsFlow,
             getPendingPhotosUseCase.invoke()
-        ) { propertyForm, currency, surfaceUnit, addressPredictions, addressDetails, photos ->
-            updateAddressData(addressDetails)
-
+        ) { propertyForm, currency, surfaceUnit, addressPredictions, photos ->
             AddPropertyViewState(
                 propertyTypeEntity = propertyForm.type,
                 isSold = propertyForm.isSold,
@@ -109,7 +94,7 @@ class AddPropertyViewModel @Inject constructor(
                 numberOfBathrooms = propertyForm.bathrooms.toString(),
                 numberOfBedrooms = propertyForm.bedrooms.toString(),
                 addressPredictions = mapAddressPredictions(addressPredictions),
-                address = currentAddress,
+                address = formatAddress(propertyForm.autoCompleteAddress),
                 city = propertyForm.address.city,
                 state = propertyForm.address.state,
                 zipcode = propertyForm.address.zipcode,
@@ -167,6 +152,14 @@ class AddPropertyViewModel @Inject constructor(
         surface.toString()
     }
 
+    private fun formatAddress(address: AddPropertyAddress?): String? {
+        return if (address?.streetNumber != null && address.route != null) {
+            "${address.streetNumber} ${address.route}"
+        } else {
+            null
+        }
+    }
+
     private fun mapAddressPredictions(wrapper: AutocompleteWrapper?): List<AddPropertySuggestionItemViewState> =
         (wrapper as? AutocompleteWrapper.Success)?.let {
             wrapper.predictions.map { predictionEntity ->
@@ -175,68 +168,61 @@ class AddPropertyViewModel @Inject constructor(
                     address = predictionEntity.address,
                     onSuggestionClicked = EquatableCallback {
                         navigateUseCase.invoke(To.HideAddressSuggestions)
-                        selectedAddressMutableStateFlow.value = predictionEntity
+
+                        viewModelScope.launch {
+                            when (val geocodingResult = getAddressDetailsUseCase.invoke(predictionEntity.placeId)) {
+                                is GeocodingWrapper.Error -> {
+                                    navigateUseCase.invoke(To.Toast("An error occurred while trying to get selected address details"))
+                                    Log.d(TAG, "Geocoding error: ${geocodingResult.exception.message}")
+                                }
+
+                                is GeocodingWrapper.Failure -> {
+                                    navigateUseCase.invoke(To.Toast("Failed to get selected address details"))
+                                    Log.d(TAG, "Geocoding failure: ${geocodingResult.message}")
+                                }
+
+                                is GeocodingWrapper.NoResults -> navigateUseCase.invoke(To.Toast("No results found for selected address"))
+
+                                is GeocodingWrapper.Success -> {
+                                    propertyFormMutableStateFlow.update {
+                                        it.copy(
+                                            autoCompleteAddress = it.address.copy(
+                                                streetNumber = geocodingResult.result.streetNumber,
+                                                route = geocodingResult.result.route,
+                                                complementaryAddress = it.address.complementaryAddress,
+                                                zipcode = geocodingResult.result.zipcode,
+                                                city = geocodingResult.result.city,
+                                                state = geocodingResult.result.state,
+                                                country = geocodingResult.result.country,
+                                                latitude = geocodingResult.result.latitude,
+                                                longitude = geocodingResult.result.longitude
+                                            ),
+                                            address = it.address.copy(
+                                                streetNumber = geocodingResult.result.streetNumber,
+                                                route = geocodingResult.result.route,
+                                                complementaryAddress = it.address.complementaryAddress,
+                                                zipcode = geocodingResult.result.zipcode,
+                                                city = geocodingResult.result.city,
+                                                state = geocodingResult.result.state,
+                                                country = geocodingResult.result.country,
+                                                latitude = geocodingResult.result.latitude,
+                                                longitude = geocodingResult.result.longitude
+                                            )
+                                        )
+                                    }
+                                }
+                            }
+                        }
                     }
                 )
             }
         } ?: emptyList()
 
-    private fun updateAddressData(wrapper: GeocodingWrapper?) {
-        when (wrapper) {
-            is GeocodingWrapper.Error -> {
-                navigateUseCase.invoke(To.Toast("An error occurred while trying to get selected address details"))
-                Log.d(TAG, "Geocoding error: ${wrapper.exception.message}")
-            }
-
-            is GeocodingWrapper.Failure -> {
-                navigateUseCase.invoke(To.Toast("Failed to get selected address details"))
-                Log.d(TAG, "Geocoding failure: ${wrapper.message}")
-            }
-
-            is GeocodingWrapper.NoResults -> navigateUseCase.invoke(To.Toast("No results found for selected address"))
-
-            is GeocodingWrapper.Success -> {
-                if (!hasUpdatedPropertyForm) {
-                    hasUpdatedPropertyForm = true
-
-                    currentAddress = "${wrapper.result.streetNumber} ${wrapper.result.route}"
-                    propertyFormMutableStateFlow.update {
-                        it.copy(
-                            address = it.address.copy(
-                                streetNumber = wrapper.result.streetNumber,
-                                route = wrapper.result.route,
-                                complementaryAddress = it.address.complementaryAddress,
-                                zipcode = wrapper.result.zipcode,
-                                city = wrapper.result.city,
-                                state = wrapper.result.state,
-                                country = wrapper.result.country,
-                                latitude = wrapper.result.latitude,
-                                longitude = wrapper.result.longitude
-                            )
-                        )
-                    }
-                    Log.d(TAG, "updateAddressData: ON EST là")
-                    navigateUseCase.invoke(To.Toast("Test"))
-                }
-            }
-
-            null -> resetAddressFields()
-        }
-    }
-
     private fun resetAddressFields() {
-        currentAddress = null
         propertyFormMutableStateFlow.update {
             it.copy(
-                address = it.address.copy(
-                    streetNumber = null,
-                    route = null,
-                    complementaryAddress = null,
-                    zipcode = null,
-                    city = null,
-                    state = null,
-                    country = null,
-                )
+                autoCompleteAddress = null,
+                address = AddPropertyAddress()
             )
         }
     }
@@ -402,27 +388,18 @@ class AddPropertyViewModel @Inject constructor(
     fun onAddressChanged(address: String) {
         if (isAddressTextCleared) {
             isAddressTextCleared = false
-
-            selectedAddressMutableStateFlow.value = null
-            currentAddressInputMutableStateFlow.value = address
-            propertyFormMutableStateFlow.update {
-                it.copy(address = it.address.copy(complementaryAddress = null))
-            }
-
-            hasUpdatedPropertyForm = false
+            resetAddressFields()
             return
         }
 
         if (!isAddressTextUpdatedByAutocomplete) {
-            val selectedAddress = selectedAddressMutableStateFlow.value
             currentAddressInputMutableStateFlow.value = address
 
-            if (selectedAddress != null && address != currentAddress) {
-                selectedAddressMutableStateFlow.value = null
+            if (propertyFormMutableStateFlow.value.autoCompleteAddress != null
+                && formatAddress(propertyFormMutableStateFlow.value.address) != address
+            ) {
                 resetAddressFields()
             }
-
-            hasUpdatedPropertyForm = false
         } else {
             isAddressTextUpdatedByAutocomplete = false
         }
@@ -434,6 +411,7 @@ class AddPropertyViewModel @Inject constructor(
 
     fun onAddressTextCleared() {
         isAddressTextCleared = true
+        currentAddressInputMutableStateFlow.value = ""
     }
 
     fun onComplementaryAddressChanged(complementaryAddress: String) {
