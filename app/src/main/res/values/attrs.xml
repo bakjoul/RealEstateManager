@@ -16,7 +16,8 @@
     <declare-styleable name="PlusMinusView">
         <attr name="plusMinusImageSrc" format="reference" />
         <attr name="plusMinusLabel" format="string" />
-        <attr name="plusMinusValue" format="integer" />
+        <attr name="plusMinusValue" format="string" />
+        <attr name="plusMinusIsBigDecimal" format="boolean" />
         <attr name="plusMinusDrawablePadding" format="dimension" />
         <attr name="plusMinusEditTextWidth" format="dimension" />
     </declare-styleable>
