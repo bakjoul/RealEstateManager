@@ -264,7 +264,7 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
             }
             currentCurrency = viewState.currencyFormat
 
-            binding.addPropertySurfacePlusMinusView.setLabel(viewState.surfaceLabel)
+            //binding.addPropertySurfacePlusMinusView.setLabel(viewState.surfaceLabel)
             /*if (binding.addPropertySurfacePlusMinusView.getFormattedBigDecimalValue() != viewState.surface) {
                 binding.addPropertySurfacePlusMinusView.setValueEditText(viewState.surface)
             }

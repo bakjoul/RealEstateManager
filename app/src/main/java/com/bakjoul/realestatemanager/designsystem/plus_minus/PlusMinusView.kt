@@ -1,27 +1,31 @@
-package com.bakjoul.realestatemanager.designsystem.atome
+package com.bakjoul.realestatemanager.designsystem.plus_minus
 
 import android.content.Context
 import android.graphics.drawable.Drawable
-import android.text.SpannableStringBuilder
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.ViewTreeObserver
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.withStyledAttributes
 import androidx.core.widget.doAfterTextChanged
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.findViewTreeLifecycleOwner
+import androidx.lifecycle.findViewTreeViewModelStoreOwner
 import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.databinding.ViewPlusMinusBinding
-import java.math.BigDecimal
+import com.bakjoul.realestatemanager.ui.utils.ViewModelUtils
 
 class PlusMinusView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0,
 ) : ConstraintLayout(context, attrs, defStyleAttr) {
+
     private val binding = ViewPlusMinusBinding.inflate(LayoutInflater.from(context), this, true)
+    private val viewModelKey = ViewModelUtils.generateViewModelKey()
+    private val viewModel by lazy { ViewModelProvider(findViewTreeViewModelStoreOwner()!!)[viewModelKey, PlusMinusViewModel::class.java] }
 
     private var isBigDecimal = false
-    private var value : Number? = null
 
     init {
         context.withStyledAttributes(attrs, R.styleable.PlusMinusView) {
@@ -32,10 +36,6 @@ class PlusMinusView @JvmOverloads constructor(
             // Label text
             getString(R.styleable.PlusMinusView_plusMinusLabel)?.let {
                 binding.viewPlusMinusLabelText.text = it
-            }
-            // Value
-            getString(R.styleable.PlusMinusView_plusMinusValue)?.let {
-                binding.viewPlusMinusValueEditText.text = SpannableStringBuilder(it)
             }
             // Value type
             isBigDecimal = getBoolean(R.styleable.PlusMinusView_plusMinusIsBigDecimal, false)
@@ -50,57 +50,19 @@ class PlusMinusView @JvmOverloads constructor(
                 binding.viewPlusMinusValueEditText.layoutParams = layoutParams
             }
         }
+    }
 
-        // Sets and displays initial value
-        value = if (isBigDecimal) BigDecimal.ZERO else 0
-        binding.viewPlusMinusValueEditText.text = SpannableStringBuilder(value.toString())
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
 
-        // Disables decrement button by default
-        binding.viewPlusMinusDecrementButton.isEnabled = false
-        binding.viewPlusMinusDecrementButton.alpha = 0.5f
+        viewModel.setBigDecimal(isBigDecimal)
 
         // Disables decrement button when value is 0 and updates value when EditText text changes
         binding.viewPlusMinusValueEditText.doAfterTextChanged { editable ->
-            val editTextString = editable?.toString()
-
-            if (isBigDecimal) {
-                val editTextValue = editTextString?.toBigDecimalOrNull() ?: BigDecimal.ZERO
-                binding.viewPlusMinusDecrementButton.isEnabled = editTextValue != BigDecimal.ZERO
-                binding.viewPlusMinusDecrementButton.alpha = if (editTextValue == BigDecimal.ZERO) 0.5f else 1f
-                value = editTextValue
-            } else {
-                val editTextValue = editTextString?.toIntOrNull() ?: 0
-                binding.viewPlusMinusDecrementButton.isEnabled = editTextValue != 0
-                binding.viewPlusMinusDecrementButton.alpha = if (editTextValue == 0) 0.5f else 1f
-                value = editTextValue
-            }
+            editable?.toString()?.let { viewModel.setValue(it) }
         }
-
-        // Decrements value when decrement button is clicked
-        binding.viewPlusMinusDecrementButton.setOnClickListener {
-            // Updates value
-            value = if (isBigDecimal) {
-                (value as? BigDecimal)?.minus(BigDecimal.ONE)
-            } else {
-                (value as? Int)?.minus(1)
-            }
-
-            // Displays new value
-            binding.viewPlusMinusValueEditText.text = SpannableStringBuilder(value.toString())
-        }
-
-        // Increments value when increment button is clicked
-        binding.viewPlusMinusIncrementButton.setOnClickListener {
-            // Updates value
-            value = if (isBigDecimal) {
-                (value as? BigDecimal)?.plus(BigDecimal.ONE)
-            } else {
-                (value as? Int)?.plus(1)
-            }
-
-            // Displays new value
-            binding.viewPlusMinusValueEditText.text = SpannableStringBuilder(value.toString())
-        }
+        binding.viewPlusMinusDecrementButton.setOnClickListener { viewModel.decrementValue() }
+        binding.viewPlusMinusIncrementButton.setOnClickListener { viewModel.incrementValue() }
 
         // Selects all text when EditText gains focus
         binding.viewPlusMinusValueEditText.setOnFocusChangeListener { _, hasFocus ->
@@ -117,9 +79,14 @@ class PlusMinusView @JvmOverloads constructor(
                 })
             } else {
                 if (binding.viewPlusMinusValueEditText.text.toString().isEmpty()) {
-                    binding.viewPlusMinusValueEditText.text = SpannableStringBuilder(value.toString())
+                    //binding.viewPlusMinusValueEditText.text = SpannableStringBuilder(value.toString())
+                    viewModel.setValue("0")
                 }
             }
+        }
+
+        viewModel.getValue().observe(findViewTreeLifecycleOwner()!!) {
+            binding.viewPlusMinusValueEditText.setText(it.toString())
         }
     }
 
@@ -135,9 +102,5 @@ class PlusMinusView @JvmOverloads constructor(
 
     fun setLabel(label: String) {
         binding.viewPlusMinusLabelText.text = label
-    }
-
-    fun getValue() : Number? {
-        return value
     }
 }
