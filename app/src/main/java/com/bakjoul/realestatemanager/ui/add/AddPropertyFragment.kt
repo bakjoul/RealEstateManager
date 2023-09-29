@@ -264,19 +264,7 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
             }
             currentCurrency = viewState.currencyFormat
 
-            //binding.addPropertySurfacePlusMinusView.setLabel(viewState.surfaceLabel)
-            /*if (binding.addPropertySurfacePlusMinusView.getFormattedBigDecimalValue() != viewState.surface) {
-                binding.addPropertySurfacePlusMinusView.setValueEditText(viewState.surface)
-            }
-            if (binding.addPropertyRoomsPlusMinusView.getFormattedIntValue() != viewState.numberOfRooms) {
-                binding.addPropertyRoomsPlusMinusView.setValueEditText(viewState.numberOfRooms)
-            }
-            if (binding.addPropertyBathroomsPlusMinusView.getFormattedIntValue() != viewState.numberOfBathrooms) {
-                binding.addPropertyBathroomsPlusMinusView.setValueEditText(viewState.numberOfBathrooms)
-            }
-            if (binding.addPropertyBedroomsPlusMinusView.getFormattedIntValue() != viewState.numberOfBedrooms) {
-                binding.addPropertyBedroomsPlusMinusView.setValueEditText(viewState.numberOfBedrooms)
-            }*/
+            binding.addPropertySurfacePlusMinusView.setLabel(viewState.surfaceLabel)
 
             // Updates address fields on autocomplete selection
             if (viewState.address != null && viewState.address != binding.addPropertyAddressTextInputEditText.text.toString()) {
