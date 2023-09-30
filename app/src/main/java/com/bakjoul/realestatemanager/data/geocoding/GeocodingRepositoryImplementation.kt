@@ -56,6 +56,7 @@ class GeocodingRepositoryImplementation @Inject constructor(private val googleAp
         if (streetNumber != null
             && route != null
             && zipcode != null
+            && city != null
             && state != null
             && country != null
             && latitude != null
@@ -66,7 +67,7 @@ class GeocodingRepositoryImplementation @Inject constructor(private val googleAp
                 route = route,
                 complementaryAddress = null,
                 zipcode = zipcode,
-                city = city ?: "",
+                city = city,
                 state = state,
                 country = country,
                 latitude = latitude,
