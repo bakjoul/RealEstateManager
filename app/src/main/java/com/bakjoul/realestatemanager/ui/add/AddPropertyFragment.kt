@@ -121,19 +121,6 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
             binding.addPropertyPriceTextInputEditText.setText("")
         }
 
-        // Hides keyboard and clear focus when done is pressed
-        /*binding.addPropertyBedroomsPlusMinusView.getValueEditText().imeOptions = EditorInfo.IME_ACTION_DONE
-        binding.addPropertyBedroomsPlusMinusView.getValueEditText()
-            .setOnEditorActionListener { _, actionId, _ ->
-                if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    binding.addPropertyBedroomsPlusMinusView.getValueEditText().clearFocus()
-                    hideKeyboard()
-                    true
-                } else {
-                    false
-                }
-            }*/
-
         // Chip listeners
         listOf(
             binding.addPropertyAmenitiesSchoolChip,

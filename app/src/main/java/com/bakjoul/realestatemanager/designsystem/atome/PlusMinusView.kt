@@ -1,5 +1,6 @@
 package com.bakjoul.realestatemanager.designsystem.atome
 
+import android.app.Activity
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.os.Build
@@ -9,7 +10,10 @@ import android.text.SpannableStringBuilder
 import android.util.AttributeSet
 import android.util.SparseArray
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewTreeObserver
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.withStyledAttributes
 import androidx.core.widget.doAfterTextChanged
@@ -46,11 +50,26 @@ class PlusMinusView @JvmOverloads constructor(
             getDimensionPixelSize(R.styleable.PlusMinusView_plusMinusDrawablePadding, 2).let {
                 binding.viewPlusMinusLabelText.compoundDrawablePadding = it
             }
-            // Value EditText width
+            // EditText width
             getDimensionPixelSize(R.styleable.PlusMinusView_plusMinusEditTextWidth, 0).takeIf { it != 0 }?.let { editTextWidth ->
                 val layoutParams = binding.viewPlusMinusValueEditText.layoutParams
                 layoutParams.width = editTextWidth
                 binding.viewPlusMinusValueEditText.layoutParams = layoutParams
+            }
+            // EditText imeOptions
+            val imeOptions = getInt(R.styleable.PlusMinusView_plusMinusImeOptions, 0)
+            if (imeOptions == 1) {
+                binding.viewPlusMinusValueEditText.imeOptions = EditorInfo.IME_ACTION_DONE
+                binding.viewPlusMinusValueEditText.setOnEditorActionListener { _, actionId, _ ->
+                    // Clears focus and hides keyboard when done button is clicked
+                    if (actionId == EditorInfo.IME_ACTION_DONE) {
+                        binding.viewPlusMinusValueEditText.clearFocus()
+                        hideKeyboard(binding.viewPlusMinusValueEditText)
+                        true
+                    } else {
+                        false
+                    }
+                }
             }
         }
 
@@ -160,6 +179,12 @@ class PlusMinusView @JvmOverloads constructor(
             compoundDrawables[2],
             compoundDrawables[3]
         )
+    }
+
+    private fun hideKeyboard(view: View) {
+        val context = view.context
+        val inputMethodManager = context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
     }
 
     fun setLabel(label: String) {

@@ -220,6 +220,7 @@
                         app:layout_flexGrow="1"
                         app:plusMinusDrawablePadding="3.5dp"
                         app:plusMinusImageSrc="@drawable/hotel_black_16dp"
+                        app:plusMinusImeOptions="actionDone"
                         app:plusMinusLabel="Bedrooms" />
                 </com.google.android.flexbox.FlexboxLayout>
 
