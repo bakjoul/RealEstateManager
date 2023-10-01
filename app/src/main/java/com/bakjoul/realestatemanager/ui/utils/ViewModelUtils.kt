@@ -1,6 +1,5 @@
 package com.bakjoul.realestatemanager.ui.utils
 
-import android.util.Log
 import com.bakjoul.realestatemanager.data.settings.model.AppCurrency
 import com.bakjoul.realestatemanager.data.settings.model.SurfaceUnit
 import java.math.BigDecimal
@@ -12,7 +11,6 @@ import kotlin.math.ceil
 class ViewModelUtils {
 
     companion object {
-        private var viewModelCounter = 0
 
         fun formatSurface(surface: Double, surfaceUnit: SurfaceUnit): Pair<Int, String> = when (surfaceUnit) {
             SurfaceUnit.Meters -> surface.toInt() to surfaceUnit.unit
@@ -33,12 +31,6 @@ class ViewModelUtils {
                 }
             }
             return formattedPrice
-        }
-
-        fun generateViewModelKey(): String {
-            Log.d("test", "generateViewModelKey: $viewModelCounter")
-            viewModelCounter++
-            return "PlusMinusViewModel$viewModelCounter"
         }
     }
 }

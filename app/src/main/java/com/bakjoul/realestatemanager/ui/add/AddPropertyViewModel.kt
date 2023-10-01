@@ -59,7 +59,7 @@ class AddPropertyViewModel @Inject constructor(
         private const val TAG = "AddPropertyViewModel"
     }
 
-    private val propertyFormMutableStateFlow: MutableStateFlow<AddPropertyForm> = MutableStateFlow(AddPropertyForm())
+    private val propertyFormMutableStateFlow: MutableStateFlow<AddPropertyForm> = initPropertyForm()
 
     private val currentAddressInputMutableStateFlow: MutableStateFlow<Pair<String, Boolean>?> = MutableStateFlow(null)
     private val addressPredictionsFlow: Flow<AutocompleteWrapper?> = currentAddressInputMutableStateFlow
@@ -91,7 +91,7 @@ class AddPropertyViewModel @Inject constructor(
         ) { propertyForm, currency, surfaceUnit, addressPredictions, photos ->
             AddPropertyViewState(
                 propertyTypeEntity = propertyForm.type,
-                isSold = propertyForm.isSold,
+                isSold = propertyForm.isSold ?: false,
                 priceHint = formatPriceHint(currency),
                 currencyFormat = getCurrencyFormat(currency),
                 surfaceLabel = formatSurfaceLabel(surfaceUnit),
@@ -101,9 +101,9 @@ class AddPropertyViewModel @Inject constructor(
                 numberOfBedrooms = propertyForm.bedrooms.toString(),
                 addressPredictions = mapAddressPredictions(addressPredictions),
                 address = formatAddress(propertyForm.autoCompleteAddress),
-                city = propertyForm.address.city,
-                state = propertyForm.address.state,
-                zipcode = propertyForm.address.zipcode,
+                city = propertyForm.address?.city ?: "",
+                state = propertyForm.address?.state ?: "",
+                zipcode = propertyForm.address?.zipcode ?: "",
                 photos = mapPhotosToItemViewStates(photos),
             )
         }.collect {
@@ -123,6 +123,26 @@ class AddPropertyViewModel @Inject constructor(
             }
         }
     }
+
+    private fun initPropertyForm() = MutableStateFlow(
+        AddPropertyForm(
+            type = null,
+            isSold = false,
+            forSaleSince = null,
+            dateOfSale = null,
+            price = BigDecimal.ZERO,
+            surface = BigDecimal.ZERO,
+            rooms = 0,
+            bathrooms = 0,
+            bedrooms = 0,
+            pointsOfInterest = emptyList(),
+            autoCompleteAddress = null,
+            address = AddPropertyAddress(),
+            description = null,
+            photos = emptyList(),
+            agent = null,
+        )
+    )
 
     private fun getCurrencyFormat(currency: AppCurrency): DecimalFormat {
         val symbols = DecimalFormatSymbols(Locale.getDefault())
@@ -152,10 +172,10 @@ class AddPropertyViewModel @Inject constructor(
 
     private fun formatSurfaceLabel(surfaceUnit: SurfaceUnit): String = "Surface (${surfaceUnit.unit})"
 
-    private fun formatSurfaceValue(surface: BigDecimal): String = if (surface.scale() <= 0) {
-        surface.toBigInteger().toString()
-    } else {
-        surface.toString()
+    private fun formatSurfaceValue(surface: BigDecimal?): String {
+        return surface?.let {
+            if (it.scale() <= 0) it.toBigInteger().toString() else it.toString()
+        } ?: "0"
     }
 
     private fun formatAddress(address: AddPropertyAddress?): String? {
@@ -198,7 +218,7 @@ class AddPropertyViewModel @Inject constructor(
                                     }
                                     propertyFormMutableStateFlow.update {
                                         it.copy(
-                                            autoCompleteAddress = it.address.copy(
+                                            autoCompleteAddress = it.address?.copy(
                                                 streetNumber = geocodingResult.result.streetNumber,
                                                 route = geocodingResult.result.route,
                                                 complementaryAddress = it.address.complementaryAddress,
@@ -209,7 +229,7 @@ class AddPropertyViewModel @Inject constructor(
                                                 latitude = geocodingResult.result.latitude,
                                                 longitude = geocodingResult.result.longitude
                                             ),
-                                            address = it.address.copy(
+                                            address = it.address?.copy(
                                                 streetNumber = geocodingResult.result.streetNumber,
                                                 route = geocodingResult.result.route,
                                                 complementaryAddress = it.address.complementaryAddress,
@@ -293,83 +313,27 @@ class AddPropertyViewModel @Inject constructor(
         }
     }
 
-    fun onSurfaceValueChanged(surface: BigDecimal) {
-        if (surface >= BigDecimal.ZERO) {
-            propertyFormMutableStateFlow.update {
-                it.copy(surface = surface)
-            }
-        }
-    }
-
-    fun decrementSurface(surface: BigDecimal) {
-        if (surface > BigDecimal.ZERO) {
-            propertyFormMutableStateFlow.update {
-                it.copy(surface = surface - BigDecimal.ONE)
-            }
-        }
-    }
-
-    fun incrementSurface(surface: BigDecimal) {
+    fun onSurfaceChanged(surface: Number) {
         propertyFormMutableStateFlow.update {
-            it.copy(surface = surface + BigDecimal.ONE)
+            it.copy(surface = BigDecimal(surface.toString()))
         }
     }
 
-    fun onRoomsValueChanged(rooms: Int) {
-        if (rooms >= 0) {
-            propertyFormMutableStateFlow.update {
-                it.copy(rooms = rooms)
-            }
-        }
-    }
-
-    fun updateRoomCount(rooms: Int) {
+    fun onRoomsCountChanged(rooms: Number) {
         propertyFormMutableStateFlow.update {
-            it.copy(rooms = rooms)
+            it.copy(rooms = rooms.toInt())
         }
     }
 
-    fun onBathroomsValueChanged(bathrooms: Int) {
-        if (bathrooms >= 0) {
-            propertyFormMutableStateFlow.update {
-                it.copy(bathrooms = bathrooms)
-            }
-        }
-    }
-
-    fun decrementBathrooms(bathrooms: Int) {
-        if (bathrooms > 0) {
-            propertyFormMutableStateFlow.update {
-                it.copy(bathrooms = bathrooms - 1)
-            }
-        }
-    }
-
-    fun incrementBathrooms(bathrooms: Int) {
+    fun onBathroomsCountChanged(bathrooms: Number) {
         propertyFormMutableStateFlow.update {
-            it.copy(bathrooms = bathrooms + 1)
+            it.copy(bathrooms = bathrooms.toInt())
         }
     }
 
-    fun onBedroomsValueChanged(bedrooms: Int) {
-        if (bedrooms >= 0) {
-            propertyFormMutableStateFlow.update {
-                it.copy(bedrooms = bedrooms)
-            }
-        }
-    }
-
-    fun decrementBedrooms(bedrooms: Int) {
-        if (bedrooms > 0) {
-            propertyFormMutableStateFlow.update {
-                it.copy(bedrooms = bedrooms - 1)
-            }
-        }
-    }
-
-    fun incrementBedrooms(bedrooms: Int) {
+    fun onBedroomsCountChanged(bedrooms: Number) {
         propertyFormMutableStateFlow.update {
-            it.copy(bedrooms = bedrooms + 1)
+            it.copy(bedrooms = bedrooms.toInt())
         }
     }
 
@@ -380,9 +344,9 @@ class AddPropertyViewModel @Inject constructor(
             propertyFormMutableStateFlow.update {
                 it.copy(
                     pointsOfInterest = if (isChecked) {
-                        propertyFormMutableStateFlow.value.pointsOfInterest + poiEntity
+                        propertyFormMutableStateFlow.value.pointsOfInterest?.plus(poiEntity)
                     } else {
-                        propertyFormMutableStateFlow.value.pointsOfInterest - poiEntity
+                        propertyFormMutableStateFlow.value.pointsOfInterest?.minus(poiEntity)
                     }
                 )
             }
@@ -390,16 +354,19 @@ class AddPropertyViewModel @Inject constructor(
     }
 
     fun onAddressChanged(address: String) {
+        // Reset address fields if address clear button was clicked
         if (isAddressTextCleared) {
             isAddressTextCleared = false
             resetAddressFields()
             return
         }
 
+        // Updates current address if needed
         if (currentAddressInputMutableStateFlow.value?.first != address) {
             currentAddressInputMutableStateFlow.value = address to true
         }
 
+        // Reset address fields if current address input different from address selected from suggestions
         if (propertyFormMutableStateFlow.value.autoCompleteAddress != null
             && formatAddress(propertyFormMutableStateFlow.value.address) != address
         ) {
@@ -414,13 +381,13 @@ class AddPropertyViewModel @Inject constructor(
 
     fun onComplementaryAddressChanged(complementaryAddress: String) {
         propertyFormMutableStateFlow.update {
-            it.copy(address = it.address.copy(complementaryAddress = complementaryAddress))
+            it.copy(address = it.address?.copy(complementaryAddress = complementaryAddress))
         }
     }
 
     fun onComplementaryAddressTextCleared() {
         propertyFormMutableStateFlow.update {
-            it.copy(address = it.address.copy(complementaryAddress = null))
+            it.copy(address = it.address?.copy(complementaryAddress = null))
         }
     }
 
@@ -456,19 +423,19 @@ class AddPropertyViewModel @Inject constructor(
     // region Private data classes
     private data class AddPropertyForm(
         val type: PropertyTypeEntity? = null,
-        val isSold: Boolean = false,
+        val isSold: Boolean? = null,
         val forSaleSince: LocalDate? = null,
         val dateOfSale: LocalDate? = null,
-        val price: BigDecimal = BigDecimal.ZERO,
-        val surface: BigDecimal = BigDecimal.ZERO,
+        val price: BigDecimal? = null,
+        val surface: BigDecimal? = null,
         val rooms: Int? = null,
-        val bathrooms: Int = 0,
-        val bedrooms: Int = 0,
-        val pointsOfInterest: List<PropertyPoiEntity> = emptyList(),
+        val bathrooms: Int? = null,
+        val bedrooms: Int? = null,
+        val pointsOfInterest: List<PropertyPoiEntity>? = null,
         val autoCompleteAddress: AddPropertyAddress? = null,
-        val address: AddPropertyAddress = AddPropertyAddress(),
+        val address: AddPropertyAddress? = null,
         val description: String? = null,
-        val photos: List<PhotoEntity> = emptyList(),
+        val photos: List<PhotoEntity>? = null,
         val agent: String? = null,
     )
 

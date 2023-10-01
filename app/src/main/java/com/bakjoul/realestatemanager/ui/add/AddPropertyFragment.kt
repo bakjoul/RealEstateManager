@@ -121,6 +121,26 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
             binding.addPropertyPriceTextInputEditText.setText("")
         }
 
+        // Surface plus minus view
+        binding.addPropertySurfacePlusMinusView.getValueLiveData().observe(viewLifecycleOwner) {
+            viewModel.onSurfaceChanged(it)
+        }
+
+        // Rooms plus minus views
+        binding.addPropertyRoomsPlusMinusView.getValueLiveData().observe(viewLifecycleOwner) {
+            viewModel.onRoomsCountChanged(it)
+        }
+
+        // Bathrooms plus minus views
+        binding.addPropertyBathroomsPlusMinusView.getValueLiveData().observe(viewLifecycleOwner) {
+            viewModel.onBathroomsCountChanged(it)
+        }
+
+        // Bedrooms plus minus views
+        binding.addPropertyBedroomsPlusMinusView.getValueLiveData().observe(viewLifecycleOwner) {
+            viewModel.onBedroomsCountChanged(it)
+        }
+
         // Chip listeners
         listOf(
             binding.addPropertyAmenitiesSchoolChip,
@@ -255,7 +275,6 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
 
             // Updates address fields on autocomplete selection
             if (viewState.address != null && viewState.address != binding.addPropertyAddressTextInputEditText.text.toString()) {
-//                viewModel.onAddressTextUpdatedByAutocomplete() TODO NINO
                 binding.addPropertyAddressTextInputEditText.setText(viewState.address)
             }
 

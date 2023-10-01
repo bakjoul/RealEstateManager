@@ -17,6 +17,8 @@ import android.view.inputmethod.InputMethodManager
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.withStyledAttributes
 import androidx.core.widget.doAfterTextChanged
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.databinding.ViewPlusMinusBinding
 import com.bakjoul.realestatemanager.ui.utils.restoreChildViewStates
@@ -32,7 +34,7 @@ class PlusMinusView @JvmOverloads constructor(
     private val binding = ViewPlusMinusBinding.inflate(LayoutInflater.from(context), this, true)
 
     private var isBigDecimal = false
-    private var value: Number? = null
+    private val valueLiveData: MutableLiveData<Number> = MutableLiveData()
 
     init {
         context.withStyledAttributes(attrs, R.styleable.PlusMinusView) {
@@ -74,8 +76,8 @@ class PlusMinusView @JvmOverloads constructor(
         }
 
         // Sets and displays initial value
-        value = if (isBigDecimal) BigDecimal.ZERO else 0
-        binding.viewPlusMinusValueEditText.text = SpannableStringBuilder(value.toString())
+        valueLiveData.value = if (isBigDecimal) BigDecimal.ZERO else 0
+        binding.viewPlusMinusValueEditText.text = SpannableStringBuilder(valueLiveData.value.toString())
 
         // Disables decrement button by default
         binding.viewPlusMinusDecrementButton.isEnabled = false
@@ -89,39 +91,39 @@ class PlusMinusView @JvmOverloads constructor(
                 val editTextValue = editTextString?.toBigDecimalOrNull() ?: BigDecimal.ZERO
                 binding.viewPlusMinusDecrementButton.isEnabled = editTextValue != BigDecimal.ZERO
                 binding.viewPlusMinusDecrementButton.alpha = if (editTextValue == BigDecimal.ZERO) 0.5f else 1f
-                value = editTextValue
+                valueLiveData.value = editTextValue
             } else {
                 val editTextValue = editTextString?.toIntOrNull() ?: 0
                 binding.viewPlusMinusDecrementButton.isEnabled = editTextValue != 0
                 binding.viewPlusMinusDecrementButton.alpha = if (editTextValue == 0) 0.5f else 1f
-                value = editTextValue
+                valueLiveData.value = editTextValue
             }
         }
 
         // Decrements value when decrement button is clicked
         binding.viewPlusMinusDecrementButton.setOnClickListener {
             // Updates value
-            value = if (isBigDecimal) {
-                (value as? BigDecimal)?.minus(BigDecimal.ONE)
+            valueLiveData.value = if (isBigDecimal) {
+                (valueLiveData.value as? BigDecimal)?.minus(BigDecimal.ONE)
             } else {
-                (value as? Int)?.minus(1)
+                (valueLiveData.value as? Int)?.minus(1)
             }
 
             // Displays new value
-            binding.viewPlusMinusValueEditText.text = SpannableStringBuilder(value.toString())
+            binding.viewPlusMinusValueEditText.text = SpannableStringBuilder(valueLiveData.value.toString())
         }
 
         // Increments value when increment button is clicked
         binding.viewPlusMinusIncrementButton.setOnClickListener {
             // Updates value
-            value = if (isBigDecimal) {
-                (value as? BigDecimal)?.plus(BigDecimal.ONE)
+            valueLiveData.value = if (isBigDecimal) {
+                (valueLiveData.value as? BigDecimal)?.plus(BigDecimal.ONE)
             } else {
-                (value as? Int)?.plus(1)
+                (valueLiveData.value as? Int)?.plus(1)
             }
 
             // Displays new value
-            binding.viewPlusMinusValueEditText.text = SpannableStringBuilder(value.toString())
+            binding.viewPlusMinusValueEditText.text = SpannableStringBuilder(valueLiveData.value.toString())
         }
 
         // Selects all text when EditText gains focus
@@ -140,7 +142,7 @@ class PlusMinusView @JvmOverloads constructor(
             } else {
                 if (binding.viewPlusMinusValueEditText.text.toString().isEmpty()) {
                     binding.viewPlusMinusValueEditText.text =
-                        SpannableStringBuilder(value.toString())
+                        SpannableStringBuilder(valueLiveData.value.toString())
                 }
             }
         }
@@ -191,12 +193,7 @@ class PlusMinusView @JvmOverloads constructor(
         binding.viewPlusMinusLabelText.text = label
     }
 
-    fun setValue(value: Number) {
-        this.value = value
-        binding.viewPlusMinusValueEditText.text = SpannableStringBuilder(value.toString())
-    }
-
-    fun getValue(): Number? = value
+    fun getValueLiveData(): LiveData<Number> = valueLiveData
 
     internal class SavedState : BaseSavedState {
 
