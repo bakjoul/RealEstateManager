@@ -1,6 +1,6 @@
 package com.bakjoul.realestatemanager.data.photos
 
-import com.bakjoul.realestatemanager.data.photos.model.PendingPhotoDto
+import com.bakjoul.realestatemanager.data.photos.model.PhotoDraftDto
 import com.bakjoul.realestatemanager.data.photos.model.PhotoDto
 import com.bakjoul.realestatemanager.domain.CoroutineDispatcherProvider
 import com.bakjoul.realestatemanager.domain.photos.PhotoRepository
@@ -15,7 +15,7 @@ import javax.inject.Singleton
 @Singleton
 class PhotoRepositoryRoom @Inject constructor(
     private val photoDao: PhotoDao,
-    private val pendingPhotoDao: PendingPhotoDao,
+    private val photoDraftDao: PhotoDraftDao,
     private val coroutineDispatcherProvider: CoroutineDispatcherProvider
 ) : PhotoRepository {
 
@@ -28,21 +28,21 @@ class PhotoRepositoryRoom @Inject constructor(
             mapPhotoDtoToDomainEntities(it)
         }.flowOn(coroutineDispatcherProvider.io)
 
-    override suspend fun addPendingPhoto(photoEntity: PhotoEntity) = withContext(coroutineDispatcherProvider.io) {
-        pendingPhotoDao.insert(mapToPendingPhotoDtoEntity(photoEntity))
+    override suspend fun addPhotoDraft(photoEntity: PhotoEntity) = withContext(coroutineDispatcherProvider.io) {
+        photoDraftDao.insert(mapToPhotoDraftDto(photoEntity))
     }
 
-    override fun getPendingPhotos(): Flow<List<PhotoEntity>> =
-        pendingPhotoDao.getPendingPhotos().map {
-            mapPendingPhotoDtoToDomainEntities(it)
+    override fun getPhotosDrafts(): Flow<List<PhotoEntity>> =
+        photoDraftDao.getPhotosDrafts().map {
+            mapPhotoDraftDtoToDomainEntities(it)
         }.flowOn(coroutineDispatcherProvider.io)
 
-    override suspend fun deletePendingPhoto(id: Long) = withContext(coroutineDispatcherProvider.io) {
-        pendingPhotoDao.delete(id)
+    override suspend fun deletePhotoDraft(id: Long) = withContext(coroutineDispatcherProvider.io) {
+        photoDraftDao.delete(id)
     }
 
-    override suspend fun deleteAllPendingPhotos() = withContext(coroutineDispatcherProvider.io) {
-        pendingPhotoDao.deleteAll()
+    override suspend fun deleteAllPhotosDrafts() = withContext(coroutineDispatcherProvider.io) {
+        photoDraftDao.deleteAll()
     }
 
     // region Mapping
@@ -63,15 +63,15 @@ class PhotoRepositoryRoom @Inject constructor(
             )
         }
 
-    private fun mapToPendingPhotoDtoEntity(photoEntity: PhotoEntity): PendingPhotoDto =
-        PendingPhotoDto(
+    private fun mapToPhotoDraftDto(photoEntity: PhotoEntity): PhotoDraftDto =
+        PhotoDraftDto(
             propertyId = photoEntity.propertyId,
             url = photoEntity.url,
             description = photoEntity.description
         )
 
-    private fun mapPendingPhotoDtoToDomainEntities(pendingPhotoDtoList: List<PendingPhotoDto>) =
-        pendingPhotoDtoList.map {
+    private fun mapPhotoDraftDtoToDomainEntities(photoDraftDtoList: List<PhotoDraftDto>) =
+        photoDraftDtoList.map {
             PhotoEntity(
                 id = it.id,
                 propertyId = it.propertyId,
