@@ -12,7 +12,7 @@ import com.bakjoul.realestatemanager.domain.camera.DeleteCapturedPhotoUseCase
 import com.bakjoul.realestatemanager.domain.camera.GetCapturedPhotoUriUseCase
 import com.bakjoul.realestatemanager.domain.navigation.NavigateUseCase
 import com.bakjoul.realestatemanager.domain.navigation.model.To
-import com.bakjoul.realestatemanager.domain.photos.AddPendingPhotoUseCase
+import com.bakjoul.realestatemanager.domain.photos.AddPhotoDraftUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -25,7 +25,7 @@ class PhotoPreviewViewModel @Inject constructor(
     private val application: Application,
     private val getCapturedPhotoUriUseCase: GetCapturedPhotoUriUseCase,
     private val deleteCapturedPhotoUseCase: DeleteCapturedPhotoUseCase,
-    private val addPendingPhotoUseCase: AddPendingPhotoUseCase,
+    private val addPhotoDraftUseCase: AddPhotoDraftUseCase,
     private val navigateUseCase: NavigateUseCase
 ) : ViewModel() {
 
@@ -66,7 +66,7 @@ class PhotoPreviewViewModel @Inject constructor(
         if (descriptionMutableStateFlow.value != null) {
             photoUri?.let {
                 viewModelScope.launch {
-                    addPendingPhotoUseCase.invoke(it, descriptionMutableStateFlow.value!!)
+                    addPhotoDraftUseCase.invoke(it, descriptionMutableStateFlow.value!!)
                 }
             }
             navigateUseCase.invoke(To.CloseCamera)

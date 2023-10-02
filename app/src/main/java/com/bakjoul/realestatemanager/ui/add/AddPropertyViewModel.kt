@@ -15,8 +15,8 @@ import com.bakjoul.realestatemanager.domain.geocoding.model.GeocodingWrapper
 import com.bakjoul.realestatemanager.domain.navigation.GetCurrentNavigationUseCase
 import com.bakjoul.realestatemanager.domain.navigation.NavigateUseCase
 import com.bakjoul.realestatemanager.domain.navigation.model.To
-import com.bakjoul.realestatemanager.domain.photos.DeletePendingPhotoUseCase
-import com.bakjoul.realestatemanager.domain.photos.GetPendingPhotosUseCase
+import com.bakjoul.realestatemanager.domain.photos.DeletePhotoDraftUseCase
+import com.bakjoul.realestatemanager.domain.photos.GetPhotosDraftsUseCase
 import com.bakjoul.realestatemanager.domain.photos.model.PhotoEntity
 import com.bakjoul.realestatemanager.domain.property.model.PropertyPoiEntity
 import com.bakjoul.realestatemanager.domain.property.model.PropertyTypeEntity
@@ -50,8 +50,8 @@ class AddPropertyViewModel @Inject constructor(
     private val getCurrentSurfaceUnitUseCase: GetCurrentSurfaceUnitUseCase,
     private val getAddressPredictionsUseCase: GetAddressPredictionsUseCase,
     private val getAddressDetailsUseCase: GetAddressDetailsUseCase,
-    private val getPendingPhotosUseCase: GetPendingPhotosUseCase,
-    private val deletePendingPhotoUseCase: DeletePendingPhotoUseCase,
+    private val getPhotosDraftsUseCase: GetPhotosDraftsUseCase,
+    private val deletePhotoDraftUseCase: DeletePhotoDraftUseCase,
     private val navigateUseCase: NavigateUseCase
 ) : ViewModel() {
 
@@ -87,7 +87,7 @@ class AddPropertyViewModel @Inject constructor(
             getCurrentCurrencyUseCase.invoke(),
             getCurrentSurfaceUnitUseCase.invoke(),
             addressPredictionsFlow,
-            getPendingPhotosUseCase.invoke()
+            getPhotosDraftsUseCase.invoke()
         ) { propertyForm, currency, surfaceUnit, addressPredictions, photos ->
             AddPropertyViewState(
                 propertyTypeEntity = propertyForm.type,
@@ -162,7 +162,7 @@ class AddPropertyViewModel @Inject constructor(
             },
             onDeletePhotoClicked = EquatableCallback {
                 viewModelScope.launch {
-                    deletePendingPhotoUseCase.invoke(it.id)
+                    deletePhotoDraftUseCase.invoke(it.id)
                 }
             }
         )

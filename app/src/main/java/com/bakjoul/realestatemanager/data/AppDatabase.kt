@@ -9,9 +9,9 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.workDataOf
-import com.bakjoul.realestatemanager.data.photos.PendingPhotoDao
+import com.bakjoul.realestatemanager.data.photos.PhotoDraftDao
 import com.bakjoul.realestatemanager.data.photos.PhotoDao
-import com.bakjoul.realestatemanager.data.photos.model.PendingPhotoDto
+import com.bakjoul.realestatemanager.data.photos.model.PhotoDraftDto
 import com.bakjoul.realestatemanager.data.photos.model.PhotoDto
 import com.bakjoul.realestatemanager.data.property.PropertyDao
 import com.bakjoul.realestatemanager.data.property.model.PropertyDto
@@ -26,7 +26,7 @@ import java.time.LocalDate
     entities = [
         PropertyDto::class,
         PhotoDto::class,
-        PendingPhotoDto::class
+        PhotoDraftDto::class
     ],
     version = 1,
     exportSchema = false
@@ -39,7 +39,7 @@ abstract class AppDatabase : RoomDatabase() {
 
     abstract fun getPropertyDao(): PropertyDao
     abstract fun getPhotoDao(): PhotoDao
-    abstract fun getPendingPhotoDao(): PendingPhotoDao
+    abstract fun getPhotoDraftDao(): PhotoDraftDao
 
     companion object {
         private const val DATABASE_NAME = "RealEstateManager_database"

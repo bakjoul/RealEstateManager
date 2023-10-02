@@ -4,8 +4,8 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "pending_photos")
-data class PendingPhotoDto (
+@Entity(tableName = "photos_drafts")
+data class PhotoDraftDto (
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     @ColumnInfo(name = "property_id") val propertyId: Long,
     val url: String,
