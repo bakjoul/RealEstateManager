@@ -9,12 +9,12 @@ plugins {
 
 android {
     namespace 'com.bakjoul.realestatemanager'
-    compileSdk 33
+    compileSdk 34
 
     defaultConfig {
         applicationId "com.bakjoul.realestatemanager"
         minSdk 21
-        targetSdk 33
+        targetSdk 34
         versionCode 1
         versionName "1.0"
 
@@ -81,8 +81,8 @@ dependencies {
 
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation 'androidx.core:core-ktx:1.10.1'
-    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.6.1'
+    implementation 'androidx.core:core-ktx:1.12.0'
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.6.2'
     implementation 'com.google.android.material:material:1.9.0'
     // Hilt
     implementation 'com.google.dagger:hilt-android:2.46.1'
@@ -93,7 +93,7 @@ dependencies {
     kapt "androidx.room:room-compiler:2.5.2"
     implementation "androidx.room:room-ktx:2.5.2"
     // LiveData
-    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.6.1'
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.6.2'
     // Fragment
     implementation 'androidx.fragment:fragment-ktx:1.6.1'
     // Retrofit
@@ -111,11 +111,11 @@ dependencies {
     // Flexbox
     implementation 'com.google.android.flexbox:flexbox:3.0.0'
     // Firestore
-    implementation 'com.google.firebase:firebase-firestore-ktx:24.7.0'
+    implementation 'com.google.firebase:firebase-firestore-ktx:24.8.1'
     // Firebase Auth
-    implementation 'com.google.firebase:firebase-auth-ktx:22.1.1'
+    implementation 'com.google.firebase:firebase-auth-ktx:22.1.2'
     // Google Auth
-    implementation 'com.google.android.gms:play-services-auth:20.6.0'
+    implementation 'com.google.android.gms:play-services-auth:20.7.0'
 
     // CameraX core library using the camera2 implementation
     def camerax_version = "1.2.3"
