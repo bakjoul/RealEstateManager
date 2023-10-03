@@ -82,7 +82,7 @@ class PhotoRepositoryRoom @Inject constructor(
 
     private fun mapToPhotoDraftDto(photoEntity: PhotoEntity): PhotoDraftDto =
         PhotoDraftDto(
-            propertyId = photoEntity.propertyId,
+            propertyFormId = photoEntity.propertyId,
             url = photoEntity.url,
             description = photoEntity.description
         )
@@ -91,7 +91,7 @@ class PhotoRepositoryRoom @Inject constructor(
         photoDraftDtoList.map {
             PhotoEntity(
                 id = it.id,
-                propertyId = it.propertyId,
+                propertyId = it.propertyFormId,
                 url = it.url,
                 description = it.description
             )

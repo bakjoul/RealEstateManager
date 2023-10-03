@@ -9,12 +9,14 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.workDataOf
-import com.bakjoul.realestatemanager.data.photos.PhotoDraftDao
 import com.bakjoul.realestatemanager.data.photos.PhotoDao
+import com.bakjoul.realestatemanager.data.photos.PhotoDraftDao
 import com.bakjoul.realestatemanager.data.photos.model.PhotoDraftDto
 import com.bakjoul.realestatemanager.data.photos.model.PhotoDto
 import com.bakjoul.realestatemanager.data.property.PropertyDao
+import com.bakjoul.realestatemanager.data.property.PropertyFormDao
 import com.bakjoul.realestatemanager.data.property.model.PropertyDto
+import com.bakjoul.realestatemanager.data.property.model.PropertyFormDto
 import com.bakjoul.realestatemanager.data.utils.type_converters.BigDecimalTypeConverter
 import com.bakjoul.realestatemanager.data.utils.type_converters.LocalDateTypeConverter
 import com.bakjoul.realestatemanager.domain.property.model.PropertyTypeEntity
@@ -26,7 +28,8 @@ import java.time.LocalDate
     entities = [
         PropertyDto::class,
         PhotoDto::class,
-        PhotoDraftDto::class
+        PhotoDraftDto::class,
+        PropertyFormDto::class
     ],
     version = 1,
     exportSchema = false
@@ -38,6 +41,7 @@ import java.time.LocalDate
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun getPropertyDao(): PropertyDao
+    abstract fun getPropertyFormDao(): PropertyFormDao
     abstract fun getPhotoDao(): PhotoDao
     abstract fun getPhotoDraftDao(): PhotoDraftDao
 

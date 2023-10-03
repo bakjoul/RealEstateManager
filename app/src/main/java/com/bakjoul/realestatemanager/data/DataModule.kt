@@ -8,6 +8,7 @@ import com.bakjoul.realestatemanager.data.api.GoogleApi
 import com.bakjoul.realestatemanager.data.photos.PhotoDao
 import com.bakjoul.realestatemanager.data.photos.PhotoDraftDao
 import com.bakjoul.realestatemanager.data.property.PropertyDao
+import com.bakjoul.realestatemanager.data.property.PropertyFormDao
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.gson.Gson
@@ -130,6 +131,10 @@ class DataModule {
     @Singleton
     @Provides
     fun providePhotoDraftDao(appDatabase: AppDatabase): PhotoDraftDao = appDatabase.getPhotoDraftDao()
+
+    @Singleton
+    @Provides
+    fun providePropertyFormDao(appDatabase: AppDatabase): PropertyFormDao = appDatabase.getPropertyFormDao()
 }
 
 @Qualifier
