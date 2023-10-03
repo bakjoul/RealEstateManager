@@ -18,8 +18,10 @@ import com.bakjoul.realestatemanager.domain.navigation.model.To
 import com.bakjoul.realestatemanager.domain.photos.DeletePhotoDraftUseCase
 import com.bakjoul.realestatemanager.domain.photos.GetPhotosDraftsUseCase
 import com.bakjoul.realestatemanager.domain.photos.model.PhotoEntity
+import com.bakjoul.realestatemanager.domain.property_form.model.PropertyFormEntity
 import com.bakjoul.realestatemanager.domain.property.model.PropertyPoiEntity
 import com.bakjoul.realestatemanager.domain.property.model.PropertyTypeEntity
+import com.bakjoul.realestatemanager.domain.property_form.model.PropertyFormAddress
 import com.bakjoul.realestatemanager.domain.settings.currency.GetCurrentCurrencyUseCase
 import com.bakjoul.realestatemanager.domain.settings.surface_unit.GetCurrentSurfaceUnitUseCase
 import com.bakjoul.realestatemanager.ui.utils.EquatableCallback
@@ -36,7 +38,6 @@ import java.math.BigDecimal
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.time.Instant
-import java.time.LocalDate
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.util.Locale
@@ -59,7 +60,7 @@ class AddPropertyViewModel @Inject constructor(
         private const val TAG = "AddPropertyViewModel"
     }
 
-    private val propertyFormMutableStateFlow: MutableStateFlow<AddPropertyForm> = initPropertyForm()
+    private val propertyFormMutableStateFlow: MutableStateFlow<PropertyFormEntity> = initPropertyForm()
 
     private val currentAddressInputMutableStateFlow: MutableStateFlow<Pair<String, Boolean>?> = MutableStateFlow(null)
     private val addressPredictionsFlow: Flow<AutocompleteWrapper?> = currentAddressInputMutableStateFlow
@@ -125,7 +126,7 @@ class AddPropertyViewModel @Inject constructor(
     }
 
     private fun initPropertyForm() = MutableStateFlow(
-        AddPropertyForm(
+        PropertyFormEntity(
             type = null,
             isSold = false,
             forSaleSince = null,
@@ -137,7 +138,7 @@ class AddPropertyViewModel @Inject constructor(
             bedrooms = 0,
             pointsOfInterest = emptyList(),
             autoCompleteAddress = null,
-            address = AddPropertyAddress(),
+            address = PropertyFormAddress(),
             description = null,
             photos = emptyList(),
             agent = null,
@@ -178,7 +179,7 @@ class AddPropertyViewModel @Inject constructor(
         } ?: "0"
     }
 
-    private fun formatAddress(address: AddPropertyAddress?): String? {
+    private fun formatAddress(address: PropertyFormAddress?): String? {
         return if (address?.streetNumber != null && address.route != null) {
             "${address.streetNumber} ${address.route}"
         } else {
@@ -254,7 +255,7 @@ class AddPropertyViewModel @Inject constructor(
         propertyFormMutableStateFlow.update {
             it.copy(
                 autoCompleteAddress = null,
-                address = AddPropertyAddress()
+                address = PropertyFormAddress()
             )
         }
     }
@@ -419,36 +420,4 @@ class AddPropertyViewModel @Inject constructor(
         // TODO check everything
         navigateUseCase.invoke(To.CloseAddProperty)
     }
-
-    // region Private data classes
-    private data class AddPropertyForm(
-        val type: PropertyTypeEntity? = null,
-        val isSold: Boolean? = null,
-        val forSaleSince: LocalDate? = null,
-        val dateOfSale: LocalDate? = null,
-        val price: BigDecimal? = null,
-        val surface: BigDecimal? = null,
-        val rooms: Int? = null,
-        val bathrooms: Int? = null,
-        val bedrooms: Int? = null,
-        val pointsOfInterest: List<PropertyPoiEntity>? = null,
-        val autoCompleteAddress: AddPropertyAddress? = null,
-        val address: AddPropertyAddress? = null,
-        val description: String? = null,
-        val photos: List<PhotoEntity>? = null,
-        val agent: String? = null,
-    )
-
-    private data class AddPropertyAddress(
-        val streetNumber: String? = null,
-        val route: String? = null,
-        val complementaryAddress: String? = null,
-        val zipcode: String? = null,
-        val city: String? = null,
-        val state: String? = null,
-        val country: String? = null,
-        val latitude: Double? = null,
-        val longitude: Double? = null
-    )
-    // endregion
 }
