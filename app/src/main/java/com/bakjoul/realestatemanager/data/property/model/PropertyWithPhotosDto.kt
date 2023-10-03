@@ -13,4 +13,3 @@ data class PropertyWithPhotosDto(
     )
     val photos: List<PhotoDto>
 )
-

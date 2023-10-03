@@ -62,8 +62,8 @@ abstract class AppDatabase : RoomDatabase() {
                             PropertyDto(
                                 id = 1,
                                 type = PropertyTypeEntity.FLAT.name,
-                                entryDate = LocalDate.parse("2023-01-01"),
-                                saleDate = LocalDate.parse("2023-01-02"),
+                                forSaleSince = LocalDate.parse("2023-01-01"),
+                                dateOfSale = LocalDate.parse("2023-01-02"),
                                 price = BigDecimal(100000),
                                 surface = 100.0,
                                 rooms = 5,
@@ -94,8 +94,8 @@ abstract class AppDatabase : RoomDatabase() {
                             PropertyDto(
                                 id = 2,
                                 type = PropertyTypeEntity.HOUSE.name,
-                                entryDate = LocalDate.parse("2023-02-01"),
-                                saleDate = null,
+                                forSaleSince = LocalDate.parse("2023-02-01"),
+                                dateOfSale = null,
                                 price = BigDecimal(200000),
                                 surface = 200.0,
                                 rooms = 10,
@@ -126,8 +126,8 @@ abstract class AppDatabase : RoomDatabase() {
                             PropertyDto(
                                 id = 3,
                                 type = PropertyTypeEntity.DUPLEX.name,
-                                entryDate = LocalDate.parse("2023-04-01"),
-                                saleDate = null,
+                                forSaleSince = LocalDate.parse("2023-04-01"),
+                                dateOfSale = null,
                                 price = BigDecimal(300000),
                                 surface = 300.0,
                                 rooms = 12,

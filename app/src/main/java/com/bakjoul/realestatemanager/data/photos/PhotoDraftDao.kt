@@ -11,21 +11,21 @@ import kotlinx.coroutines.flow.Flow
 interface PhotoDraftDao {
 
     @Insert
-    suspend fun insert(photo: PhotoDraftDto)
+    suspend fun insert(photo: PhotoDraftDto): Long?
 
-    @Query("SELECT EXISTS(SELECT id FROM photos_drafts)")
-    suspend fun hasPhotosDrafts(): Boolean
+    @Query("SELECT EXISTS(SELECT id FROM photo_drafts)")
+    suspend fun hasPhotoDrafts(): Boolean
 
-    @Query("SELECT * FROM photos_drafts")
-    fun getPhotosDrafts(): Flow<List<PhotoDraftDto>>
+    @Query("SELECT * FROM photo_drafts")
+    fun getPhotoDrafts(): Flow<List<PhotoDraftDto>>
 
-    @Query("DELETE FROM photos_drafts WHERE id = :id")
+    @Query("DELETE FROM photo_drafts WHERE id = :id")
     suspend fun delete(id: Long)
 
     @Transaction
-    @Query("DELETE FROM photos_drafts WHERE id in (:ids)")
+    @Query("DELETE FROM photo_drafts WHERE id in (:ids)")
     suspend fun deleteBulk(ids: List<Long>)
 
-    @Query("DELETE FROM photos_drafts")
+    @Query("DELETE FROM photo_drafts")
     suspend fun deleteAll()
 }
