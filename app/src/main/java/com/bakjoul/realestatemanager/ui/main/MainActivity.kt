@@ -25,6 +25,7 @@ import com.bakjoul.realestatemanager.ui.photos.PhotosFragment
 import com.bakjoul.realestatemanager.ui.settings.SettingsFragment
 import com.bakjoul.realestatemanager.ui.utils.Event.Companion.observeEvent
 import com.bakjoul.realestatemanager.ui.utils.viewBinding
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -128,6 +129,22 @@ class MainActivity : AppCompatActivity() {
                     val detailsPortraitFragment = hideDetailsPortrait()
                     showDetailsTabletIfNeeded(containerDetailsId, detailsPortraitFragment)
                     showPhotosDialog()
+                }
+
+                MainViewAction.ShowPropertyDraftDialog -> { // TODO extract string resources
+                    MaterialAlertDialogBuilder(this)
+                        .setTitle("Drafts available")
+                        .setMessage("You have drafts in progress")
+                        .setNeutralButton("Cancel") { dialog, _ ->
+                            dialog.dismiss()
+                        }
+                        .setNegativeButton("Add new property") { dialog, _ ->
+
+                        }
+                        .setPositiveButton("Continue editing draft") { dialog, _ ->
+
+                        }
+                        .show()
                 }
 
                 MainViewAction.ShowAddPropertyDialog -> {

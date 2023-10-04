@@ -5,6 +5,7 @@ sealed class To {
     object CloseDetails: To()
     object PhotosDialog: To()
     object ClosePhotosDialog: To()
+    object DraftDialog: To()
     object AddProperty : To()
     object CloseAddProperty : To()
     object HideAddressSuggestions : To()

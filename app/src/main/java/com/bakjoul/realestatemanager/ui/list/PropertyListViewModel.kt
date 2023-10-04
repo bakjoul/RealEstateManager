@@ -136,6 +136,6 @@ class PropertyListViewModel @Inject constructor(
     }
 
     fun onAddPropertyClicked() {
-        navigateUseCase.invoke(To.AddProperty)
+        navigateUseCase.invoke(To.DraftDialog)
     }
 }
