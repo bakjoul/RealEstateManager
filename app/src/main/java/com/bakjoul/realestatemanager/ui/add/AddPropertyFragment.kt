@@ -122,23 +122,23 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
         }
 
         // Surface plus minus view
-        binding.addPropertySurfacePlusMinusView.getValueLiveData().observe(viewLifecycleOwner) {
-            viewModel.onSurfaceChanged(it)
+        binding.addPropertySurfacePlusMinusView.addOnValueChangedListener { newValue ->
+            viewModel.onSurfaceChanged(newValue)
         }
 
         // Rooms plus minus views
-        binding.addPropertyRoomsPlusMinusView.getValueLiveData().observe(viewLifecycleOwner) {
-            viewModel.onRoomsCountChanged(it)
+        binding.addPropertyRoomsPlusMinusView.addOnValueChangedListener { newValue ->
+            viewModel.onRoomsCountChanged(newValue)
         }
 
         // Bathrooms plus minus views
-        binding.addPropertyBathroomsPlusMinusView.getValueLiveData().observe(viewLifecycleOwner) {
-            viewModel.onBathroomsCountChanged(it)
+        binding.addPropertyBathroomsPlusMinusView.addOnValueChangedListener { newValue ->
+            viewModel.onBathroomsCountChanged(newValue)
         }
 
         // Bedrooms plus minus views
-        binding.addPropertyBedroomsPlusMinusView.getValueLiveData().observe(viewLifecycleOwner) {
-            viewModel.onBedroomsCountChanged(it)
+        binding.addPropertyBedroomsPlusMinusView.addOnValueChangedListener { newValue ->
+            viewModel.onBedroomsCountChanged(newValue)
         }
 
         // Chip listeners

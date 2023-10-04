@@ -17,13 +17,12 @@ import android.view.inputmethod.InputMethodManager
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.withStyledAttributes
 import androidx.core.widget.doAfterTextChanged
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.databinding.ViewPlusMinusBinding
 import com.bakjoul.realestatemanager.ui.utils.restoreChildViewStates
 import com.bakjoul.realestatemanager.ui.utils.saveChildViewStates
 import java.math.BigDecimal
+import java.util.concurrent.CopyOnWriteArraySet
 
 class PlusMinusView @JvmOverloads constructor(
     context: Context,
@@ -33,8 +32,15 @@ class PlusMinusView @JvmOverloads constructor(
 
     private val binding = ViewPlusMinusBinding.inflate(LayoutInflater.from(context), this, true)
 
-    private var isBigDecimal = false
-    private val valueLiveData: MutableLiveData<Number> = MutableLiveData()
+    private val listeners = CopyOnWriteArraySet<(Number) -> Unit>()
+
+    // FIXME When Context.withStyledAttributes is updated to guarantee variable value
+    private var isBigDecimal: Boolean = false
+    private var count: BigDecimal = BigDecimal.ZERO
+        set(value) {
+            field = value
+            publishNewValueToListeners(value)
+        }
 
     init {
         context.withStyledAttributes(attrs, R.styleable.PlusMinusView) {
@@ -76,8 +82,7 @@ class PlusMinusView @JvmOverloads constructor(
         }
 
         // Sets and displays initial value
-        valueLiveData.value = if (isBigDecimal) BigDecimal.ZERO else 0
-        binding.viewPlusMinusValueEditText.text = SpannableStringBuilder(valueLiveData.value.toString())
+        binding.viewPlusMinusValueEditText.text = SpannableStringBuilder(count.toString())
 
         // Disables decrement button by default
         binding.viewPlusMinusDecrementButton.isEnabled = false
@@ -85,45 +90,28 @@ class PlusMinusView @JvmOverloads constructor(
 
         // Disables decrement button when value is 0 and updates value when EditText text changes
         binding.viewPlusMinusValueEditText.doAfterTextChanged { editable ->
-            val editTextString = editable?.toString()
-
-            if (isBigDecimal) {
-                val editTextValue = editTextString?.toBigDecimalOrNull() ?: BigDecimal.ZERO
-                binding.viewPlusMinusDecrementButton.isEnabled = editTextValue != BigDecimal.ZERO
-                binding.viewPlusMinusDecrementButton.alpha = if (editTextValue == BigDecimal.ZERO) 0.5f else 1f
-                valueLiveData.value = editTextValue
-            } else {
-                val editTextValue = editTextString?.toIntOrNull() ?: 0
-                binding.viewPlusMinusDecrementButton.isEnabled = editTextValue != 0
-                binding.viewPlusMinusDecrementButton.alpha = if (editTextValue == 0) 0.5f else 1f
-                valueLiveData.value = editTextValue
-            }
+            val editTextValue = editable?.toString()?.toBigDecimalOrNull() ?: BigDecimal.ZERO
+            binding.viewPlusMinusDecrementButton.isEnabled = editTextValue != BigDecimal.ZERO
+            binding.viewPlusMinusDecrementButton.alpha = if (editTextValue == BigDecimal.ZERO) 0.5f else 1f
+            count = editTextValue
         }
 
         // Decrements value when decrement button is clicked
         binding.viewPlusMinusDecrementButton.setOnClickListener {
             // Updates value
-            valueLiveData.value = if (isBigDecimal) {
-                (valueLiveData.value as? BigDecimal)?.minus(BigDecimal.ONE)
-            } else {
-                (valueLiveData.value as? Int)?.minus(1)
-            }
+            count = count.minus(BigDecimal.ONE)
 
             // Displays new value
-            binding.viewPlusMinusValueEditText.text = SpannableStringBuilder(valueLiveData.value.toString())
+            binding.viewPlusMinusValueEditText.text = SpannableStringBuilder(count.toString())
         }
 
         // Increments value when increment button is clicked
         binding.viewPlusMinusIncrementButton.setOnClickListener {
             // Updates value
-            valueLiveData.value = if (isBigDecimal) {
-                (valueLiveData.value as? BigDecimal)?.plus(BigDecimal.ONE)
-            } else {
-                (valueLiveData.value as? Int)?.plus(1)
-            }
+            count = count.plus(BigDecimal.ONE)
 
             // Displays new value
-            binding.viewPlusMinusValueEditText.text = SpannableStringBuilder(valueLiveData.value.toString())
+            binding.viewPlusMinusValueEditText.text = SpannableStringBuilder(count.toString())
         }
 
         // Selects all text when EditText gains focus
@@ -142,9 +130,15 @@ class PlusMinusView @JvmOverloads constructor(
             } else {
                 if (binding.viewPlusMinusValueEditText.text.toString().isEmpty()) {
                     binding.viewPlusMinusValueEditText.text =
-                        SpannableStringBuilder(valueLiveData.value.toString())
+                        SpannableStringBuilder(count.toString())
                 }
             }
+        }
+    }
+
+    private fun publishNewValueToListeners(newValue: Number) {
+        listeners.forEach { listener ->
+            listener.invoke(newValue)
         }
     }
 
@@ -193,7 +187,13 @@ class PlusMinusView @JvmOverloads constructor(
         binding.viewPlusMinusLabelText.text = label
     }
 
-    fun getValueLiveData(): LiveData<Number> = valueLiveData
+    fun addOnValueChangedListener(listener: (Number) -> Unit) {
+        listeners.add(listener)
+    }
+
+    fun removeOnValueChangeListener(listener: (Number) -> Unit) {
+        listeners.remove(listener)
+    }
 
     internal class SavedState : BaseSavedState {
 
