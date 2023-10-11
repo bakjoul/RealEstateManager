@@ -23,6 +23,7 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.databinding.FragmentAddPropertyBinding
+import com.bakjoul.realestatemanager.designsystem.molecule.photo_list.AddPropertyPhotoAdapter
 import com.bakjoul.realestatemanager.ui.camera.activity.CameraActivity
 import com.bakjoul.realestatemanager.ui.utils.CustomThemeDialog
 import com.bakjoul.realestatemanager.ui.utils.Event.Companion.observeEvent

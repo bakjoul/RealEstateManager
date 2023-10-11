@@ -9,10 +9,10 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.databinding.FragmentPhotosThumbnailItemBinding
-import com.bakjoul.realestatemanager.ui.common_model.PhotoItemViewState
+import com.bakjoul.realestatemanager.designsystem.molecule.photo_list.PhotoListItemViewState
 import com.bumptech.glide.Glide
 
-class PhotosAdapter : ListAdapter<PhotoItemViewState, PhotosAdapter.ViewHolder>(PhotosDiffCallback) {
+class PhotosAdapter : ListAdapter<PhotoListItemViewState, PhotosAdapter.ViewHolder>(PhotosDiffCallback) {
 
     private var selectedItem: Int = RecyclerView.NO_POSITION
 
@@ -26,7 +26,7 @@ class PhotosAdapter : ListAdapter<PhotoItemViewState, PhotosAdapter.ViewHolder>(
 
     class ViewHolder(private val binding: FragmentPhotosThumbnailItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(item: PhotoItemViewState, isSelected: Boolean) {
+        fun bind(item: PhotoListItemViewState, isSelected: Boolean) {
             Glide.with(binding.photosThumbnailItemImageView.context).load(item.url).into(binding.photosThumbnailItemImageView)
             binding.photosThumbnailItemDescription.text = item.description
             binding.photosThumbnailItem.setOnClickListener { item.onPhotoClicked() }
@@ -47,9 +47,9 @@ class PhotosAdapter : ListAdapter<PhotoItemViewState, PhotosAdapter.ViewHolder>(
         notifyDataSetChanged()
     }
 
-    object PhotosDiffCallback : DiffUtil.ItemCallback<PhotoItemViewState>() {
-        override fun areItemsTheSame(oldItem: PhotoItemViewState, newItem: PhotoItemViewState): Boolean = oldItem.id == newItem.id
+    object PhotosDiffCallback : DiffUtil.ItemCallback<PhotoListItemViewState>() {
+        override fun areItemsTheSame(oldItem: PhotoListItemViewState, newItem: PhotoListItemViewState): Boolean = oldItem.id == newItem.id
 
-        override fun areContentsTheSame(oldItem: PhotoItemViewState, newItem: PhotoItemViewState): Boolean = oldItem == newItem
+        override fun areContentsTheSame(oldItem: PhotoListItemViewState, newItem: PhotoListItemViewState): Boolean = oldItem == newItem
     }
 }

@@ -1,4 +1,4 @@
-package com.bakjoul.realestatemanager.designsystem.atome
+package com.bakjoul.realestatemanager.designsystem.molecule.plus_minus
 
 import android.app.Activity
 import android.content.Context

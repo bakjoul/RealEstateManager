@@ -1,5 +1,6 @@
 package com.bakjoul.realestatemanager.ui.add
 
+import com.bakjoul.realestatemanager.designsystem.molecule.photo_list.PhotoListItemViewState
 import com.bakjoul.realestatemanager.domain.property.model.PropertyTypeEntity
 import com.bakjoul.realestatemanager.ui.utils.EquatableCallback
 import com.bakjoul.realestatemanager.ui.utils.EquatableCallbackWithTwoParams
@@ -20,5 +21,5 @@ data class AddPropertyViewState(
     val city: String?,
     val state: String?,
     val zipcode: String?,
-    val photos: List<AddPropertyPhotoItemViewState>,
+    val photos: List<PhotoListItemViewState>,
 )

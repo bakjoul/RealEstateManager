@@ -18,7 +18,7 @@ import com.bakjoul.realestatemanager.domain.property.model.PropertyPoiEntity
 import com.bakjoul.realestatemanager.domain.property.model.PropertyTypeEntity
 import com.bakjoul.realestatemanager.domain.settings.currency.GetCurrentCurrencyUseCase
 import com.bakjoul.realestatemanager.domain.settings.surface_unit.GetCurrentSurfaceUnitUseCase
-import com.bakjoul.realestatemanager.ui.common_model.PhotoItemViewState
+import com.bakjoul.realestatemanager.designsystem.molecule.photo_list.PhotoListItemViewState
 import com.bakjoul.realestatemanager.ui.utils.EquatableCallback
 import com.bakjoul.realestatemanager.ui.utils.ViewModelUtils.Companion.formatPrice
 import com.bakjoul.realestatemanager.ui.utils.ViewModelUtils.Companion.formatSurface
@@ -116,9 +116,9 @@ class DetailsViewModel @Inject constructor(
         }
     }
 
-    private fun mapPhotosToItemViewStates(photoEntities: List<PhotoEntity>): List<PhotoItemViewState> {
+    private fun mapPhotosToItemViewStates(photoEntities: List<PhotoEntity>): List<PhotoListItemViewState> {
         return photoEntities.mapIndexed { index, photoEntity ->
-            PhotoItemViewState(
+            PhotoListItemViewState(
                 id = index.toLong(),
                 url = photoEntity.url,
                 description = photoEntity.description,

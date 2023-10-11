@@ -1,4 +1,4 @@
-package com.bakjoul.realestatemanager.ui.add
+package com.bakjoul.realestatemanager.designsystem.molecule.photo_list
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bakjoul.realestatemanager.databinding.FragmentAddPropertyPhotoItemBinding
+import com.bakjoul.realestatemanager.ui.add.AddPropertyPhotoItemViewState
 import com.bumptech.glide.Glide
 
 class AddPropertyPhotoAdapter : ListAdapter<AddPropertyPhotoItemViewState, AddPropertyPhotoAdapter.ViewHolder>(AddPropertyPhotoDiffCallback) {

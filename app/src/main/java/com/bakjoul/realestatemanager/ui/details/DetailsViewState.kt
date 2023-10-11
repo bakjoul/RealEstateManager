@@ -1,6 +1,6 @@
 package com.bakjoul.realestatemanager.ui.details
 
-import com.bakjoul.realestatemanager.ui.common_model.PhotoItemViewState
+import com.bakjoul.realestatemanager.designsystem.molecule.photo_list.PhotoListItemViewState
 
 data class DetailsViewState(
     val mainPhotoUrl: String,
@@ -25,7 +25,7 @@ data class DetailsViewState(
     val poiTrain: Boolean,
     val poiAirport: Boolean,
     val location: String,
-    val medias: List<PhotoItemViewState>,
+    val medias: List<PhotoListItemViewState>,
     val clipboardAddress: String,
     val staticMapUrl: String,
     val mapsAddress: String

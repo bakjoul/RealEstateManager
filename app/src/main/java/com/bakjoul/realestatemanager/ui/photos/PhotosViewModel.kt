@@ -12,7 +12,7 @@ import com.bakjoul.realestatemanager.domain.navigation.NavigateUseCase
 import com.bakjoul.realestatemanager.domain.navigation.model.To
 import com.bakjoul.realestatemanager.domain.property.GetCurrentPropertyUseCase
 import com.bakjoul.realestatemanager.domain.photos.model.PhotoEntity
-import com.bakjoul.realestatemanager.ui.common_model.PhotoItemViewState
+import com.bakjoul.realestatemanager.designsystem.molecule.photo_list.PhotoListItemViewState
 import com.bakjoul.realestatemanager.ui.utils.EquatableCallback
 import com.bakjoul.realestatemanager.ui.utils.Event
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -54,9 +54,9 @@ class PhotosViewModel @Inject constructor(
                 }
             }.asLiveData()
 
-    private fun mapPhotosToItemViewStates(photoEntities: List<PhotoEntity>): List<PhotoItemViewState> {
+    private fun mapPhotosToItemViewStates(photoEntities: List<PhotoEntity>): List<PhotoListItemViewState> {
         return photoEntities.mapIndexed { index, photoEntity ->
-            PhotoItemViewState(
+            PhotoListItemViewState(
                 id = index.toLong(),
                 url = photoEntity.url,
                 description = photoEntity.description,
