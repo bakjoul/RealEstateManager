@@ -1,5 +1,6 @@
-package com.bakjoul.realestatemanager.domain.photos
+package com.bakjoul.realestatemanager.domain.photos.drafts
 
+import com.bakjoul.realestatemanager.domain.photos.PhotoRepository
 import com.bakjoul.realestatemanager.domain.photos.model.PhotoEntity
 import javax.inject.Inject
 

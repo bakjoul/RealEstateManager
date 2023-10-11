@@ -7,7 +7,7 @@ import java.math.BigDecimal
 import java.time.LocalDate
 
 data class PropertyFormEntity(
-    val id: Long? = null,
+    val id: Long,
     val type: PropertyTypeEntity? = null,
     val isSold: Boolean? = null,
     val forSaleSince: LocalDate? = null,
@@ -23,4 +23,5 @@ data class PropertyFormEntity(
     val description: String? = null,
     val photos: List<PhotoEntity>? = null,
     val agent: String? = null,
+    val entryDate: LocalDate? = null,
 )

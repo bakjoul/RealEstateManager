@@ -135,11 +135,9 @@ class MainActivity : AppCompatActivity() {
                     MaterialAlertDialogBuilder(this)
                         .setTitle("Drafts available")
                         .setMessage("You have drafts in progress")
-                        .setNeutralButton("Cancel") { dialog, _ ->
-                            dialog.dismiss()
-                        }
-                        .setNegativeButton("Add new property") { dialog, _ ->
-
+                        .setNeutralButton("Cancel") { _, _ -> }
+                        .setNegativeButton("Add new property") { _, _ ->
+                            viewModel.onAddNewPropertyClicked()
                         }
                         .setPositiveButton("Continue editing draft") { dialog, _ ->
 

@@ -14,11 +14,13 @@ interface PropertyRepository {
 
     suspend fun addPropertyDraft(propertyForm: PropertyFormEntity): Long?
 
-    suspend fun hasPropertyForms(): Boolean
+    suspend fun updatePropertyDraft(propertyId: Long, propertyForm: PropertyFormEntity): Int
 
-    fun getPropertyFormsFlow(): Flow<List<PropertyFormEntity>>
+    suspend fun hasPropertyDrafts(): Boolean
 
-    fun getPropertyFormById(id: Long): Flow<PropertyFormEntity?>
+    fun getPropertyDraftsFlow(): Flow<List<PropertyFormEntity>>
 
-    suspend fun deletePropertyForm(id: Long)
+    fun getPropertyDraftById(id: Long): Flow<PropertyFormEntity?>
+
+    suspend fun deletePropertyDraft(id: Long)
 }

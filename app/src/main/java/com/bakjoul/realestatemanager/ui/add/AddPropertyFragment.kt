@@ -155,7 +155,7 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
             binding.addPropertyTransportationAirportChip
         ).forEach {
             it.setOnCheckedChangeListener { chip, isChecked ->
-                viewModel.onChipCheckedChanged(chip.toString(), isChecked)
+                viewModel.onChipCheckedChanged(chip.text.toString(), isChecked)
             }
         }
 

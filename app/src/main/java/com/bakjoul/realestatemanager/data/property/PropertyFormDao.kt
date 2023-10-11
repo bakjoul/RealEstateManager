@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
+import androidx.room.Update
 import com.bakjoul.realestatemanager.data.property.model.PropertyFormDto
 import com.bakjoul.realestatemanager.data.property.model.PropertyFormWithPhotosDto
 import kotlinx.coroutines.flow.Flow
@@ -13,6 +14,9 @@ interface PropertyFormDao {
 
     @Insert
     suspend fun insert(propertyForm: PropertyFormDto): Long?
+
+    @Update
+    suspend fun update(propertyForm: PropertyFormDto): Int
 
     @Query("SELECT EXISTS(SELECT id FROM property_drafts)")
     suspend fun hasPropertyForms(): Boolean

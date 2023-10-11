@@ -12,7 +12,7 @@ import com.bakjoul.realestatemanager.domain.camera.DeleteCapturedPhotoUseCase
 import com.bakjoul.realestatemanager.domain.camera.GetCapturedPhotoUriUseCase
 import com.bakjoul.realestatemanager.domain.navigation.NavigateUseCase
 import com.bakjoul.realestatemanager.domain.navigation.model.To
-import com.bakjoul.realestatemanager.domain.photos.AddPhotoDraftUseCase
+import com.bakjoul.realestatemanager.domain.photos.drafts.AddPhotoDraftUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

@@ -15,13 +15,15 @@ import com.bakjoul.realestatemanager.domain.geocoding.model.GeocodingWrapper
 import com.bakjoul.realestatemanager.domain.navigation.GetCurrentNavigationUseCase
 import com.bakjoul.realestatemanager.domain.navigation.NavigateUseCase
 import com.bakjoul.realestatemanager.domain.navigation.model.To
-import com.bakjoul.realestatemanager.domain.photos.DeletePhotoDraftUseCase
-import com.bakjoul.realestatemanager.domain.photos.GetPhotosDraftsUseCase
+import com.bakjoul.realestatemanager.domain.photos.drafts.DeletePhotoDraftUseCase
+import com.bakjoul.realestatemanager.domain.photos.drafts.GetPhotosDraftsUseCase
 import com.bakjoul.realestatemanager.domain.photos.model.PhotoEntity
-import com.bakjoul.realestatemanager.domain.property_form.model.PropertyFormEntity
+import com.bakjoul.realestatemanager.domain.property.drafts.AddPropertyDraftUseCase
+import com.bakjoul.realestatemanager.domain.property.drafts.UpdatePropertyDraftUseCase
 import com.bakjoul.realestatemanager.domain.property.model.PropertyPoiEntity
 import com.bakjoul.realestatemanager.domain.property.model.PropertyTypeEntity
 import com.bakjoul.realestatemanager.domain.property_form.model.PropertyFormAddress
+import com.bakjoul.realestatemanager.domain.property_form.model.PropertyFormEntity
 import com.bakjoul.realestatemanager.domain.settings.currency.GetCurrentCurrencyUseCase
 import com.bakjoul.realestatemanager.domain.settings.surface_unit.GetCurrentSurfaceUnitUseCase
 import com.bakjoul.realestatemanager.ui.utils.EquatableCallback
@@ -53,7 +55,9 @@ class AddPropertyViewModel @Inject constructor(
     private val getAddressDetailsUseCase: GetAddressDetailsUseCase,
     private val getPhotosDraftsUseCase: GetPhotosDraftsUseCase,
     private val deletePhotoDraftUseCase: DeletePhotoDraftUseCase,
-    private val navigateUseCase: NavigateUseCase
+    private val navigateUseCase: NavigateUseCase,
+    private val addPropertyDraftUseCase: AddPropertyDraftUseCase,
+    private val updatePropertyDraftUseCase: UpdatePropertyDraftUseCase,
 ) : ViewModel() {
 
     private companion object {
@@ -80,6 +84,7 @@ class AddPropertyViewModel @Inject constructor(
             }
         }
 
+    private var propertyId: Long? = null
     private var isAddressTextCleared = false
 
     val viewStateLiveData: LiveData<AddPropertyViewState> = liveData {
@@ -90,6 +95,8 @@ class AddPropertyViewModel @Inject constructor(
             addressPredictionsFlow,
             getPhotosDraftsUseCase.invoke()
         ) { propertyForm, currency, surfaceUnit, addressPredictions, photos ->
+            saveDraft(propertyForm)
+
             AddPropertyViewState(
                 propertyTypeEntity = propertyForm.type,
                 isSold = propertyForm.isSold ?: false,
@@ -112,6 +119,18 @@ class AddPropertyViewModel @Inject constructor(
         }
     }
 
+    private fun saveDraft(propertyForm: PropertyFormEntity) {
+        viewModelScope.launch {
+            if (propertyId == null) {
+                propertyId = addPropertyDraftUseCase.invoke(propertyForm)
+                Log.d("test", "saveDraft: init $propertyId")
+            } else {
+                updatePropertyDraftUseCase.invoke(propertyId!!, propertyForm)
+                Log.d("test", "saveDraft: update $propertyId")
+            }
+        }
+    }
+
     val viewActionLiveData: LiveData<Event<AddPropertyViewAction>> = liveData {
         getCurrentNavigationUseCase.invoke().collect {
             when (it) {
@@ -127,6 +146,7 @@ class AddPropertyViewModel @Inject constructor(
 
     private fun initPropertyForm() = MutableStateFlow(
         PropertyFormEntity(
+            id = 0,
             type = null,
             isSold = false,
             forSaleSince = null,
@@ -142,6 +162,7 @@ class AddPropertyViewModel @Inject constructor(
             description = null,
             photos = emptyList(),
             agent = null,
+            entryDate = null
         )
     )
 

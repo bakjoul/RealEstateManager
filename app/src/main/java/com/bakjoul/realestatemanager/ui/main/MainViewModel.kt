@@ -1,5 +1,6 @@
 package com.bakjoul.realestatemanager.ui.main
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
@@ -101,5 +102,10 @@ class MainViewModel @Inject constructor(
 
     fun onSettingsClicked() {
         navigateUseCase.invoke(To.Settings)
+    }
+
+    fun onAddNewPropertyClicked() {
+        Log.d("test", "onAddNewPropertyClicked: ")
+        navigateUseCase.invoke(To.AddProperty)
     }
 }

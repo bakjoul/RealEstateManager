@@ -129,8 +129,7 @@ class PlusMinusView @JvmOverloads constructor(
                 })
             } else {
                 if (binding.viewPlusMinusValueEditText.text.toString().isEmpty()) {
-                    binding.viewPlusMinusValueEditText.text =
-                        SpannableStringBuilder(count.toString())
+                    binding.viewPlusMinusValueEditText.text = SpannableStringBuilder(count.toString())
                 }
             }
         }

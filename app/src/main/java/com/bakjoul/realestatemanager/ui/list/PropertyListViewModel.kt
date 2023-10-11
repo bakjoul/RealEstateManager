@@ -8,6 +8,7 @@ import android.text.style.StyleSpan
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
+import androidx.lifecycle.viewModelScope
 import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.data.settings.model.AppCurrency
 import com.bakjoul.realestatemanager.data.settings.model.SurfaceUnit
@@ -17,6 +18,7 @@ import com.bakjoul.realestatemanager.domain.current_property.SetCurrentPropertyI
 import com.bakjoul.realestatemanager.domain.navigation.NavigateUseCase
 import com.bakjoul.realestatemanager.domain.navigation.model.To
 import com.bakjoul.realestatemanager.domain.property.GetPropertiesFlowUseCase
+import com.bakjoul.realestatemanager.domain.property.drafts.HasPropertyDraftsUseCase
 import com.bakjoul.realestatemanager.domain.property.model.PropertyTypeEntity
 import com.bakjoul.realestatemanager.domain.resources.IsTabletUseCase
 import com.bakjoul.realestatemanager.domain.settings.currency.GetCurrentCurrencyUseCase
@@ -27,6 +29,7 @@ import com.bakjoul.realestatemanager.ui.utils.ViewModelUtils.Companion.formatSur
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.time.format.DateTimeFormatter
@@ -44,7 +47,8 @@ class PropertyListViewModel @Inject constructor(
     private val getEuroRateUseCase: GetEuroRateUseCase,
     private val getCurrentSurfaceUnitUseCase: GetCurrentSurfaceUnitUseCase,
     private val isTabletUseCase: IsTabletUseCase,
-    private val navigateUseCase: NavigateUseCase
+    private val navigateUseCase: NavigateUseCase,
+    private val hasPropertyDraftsUseCase: HasPropertyDraftsUseCase
 ) : ViewModel() {
 
     private val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
@@ -136,6 +140,12 @@ class PropertyListViewModel @Inject constructor(
     }
 
     fun onAddPropertyClicked() {
-        navigateUseCase.invoke(To.DraftDialog)
+        viewModelScope.launch {
+            if (hasPropertyDraftsUseCase.invoke()) {
+                navigateUseCase.invoke(To.DraftDialog)
+            } else {
+                navigateUseCase.invoke(To.AddProperty)
+            }
+        }
     }
 }

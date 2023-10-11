@@ -48,22 +48,26 @@ class PropertyRepositoryRoom @Inject constructor(
     }.flowOn(coroutineDispatcherProvider.io)
 
     override suspend fun addPropertyDraft(propertyForm: PropertyFormEntity): Long? = withContext(coroutineDispatcherProvider.io) {
-        propertyFormDao.insert(mapPropertyDraftToDto(propertyForm))
+        propertyFormDao.insert(mapPropertyDraftToDto(null, propertyForm))
     }
 
-    override suspend fun hasPropertyForms(): Boolean = propertyFormDao.hasPropertyForms()
+    override suspend fun updatePropertyDraft(propertyId: Long, propertyForm: PropertyFormEntity): Int = withContext(coroutineDispatcherProvider.io) {
+        propertyFormDao.update(mapPropertyDraftToDto(propertyId, propertyForm))
+    }
 
-    override fun getPropertyFormsFlow(): Flow<List<PropertyFormEntity>> = propertyFormDao.getPropertyForms().map { propertyFormWithPhotosList ->
+    override suspend fun hasPropertyDrafts(): Boolean = propertyFormDao.hasPropertyForms()
+
+    override fun getPropertyDraftsFlow(): Flow<List<PropertyFormEntity>> = propertyFormDao.getPropertyForms().map { propertyFormWithPhotosList ->
         propertyFormWithPhotosList.map {
             mapPropertyFormDtoToDomainEntity(it)
         }
     }.flowOn(coroutineDispatcherProvider.io)
 
-    override fun getPropertyFormById(id: Long): Flow<PropertyFormEntity?> = propertyFormDao.getPropertyFormById(id).map {
+    override fun getPropertyDraftById(id: Long): Flow<PropertyFormEntity?> = propertyFormDao.getPropertyFormById(id).map {
         it?.let { mapPropertyFormDtoToDomainEntity(it) }
     }.flowOn(coroutineDispatcherProvider.io)
 
-    override suspend fun deletePropertyForm(id: Long) = withContext(coroutineDispatcherProvider.io) {
+    override suspend fun deletePropertyDraft(id: Long) = withContext(coroutineDispatcherProvider.io) {
         propertyFormDao.delete(id)
     }
 
@@ -152,8 +156,9 @@ class PropertyRepositoryRoom @Inject constructor(
             )
         }
 
-    private fun mapPropertyDraftToDto(propertyForm: PropertyFormEntity): PropertyFormDto =
+    private fun mapPropertyDraftToDto(propertyId: Long?, propertyForm: PropertyFormEntity): PropertyFormDto =
         PropertyFormDto(
+            id = propertyId ?: 0,
             type = propertyForm.type?.name.toString(),
             isSold = propertyForm.isSold,
             forSaleSince = propertyForm.forSaleSince,
