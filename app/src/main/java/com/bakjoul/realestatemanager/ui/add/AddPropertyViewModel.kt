@@ -8,6 +8,8 @@ import androidx.lifecycle.viewModelScope
 import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.data.settings.model.AppCurrency
 import com.bakjoul.realestatemanager.data.settings.model.SurfaceUnit
+import com.bakjoul.realestatemanager.designsystem.molecule.photo_list.PhotoListMapper
+import com.bakjoul.realestatemanager.designsystem.molecule.photo_list.SelectType
 import com.bakjoul.realestatemanager.domain.autocomplete.GetAddressPredictionsUseCase
 import com.bakjoul.realestatemanager.domain.autocomplete.model.AutocompleteWrapper
 import com.bakjoul.realestatemanager.domain.geocoding.GetAddressDetailsUseCase
@@ -17,7 +19,6 @@ import com.bakjoul.realestatemanager.domain.navigation.NavigateUseCase
 import com.bakjoul.realestatemanager.domain.navigation.model.To
 import com.bakjoul.realestatemanager.domain.photos.drafts.DeletePhotoDraftUseCase
 import com.bakjoul.realestatemanager.domain.photos.drafts.GetPhotosDraftsUseCase
-import com.bakjoul.realestatemanager.domain.photos.model.PhotoEntity
 import com.bakjoul.realestatemanager.domain.property.drafts.AddPropertyDraftUseCase
 import com.bakjoul.realestatemanager.domain.property.drafts.UpdatePropertyDraftUseCase
 import com.bakjoul.realestatemanager.domain.property.model.PropertyPoiEntity
@@ -112,7 +113,16 @@ class AddPropertyViewModel @Inject constructor(
                 city = propertyForm.address?.city ?: "",
                 state = propertyForm.address?.state ?: "",
                 zipcode = propertyForm.address?.zipcode ?: "",
-                photos = mapPhotosToItemViewStates(photos),
+                photos = PhotoListMapper().map(
+                    photos,
+                    { SelectType.NOT_SELECTABLE },
+                    {},
+                    {
+                        viewModelScope.launch {
+                            deletePhotoDraftUseCase.invoke(it)
+                        }
+                    }
+                ),
             )
         }.collect {
             emit(it)
@@ -172,22 +182,6 @@ class AddPropertyViewModel @Inject constructor(
         symbols.decimalSeparator = if (currency == AppCurrency.EUR) ',' else '.'
 
         return DecimalFormat("#,###.##", symbols)
-    }
-
-    private fun mapPhotosToItemViewStates(photos: List<PhotoEntity>): List<AddPropertyPhotoItemViewState> = photos.map {
-        AddPropertyPhotoItemViewState(
-            id = it.id,
-            url = it.url,
-            description = it.description,
-            onPhotoClicked = EquatableCallback {
-                // TODO
-            },
-            onDeletePhotoClicked = EquatableCallback {
-                viewModelScope.launch {
-                    deletePhotoDraftUseCase.invoke(it.id)
-                }
-            }
-        )
     }
 
     private fun formatPriceHint(currency: AppCurrency): String = "Price (${currency.symbol})"

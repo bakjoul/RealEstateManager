@@ -23,7 +23,6 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.databinding.FragmentAddPropertyBinding
-import com.bakjoul.realestatemanager.designsystem.molecule.photo_list.AddPropertyPhotoAdapter
 import com.bakjoul.realestatemanager.ui.camera.activity.CameraActivity
 import com.bakjoul.realestatemanager.ui.utils.CustomThemeDialog
 import com.bakjoul.realestatemanager.ui.utils.Event.Companion.observeEvent
@@ -87,11 +86,9 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
         suggestionsDivider.setDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.suggestions_divider)!!)
         binding.addPropertyAddressSuggestionsRecyclerView.addItemDecoration(suggestionsDivider)
 
-        val photosAdapter = AddPropertyPhotoAdapter()
-        binding.addPropertyPhotosRecyclerView?.adapter = photosAdapter  // TODO update other layout
         val photosDivider = DividerItemDecoration(requireContext(), DividerItemDecoration.HORIZONTAL)
         photosDivider.setDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.photos_divider)!!)
-        binding.addPropertyPhotosRecyclerView?.addItemDecoration(photosDivider)
+        binding.addPropertyPhotoListView.addItemDecoration(photosDivider)
 
         // Property type radio group
         binding.addPropertyTypeRadioGroup.setOnCheckedChangeListener { _, checkedId ->
@@ -291,7 +288,7 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
             binding.addPropertyCityTextInputEditText.setText(viewState.city ?: "")
             binding.addPropertyZipcodeTextInputEditText.setText(viewState.zipcode ?: "")
 
-            photosAdapter.submitList(viewState.photos)
+            binding.addPropertyPhotoListView.bind(viewState.photos)
         }
 
         viewModel.viewActionLiveData.observeEvent(viewLifecycleOwner) {

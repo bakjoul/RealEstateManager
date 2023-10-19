@@ -2,7 +2,6 @@ package com.bakjoul.realestatemanager.designsystem.molecule.photo_list
 
 import android.content.Context
 import android.util.AttributeSet
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 
 class PhotoListView @JvmOverloads constructor(
@@ -11,9 +10,13 @@ class PhotoListView @JvmOverloads constructor(
     defStyleAttr: Int = 0,
 ) : RecyclerView(context, attrs, defStyleAttr) {
 
-    val adapter :
+    private val adapter = PhotoListAdapter()
 
-    fun bind(items : List<PhotoListItemViewState>) {
+    init {
+        setAdapter(adapter)
+    }
 
+    fun bind(items: List<PhotoListItemViewState>) {
+        adapter.submitList(items)
     }
 }

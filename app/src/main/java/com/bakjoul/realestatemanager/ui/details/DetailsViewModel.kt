@@ -6,20 +6,19 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import com.bakjoul.realestatemanager.BuildConfig
 import com.bakjoul.realestatemanager.R
+import com.bakjoul.realestatemanager.designsystem.molecule.photo_list.PhotoListMapper
+import com.bakjoul.realestatemanager.designsystem.molecule.photo_list.SelectType
 import com.bakjoul.realestatemanager.domain.CoroutineDispatcherProvider
 import com.bakjoul.realestatemanager.domain.currency_rate.GetEuroRateUseCase
 import com.bakjoul.realestatemanager.domain.current_photo.SetCurrentPhotoIdUseCase
 import com.bakjoul.realestatemanager.domain.current_property.ResetCurrentPropertyIdUseCase
 import com.bakjoul.realestatemanager.domain.navigation.NavigateUseCase
 import com.bakjoul.realestatemanager.domain.navigation.model.To
-import com.bakjoul.realestatemanager.domain.photos.model.PhotoEntity
 import com.bakjoul.realestatemanager.domain.property.GetCurrentPropertyUseCase
 import com.bakjoul.realestatemanager.domain.property.model.PropertyPoiEntity
 import com.bakjoul.realestatemanager.domain.property.model.PropertyTypeEntity
 import com.bakjoul.realestatemanager.domain.settings.currency.GetCurrentCurrencyUseCase
 import com.bakjoul.realestatemanager.domain.settings.surface_unit.GetCurrentSurfaceUnitUseCase
-import com.bakjoul.realestatemanager.designsystem.molecule.photo_list.PhotoListItemViewState
-import com.bakjoul.realestatemanager.ui.utils.EquatableCallback
 import com.bakjoul.realestatemanager.ui.utils.ViewModelUtils.Companion.formatPrice
 import com.bakjoul.realestatemanager.ui.utils.ViewModelUtils.Companion.formatSurface
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -80,7 +79,14 @@ class DetailsViewModel @Inject constructor(
                 poiTrain = property.amenities.contains(PropertyPoiEntity.TRAIN),
                 poiAirport = property.amenities.contains(PropertyPoiEntity.AIRPORT),
                 location = formatLocation(property.address.streetNumber, property.address.route, formatApartment(property.address.complementaryAddress), property.address.city, property.address.zipcode, property.address.country),
-                medias = mapPhotosToItemViewStates(property.photos),
+                medias = PhotoListMapper().map(
+                    property.photos,
+                    { SelectType.NOT_SELECTABLE },
+                    {
+                        setCurrentPhotoIdUseCase.invoke(it)
+                        navigateUseCase.invoke(To.PhotosDialog)
+                    }
+                ),
                 clipboardAddress = getClipboardAddress(property.address.streetNumber, property.address.route, property.address.city, property.address.country),
                 staticMapUrl = getMapUrl(property.address.streetNumber, property.address.route, property.address.city, property.address.country),
                 mapsAddress = getAddress(property.address.streetNumber, property.address.route, property.address.city, property.address.country)
@@ -113,20 +119,6 @@ class DetailsViewModel @Inject constructor(
             application.getString(R.string.property_sold_on) + soldDate.format(formatter)
         } else {
             application.getString(R.string.property_for_sale_since) + entryDate.format(formatter)
-        }
-    }
-
-    private fun mapPhotosToItemViewStates(photoEntities: List<PhotoEntity>): List<PhotoListItemViewState> {
-        return photoEntities.mapIndexed { index, photoEntity ->
-            PhotoListItemViewState(
-                id = index.toLong(),
-                url = photoEntity.url,
-                description = photoEntity.description,
-                onPhotoClicked = EquatableCallback {
-                    setCurrentPhotoIdUseCase.invoke(index)
-                    navigateUseCase.invoke(To.PhotosDialog)
-                }
-            )
         }
     }
 

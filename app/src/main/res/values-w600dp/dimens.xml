@@ -3,4 +3,6 @@
     <bool name="isTablet">true</bool>
     <dimen name="photo_frame_width">164dp</dimen>
     <dimen name="photo_frame_height">124dp</dimen>
+    <dimen name="photo_width">162dp</dimen>
+    <dimen name="photo_height">122dp</dimen>
 </resources>

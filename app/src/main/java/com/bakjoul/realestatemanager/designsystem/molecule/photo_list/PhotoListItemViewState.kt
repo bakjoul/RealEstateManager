@@ -7,10 +7,12 @@ data class PhotoListItemViewState(
     val url: String,
     val description: String,
     val selectType: SelectType,
-    val onPhotoClicked: EquatableCallback
+    val onPhotoClicked: EquatableCallback,
+    val onDeletePhotoClicked: EquatableCallback?
 )
+
  enum class SelectType {
-     NOT_SELECTED,
      SELECTED,
-     NOT_SELECTABLE,
+     NOT_SELECTED,
+     NOT_SELECTABLE
  }

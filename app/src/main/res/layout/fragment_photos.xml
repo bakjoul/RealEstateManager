@@ -10,7 +10,7 @@
         android:id="@+id/photos_ViewPager"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@id/photos_thumbnails_RecyclerView"
+        app:layout_constraintBottom_toTopOf="@id/photos_thumbnails_PhotoListView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -32,8 +32,8 @@
         app:progressMode="true"
         app:selectedDotColor="#FF3944BC" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/photos_thumbnails_RecyclerView"
+    <com.bakjoul.realestatemanager.designsystem.molecule.photo_list.PhotoListView
+        android:id="@+id/photos_thumbnails_PhotoListView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="2dp"
@@ -44,7 +44,7 @@
         app:layout_constraintStart_toStartOf="@id/photos_ViewPager"
         app:layout_constraintTop_toBottomOf="@id/photos_ViewPager"
         tools:itemCount="5"
-        tools:listitem="@layout/fragment_photos_thumbnail_item" />
+        tools:listitem="@layout/view_photo_item" />
 
     <ImageButton
         android:id="@+id/photos_ViewPager_close_button"

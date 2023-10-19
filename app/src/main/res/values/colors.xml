@@ -12,6 +12,7 @@
     <color name="grey_label">#FF494949</color>
     <color name="grey_transparent_button">#75494949</color>
     <color name="grey_transparent">#50808080</color>
+    <color name="grey_slightly_transparent">#85808080</color>
     <color name="grey_light">#FFECECEC</color>
     <color name="purple">#FF9370DB</color>
     <color name="blue_toolbar">#903944BC</color>

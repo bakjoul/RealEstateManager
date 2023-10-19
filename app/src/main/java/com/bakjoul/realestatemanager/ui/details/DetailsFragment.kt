@@ -46,11 +46,9 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
         handleOnBackPressed()
 
         // Medias RecyclerView
-        val recyclerViewAdapter = DetailsAdapter()
-        binding.detailsMediaRecyclerView.adapter = recyclerViewAdapter
         val divider = DividerItemDecoration(requireContext(), DividerItemDecoration.HORIZONTAL)
         divider.setDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.photos_divider)!!)
-        binding.detailsMediaRecyclerView.addItemDecoration(divider)
+        binding.detailsPhotoListView.addItemDecoration(divider)
 
         binding.detailsFabBack?.setOnClickListener { viewModel.onBackButtonPressed() }
 
@@ -80,7 +78,7 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
             setTooltip(details.poiAirport, binding.detailsPoiAirport, getString(R.string.property_poi_desc_airport))
             binding.detailsItemLocation.setText(details.location)
 
-            recyclerViewAdapter.submitList(details.medias)
+            binding.detailsPhotoListView.bind(details.medias)
 
             binding.detailsItemLocation.setOnLongClickListener {
                 val clipboardManager = requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager

@@ -48,10 +48,8 @@ class PhotosFragment @Inject constructor() : DialogFragment(R.layout.fragment_ph
         })
 
         // ViewPager thumbnails RecyclerView
-        val thumbnailsAdapter = PhotosAdapter()
-        binding.photosThumbnailsRecyclerView.adapter = thumbnailsAdapter
         val snapHelper = LinearSnapHelper()
-        snapHelper.attachToRecyclerView(binding.photosThumbnailsRecyclerView)
+        snapHelper.attachToRecyclerView(binding.photosThumbnailsPhotoListView)
 
         viewModel.viewStateLiveData.observe(viewLifecycleOwner) { viewState ->
 
@@ -63,10 +61,9 @@ class PhotosFragment @Inject constructor() : DialogFragment(R.layout.fragment_ph
                 binding.photosViewPager.setCurrentItem(viewState.currentPhotoId, true)
             }
 
-            thumbnailsAdapter.submitList(viewState.thumbnails)
+            binding.photosThumbnailsPhotoListView.bind(viewState.thumbnails)
             if (viewState.currentPhotoId != -1) {
-                binding.photosThumbnailsRecyclerView.smoothScrollToPosition(viewState.currentPhotoId)
-                thumbnailsAdapter.setSelectedItem(viewState.currentPhotoId)
+                binding.photosThumbnailsPhotoListView.smoothScrollToPosition(viewState.currentPhotoId)
             }
         }
 

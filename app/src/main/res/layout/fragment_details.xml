@@ -370,8 +370,8 @@
                 android:id="@+id/details_card_media"
                 style="@style/CustomCardView">
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/details_media_recyclerView"
+                <com.bakjoul.realestatemanager.designsystem.molecule.photo_list.PhotoListView
+                    android:id="@+id/details_PhotoListView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:clipChildren="false"
@@ -380,7 +380,7 @@
                     android:padding="8dp"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     tools:itemCount="5"
-                    tools:listitem="@layout/fragment_details_photos_item" />
+                    tools:listitem="@layout/view_photo_item" />
             </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView
