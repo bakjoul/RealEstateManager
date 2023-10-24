@@ -57,7 +57,7 @@ class PhotosFragment @Inject constructor() : DialogFragment(R.layout.fragment_ph
             if (viewState.currentPhotoId != -1 && isViewPagerFirstOpening) {
                 binding.photosViewPager.setCurrentItem(viewState.currentPhotoId, false)
                 isViewPagerFirstOpening = false
-            } else if (viewState.currentPhotoId != -1) {
+            } else if (viewState.currentPhotoId != -1 && binding.photosViewPager.currentItem != viewState.currentPhotoId) {
                 binding.photosViewPager.setCurrentItem(viewState.currentPhotoId, true)
             }
 

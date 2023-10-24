@@ -38,7 +38,7 @@ class PhotosViewModel @Inject constructor(
                 photosUrls = property.photos.map { it.url },
                 thumbnails = PhotoListMapper().map(
                     property.photos,
-                    { index -> if (index == currentPhotoId) SelectType.SELECTED else SelectType.NOT_SELECTED},
+                    { index -> if (index == currentPhotoId) SelectType.SELECTED else SelectType.NOT_SELECTED },
                     { setCurrentPhotoIdUseCase.invoke(it) }
                 ),
                 currentPhotoId = currentPhotoId
