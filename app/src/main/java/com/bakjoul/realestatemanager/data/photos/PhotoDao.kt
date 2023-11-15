@@ -13,5 +13,11 @@ interface PhotoDao {
     suspend fun insert(photo: PhotoDto): Long
 
     @Query("SELECT * FROM photos WHERE property_id = :propertyId")
-    fun getPhotos(propertyId: Long): Flow<List<PhotoDto>>
+    fun getPhotosForPropertyId(propertyId: Long): Flow<List<PhotoDto>>
+
+    @Query("DELETE FROM photos WHERE id = :id")
+    suspend fun delete(id: Long)
+
+    @Query("DELETE FROM photos WHERE property_id = :propertyId")
+    suspend fun deleteAllPhotosForPropertyId(propertyId: Long)
 }

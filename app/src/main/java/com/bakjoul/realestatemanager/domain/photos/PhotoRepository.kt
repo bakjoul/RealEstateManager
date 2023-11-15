@@ -7,17 +7,9 @@ interface PhotoRepository {
 
     suspend fun addPhoto(photoEntity: PhotoEntity): Long?
 
-    fun getPhotosForPropertyIdFlow(propertyId: Long): Flow<List<PhotoEntity>>
+    fun getPhotosForPropertyId(propertyId: Long): Flow<List<PhotoEntity>>
 
-    suspend fun addPhotoDraft(photoEntity: PhotoEntity): Long?
+    suspend fun deletePhoto(photoId: Long)
 
-    suspend fun hasPhotoDrafts(): Boolean
-
-    fun getPhotosDrafts(): Flow<List<PhotoEntity>>
-
-    suspend fun deletePhotoDraft(id: Long)
-
-    suspend fun deletePhotoDraftsByIds(ids: List<Long>)
-
-    suspend fun deleteAllPhotosDrafts()
+    suspend fun deleteAllPhotosForPropertyId(propertyId: Long)
 }

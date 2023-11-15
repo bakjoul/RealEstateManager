@@ -15,6 +15,9 @@ interface PropertyFormDao {
     @Insert
     suspend fun insert(propertyForm: PropertyFormDto): Long?
 
+    @Query("SELECT COUNT(*) FROM property_drafts WHERE id = :propertyFormId")
+    suspend fun getPropertyFormIdCount(propertyFormId: Long): Int
+
     @Update
     suspend fun update(propertyForm: PropertyFormDto): Int
 

@@ -17,7 +17,7 @@ class CameraActivityViewModel @Inject constructor(getCurrentNavigationUseCase: G
         getCurrentNavigationUseCase.invoke()
             .mapNotNull {
                 when (it) {
-                    is To.PhotoPreview -> Event(CameraActivityViewAction.ShowPhotoPreview)
+                    is To.PhotoPreview -> Event(CameraActivityViewAction.ShowPhotoPreview(it.propertyId))
                     is To.ClosePhotoPreview -> Event(CameraActivityViewAction.ClosePhotoPreview)
                     is To.CloseCamera -> Event(CameraActivityViewAction.CloseCamera)
                     else -> null

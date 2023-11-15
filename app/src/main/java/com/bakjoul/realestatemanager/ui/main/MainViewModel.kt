@@ -1,6 +1,5 @@
 package com.bakjoul.realestatemanager.ui.main
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
@@ -12,6 +11,9 @@ import com.bakjoul.realestatemanager.domain.auth.LogOutUseCase
 import com.bakjoul.realestatemanager.domain.navigation.GetCurrentNavigationUseCase
 import com.bakjoul.realestatemanager.domain.navigation.NavigateUseCase
 import com.bakjoul.realestatemanager.domain.navigation.model.To
+import com.bakjoul.realestatemanager.domain.property.GenerateNewDraftIdUseCase
+import com.bakjoul.realestatemanager.domain.property.drafts.AddPropertyDraftUseCase
+import com.bakjoul.realestatemanager.domain.property_form.model.PropertyFormEntity
 import com.bakjoul.realestatemanager.domain.resources.IsTabletUseCase
 import com.bakjoul.realestatemanager.domain.resources.RefreshOrientationUseCase
 import com.bakjoul.realestatemanager.ui.utils.Event
@@ -30,7 +32,9 @@ class MainViewModel @Inject constructor(
     private val refreshOrientationUseCase: RefreshOrientationUseCase,
     private val logOutUseCase: LogOutUseCase,
     private val getCurrentNavigationUseCase: GetCurrentNavigationUseCase,
-    private val navigateUseCase: NavigateUseCase
+    private val navigateUseCase: NavigateUseCase,
+    private val generateNewDraftIdUseCase: GenerateNewDraftIdUseCase,
+    private val addPropertyDraftUseCase: AddPropertyDraftUseCase
 ) : ViewModel() {
 
     init {
@@ -67,7 +71,7 @@ class MainViewModel @Inject constructor(
                     MainViewAction.ShowPhotosDialog
                 }
                 is To.DraftDialog -> MainViewAction.ShowPropertyDraftDialog
-                is To.AddProperty -> MainViewAction.ShowAddPropertyDialog
+                is To.AddProperty -> MainViewAction.ShowAddPropertyDialog(navigation.propertyId, navigation.propertyDraftId)
                 is To.CloseAddProperty -> if (isTablet) {
                     MainViewAction.HideDetailsPortrait
                 } else {
@@ -105,7 +109,10 @@ class MainViewModel @Inject constructor(
     }
 
     fun onAddNewPropertyClicked() {
-        Log.d("test", "onAddNewPropertyClicked: ")
-        navigateUseCase.invoke(To.AddProperty)
+        viewModelScope.launch {
+            val propertyDraftId = generateNewDraftIdUseCase.invoke()
+            addPropertyDraftUseCase.invoke(PropertyFormEntity(propertyDraftId))
+            navigateUseCase.invoke(To.AddProperty(null, propertyDraftId))
+        }
     }
 }

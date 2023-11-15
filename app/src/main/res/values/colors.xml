@@ -19,5 +19,6 @@
     <color name="pink">#FFFF9997</color>
     <color name="yellow">#FFFFCB00</color>
     <color name="grey_background_dialog">#88000000</color>
+    <color name="red">#FFB3271C</color>
 
 </resources>

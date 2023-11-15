@@ -10,8 +10,6 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.workDataOf
 import com.bakjoul.realestatemanager.data.photos.PhotoDao
-import com.bakjoul.realestatemanager.data.photos.PhotoDraftDao
-import com.bakjoul.realestatemanager.data.photos.model.PhotoDraftDto
 import com.bakjoul.realestatemanager.data.photos.model.PhotoDto
 import com.bakjoul.realestatemanager.data.property.PropertyDao
 import com.bakjoul.realestatemanager.data.property.PropertyFormDao
@@ -28,7 +26,6 @@ import java.time.LocalDate
     entities = [
         PropertyDto::class,
         PhotoDto::class,
-        PhotoDraftDto::class,
         PropertyFormDto::class
     ],
     version = 1,
@@ -43,7 +40,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun getPropertyDao(): PropertyDao
     abstract fun getPropertyFormDao(): PropertyFormDao
     abstract fun getPhotoDao(): PhotoDao
-    abstract fun getPhotoDraftDao(): PhotoDraftDao
 
     companion object {
         private const val DATABASE_NAME = "RealEstateManager_database"
@@ -69,7 +65,7 @@ abstract class AppDatabase : RoomDatabase() {
                                 forSaleSince = LocalDate.parse("2023-01-01"),
                                 dateOfSale = LocalDate.parse("2023-01-02"),
                                 price = BigDecimal(100000),
-                                surface = 100.0,
+                                surface = BigDecimal(100),
                                 rooms = 5,
                                 bathrooms = 2,
                                 bedrooms = 3,
@@ -101,7 +97,7 @@ abstract class AppDatabase : RoomDatabase() {
                                 forSaleSince = LocalDate.parse("2023-02-01"),
                                 dateOfSale = null,
                                 price = BigDecimal(200000),
-                                surface = 200.0,
+                                surface = BigDecimal(200),
                                 rooms = 10,
                                 bathrooms = 4,
                                 bedrooms = 4,
@@ -133,7 +129,7 @@ abstract class AppDatabase : RoomDatabase() {
                                 forSaleSince = LocalDate.parse("2023-04-01"),
                                 dateOfSale = null,
                                 price = BigDecimal(300000),
-                                surface = 300.0,
+                                surface = BigDecimal(300),
                                 rooms = 12,
                                 bathrooms = 5,
                                 bedrooms = 5,

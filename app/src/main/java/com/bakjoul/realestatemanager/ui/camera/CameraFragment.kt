@@ -98,7 +98,7 @@ class CameraFragment : Fragment(R.layout.fragment_camera) {
                 }
 
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
-                    viewModel.onImageSaved(output.savedUri?.toString())
+                    viewModel.onImageSaved(output.savedUri?.toString(), requireActivity().intent.getLongExtra("propertyId", -1))
                 }
             })
     }

@@ -57,7 +57,7 @@ class DetailsViewModel @Inject constructor(
             val formattedSurface = formatSurface(property.surface, surfaceUnit)
 
             DetailsViewState(
-                mainPhotoUrl = property.photos.first().url,
+                mainPhotoUrl = property.photos.firstOrNull()?.url ?: "",
                 type = formatType(property.type),
                 price = formatPrice(property.price, currency, euroRateWrapper.currencyRateEntity.rate),
                 isSold = property.saleDate != null,

@@ -2,6 +2,7 @@ package com.bakjoul.realestatemanager.ui.add
 
 import android.util.Log
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
@@ -12,15 +13,19 @@ import com.bakjoul.realestatemanager.designsystem.molecule.photo_list.PhotoListM
 import com.bakjoul.realestatemanager.designsystem.molecule.photo_list.SelectType
 import com.bakjoul.realestatemanager.domain.autocomplete.GetAddressPredictionsUseCase
 import com.bakjoul.realestatemanager.domain.autocomplete.model.AutocompleteWrapper
+import com.bakjoul.realestatemanager.domain.currency_rate.GetEuroRateUseCase
 import com.bakjoul.realestatemanager.domain.geocoding.GetAddressDetailsUseCase
 import com.bakjoul.realestatemanager.domain.geocoding.model.GeocodingWrapper
 import com.bakjoul.realestatemanager.domain.navigation.GetCurrentNavigationUseCase
 import com.bakjoul.realestatemanager.domain.navigation.NavigateUseCase
 import com.bakjoul.realestatemanager.domain.navigation.model.To
-import com.bakjoul.realestatemanager.domain.photos.drafts.DeletePhotoDraftUseCase
-import com.bakjoul.realestatemanager.domain.photos.drafts.GetPhotosDraftsUseCase
-import com.bakjoul.realestatemanager.domain.property.drafts.AddPropertyDraftUseCase
+import com.bakjoul.realestatemanager.domain.photos.DeletePhotoUseCase
+import com.bakjoul.realestatemanager.domain.photos.GetPhotosForPropertyIdUseCase
+import com.bakjoul.realestatemanager.domain.property.AddPropertyUseCase
+import com.bakjoul.realestatemanager.domain.property.drafts.DeletePropertyDraftUseCase
 import com.bakjoul.realestatemanager.domain.property.drafts.UpdatePropertyDraftUseCase
+import com.bakjoul.realestatemanager.domain.property.model.PropertyAddressEntity
+import com.bakjoul.realestatemanager.domain.property.model.PropertyEntity
 import com.bakjoul.realestatemanager.domain.property.model.PropertyPoiEntity
 import com.bakjoul.realestatemanager.domain.property.model.PropertyTypeEntity
 import com.bakjoul.realestatemanager.domain.property_form.model.PropertyFormAddress
@@ -29,11 +34,15 @@ import com.bakjoul.realestatemanager.domain.settings.currency.GetCurrentCurrency
 import com.bakjoul.realestatemanager.domain.settings.surface_unit.GetCurrentSurfaceUnitUseCase
 import com.bakjoul.realestatemanager.ui.utils.EquatableCallback
 import com.bakjoul.realestatemanager.ui.utils.Event
+import com.bakjoul.realestatemanager.ui.utils.combine
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -49,23 +58,27 @@ import kotlin.time.Duration.Companion.milliseconds
 
 @HiltViewModel
 class AddPropertyViewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle,
     getCurrentNavigationUseCase: GetCurrentNavigationUseCase,
     private val getCurrentCurrencyUseCase: GetCurrentCurrencyUseCase,
+    private val getEuroRateUseCase: GetEuroRateUseCase,
     private val getCurrentSurfaceUnitUseCase: GetCurrentSurfaceUnitUseCase,
     private val getAddressPredictionsUseCase: GetAddressPredictionsUseCase,
     private val getAddressDetailsUseCase: GetAddressDetailsUseCase,
-    private val getPhotosDraftsUseCase: GetPhotosDraftsUseCase,
-    private val deletePhotoDraftUseCase: DeletePhotoDraftUseCase,
+    private val getPhotosForPropertyIdUseCase: GetPhotosForPropertyIdUseCase,
+    private val deletePhotoUseCase: DeletePhotoUseCase,
     private val navigateUseCase: NavigateUseCase,
-    private val addPropertyDraftUseCase: AddPropertyDraftUseCase,
+    private val deletePropertyDraftUseCase: DeletePropertyDraftUseCase,
     private val updatePropertyDraftUseCase: UpdatePropertyDraftUseCase,
+    private val addPropertyUseCase: AddPropertyUseCase,
 ) : ViewModel() {
 
     private companion object {
         private const val TAG = "AddPropertyViewModel"
+        private const val SAVE_DELAY = 3000L
     }
 
-    private val propertyFormMutableStateFlow: MutableStateFlow<PropertyFormEntity> = initPropertyForm()
+    private val propertyFormMutableStateFlow: MutableStateFlow<PropertyFormEntity> = MutableStateFlow(PropertyFormEntity())
 
     private val currentAddressInputMutableStateFlow: MutableStateFlow<Pair<String, Boolean>?> = MutableStateFlow(null)
     private val addressPredictionsFlow: Flow<AutocompleteWrapper?> = currentAddressInputMutableStateFlow
@@ -86,17 +99,41 @@ class AddPropertyViewModel @Inject constructor(
         }
 
     private var propertyId: Long? = null
+    private var isNewDraft = false
+    private var lastSavedPropertyForm: PropertyFormEntity? = null
+    private var saveJob: Job? = null
     private var isAddressTextCleared = false
+
+    init {
+        if (savedStateHandle.get<Long>("propertyId") != null) {
+            propertyId = savedStateHandle.get<Long>("propertyId")
+        } else {
+            propertyId = savedStateHandle.get<Long>("propertyDraftId")
+            propertyFormMutableStateFlow.value = initPropertyForm(propertyId!!)
+            isNewDraft = true
+        }
+        lastSavedPropertyForm = propertyFormMutableStateFlow.value.copy()
+    }
 
     val viewStateLiveData: LiveData<AddPropertyViewState> = liveData {
         combine(
             propertyFormMutableStateFlow,
             getCurrentCurrencyUseCase.invoke(),
+            flow { emit(getEuroRateUseCase.invoke()) },
             getCurrentSurfaceUnitUseCase.invoke(),
             addressPredictionsFlow,
-            getPhotosDraftsUseCase.invoke()
-        ) { propertyForm, currency, surfaceUnit, addressPredictions, photos ->
-            saveDraft(propertyForm)
+            getPhotosForPropertyIdUseCase.invoke(propertyId)
+        ) { propertyForm, currency, euroRate, surfaceUnit, addressPredictions, photos ->
+            if (propertyForm == lastSavedPropertyForm) {
+                saveJob?.cancelAndJoin()
+            } else {
+                saveJob = viewModelScope.launch {
+                    delay(SAVE_DELAY)
+
+                    saveDraft(propertyForm, currency, euroRate.currencyRateEntity.rate)
+                    lastSavedPropertyForm = propertyForm
+                }
+            }
 
             AddPropertyViewState(
                 propertyTypeEntity = propertyForm.type,
@@ -119,7 +156,7 @@ class AddPropertyViewModel @Inject constructor(
                     {},
                     {
                         viewModelScope.launch {
-                            deletePhotoDraftUseCase.invoke(it)
+                            deletePhotoUseCase.invoke(it)
                         }
                     }
                 ),
@@ -129,15 +166,15 @@ class AddPropertyViewModel @Inject constructor(
         }
     }
 
-    private fun saveDraft(propertyForm: PropertyFormEntity) {
+    private fun saveDraft(propertyForm: PropertyFormEntity, currency: AppCurrency, euroRate: Double) {
+        val price = if (currency == AppCurrency.EUR) {
+            propertyForm.price?.times(BigDecimal(euroRate))
+        } else {
+            propertyForm.price
+        }
+
         viewModelScope.launch {
-            if (propertyId == null) {
-                propertyId = addPropertyDraftUseCase.invoke(propertyForm)
-                Log.d("test", "saveDraft: init $propertyId")
-            } else {
-                updatePropertyDraftUseCase.invoke(propertyId!!, propertyForm)
-                Log.d("test", "saveDraft: update $propertyId")
-            }
+            updatePropertyDraftUseCase.invoke(propertyId!!, propertyForm.copy(price = price))
         }
     }
 
@@ -145,7 +182,8 @@ class AddPropertyViewModel @Inject constructor(
         getCurrentNavigationUseCase.invoke().collect {
             when (it) {
                 is To.HideAddressSuggestions -> emit(Event(AddPropertyViewAction.HideSuggestions))
-                is To.Camera -> emit(Event(AddPropertyViewAction.OpenCamera))
+                is To.Camera -> emit(Event(AddPropertyViewAction.OpenCamera(it.propertyId)))
+                is To.SaveDraftDialog -> emit(Event(AddPropertyViewAction.SaveDraftDialog))
                 is To.CloseAddProperty -> emit(Event(AddPropertyViewAction.CloseDialog))
                 is To.Settings -> emit(Event(AddPropertyViewAction.OpenSettings))
                 is To.Toast -> emit(Event(AddPropertyViewAction.ShowToast(it.message)))
@@ -154,26 +192,24 @@ class AddPropertyViewModel @Inject constructor(
         }
     }
 
-    private fun initPropertyForm() = MutableStateFlow(
-        PropertyFormEntity(
-            id = 0,
-            type = null,
-            isSold = false,
-            forSaleSince = null,
-            dateOfSale = null,
-            price = BigDecimal.ZERO,
-            surface = BigDecimal.ZERO,
-            rooms = 0,
-            bathrooms = 0,
-            bedrooms = 0,
-            pointsOfInterest = emptyList(),
-            autoCompleteAddress = null,
-            address = PropertyFormAddress(),
-            description = null,
-            photos = emptyList(),
-            agent = null,
-            entryDate = null
-        )
+    private fun initPropertyForm(propertyDraftId: Long) = PropertyFormEntity(
+        id = propertyDraftId,
+        type = null,
+        isSold = false,
+        forSaleSince = null,
+        dateOfSale = null,
+        price = null,
+        surface = BigDecimal.ZERO,
+        rooms = 0,
+        bathrooms = 0,
+        bedrooms = 0,
+        pointsOfInterest = emptyList(),
+        autoCompleteAddress = null,
+        address = PropertyFormAddress(),
+        description = null,
+        photos = emptyList(),
+        agent = null,
+        entryDate = null
     )
 
     private fun getCurrencyFormat(currency: AppCurrency): DecimalFormat {
@@ -420,7 +456,7 @@ class AddPropertyViewModel @Inject constructor(
     }
 
     fun onCameraPermissionGranted() {
-        navigateUseCase.invoke(To.Camera)
+        navigateUseCase.invoke(To.Camera(propertyId!!))
     }
 
     fun onChangeSettingsClicked() {
@@ -428,11 +464,95 @@ class AddPropertyViewModel @Inject constructor(
     }
 
     fun closeDialog() {
-        navigateUseCase.invoke(To.CloseAddProperty)
+        if (isNewDraft &&
+            propertyFormMutableStateFlow.value.type == null &&
+            propertyFormMutableStateFlow.value.forSaleSince == null &&
+            propertyFormMutableStateFlow.value.dateOfSale == null &&
+            propertyFormMutableStateFlow.value.price == null &&
+            propertyFormMutableStateFlow.value.surface == BigDecimal.ZERO &&
+            propertyFormMutableStateFlow.value.rooms == 0 &&
+            propertyFormMutableStateFlow.value.bathrooms == 0 &&
+            propertyFormMutableStateFlow.value.bedrooms == 0 &&
+            propertyFormMutableStateFlow.value.pointsOfInterest!!.isEmpty() &&
+            propertyFormMutableStateFlow.value.address == PropertyFormAddress() &&
+            propertyFormMutableStateFlow.value.autoCompleteAddress == null &&
+            propertyFormMutableStateFlow.value.description == null) {
+
+            dropDraft()
+        } else {
+            navigateUseCase.invoke(To.SaveDraftDialog)
+        }
+    }
+
+    fun dropDraft() {
+        viewModelScope.launch {
+            deletePropertyDraftUseCase.invoke(propertyId!!)
+            navigateUseCase.invoke(To.Toast("Draft has been discarded"))
+            navigateUseCase.invoke(To.CloseAddProperty)
+        }
+    }
+
+    fun saveDraft() {
+        viewModelScope.launch {
+            updatePropertyDraftUseCase.invoke(propertyId!!, propertyFormMutableStateFlow.value)
+            navigateUseCase.invoke(To.Toast("Draft has been saved"))
+            navigateUseCase.invoke(To.CloseAddProperty)
+        }
     }
 
     fun onDoneButtonClicked() {
-        // TODO check everything
+        if (propertyFormMutableStateFlow.value.type != null &&
+            propertyFormMutableStateFlow.value.forSaleSince != null &&
+            propertyFormMutableStateFlow.value.price != null &&
+            propertyFormMutableStateFlow.value.surface!! > BigDecimal.ZERO &&
+            propertyFormMutableStateFlow.value.rooms!! > 0 &&
+            propertyFormMutableStateFlow.value.autoCompleteAddress != null &&
+            propertyFormMutableStateFlow.value.description != null) {
+
+            viewModelScope.launch {
+                val newPropertyId = async {
+                    addPropertyUseCase.invoke(
+                        PropertyEntity(
+                            id = propertyFormMutableStateFlow.value.id,
+                            type = propertyFormMutableStateFlow.value.type!!.name,
+                            forSaleSince = propertyFormMutableStateFlow.value.forSaleSince!!,
+                            saleDate = propertyFormMutableStateFlow.value.dateOfSale,
+                            price = propertyFormMutableStateFlow.value.price!!,
+                            surface = propertyFormMutableStateFlow.value.surface!!,
+                            rooms = propertyFormMutableStateFlow.value.rooms!!,
+                            bathrooms = propertyFormMutableStateFlow.value.bathrooms!!,
+                            bedrooms = propertyFormMutableStateFlow.value.bedrooms!!,
+                            amenities = propertyFormMutableStateFlow.value.pointsOfInterest!!,
+                            address = PropertyAddressEntity(
+                                streetNumber = propertyFormMutableStateFlow.value.autoCompleteAddress!!.streetNumber!!,
+                                route = propertyFormMutableStateFlow.value.autoCompleteAddress!!.route!!,
+                                complementaryAddress = propertyFormMutableStateFlow.value.autoCompleteAddress!!.complementaryAddress,
+                                zipcode = propertyFormMutableStateFlow.value.autoCompleteAddress!!.zipcode!!,
+                                city = propertyFormMutableStateFlow.value.autoCompleteAddress!!.city!!,
+                                state = propertyFormMutableStateFlow.value.autoCompleteAddress!!.state!!,
+                                country = propertyFormMutableStateFlow.value.autoCompleteAddress!!.country!!,
+                                latitude = propertyFormMutableStateFlow.value.autoCompleteAddress!!.latitude!!,
+                                longitude = propertyFormMutableStateFlow.value.autoCompleteAddress!!.longitude!!
+                            ),
+                            description = propertyFormMutableStateFlow.value.description!!,
+                            photos = propertyFormMutableStateFlow.value.photos!!,
+                            agent = propertyFormMutableStateFlow.value.agent ?: "John Doe",
+                            entryDate = ZonedDateTime.now().toLocalDate()
+                        )
+                    )
+                }.await()
+
+                if (newPropertyId != null) {
+                    deletePropertyDraftUseCase.invoke(newPropertyId)
+                    Log.d("test", "onDoneButtonClicked: property added, draft deleted")
+                } else {
+                    Log.d("test", "onDoneButtonClicked: there was a problem adding the new property")
+                }
+            }
+
+        } else {
+            Log.d("test", "onDoneButtonClicked: else")
+        }
         navigateUseCase.invoke(To.CloseAddProperty)
     }
 }

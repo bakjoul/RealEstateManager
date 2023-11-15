@@ -1,7 +1,6 @@
 package com.bakjoul.realestatemanager.data.photos
 
 import android.database.sqlite.SQLiteException
-import com.bakjoul.realestatemanager.data.photos.model.PhotoDraftDto
 import com.bakjoul.realestatemanager.data.photos.model.PhotoDto
 import com.bakjoul.realestatemanager.domain.CoroutineDispatcherProvider
 import com.bakjoul.realestatemanager.domain.photos.PhotoRepository
@@ -16,7 +15,6 @@ import javax.inject.Singleton
 @Singleton
 class PhotoRepositoryRoom @Inject constructor(
     private val photoDao: PhotoDao,
-    private val photoDraftDao: PhotoDraftDao,
     private val coroutineDispatcherProvider: CoroutineDispatcherProvider
 ) : PhotoRepository {
 
@@ -29,37 +27,17 @@ class PhotoRepositoryRoom @Inject constructor(
         }
     }
 
-    override fun getPhotosForPropertyIdFlow(propertyId: Long): Flow<List<PhotoEntity>> =
-        photoDao.getPhotos(propertyId).map {
+    override fun getPhotosForPropertyId(propertyId: Long): Flow<List<PhotoEntity>> =
+        photoDao.getPhotosForPropertyId(propertyId).map {
             mapPhotoDtoToDomainEntities(it)
         }.flowOn(coroutineDispatcherProvider.io)
 
-    override suspend fun addPhotoDraft(photoEntity: PhotoEntity): Long? = withContext(coroutineDispatcherProvider.io) {
-        try {
-            photoDraftDao.insert(mapToPhotoDraftDto(photoEntity))
-        } catch (e: SQLiteException) {
-            e.printStackTrace()
-            null
-        }
+    override suspend fun deletePhoto(photoId: Long) = withContext(coroutineDispatcherProvider.io) {
+        photoDao.delete(photoId)
     }
 
-    override suspend fun hasPhotoDrafts(): Boolean = photoDraftDao.hasPhotoDrafts()
-
-    override fun getPhotosDrafts(): Flow<List<PhotoEntity>> =
-        photoDraftDao.getPhotoDrafts().map {
-            mapPhotoDraftDtoToDomainEntities(it)
-        }.flowOn(coroutineDispatcherProvider.io)
-
-    override suspend fun deletePhotoDraft(id: Long) = withContext(coroutineDispatcherProvider.io) {
-        photoDraftDao.delete(id)
-    }
-
-    override suspend fun deletePhotoDraftsByIds(ids: List<Long>) = withContext(coroutineDispatcherProvider.io) {
-        photoDraftDao.deleteBulk(ids)
-    }
-
-    override suspend fun deleteAllPhotosDrafts() = withContext(coroutineDispatcherProvider.io) {
-        photoDraftDao.deleteAll()
+    override suspend fun deleteAllPhotosForPropertyId(propertyId: Long) = withContext(coroutineDispatcherProvider.io) {
+        photoDao.deleteAllPhotosForPropertyId(propertyId)
     }
 
     // region Mapping
@@ -71,27 +49,10 @@ class PhotoRepositoryRoom @Inject constructor(
         )
 
     private fun mapPhotoDtoToDomainEntities(photoDtoList: List<PhotoDto>) =
-        photoDtoList.mapIndexed { index, photoDtoEntity ->
-            PhotoEntity(
-                id = index.toLong(),
-                propertyId = photoDtoEntity.propertyId,
-                url = photoDtoEntity.url,
-                description = photoDtoEntity.description
-            )
-        }
-
-    private fun mapToPhotoDraftDto(photoEntity: PhotoEntity): PhotoDraftDto =
-        PhotoDraftDto(
-            propertyFormId = photoEntity.propertyId,
-            url = photoEntity.url,
-            description = photoEntity.description
-        )
-
-    private fun mapPhotoDraftDtoToDomainEntities(photoDraftDtoList: List<PhotoDraftDto>) =
-        photoDraftDtoList.map {
+        photoDtoList.map {
             PhotoEntity(
                 id = it.id,
-                propertyId = it.propertyFormId,
+                propertyId = it.propertyId,
                 url = it.url,
                 description = it.description
             )

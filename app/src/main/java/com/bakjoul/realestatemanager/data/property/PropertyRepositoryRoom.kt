@@ -14,6 +14,7 @@ import com.bakjoul.realestatemanager.domain.property.model.PropertyEntity
 import com.bakjoul.realestatemanager.domain.property.model.PropertyPoiEntity
 import com.bakjoul.realestatemanager.domain.property.model.PropertyTypeEntity
 import com.bakjoul.realestatemanager.domain.property_form.model.PropertyFormEntity
+import com.bakjoul.realestatemanager.ui.utils.IdGenerator
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
@@ -27,6 +28,16 @@ class PropertyRepositoryRoom @Inject constructor(
     private val propertyFormDao: PropertyFormDao,
     private val coroutineDispatcherProvider: CoroutineDispatcherProvider
 ) : PropertyRepository {
+
+    override suspend fun generateNewDraftId(): Long = withContext(coroutineDispatcherProvider.io) {
+        var newId: Long
+
+        do {
+            newId = IdGenerator.generateNewIdAsLong()
+        } while (isPropertyIdExisting(newId) || isPropertyFormIdExisting(newId))
+
+        return@withContext newId
+    }
 
     override suspend fun addProperty(propertyEntity: PropertyEntity): Long? = withContext(coroutineDispatcherProvider.io) {
         try {
@@ -48,7 +59,7 @@ class PropertyRepositoryRoom @Inject constructor(
     }.flowOn(coroutineDispatcherProvider.io)
 
     override suspend fun addPropertyDraft(propertyForm: PropertyFormEntity): Long? = withContext(coroutineDispatcherProvider.io) {
-        propertyFormDao.insert(mapPropertyDraftToDto(null, propertyForm))
+        propertyFormDao.insert(mapPropertyDraftToDto(propertyForm.id, propertyForm))
     }
 
     override suspend fun updatePropertyDraft(propertyId: Long, propertyForm: PropertyFormEntity): Int = withContext(coroutineDispatcherProvider.io) {
@@ -70,10 +81,19 @@ class PropertyRepositoryRoom @Inject constructor(
     override suspend fun deletePropertyDraft(id: Long) = withContext(coroutineDispatcherProvider.io) {
         propertyFormDao.delete(id)
     }
+    
+    private suspend fun isPropertyIdExisting(propertyId: Long): Boolean {
+        return propertyDao.getPropertyIdCount(propertyId) > 0
+    }
+    
+    private suspend fun isPropertyFormIdExisting(propertyFormId: Long): Boolean {
+        return propertyFormDao.getPropertyFormIdCount(propertyFormId) > 0
+    }
 
     // region Mapping
     private fun mapPropertyEntityToDto(propertyEntity: PropertyEntity): PropertyDto =
         PropertyDto(
+            id = propertyEntity.id,
             type = propertyEntity.type,
             forSaleSince = propertyEntity.entryDate,
             dateOfSale = propertyEntity.saleDate,
@@ -109,7 +129,7 @@ class PropertyRepositoryRoom @Inject constructor(
         return PropertyEntity(
             id = propertyWithPhotosDto.propertyDto.id,
             type = propertyWithPhotosDto.propertyDto.type,
-            entryDate = propertyWithPhotosDto.propertyDto.forSaleSince,
+            forSaleSince = propertyWithPhotosDto.propertyDto.forSaleSince,
             saleDate = propertyWithPhotosDto.propertyDto.dateOfSale,
             price = propertyWithPhotosDto.propertyDto.price,
             surface = propertyWithPhotosDto.propertyDto.surface,
@@ -129,7 +149,8 @@ class PropertyRepositoryRoom @Inject constructor(
                 longitude = propertyWithPhotosDto.propertyDto.longitude),
             description = propertyWithPhotosDto.propertyDto.description,
             photos = mapPhotos(propertyWithPhotosDto.photos),
-            agent = propertyWithPhotosDto.propertyDto.agent
+            agent = propertyWithPhotosDto.propertyDto.agent,
+            entryDate = propertyWithPhotosDto.propertyDto.forSaleSince
         )
     }
 
@@ -156,9 +177,9 @@ class PropertyRepositoryRoom @Inject constructor(
             )
         }
 
-    private fun mapPropertyDraftToDto(propertyId: Long?, propertyForm: PropertyFormEntity): PropertyFormDto =
+    private fun mapPropertyDraftToDto(propertyId: Long, propertyForm: PropertyFormEntity): PropertyFormDto =
         PropertyFormDto(
-            id = propertyId ?: 0,
+            id = propertyId,
             type = propertyForm.type?.name.toString(),
             isSold = propertyForm.isSold,
             forSaleSince = propertyForm.forSaleSince,

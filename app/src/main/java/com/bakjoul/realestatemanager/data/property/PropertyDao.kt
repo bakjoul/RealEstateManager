@@ -12,7 +12,10 @@ import kotlinx.coroutines.flow.Flow
 interface PropertyDao {
 
     @Insert
-    suspend fun insert(property: PropertyDto): Long?
+    suspend fun insert(property: PropertyDto): Long
+
+    @Query("SELECT COUNT(*) FROM properties WHERE id = :propertyId")
+    suspend fun getPropertyIdCount(propertyId: Long): Int
 
     @Query("SELECT * FROM properties")
     @Transaction

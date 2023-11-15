@@ -10,7 +10,7 @@ sealed class MainViewAction {
     object ShowPhotosDialog : MainViewAction()
     object ShowPhotosDialogAndHideDetailsPortrait : MainViewAction()
     object ShowPropertyDraftDialog: MainViewAction()
-    object ShowAddPropertyDialog : MainViewAction()
+    data class ShowAddPropertyDialog(val propertyId: Long?, val propertyDraftId: Long?) : MainViewAction()
     object ReturnToDispatcher : MainViewAction()
     object ShowSettings : MainViewAction()
     object ShowSettingsAndHideDetailsPortrait : MainViewAction()

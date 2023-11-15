@@ -17,9 +17,12 @@ import com.bakjoul.realestatemanager.domain.currency_rate.GetEuroRateUseCase
 import com.bakjoul.realestatemanager.domain.current_property.SetCurrentPropertyIdUseCase
 import com.bakjoul.realestatemanager.domain.navigation.NavigateUseCase
 import com.bakjoul.realestatemanager.domain.navigation.model.To
+import com.bakjoul.realestatemanager.domain.property.GenerateNewDraftIdUseCase
 import com.bakjoul.realestatemanager.domain.property.GetPropertiesFlowUseCase
+import com.bakjoul.realestatemanager.domain.property.drafts.AddPropertyDraftUseCase
 import com.bakjoul.realestatemanager.domain.property.drafts.HasPropertyDraftsUseCase
 import com.bakjoul.realestatemanager.domain.property.model.PropertyTypeEntity
+import com.bakjoul.realestatemanager.domain.property_form.model.PropertyFormEntity
 import com.bakjoul.realestatemanager.domain.resources.IsTabletUseCase
 import com.bakjoul.realestatemanager.domain.settings.currency.GetCurrentCurrencyUseCase
 import com.bakjoul.realestatemanager.domain.settings.surface_unit.GetCurrentSurfaceUnitUseCase
@@ -30,6 +33,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
+import java.math.BigDecimal
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.time.format.DateTimeFormatter
@@ -48,7 +52,9 @@ class PropertyListViewModel @Inject constructor(
     private val getCurrentSurfaceUnitUseCase: GetCurrentSurfaceUnitUseCase,
     private val isTabletUseCase: IsTabletUseCase,
     private val navigateUseCase: NavigateUseCase,
-    private val hasPropertyDraftsUseCase: HasPropertyDraftsUseCase
+    private val hasPropertyDraftsUseCase: HasPropertyDraftsUseCase,
+    private val generateNewDraftIdUseCase: GenerateNewDraftIdUseCase,
+    private val addPropertyDraftUseCase: AddPropertyDraftUseCase
 ) : ViewModel() {
 
     private val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
@@ -64,7 +70,7 @@ class PropertyListViewModel @Inject constructor(
             properties.map {
                 PropertyItemViewState(
                     id = it.id,
-                    photoUrl = it.photos.first().url,
+                    photoUrl = it.photos.firstOrNull()?.url ?: "",
                     type = formatType(it.type),
                     city = it.address.city,
                     features = formatFeatures(it.bedrooms, it.bathrooms, it.surface, surfaceUnit, isTablet),
@@ -92,7 +98,7 @@ class PropertyListViewModel @Inject constructor(
         else -> ""
     }
 
-    private fun formatFeatures(bedrooms: Int, bathrooms: Int, surface: Double, surfaceUnit: SurfaceUnit, isTablet: Boolean): String {
+    private fun formatFeatures(bedrooms: Int, bathrooms: Int, surface: BigDecimal, surfaceUnit: SurfaceUnit, isTablet: Boolean): String {
         val (mappedSurface, mappedSurfaceUnit) = formatSurface(surface, surfaceUnit)
 
         return if (isTablet) {
@@ -144,7 +150,9 @@ class PropertyListViewModel @Inject constructor(
             if (hasPropertyDraftsUseCase.invoke()) {
                 navigateUseCase.invoke(To.DraftDialog)
             } else {
-                navigateUseCase.invoke(To.AddProperty)
+                val propertyDraftId = generateNewDraftIdUseCase.invoke()
+                addPropertyDraftUseCase.invoke(PropertyFormEntity(propertyDraftId))
+                navigateUseCase.invoke(To.AddProperty(null, propertyDraftId))
             }
         }
     }

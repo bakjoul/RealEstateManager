@@ -7,10 +7,10 @@ import java.time.LocalDate
 data class PropertyEntity(
     val id: Long,
     val type: String,
-    val entryDate: LocalDate,
+    val forSaleSince: LocalDate,
     val saleDate: LocalDate?,
     val price: BigDecimal,
-    val surface: Double,
+    val surface: BigDecimal,
     val rooms: Int,
     val bathrooms: Int,
     val bedrooms: Int,
@@ -19,4 +19,5 @@ data class PropertyEntity(
     val description: String,
     val photos: List<PhotoEntity>,
     val agent: String,
+    val entryDate: LocalDate
 )

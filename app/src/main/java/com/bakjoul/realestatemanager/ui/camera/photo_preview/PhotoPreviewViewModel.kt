@@ -4,6 +4,7 @@ import android.app.Application
 import android.text.Editable
 import androidx.core.net.toUri
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
@@ -12,7 +13,7 @@ import com.bakjoul.realestatemanager.domain.camera.DeleteCapturedPhotoUseCase
 import com.bakjoul.realestatemanager.domain.camera.GetCapturedPhotoUriUseCase
 import com.bakjoul.realestatemanager.domain.navigation.NavigateUseCase
 import com.bakjoul.realestatemanager.domain.navigation.model.To
-import com.bakjoul.realestatemanager.domain.photos.drafts.AddPhotoDraftUseCase
+import com.bakjoul.realestatemanager.domain.photos.AddPhotoUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -25,7 +26,8 @@ class PhotoPreviewViewModel @Inject constructor(
     private val application: Application,
     private val getCapturedPhotoUriUseCase: GetCapturedPhotoUriUseCase,
     private val deleteCapturedPhotoUseCase: DeleteCapturedPhotoUseCase,
-    private val addPhotoDraftUseCase: AddPhotoDraftUseCase,
+    private val savedStateHandle: SavedStateHandle,
+    private val addPhotoUseCase: AddPhotoUseCase,
     private val navigateUseCase: NavigateUseCase
 ) : ViewModel() {
 
@@ -66,7 +68,7 @@ class PhotoPreviewViewModel @Inject constructor(
         if (descriptionMutableStateFlow.value != null) {
             photoUri?.let {
                 viewModelScope.launch {
-                    addPhotoDraftUseCase.invoke(it, descriptionMutableStateFlow.value!!)
+                    addPhotoUseCase.invoke(savedStateHandle.get<Long>("propertyId")!!, it, descriptionMutableStateFlow.value!!)
                 }
             }
             navigateUseCase.invoke(To.CloseCamera)

@@ -1,7 +1,7 @@
 package com.bakjoul.realestatemanager.ui.camera.activity
 
 sealed class CameraActivityViewAction {
-    object ShowPhotoPreview : CameraActivityViewAction()
+    data class ShowPhotoPreview(val propertyId: Long) : CameraActivityViewAction()
     object ClosePhotoPreview : CameraActivityViewAction()
     object CloseCamera : CameraActivityViewAction()
 }

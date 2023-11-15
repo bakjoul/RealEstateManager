@@ -194,6 +194,14 @@ class PlusMinusView @JvmOverloads constructor(
         listeners.remove(listener)
     }
 
+    fun shouldShouldError(shouldShowError: Boolean) {
+        binding.viewPlusMinusErrorTextView.visibility = if (shouldShowError) {
+            View.VISIBLE
+        } else {
+            View.GONE
+        }
+    }
+
     internal class SavedState : BaseSavedState {
 
         internal var childrenStates: SparseArray<Parcelable>? = null

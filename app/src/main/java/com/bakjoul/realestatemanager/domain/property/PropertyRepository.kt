@@ -6,6 +6,8 @@ import kotlinx.coroutines.flow.Flow
 
 interface PropertyRepository {
 
+    suspend fun generateNewDraftId(): Long
+
     suspend fun addProperty(propertyEntity: PropertyEntity): Long?
 
     fun getPropertiesFlow(): Flow<List<PropertyEntity>>

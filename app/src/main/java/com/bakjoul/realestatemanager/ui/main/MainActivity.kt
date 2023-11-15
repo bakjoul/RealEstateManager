@@ -131,26 +131,26 @@ class MainActivity : AppCompatActivity() {
                     showPhotosDialog()
                 }
 
-                MainViewAction.ShowPropertyDraftDialog -> { // TODO extract string resources
+                MainViewAction.ShowPropertyDraftDialog -> {
                     MaterialAlertDialogBuilder(this)
-                        .setTitle("Drafts available")
-                        .setMessage("You have drafts in progress")
-                        .setNeutralButton("Cancel") { _, _ -> }
-                        .setNegativeButton("Add new property") { _, _ ->
+                        .setTitle(getString(R.string.draft_dialog_title))
+                        .setMessage(getString(R.string.draft_dialog_message))
+                        .setNeutralButton(getString(R.string.cancel)) { _, _ -> }
+                        .setNegativeButton(getString(R.string.draft_dialog_negative)) { _, _ ->
                             viewModel.onAddNewPropertyClicked()
                         }
-                        .setPositiveButton("Continue editing draft") { dialog, _ ->
+                        .setPositiveButton(getString(R.string.draft_dialog_positive)) { dialog, _ ->
 
                         }
                         .show()
                 }
 
-                MainViewAction.ShowAddPropertyDialog -> {
+                is MainViewAction.ShowAddPropertyDialog -> {
                     showDetailsPortraitIfNeeded(containerMainId)
 
                     val existingFragment = supportFragmentManager.findFragmentByTag(ADD_PROPERTY_DIALOG_TAG)
                     if (existingFragment == null) {
-                        AddPropertyFragment().show(supportFragmentManager, ADD_PROPERTY_DIALOG_TAG)
+                        AddPropertyFragment.newInstance(it.propertyId, it.propertyDraftId).show(supportFragmentManager, ADD_PROPERTY_DIALOG_TAG)
                     }
                 }
 

@@ -38,9 +38,22 @@ import java.text.DecimalFormat
 @AndroidEntryPoint
 class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
 
-    private companion object {
+    companion object {
         private const val DIALOG_WINDOW_WIDTH = 0.5
         private const val DIALOG_WINDOW_HEIGHT = 0.9
+
+        fun newInstance(propertyId: Long?, propertyDraftId: Long?): AddPropertyFragment {
+            val args = Bundle()
+            if (propertyId != null) {
+                args.putLong("propertyId", propertyId)
+            }
+            if (propertyDraftId != null) {
+                args.putLong("propertyDraftId", propertyDraftId)
+            }
+            val fragment = AddPropertyFragment()
+            fragment.arguments = args
+            return fragment
+        }
     }
 
     private val binding by viewBinding { FragmentAddPropertyBinding.bind(it) }
@@ -300,8 +313,19 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
                     hideKeyboard()
                 }
 
-                AddPropertyViewAction.OpenCamera -> {
-                    startActivity(Intent(requireContext(), CameraActivity::class.java))
+                is AddPropertyViewAction.OpenCamera -> startActivity(CameraActivity.navigate(requireContext(), it.propertyId))
+
+                AddPropertyViewAction.SaveDraftDialog -> {
+                    MaterialAlertDialogBuilder(requireContext())
+                        .setTitle(getString(R.string.save_draft_dialog_title))
+                        .setMessage(getString(R.string.save_draft_dialog_message))
+                        .setNegativeButton(getString(R.string.discard)) { _, _ ->
+                            viewModel.dropDraft()
+                        }
+                        .setPositiveButton(getString(R.string.save_draft_dialog_positive)) { dialog, _ ->
+                            viewModel.saveDraft()
+                        }
+                        .show()
                 }
 
                 AddPropertyViewAction.CloseDialog -> dismiss()

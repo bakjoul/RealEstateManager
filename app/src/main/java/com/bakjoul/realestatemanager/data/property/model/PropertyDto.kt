@@ -13,7 +13,7 @@ data class PropertyDto(
     @ColumnInfo("for_sale_since") val forSaleSince: LocalDate,
     @ColumnInfo("date_of_sale") val dateOfSale: LocalDate?,
     val price: BigDecimal,
-    val surface: Double,
+    val surface: BigDecimal,
     val rooms: Int,
     val bathrooms: Int,
     val bedrooms: Int,

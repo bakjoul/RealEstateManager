@@ -1,6 +1,8 @@
 package com.bakjoul.realestatemanager.ui.camera.activity
 
 import android.Manifest
+import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.MotionEvent
@@ -17,6 +19,14 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class CameraActivity : AppCompatActivity() {
+
+    companion object {
+        fun navigate(context: Context, propertyId: Long) : Intent {
+            return Intent(context, CameraActivity::class.java).apply {
+                putExtra("propertyId", propertyId)
+            }
+        }
+    }
 
     private val binding by viewBinding { ActivityCameraBinding.inflate(it) }
     private val viewModel by viewModels<CameraActivityViewModel>()
@@ -38,9 +48,14 @@ class CameraActivity : AppCompatActivity() {
 
         viewModel.viewActionLiveData.observeEvent(this) {
             when (it) {
-                CameraActivityViewAction.ShowPhotoPreview -> {
+                is CameraActivityViewAction.ShowPhotoPreview -> {
+                    val photoPreviewFragment = PhotoPreviewFragment()
+                    val args = Bundle()
+                    args.putLong("propertyId", it.propertyId)
+                    photoPreviewFragment.arguments = args
+
                     supportFragmentManager.beginTransaction()
-                        .replace(binding.cameraFrameLayoutContainer.id, PhotoPreviewFragment())
+                        .replace(binding.cameraFrameLayoutContainer.id, photoPreviewFragment)
                         .addToBackStack(null)
                         .commit()
                 }

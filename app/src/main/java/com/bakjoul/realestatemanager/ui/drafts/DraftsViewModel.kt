@@ -24,7 +24,7 @@ class DraftsViewModel @Inject constructor(
                     id = propertyDraft.id,
                     entryDate = propertyDraft.entryDate.toString(),
                     onDraftItemClicked = EquatableCallback {
-                        navigateUseCase.invoke(To.AddProperty)
+                        navigateUseCase.invoke(To.AddProperty(null, propertyDraft.id))
                     }
                 )
             }
