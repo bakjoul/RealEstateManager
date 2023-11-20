@@ -100,6 +100,7 @@ class AddPropertyViewModel @Inject constructor(
 
     private var propertyId: Long? = null
     private var isNewDraft = false
+    private var hasPropertyFormChanged = false
     private var lastSavedPropertyForm: PropertyFormEntity? = null
     private var saveJob: Job? = null
     private var isAddressTextCleared = false
@@ -124,14 +125,17 @@ class AddPropertyViewModel @Inject constructor(
             addressPredictionsFlow,
             getPhotosForPropertyIdUseCase.invoke(propertyId)
         ) { propertyForm, currency, euroRate, surfaceUnit, addressPredictions, photos ->
-            if (propertyForm == lastSavedPropertyForm) {
+            if (hasPropertyFormChanged) {
                 saveJob?.cancelAndJoin()
-            } else {
+            }
+
+            if (propertyForm != lastSavedPropertyForm) {
                 saveJob = viewModelScope.launch {
                     delay(SAVE_DELAY)
 
                     saveDraft(propertyForm, currency, euroRate.currencyRateEntity.rate)
                     lastSavedPropertyForm = propertyForm
+                    hasPropertyFormChanged = false
                 }
             }
 
@@ -325,12 +329,16 @@ class AddPropertyViewModel @Inject constructor(
                 }
             )
         }
+
+        hasPropertyFormChanged = true
     }
 
     fun onSaleStatusChanged(isSold: Boolean) {
         propertyFormMutableStateFlow.update {
             it.copy(isSold = isSold)
         }
+
+        hasPropertyFormChanged = true
     }
 
     fun onForSaleSinceDateChanged(date: Any?) {
@@ -340,6 +348,8 @@ class AddPropertyViewModel @Inject constructor(
         propertyFormMutableStateFlow.update {
             it.copy(forSaleSince = zonedDateTime.toLocalDate())
         }
+
+        hasPropertyFormChanged = true
     }
 
     fun onSoldOnDateChanged(date: Any?) {
@@ -349,6 +359,8 @@ class AddPropertyViewModel @Inject constructor(
         propertyFormMutableStateFlow.update {
             it.copy(dateOfSale = zonedDateTime.toLocalDate())
         }
+
+        hasPropertyFormChanged = true
     }
 
     fun onPriceChanged(price: BigDecimal) {
@@ -356,6 +368,8 @@ class AddPropertyViewModel @Inject constructor(
             propertyFormMutableStateFlow.update {
                 it.copy(price = price)
             }
+
+            hasPropertyFormChanged = true
         }
     }
 
@@ -363,30 +377,40 @@ class AddPropertyViewModel @Inject constructor(
         propertyFormMutableStateFlow.update {
             it.copy(price = BigDecimal.ZERO)
         }
+
+        hasPropertyFormChanged = true
     }
 
     fun onSurfaceChanged(surface: Number) {
         propertyFormMutableStateFlow.update {
             it.copy(surface = BigDecimal(surface.toString()))
         }
+
+        hasPropertyFormChanged = true
     }
 
     fun onRoomsCountChanged(rooms: Number) {
         propertyFormMutableStateFlow.update {
             it.copy(rooms = rooms.toInt())
         }
+
+        hasPropertyFormChanged = true
     }
 
     fun onBathroomsCountChanged(bathrooms: Number) {
         propertyFormMutableStateFlow.update {
             it.copy(bathrooms = bathrooms.toInt())
         }
+
+        hasPropertyFormChanged = true
     }
 
     fun onBedroomsCountChanged(bedrooms: Number) {
         propertyFormMutableStateFlow.update {
             it.copy(bedrooms = bedrooms.toInt())
         }
+
+        hasPropertyFormChanged = true
     }
 
     fun onChipCheckedChanged(chipText: String, isChecked: Boolean) {
@@ -402,10 +426,14 @@ class AddPropertyViewModel @Inject constructor(
                     }
                 )
             }
+
+            hasPropertyFormChanged = true
         }
     }
 
     fun onAddressChanged(address: String) {
+        hasPropertyFormChanged = true
+
         // Reset address fields if address clear button was clicked
         if (isAddressTextCleared) {
             isAddressTextCleared = false
@@ -429,30 +457,40 @@ class AddPropertyViewModel @Inject constructor(
     fun onAddressTextCleared() {
         isAddressTextCleared = true
         currentAddressInputMutableStateFlow.value = "" to true
+
+        hasPropertyFormChanged = true
     }
 
     fun onComplementaryAddressChanged(complementaryAddress: String) {
         propertyFormMutableStateFlow.update {
             it.copy(address = it.address?.copy(complementaryAddress = complementaryAddress))
         }
+
+        hasPropertyFormChanged = true
     }
 
     fun onComplementaryAddressTextCleared() {
         propertyFormMutableStateFlow.update {
             it.copy(address = it.address?.copy(complementaryAddress = null))
         }
+
+        hasPropertyFormChanged = true
     }
 
     fun onDescriptionChanged(description: String) {
         propertyFormMutableStateFlow.update {
             it.copy(description = description)
         }
+
+        hasPropertyFormChanged = true
     }
 
     fun onDescriptionTextCleared() {
         propertyFormMutableStateFlow.update {
             it.copy(description = null)
         }
+
+        hasPropertyFormChanged = true
     }
 
     fun onCameraPermissionGranted() {
