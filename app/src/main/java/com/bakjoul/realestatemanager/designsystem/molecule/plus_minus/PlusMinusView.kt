@@ -54,6 +54,10 @@ class PlusMinusView @JvmOverloads constructor(
             }
             // Value type
             isBigDecimal = getBoolean(R.styleable.PlusMinusView_plusMinusIsBigDecimal, false)
+            // Error text
+            getString(R.styleable.PlusMinusView_plusMinusErrorText)?.let {
+                binding.viewPlusMinusErrorTextView.text = it
+            }
             // Label drawable padding
             getDimensionPixelSize(R.styleable.PlusMinusView_plusMinusDrawablePadding, 2).let {
                 binding.viewPlusMinusLabelText.compoundDrawablePadding = it
@@ -194,8 +198,8 @@ class PlusMinusView @JvmOverloads constructor(
         listeners.remove(listener)
     }
 
-    fun shouldShouldError(shouldShowError: Boolean) {
-        binding.viewPlusMinusErrorTextView.visibility = if (shouldShowError) {
+    fun isErrorVisible(isErrorVisible: Boolean) {
+        binding.viewPlusMinusErrorTextView.visibility = if (isErrorVisible) {
             View.VISIBLE
         } else {
             View.GONE

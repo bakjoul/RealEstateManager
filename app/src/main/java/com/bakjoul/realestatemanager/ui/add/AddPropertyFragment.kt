@@ -302,6 +302,25 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
             binding.addPropertyZipcodeTextInputEditText.setText(viewState.zipcode ?: "")
 
             binding.addPropertyPhotoListView.bind(viewState.photos)
+
+            // Error messages
+            if (viewState.isTypeErrorVisible) {
+                binding.addPropertyTypeRadioGroup.background = ContextCompat.getDrawable(requireContext(), R.drawable.type_background_error)
+                binding.addPropertyTypeErrorTextView.visibility = View.VISIBLE
+            } else {
+                binding.addPropertyTypeRadioGroup.background = ContextCompat.getDrawable(requireContext(), R.drawable.type_background)
+                binding.addPropertyTypeErrorTextView.visibility = View.GONE
+            }
+            binding.addPropertyForSaleSinceTextInputLayout.error = viewState.forSaleSinceError
+            binding.addPropertySoldOnTextInputLayout.error = viewState.dateOfSaleError
+            binding.addPropertyPriceTextInputLayout.error = viewState.priceError
+            binding.addPropertySurfacePlusMinusView.isErrorVisible(viewState.isSurfaceErrorVisible)
+            binding.addPropertyRoomsPlusMinusView.isErrorVisible(viewState.isRoomsErrorVisible)
+            binding.addPropertyAddressTextInputLayout.error = viewState.addressError
+            binding.addPropertyCityTextInputLayout.error = viewState.cityError
+            binding.addPropertyStateRegionTextInputLayout.error = viewState.stateError
+            binding.addPropertyZipcodeTextInputLayout.error = viewState.zipcodeError
+            binding.addPropertyDescriptionTextInputLayout.error = viewState.descriptionError
         }
 
         viewModel.viewActionLiveData.observeEvent(viewLifecycleOwner) {

@@ -76,10 +76,10 @@
         android:textColor="@color/red"
         android:textSize="11sp"
         android:visibility="gone"
+        app:drawableStartCompat="@drawable/baseline_error_24"
         app:layout_constraintEnd_toEndOf="@id/view_plus_minus_increment_button"
         app:layout_constraintStart_toStartOf="@id/view_plus_minus_decrement_button"
         app:layout_constraintTop_toBottomOf="@id/view_plus_minus_decrement_button"
-        tools:drawableStartCompat="@drawable/baseline_error_24"
         tools:text="Invalid field"
         tools:visibility="visible" />
 

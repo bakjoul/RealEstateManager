@@ -95,4 +95,7 @@
     <string name="save_draft_dialog_message">Do you want to save this draft ?</string>
     <string name="discard">Discard</string>
     <string name="save_draft_dialog_positive">Save draft</string>
+    <string name="add_property_type_error">Type required</string>
+    <string name="plus_minus_surface_error">Invalid surface</string>
+    <string name="plus_minus_rooms_error">Invalid number</string>
 </resources>

@@ -97,6 +97,7 @@ class AddPropertyViewModel @Inject constructor(
                 }
             }
         }
+    private val errorsMutableStateFlow: MutableStateFlow<PropertyFormErrors> = MutableStateFlow(PropertyFormErrors())
 
     private var propertyId: Long? = null
     private var isNewDraft = false
@@ -123,8 +124,9 @@ class AddPropertyViewModel @Inject constructor(
             flow { emit(getEuroRateUseCase.invoke()) },
             getCurrentSurfaceUnitUseCase.invoke(),
             addressPredictionsFlow,
-            getPhotosForPropertyIdUseCase.invoke(propertyId)
-        ) { propertyForm, currency, euroRate, surfaceUnit, addressPredictions, photos ->
+            getPhotosForPropertyIdUseCase.invoke(propertyId),
+            errorsMutableStateFlow
+        ) { propertyForm, currency, euroRate, surfaceUnit, addressPredictions, photos, errors ->
             if (hasPropertyFormChanged) {
                 saveJob?.cancelAndJoin()
             }
@@ -164,6 +166,17 @@ class AddPropertyViewModel @Inject constructor(
                         }
                     }
                 ),
+                isTypeErrorVisible = errors.isTypeErrorVisible,
+                forSaleSinceError = errors.forSaleSinceError,
+                dateOfSaleError = errors.dateOfSaleError,
+                priceError = errors.priceError,
+                isSurfaceErrorVisible = errors.isSurfaceErrorVisible,
+                isRoomsErrorVisible = errors.isRoomsErrorVisible,
+                addressError = errors.addressError,
+                cityError = errors.cityError,
+                stateError = errors.stateError,
+                zipcodeError = errors.zipcodeError,
+                descriptionError = errors.descriptionError,
             )
         }.collect {
             emit(it)
@@ -330,12 +343,25 @@ class AddPropertyViewModel @Inject constructor(
             )
         }
 
+        errorsMutableStateFlow.update {
+            it.copy(isTypeErrorVisible = false)
+        }
+
         hasPropertyFormChanged = true
     }
 
     fun onSaleStatusChanged(isSold: Boolean) {
         propertyFormMutableStateFlow.update {
             it.copy(isSold = isSold)
+        }
+
+        if (!isSold) {
+            propertyFormMutableStateFlow.update {
+                it.copy(dateOfSale = null)
+            }
+            errorsMutableStateFlow.update {
+                it.copy(dateOfSaleError = null)
+            }
         }
 
         hasPropertyFormChanged = true
@@ -349,6 +375,10 @@ class AddPropertyViewModel @Inject constructor(
             it.copy(forSaleSince = zonedDateTime.toLocalDate())
         }
 
+        errorsMutableStateFlow.update {
+            it.copy(forSaleSinceError = null)
+        }
+
         hasPropertyFormChanged = true
     }
 
@@ -358,6 +388,10 @@ class AddPropertyViewModel @Inject constructor(
 
         propertyFormMutableStateFlow.update {
             it.copy(dateOfSale = zonedDateTime.toLocalDate())
+        }
+
+        errorsMutableStateFlow.update {
+            it.copy(dateOfSaleError = null)
         }
 
         hasPropertyFormChanged = true
@@ -376,6 +410,10 @@ class AddPropertyViewModel @Inject constructor(
     fun onPriceTextCleared() {
         propertyFormMutableStateFlow.update {
             it.copy(price = BigDecimal.ZERO)
+        }
+
+        errorsMutableStateFlow.update {
+            it.copy(priceError = null)
         }
 
         hasPropertyFormChanged = true
@@ -432,6 +470,9 @@ class AddPropertyViewModel @Inject constructor(
     }
 
     fun onAddressChanged(address: String) {
+        errorsMutableStateFlow.update {
+            it.copy(addressError = null)
+        }
         hasPropertyFormChanged = true
 
         // Reset address fields if address clear button was clicked
@@ -480,6 +521,12 @@ class AddPropertyViewModel @Inject constructor(
     fun onDescriptionChanged(description: String) {
         propertyFormMutableStateFlow.update {
             it.copy(description = description)
+        }
+
+        if (description.isNotEmpty()) {
+            errorsMutableStateFlow.update {
+                it.copy(descriptionError = null)
+            }
         }
 
         hasPropertyFormChanged = true
@@ -539,14 +586,7 @@ class AddPropertyViewModel @Inject constructor(
     }
 
     fun onDoneButtonClicked() {
-        if (propertyFormMutableStateFlow.value.type != null &&
-            propertyFormMutableStateFlow.value.forSaleSince != null &&
-            propertyFormMutableStateFlow.value.price != null &&
-            propertyFormMutableStateFlow.value.surface!! > BigDecimal.ZERO &&
-            propertyFormMutableStateFlow.value.rooms!! > 0 &&
-            propertyFormMutableStateFlow.value.autoCompleteAddress != null &&
-            propertyFormMutableStateFlow.value.description != null) {
-
+        if (isFormValid()) {
             viewModelScope.launch {
                 val newPropertyId = async {
                     addPropertyUseCase.invoke(
@@ -582,15 +622,160 @@ class AddPropertyViewModel @Inject constructor(
 
                 if (newPropertyId != null) {
                     deletePropertyDraftUseCase.invoke(newPropertyId)
+                    navigateUseCase.invoke(To.CloseAddProperty)
                     Log.d("test", "onDoneButtonClicked: property added, draft deleted")
                 } else {
                     Log.d("test", "onDoneButtonClicked: there was a problem adding the new property")
                 }
             }
-
         } else {
             Log.d("test", "onDoneButtonClicked: else")
         }
-        navigateUseCase.invoke(To.CloseAddProperty)
     }
+
+    private fun isFormValid() : Boolean {
+        var isFormValid = true
+
+        if (propertyFormMutableStateFlow.value.type == null) {
+            errorsMutableStateFlow.update {
+                it.copy(isTypeErrorVisible = true)
+            }
+            isFormValid = false
+        } else {
+            errorsMutableStateFlow.update {
+                it.copy(isTypeErrorVisible = false)
+            }
+        }
+
+        if (propertyFormMutableStateFlow.value.forSaleSince == null) {
+            errorsMutableStateFlow.update {
+                it.copy(forSaleSinceError = "Date required")
+            }
+            isFormValid = false
+        } else {
+            if (propertyFormMutableStateFlow.value.isSold == true && propertyFormMutableStateFlow.value.dateOfSale != null && propertyFormMutableStateFlow.value.forSaleSince!!.isAfter(propertyFormMutableStateFlow.value.dateOfSale)) {
+                errorsMutableStateFlow.update {
+                    it.copy(forSaleSinceError = "Invalid date")
+                }
+                isFormValid = false
+            } else {
+                errorsMutableStateFlow.update {
+                    it.copy(forSaleSinceError = null)
+                }
+            }
+        }
+
+        if (propertyFormMutableStateFlow.value.isSold == true) {
+            if (propertyFormMutableStateFlow.value.dateOfSale == null) {
+                errorsMutableStateFlow.update {
+                    it.copy(dateOfSaleError = "Date required")
+                }
+                isFormValid = false
+            } else {
+                if (propertyFormMutableStateFlow.value.forSaleSince != null && propertyFormMutableStateFlow.value.dateOfSale!!.isBefore(propertyFormMutableStateFlow.value.forSaleSince)) {
+                    errorsMutableStateFlow.update {
+                        it.copy(dateOfSaleError = "Invalid date")
+                    }
+                    isFormValid = false
+                } else {
+                    errorsMutableStateFlow.update {
+                        it.copy(dateOfSaleError = null)
+                    }
+                }
+            }
+        } else {
+            errorsMutableStateFlow.update {
+                it.copy(dateOfSaleError = null)
+            }
+        }
+
+        if (propertyFormMutableStateFlow.value.price == null) {
+            errorsMutableStateFlow.update {
+                it.copy(priceError = "Price required")
+            }
+            isFormValid = false
+        } else {
+            if (propertyFormMutableStateFlow.value.price!! <= BigDecimal.ZERO) {
+                errorsMutableStateFlow.update {
+                    it.copy(priceError = "Invalid price")
+                }
+                isFormValid = false
+            } else {
+                errorsMutableStateFlow.update {
+                    it.copy(priceError = null)
+                }
+            }
+        }
+
+        if (propertyFormMutableStateFlow.value.surface!! <= BigDecimal.ZERO) {
+            errorsMutableStateFlow.update {
+                it.copy(isSurfaceErrorVisible = true)
+            }
+            isFormValid = false
+        } else {
+            errorsMutableStateFlow.update {
+                it.copy(isSurfaceErrorVisible = false)
+            }
+        }
+
+        if (propertyFormMutableStateFlow.value.rooms!! <= 0) {
+            errorsMutableStateFlow.update {
+                it.copy(isRoomsErrorVisible = true)
+            }
+            isFormValid = false
+        } else {
+            errorsMutableStateFlow.update {
+                it.copy(isRoomsErrorVisible = false)
+            }
+        }
+
+        if (propertyFormMutableStateFlow.value.autoCompleteAddress == null) {
+            errorsMutableStateFlow.update {
+                it.copy(
+                    addressError = "Address required",
+                    cityError = " ",
+                    stateError = " ",
+                    zipcodeError = " "
+                )
+            }
+            isFormValid = false
+        } else {
+            errorsMutableStateFlow.update {
+                it.copy(
+                    addressError = null,
+                    cityError = null,
+                    stateError = null,
+                    zipcodeError = null
+                )
+            }
+        }
+
+        if (propertyFormMutableStateFlow.value.description == null ||
+            propertyFormMutableStateFlow.value.description!!.isEmpty()) {
+            errorsMutableStateFlow.update {
+                it.copy(descriptionError = "Description required")
+            }
+            isFormValid = false
+        } else {
+            errorsMutableStateFlow.update {
+                it.copy(descriptionError = null)
+            }
+        }
+
+        return isFormValid
+    }
+
+    data class PropertyFormErrors (
+        val isTypeErrorVisible: Boolean = false,
+        val forSaleSinceError: String? = null,
+        val dateOfSaleError: String? = null,
+        val priceError: String? = null,
+        val isSurfaceErrorVisible: Boolean = false,
+        val isRoomsErrorVisible: Boolean = false,
+        val addressError: String? = null,
+        val cityError: String? = null,
+        val stateError: String? = null,
+        val zipcodeError: String? = null,
+        val descriptionError: String? = null
+    )
 }
