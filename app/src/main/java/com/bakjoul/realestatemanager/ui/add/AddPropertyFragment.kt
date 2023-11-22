@@ -345,7 +345,7 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
                             viewModel.dropDraft()
                         }
                         .setPositiveButton(getString(R.string.save_draft_dialog_positive)) { dialog, _ ->
-                            viewModel.saveDraft()
+                            viewModel.onSaveDraftButtonClicked()
                         }
                         .show()
                 }

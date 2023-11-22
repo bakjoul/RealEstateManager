@@ -577,14 +577,6 @@ class AddPropertyViewModel @Inject constructor(
         }
     }
 
-    fun saveDraft() {
-        viewModelScope.launch {
-            updatePropertyDraftUseCase.invoke(propertyId!!, propertyFormMutableStateFlow.value)
-            navigateUseCase.invoke(To.Toast("Draft has been saved"))
-            navigateUseCase.invoke(To.CloseAddProperty)
-        }
-    }
-
     fun onSaveDraftButtonClicked() {
         if(saveJob?.isActive == true) {
             viewModelScope.launch {
