@@ -103,6 +103,9 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
         photosDivider.setDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.photos_divider)!!)
         binding.addPropertyPhotoListView.addItemDecoration(photosDivider)
 
+        // Save button
+        binding.addPropertySaveDraftButton.setOnClickListener { viewModel.onSaveDraftButtonClicked() }
+
         // Property type radio group
         binding.addPropertyTypeRadioGroup.setOnCheckedChangeListener { _, checkedId ->
             viewModel.onPropertyTypeChanged(checkedId)
@@ -337,7 +340,7 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
                 AddPropertyViewAction.SaveDraftDialog -> {
                     MaterialAlertDialogBuilder(requireContext())
                         .setTitle(getString(R.string.save_draft_dialog_title))
-                        .setMessage(getString(R.string.save_draft_dialog_message))
+                        .setMessage(getString(R.string.save_draft))
                         .setNegativeButton(getString(R.string.discard)) { _, _ ->
                             viewModel.dropDraft()
                         }

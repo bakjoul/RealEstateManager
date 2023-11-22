@@ -585,6 +585,18 @@ class AddPropertyViewModel @Inject constructor(
         }
     }
 
+    fun onSaveDraftButtonClicked() {
+        if(saveJob?.isActive == true) {
+            viewModelScope.launch {
+                navigateUseCase.invoke(To.Toast("Saving draft..."))
+                saveJob!!.join()
+                navigateUseCase.invoke(To.CloseAddProperty)
+            }
+        } else {
+            navigateUseCase.invoke(To.CloseAddProperty)
+        }
+    }
+
     fun onDoneButtonClicked() {
         if (isFormValid()) {
             viewModelScope.launch {

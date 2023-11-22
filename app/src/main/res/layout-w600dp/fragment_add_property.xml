@@ -20,26 +20,43 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
+            <ImageButton
+                android:id="@+id/add_property_appbar_close_button"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:layout_gravity="center_vertical"
+                android:background="@null"
+                android:contentDescription="@string/close_button_desc"
+                android:src="@drawable/baseline_close_24_white" />
+
             <TextView
                 android:id="@+id/add_property_appbar_title"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:layout_marginHorizontal="16dp"
+                android:layout_marginStart="4dp"
                 android:layout_weight="1"
                 android:text="@string/add_property_title"
                 android:textColor="@color/white"
                 android:textSize="22sp" />
 
-            <ImageButton
-                android:id="@+id/add_property_appbar_close_button"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_gravity="center_vertical"
-                android:layout_marginEnd="8dp"
-                android:background="@null"
-                android:contentDescription="@string/close_button_desc"
-                android:src="@drawable/baseline_close_24_white" />
+            <TextView
+                android:id="@+id/add_property_save_draft_button"
+                android:layout_width="wrap_content"
+                android:layout_height="56dp"
+                android:layout_gravity="center_vertical|end"
+                android:background="?selectableItemBackground"
+                android:clickable="true"
+                android:drawablePadding="4dp"
+                android:focusable="true"
+                android:fontFamily="monospace"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="12dp"
+                android:text="@string/add_property_save_button"
+                android:textColor="@color/white"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:drawableEndCompat="@drawable/baseline_save_24" />
         </LinearLayout>
 
         <ScrollView
@@ -168,8 +185,7 @@
                     android:id="@+id/add_property_type_sale_status_Toggle"
                     android:layout_width="wrap_content"
                     android:layout_height="56dp"
-                    android:layout_marginTop="6dp"
-                    android:layout_marginBottom="1dp"
+                    android:layout_marginTop="5.5dp"
                     android:background="@drawable/sale_status_selector"
                     android:checked="false"
                     android:textColor="@color/white"
