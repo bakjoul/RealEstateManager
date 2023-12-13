@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
 import com.bakjoul.realestatemanager.R
+import com.bakjoul.realestatemanager.data.currency_rate.model.CurrencyRateWrapper
 import com.bakjoul.realestatemanager.data.settings.model.AppCurrency
 import com.bakjoul.realestatemanager.data.settings.model.SurfaceUnit
 import com.bakjoul.realestatemanager.designsystem.molecule.photo_list.PhotoListMapper
@@ -35,15 +36,16 @@ import com.bakjoul.realestatemanager.domain.settings.currency.GetCurrentCurrency
 import com.bakjoul.realestatemanager.domain.settings.surface_unit.GetCurrentSurfaceUnitUseCase
 import com.bakjoul.realestatemanager.ui.utils.EquatableCallback
 import com.bakjoul.realestatemanager.ui.utils.Event
-import com.bakjoul.realestatemanager.ui.utils.combine
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
-import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -59,6 +61,7 @@ import java.time.format.DateTimeFormatter
 import java.util.Locale
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 
 @HiltViewModel
 class AddPropertyViewModel @Inject constructor(
@@ -80,10 +83,10 @@ class AddPropertyViewModel @Inject constructor(
 
     private companion object {
         private const val TAG = "AddPropertyViewModel"
-        private const val SAVE_DELAY = 3000L
+        private val SAVE_DELAY = 3.seconds
     }
 
-    private val propertyFormMutableStateFlow: MutableStateFlow<PropertyFormEntity> = MutableStateFlow(PropertyFormEntity())
+    private val propertyFormMutableSharedFlow: MutableSharedFlow<PropertyFormEntity> = MutableSharedFlow(replay = 1)
 
     private val currentAddressInputMutableStateFlow: MutableStateFlow<Pair<String, Boolean>?> = MutableStateFlow(null)
     private val addressPredictionsFlow: Flow<AutocompleteWrapper?> = currentAddressInputMutableStateFlow
@@ -106,65 +109,66 @@ class AddPropertyViewModel @Inject constructor(
 
     private var propertyId: Long? = null
     private var isNewDraft = false
-    private var hasPropertyFormChanged = false
-    private var lastSavedPropertyForm: PropertyFormEntity? = null
     private var saveJob: Job? = null
     private var isAddressTextCleared = false
 
-    init {
-        // TODO REFACTO
-        val draftId = savedStateHandle.get<Long>("draftId")
-        val newDraftId = savedStateHandle.get<Long>("newDraftId")
+    private val propertyInformationFlow : Flow<PropertyInformation> = combine(
+        propertyFormMutableSharedFlow,
+        getCurrentCurrencyUseCase.invoke(),
+        flow { emit(getEuroRateUseCase.invoke()) },
+        getCurrentSurfaceUnitUseCase.invoke(),
+    ) { propertyForm, currency, euroRate, surfaceUnit ->
+        PropertyInformation(
+            propertyForm,
+            currency,
+            euroRate,
+            surfaceUnit
+        )
+    }.onEach { (propertyForm, currency, euroRate, surfaceUnit) ->
+        saveJob = viewModelScope.launch {
+            saveJob?.cancel()
+            delay(SAVE_DELAY)
 
-        if (draftId != null) {
-            viewModelScope.launch {
-                val draft = async { getPropertyDraftByIdUseCase.invoke(draftId) }.await()
-                draft?.let {
-                    propertyFormMutableStateFlow.value = it
-                    Log.d("test", "draft loaded : $it")
-                }
-            }
-            propertyId = draftId
-        } else if (newDraftId != null) {
-            propertyFormMutableStateFlow.value = initPropertyForm(newDraftId)
-            propertyId = newDraftId
-            isNewDraft = true
-            Log.d("test", "new draft case")
+            saveDraft(propertyForm, currency, euroRate.currencyRateEntity.rate, surfaceUnit)
         }
-        lastSavedPropertyForm = propertyFormMutableStateFlow.value.copy()
     }
 
     val viewStateLiveData: LiveData<AddPropertyViewState> = liveData {
+        if (latestValue == null) {
+            // TODO REFACTO
+            val draftId = savedStateHandle.get<Long>("draftId")
+            val newDraftId = savedStateHandle.get<Long>("newDraftId")
+
+            if (draftId != null) {
+                viewModelScope.launch {
+                    val draft = getPropertyDraftByIdUseCase.invoke(draftId)
+                    if (draft != null) {
+                        propertyFormMutableSharedFlow.tryEmit(draft)
+                        Log.d("test", "draft loaded : $draft")
+                    }
+                }
+                propertyId = draftId
+            } else if (newDraftId != null) {
+                propertyFormMutableSharedFlow.tryEmit(initPropertyForm(newDraftId))
+                propertyId = newDraftId
+                isNewDraft = true
+                Log.d("test", "new draft case")
+            }
+        }
+
         combine(
-            propertyFormMutableStateFlow,
-            getCurrentCurrencyUseCase.invoke(),
-            flow { emit(getEuroRateUseCase.invoke()) },
-            getCurrentSurfaceUnitUseCase.invoke(),
+            propertyInformationFlow,
             addressPredictionsFlow,
             getPhotosForPropertyIdUseCase.invoke(propertyId),
             errorsMutableStateFlow
-        ) { propertyForm, currency, euroRate, surfaceUnit, addressPredictions, photos, errors ->
+        ) { (propertyForm, currency, euroRate, surfaceUnit), addressPredictions, photos, errors ->
             Log.d("test", "combine form : $propertyForm")
-            if (hasPropertyFormChanged) {
-                saveJob?.cancelAndJoin()
-            }
-
-            if (propertyForm != lastSavedPropertyForm) {
-                saveJob = viewModelScope.launch {
-                    delay(SAVE_DELAY)
-
-                    saveDraft(propertyForm, currency, euroRate.currencyRateEntity.rate, surfaceUnit)
-                    lastSavedPropertyForm = propertyForm
-                    hasPropertyFormChanged = false
-                }
-            }
-
             AddPropertyViewState(
                 propertyTypeEntity = propertyForm.type,
                 forSaleSince = formatDate(propertyForm.forSaleSince),
                 dateOfSale = formatDate(propertyForm.dateOfSale),
                 isSold = propertyForm.isSold ?: false,
-                price = formatSavedPrice(propertyForm.price, currency, euroRate.currencyRateEntity.rate),
+                price = formatSavedPrice(propertyForm.initialPrice, propertyForm.priceFromUser, currency, euroRate.currencyRateEntity.rate),
                 priceHint = formatPriceHint(currency),
                 currencyFormat = getCurrencyFormat(currency),
                 surfaceLabel = formatSurfaceLabel(surfaceUnit),
@@ -205,10 +209,10 @@ class AddPropertyViewModel @Inject constructor(
     }
 
     private fun saveDraft(propertyForm: PropertyFormEntity, currency: AppCurrency, euroRate: Double, surfaceUnit: SurfaceUnit) {
-        val price = if (currency == AppCurrency.EUR) {
-            propertyForm.price?.times(BigDecimal(euroRate))
+        val dollarsPrice = if (currency == AppCurrency.EUR && propertyForm.priceFromUser != null) {
+            propertyForm.priceFromUser.times(BigDecimal(euroRate))
         } else {
-            propertyForm.price
+            propertyForm.initialPrice
         }
 
         val surface = if (surfaceUnit == SurfaceUnit.Feet) {
@@ -218,7 +222,7 @@ class AddPropertyViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            updatePropertyDraftUseCase.invoke(propertyId!!, propertyForm.copy(price = price, surface = surface))
+            updatePropertyDraftUseCase.invoke(propertyId!!, propertyForm.copy(initialPrice = dollarsPrice, surface = surface))
         }
     }
 
@@ -279,11 +283,11 @@ class AddPropertyViewModel @Inject constructor(
 
     private fun formatPriceHint(currency: AppCurrency): String = "Price (${currency.symbol})"
 
-    private fun formatSavedPrice(price: BigDecimal?, currency: AppCurrency, euroRate: Double): String? {
+    private fun formatSavedPrice(initialPrice: BigDecimal?, priceFromUser: BigDecimal?, currency: AppCurrency, euroRate: Double): String? {
         // TODO NEED TO BE FIXED, CONVERT DIRECTLY IN FORM WHEN LOADING
         val convertedPrice = when (currency) {
-            AppCurrency.EUR -> price?.divide(BigDecimal(euroRate), 0, RoundingMode.HALF_UP)
-            else -> price
+            AppCurrency.EUR -> (priceFromUser?: initialPrice)?.divide(BigDecimal(euroRate), 0, RoundingMode.HALF_UP)
+            else -> priceFromUser?: initialPrice
         }
 
         return convertedPrice?.toString()
@@ -341,7 +345,7 @@ class AddPropertyViewModel @Inject constructor(
                                             second = false,
                                         )
                                     }
-                                    propertyFormMutableStateFlow.update {
+                                    propertyFormMutableSharedFlow.update {
                                         it.copy(
                                             autoCompleteAddress = it.address?.copy(
                                                 streetNumber = geocodingResult.result.streetNumber,
@@ -376,7 +380,7 @@ class AddPropertyViewModel @Inject constructor(
         } ?: emptyList()
 
     private fun resetAddressFields() {
-        propertyFormMutableStateFlow.update {
+        propertyFormMutableSharedFlow.update {
             it.copy(
                 autoCompleteAddress = null,
                 address = PropertyFormAddress()
@@ -385,7 +389,7 @@ class AddPropertyViewModel @Inject constructor(
     }
 
     fun onPropertyTypeChanged(checkedId: Int) {
-        propertyFormMutableStateFlow.update {
+        propertyFormMutableSharedFlow.update {
             it.copy(
                 type = when (checkedId) {
                     R.id.add_property_type_flat_RadioButton -> PropertyTypeEntity.FLAT
@@ -407,12 +411,12 @@ class AddPropertyViewModel @Inject constructor(
     }
 
     fun onSaleStatusChanged(isSold: Boolean) {
-        propertyFormMutableStateFlow.update {
+        propertyFormMutableSharedFlow.update {
             it.copy(isSold = isSold)
         }
 
         if (!isSold) {
-            propertyFormMutableStateFlow.update {
+            propertyFormMutableSharedFlow.update {
                 it.copy(dateOfSale = null)
             }
             errorsMutableStateFlow.update {
@@ -427,7 +431,7 @@ class AddPropertyViewModel @Inject constructor(
         val instant = Instant.ofEpochMilli(date as Long)
         val zonedDateTime = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault())
 
-        propertyFormMutableStateFlow.update {
+        propertyFormMutableSharedFlow.update {
             it.copy(forSaleSince = zonedDateTime.toLocalDate())
         }
 
@@ -442,7 +446,7 @@ class AddPropertyViewModel @Inject constructor(
         val instant = Instant.ofEpochMilli(date as Long)
         val zonedDateTime = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault())
 
-        propertyFormMutableStateFlow.update {
+        propertyFormMutableSharedFlow.update {
             it.copy(dateOfSale = zonedDateTime.toLocalDate())
         }
 
@@ -455,7 +459,7 @@ class AddPropertyViewModel @Inject constructor(
 
     fun onPriceChanged(price: BigDecimal) {
         if (price >= BigDecimal.ZERO) {
-            propertyFormMutableStateFlow.update {
+            propertyFormMutableSharedFlow.update {
                 it.copy(price = price)
             }
 
@@ -464,7 +468,7 @@ class AddPropertyViewModel @Inject constructor(
     }
 
     fun onPriceTextCleared() {
-        propertyFormMutableStateFlow.update {
+        propertyFormMutableSharedFlow.update {
             it.copy(price = null)
         }
 
@@ -476,7 +480,7 @@ class AddPropertyViewModel @Inject constructor(
     }
 
     fun onSurfaceChanged(surface: Number) {
-        propertyFormMutableStateFlow.update {
+        propertyFormMutableSharedFlow.update {
             it.copy(surface = BigDecimal(surface.toString()))
         }
 
@@ -484,7 +488,7 @@ class AddPropertyViewModel @Inject constructor(
     }
 
     fun onRoomsCountChanged(rooms: Number) {
-        propertyFormMutableStateFlow.update {
+        propertyFormMutableSharedFlow.update {
             it.copy(rooms = rooms.toInt())
         }
 
@@ -492,7 +496,7 @@ class AddPropertyViewModel @Inject constructor(
     }
 
     fun onBathroomsCountChanged(bathrooms: Number) {
-        propertyFormMutableStateFlow.update {
+        propertyFormMutableSharedFlow.update {
             it.copy(bathrooms = bathrooms.toInt())
         }
 
@@ -500,7 +504,7 @@ class AddPropertyViewModel @Inject constructor(
     }
 
     fun onBedroomsCountChanged(bedrooms: Number) {
-        propertyFormMutableStateFlow.update {
+        propertyFormMutableSharedFlow.update {
             it.copy(bedrooms = bedrooms.toInt())
         }
 
@@ -511,12 +515,12 @@ class AddPropertyViewModel @Inject constructor(
         val poiEntity = PropertyPoiEntity.values().find { it.name.equals(chipText, ignoreCase = true) }
 
         if (poiEntity != null) {
-            propertyFormMutableStateFlow.update {
+            propertyFormMutableSharedFlow.update {
                 it.copy(
                     pointsOfInterest = if (isChecked) {
-                        propertyFormMutableStateFlow.value.pointsOfInterest?.plus(poiEntity)
+                        propertyFormMutableSharedFlow.value.pointsOfInterest?.plus(poiEntity)
                     } else {
-                        propertyFormMutableStateFlow.value.pointsOfInterest?.minus(poiEntity)
+                        propertyFormMutableSharedFlow.value.pointsOfInterest?.minus(poiEntity)
                     }
                 )
             }
@@ -544,8 +548,8 @@ class AddPropertyViewModel @Inject constructor(
         }
 
         // Reset address fields if current address input different from address selected from suggestions
-        if (propertyFormMutableStateFlow.value.autoCompleteAddress != null
-            && formatAddress(propertyFormMutableStateFlow.value.address) != address
+        if (propertyFormMutableSharedFlow.value.autoCompleteAddress != null
+            && formatAddress(propertyFormMutableSharedFlow.value.address) != address
         ) {
             resetAddressFields()
         }
@@ -559,7 +563,7 @@ class AddPropertyViewModel @Inject constructor(
     }
 
     fun onComplementaryAddressChanged(complementaryAddress: String) {
-        propertyFormMutableStateFlow.update {
+        propertyFormMutableSharedFlow.update {
             it.copy(address = it.address?.copy(complementaryAddress = complementaryAddress))
         }
 
@@ -567,7 +571,7 @@ class AddPropertyViewModel @Inject constructor(
     }
 
     fun onComplementaryAddressTextCleared() {
-        propertyFormMutableStateFlow.update {
+        propertyFormMutableSharedFlow.update {
             it.copy(address = it.address?.copy(complementaryAddress = null))
         }
 
@@ -575,7 +579,7 @@ class AddPropertyViewModel @Inject constructor(
     }
 
     fun onDescriptionChanged(description: String) {
-        propertyFormMutableStateFlow.update {
+        propertyFormMutableSharedFlow.update {
             it.copy(description = description)
         }
 
@@ -589,7 +593,7 @@ class AddPropertyViewModel @Inject constructor(
     }
 
     fun onDescriptionTextCleared() {
-        propertyFormMutableStateFlow.update {
+        propertyFormMutableSharedFlow.update {
             it.copy(description = null)
         }
 
@@ -606,18 +610,19 @@ class AddPropertyViewModel @Inject constructor(
 
     fun closeDialog() {
         if (isNewDraft &&
-            propertyFormMutableStateFlow.value.type == null &&
-            propertyFormMutableStateFlow.value.forSaleSince == null &&
-            propertyFormMutableStateFlow.value.dateOfSale == null &&
-            propertyFormMutableStateFlow.value.price == null &&
-            propertyFormMutableStateFlow.value.surface == BigDecimal.ZERO &&
-            propertyFormMutableStateFlow.value.rooms == 0 &&
-            propertyFormMutableStateFlow.value.bathrooms == 0 &&
-            propertyFormMutableStateFlow.value.bedrooms == 0 &&
-            propertyFormMutableStateFlow.value.pointsOfInterest!!.isEmpty() &&
-            propertyFormMutableStateFlow.value.address == PropertyFormAddress() &&
-            propertyFormMutableStateFlow.value.autoCompleteAddress == null &&
-            propertyFormMutableStateFlow.value.description == null) {
+            propertyFormMutableSharedFlow.value.type == null &&
+            propertyFormMutableSharedFlow.value.forSaleSince == null &&
+            propertyFormMutableSharedFlow.value.dateOfSale == null &&
+            propertyFormMutableSharedFlow.value.price == null &&
+            propertyFormMutableSharedFlow.value.surface == BigDecimal.ZERO &&
+            propertyFormMutableSharedFlow.value.rooms == 0 &&
+            propertyFormMutableSharedFlow.value.bathrooms == 0 &&
+            propertyFormMutableSharedFlow.value.bedrooms == 0 &&
+            propertyFormMutableSharedFlow.value.pointsOfInterest!!.isEmpty() &&
+            propertyFormMutableSharedFlow.value.address == PropertyFormAddress() &&
+            propertyFormMutableSharedFlow.value.autoCompleteAddress == null &&
+            propertyFormMutableSharedFlow.value.description == null
+        ) {
 
             dropDraft()
         } else {
@@ -634,7 +639,7 @@ class AddPropertyViewModel @Inject constructor(
     }
 
     fun onSaveDraftButtonClicked() {
-        if(saveJob?.isActive == true) {
+        if (saveJob?.isActive == true) {
             viewModelScope.launch {
                 navigateUseCase.invoke(To.Toast("Saving draft..."))
                 saveJob!!.join()
@@ -651,30 +656,30 @@ class AddPropertyViewModel @Inject constructor(
                 val newPropertyId = async {
                     addPropertyUseCase.invoke(
                         PropertyEntity(
-                            id = propertyFormMutableStateFlow.value.id,
-                            type = propertyFormMutableStateFlow.value.type!!.name,
-                            forSaleSince = propertyFormMutableStateFlow.value.forSaleSince!!,
-                            saleDate = propertyFormMutableStateFlow.value.dateOfSale,
-                            price = propertyFormMutableStateFlow.value.price!!,
-                            surface = propertyFormMutableStateFlow.value.surface!!,
-                            rooms = propertyFormMutableStateFlow.value.rooms!!,
-                            bathrooms = propertyFormMutableStateFlow.value.bathrooms ?: 0,
-                            bedrooms = propertyFormMutableStateFlow.value.bedrooms ?: 0,
-                            amenities = propertyFormMutableStateFlow.value.pointsOfInterest!!,
+                            id = propertyFormMutableSharedFlow.value.id,
+                            type = propertyFormMutableSharedFlow.value.type!!.name,
+                            forSaleSince = propertyFormMutableSharedFlow.value.forSaleSince!!,
+                            saleDate = propertyFormMutableSharedFlow.value.dateOfSale,
+                            price = propertyFormMutableSharedFlow.value.price!!,
+                            surface = propertyFormMutableSharedFlow.value.surface!!,
+                            rooms = propertyFormMutableSharedFlow.value.rooms!!,
+                            bathrooms = propertyFormMutableSharedFlow.value.bathrooms ?: 0,
+                            bedrooms = propertyFormMutableSharedFlow.value.bedrooms ?: 0,
+                            amenities = propertyFormMutableSharedFlow.value.pointsOfInterest!!,
                             address = PropertyAddressEntity(
-                                streetNumber = propertyFormMutableStateFlow.value.autoCompleteAddress!!.streetNumber!!,
-                                route = propertyFormMutableStateFlow.value.autoCompleteAddress!!.route!!,
-                                complementaryAddress = propertyFormMutableStateFlow.value.autoCompleteAddress!!.complementaryAddress,
-                                zipcode = propertyFormMutableStateFlow.value.autoCompleteAddress!!.zipcode!!,
-                                city = propertyFormMutableStateFlow.value.autoCompleteAddress!!.city!!,
-                                state = propertyFormMutableStateFlow.value.autoCompleteAddress!!.state!!,
-                                country = propertyFormMutableStateFlow.value.autoCompleteAddress!!.country!!,
-                                latitude = propertyFormMutableStateFlow.value.autoCompleteAddress!!.latitude!!,
-                                longitude = propertyFormMutableStateFlow.value.autoCompleteAddress!!.longitude!!
+                                streetNumber = propertyFormMutableSharedFlow.value.autoCompleteAddress!!.streetNumber!!,
+                                route = propertyFormMutableSharedFlow.value.autoCompleteAddress!!.route!!,
+                                complementaryAddress = propertyFormMutableSharedFlow.value.autoCompleteAddress!!.complementaryAddress,
+                                zipcode = propertyFormMutableSharedFlow.value.autoCompleteAddress!!.zipcode!!,
+                                city = propertyFormMutableSharedFlow.value.autoCompleteAddress!!.city!!,
+                                state = propertyFormMutableSharedFlow.value.autoCompleteAddress!!.state!!,
+                                country = propertyFormMutableSharedFlow.value.autoCompleteAddress!!.country!!,
+                                latitude = propertyFormMutableSharedFlow.value.autoCompleteAddress!!.latitude!!,
+                                longitude = propertyFormMutableSharedFlow.value.autoCompleteAddress!!.longitude!!
                             ),
-                            description = propertyFormMutableStateFlow.value.description!!,
-                            photos = propertyFormMutableStateFlow.value.photos!!,
-                            agent = propertyFormMutableStateFlow.value.agent ?: "John Doe",
+                            description = propertyFormMutableSharedFlow.value.description!!,
+                            photos = propertyFormMutableSharedFlow.value.photos!!,
+                            agent = propertyFormMutableSharedFlow.value.agent ?: "John Doe",
                             entryDate = ZonedDateTime.now().toLocalDate()
                         )
                     )
@@ -693,10 +698,10 @@ class AddPropertyViewModel @Inject constructor(
         }
     }
 
-    private fun isFormValid() : Boolean {
+    private fun isFormValid(): Boolean {
         var isFormValid = true
 
-        if (propertyFormMutableStateFlow.value.type == null) {
+        if (propertyFormMutableSharedFlow.value.type == null) {
             errorsMutableStateFlow.update {
                 it.copy(isTypeErrorVisible = true)
             }
@@ -707,13 +712,16 @@ class AddPropertyViewModel @Inject constructor(
             }
         }
 
-        if (propertyFormMutableStateFlow.value.forSaleSince == null) {
+        if (propertyFormMutableSharedFlow.value.forSaleSince == null) {
             errorsMutableStateFlow.update {
                 it.copy(forSaleSinceError = "Date required")
             }
             isFormValid = false
         } else {
-            if (propertyFormMutableStateFlow.value.isSold == true && propertyFormMutableStateFlow.value.dateOfSale != null && propertyFormMutableStateFlow.value.forSaleSince!!.isAfter(propertyFormMutableStateFlow.value.dateOfSale)) {
+            if (propertyFormMutableSharedFlow.value.isSold == true && propertyFormMutableSharedFlow.value.dateOfSale != null && propertyFormMutableSharedFlow.value.forSaleSince!!.isAfter(
+                    propertyFormMutableSharedFlow.value.dateOfSale
+                )
+            ) {
                 errorsMutableStateFlow.update {
                     it.copy(forSaleSinceError = "Invalid date")
                 }
@@ -725,14 +733,17 @@ class AddPropertyViewModel @Inject constructor(
             }
         }
 
-        if (propertyFormMutableStateFlow.value.isSold == true) {
-            if (propertyFormMutableStateFlow.value.dateOfSale == null) {
+        if (propertyFormMutableSharedFlow.value.isSold == true) {
+            if (propertyFormMutableSharedFlow.value.dateOfSale == null) {
                 errorsMutableStateFlow.update {
                     it.copy(dateOfSaleError = "Date required")
                 }
                 isFormValid = false
             } else {
-                if (propertyFormMutableStateFlow.value.forSaleSince != null && propertyFormMutableStateFlow.value.dateOfSale!!.isBefore(propertyFormMutableStateFlow.value.forSaleSince)) {
+                if (propertyFormMutableSharedFlow.value.forSaleSince != null && propertyFormMutableSharedFlow.value.dateOfSale!!.isBefore(
+                        propertyFormMutableSharedFlow.value.forSaleSince
+                    )
+                ) {
                     errorsMutableStateFlow.update {
                         it.copy(dateOfSaleError = "Invalid date")
                     }
@@ -749,13 +760,13 @@ class AddPropertyViewModel @Inject constructor(
             }
         }
 
-        if (propertyFormMutableStateFlow.value.price == null) {
+        if (propertyFormMutableSharedFlow.value.price == null) {
             errorsMutableStateFlow.update {
                 it.copy(priceError = "Price required")
             }
             isFormValid = false
         } else {
-            if (propertyFormMutableStateFlow.value.price!! <= BigDecimal.ZERO) {
+            if (propertyFormMutableSharedFlow.value.price!! <= BigDecimal.ZERO) {
                 errorsMutableStateFlow.update {
                     it.copy(priceError = "Invalid price")
                 }
@@ -767,7 +778,7 @@ class AddPropertyViewModel @Inject constructor(
             }
         }
 
-        if (propertyFormMutableStateFlow.value.surface == null || propertyFormMutableStateFlow.value.surface == BigDecimal.ZERO) {
+        if (propertyFormMutableSharedFlow.value.surface == null || propertyFormMutableSharedFlow.value.surface == BigDecimal.ZERO) {
             errorsMutableStateFlow.update {
                 it.copy(isSurfaceErrorVisible = true)
             }
@@ -778,7 +789,7 @@ class AddPropertyViewModel @Inject constructor(
             }
         }
 
-        if (propertyFormMutableStateFlow.value.rooms == null || propertyFormMutableStateFlow.value.rooms!! < 1) {
+        if (propertyFormMutableSharedFlow.value.rooms == null || propertyFormMutableSharedFlow.value.rooms!! < 1) {
             errorsMutableStateFlow.update {
                 it.copy(isRoomsErrorVisible = true)
             }
@@ -789,7 +800,7 @@ class AddPropertyViewModel @Inject constructor(
             }
         }
 
-        if (propertyFormMutableStateFlow.value.autoCompleteAddress == null) {
+        if (propertyFormMutableSharedFlow.value.autoCompleteAddress == null) {
             errorsMutableStateFlow.update {
                 it.copy(
                     addressError = "Address required",
@@ -810,8 +821,9 @@ class AddPropertyViewModel @Inject constructor(
             }
         }
 
-        if (propertyFormMutableStateFlow.value.description == null ||
-            propertyFormMutableStateFlow.value.description!!.isEmpty()) {
+        if (propertyFormMutableSharedFlow.value.description == null ||
+            propertyFormMutableSharedFlow.value.description!!.isEmpty()
+        ) {
             errorsMutableStateFlow.update {
                 it.copy(descriptionError = "Description required")
             }
@@ -825,7 +837,7 @@ class AddPropertyViewModel @Inject constructor(
         return isFormValid
     }
 
-    data class PropertyFormErrors (
+    data class PropertyFormErrors(
         val isTypeErrorVisible: Boolean = false,
         val forSaleSinceError: String? = null,
         val dateOfSaleError: String? = null,
@@ -837,5 +849,12 @@ class AddPropertyViewModel @Inject constructor(
         val stateError: String? = null,
         val zipcodeError: String? = null,
         val descriptionError: String? = null
+    )
+
+    private data class PropertyInformation(
+        val propertyForm: PropertyFormEntity,
+        val currency: AppCurrency,
+        val euroRate: CurrencyRateWrapper,
+        val surfaceUnit: SurfaceUnit,
     )
 }

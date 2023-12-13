@@ -233,7 +233,7 @@ class PropertyRepositoryRoom @Inject constructor(
             isSold = propertyFormWithPhotosDto.propertyFormDto.isSold,
             forSaleSince = propertyFormWithPhotosDto.propertyFormDto.forSaleSince,
             dateOfSale = propertyFormWithPhotosDto.propertyFormDto.dateOfSale,
-            price = propertyFormWithPhotosDto.propertyFormDto.price,
+            initialPrice = propertyFormWithPhotosDto.propertyFormDto.price,
             surface = propertyFormWithPhotosDto.propertyFormDto.surface,
             rooms = propertyFormWithPhotosDto.propertyFormDto.rooms,
             bathrooms = propertyFormWithPhotosDto.propertyFormDto.bathrooms,
