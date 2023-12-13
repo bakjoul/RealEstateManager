@@ -17,7 +17,7 @@ import com.bakjoul.realestatemanager.domain.currency_rate.GetEuroRateUseCase
 import com.bakjoul.realestatemanager.domain.current_property.SetCurrentPropertyIdUseCase
 import com.bakjoul.realestatemanager.domain.navigation.NavigateUseCase
 import com.bakjoul.realestatemanager.domain.navigation.model.To
-import com.bakjoul.realestatemanager.domain.property.GenerateNewDraftIdUseCase
+import com.bakjoul.realestatemanager.domain.property.drafts.GenerateNewDraftIdUseCase
 import com.bakjoul.realestatemanager.domain.property.GetPropertiesFlowUseCase
 import com.bakjoul.realestatemanager.domain.property.drafts.AddPropertyDraftUseCase
 import com.bakjoul.realestatemanager.domain.property.drafts.HasPropertyDraftsUseCase

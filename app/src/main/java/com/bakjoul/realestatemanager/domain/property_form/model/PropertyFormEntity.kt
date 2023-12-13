@@ -5,6 +5,8 @@ import com.bakjoul.realestatemanager.domain.property.model.PropertyPoiEntity
 import com.bakjoul.realestatemanager.domain.property.model.PropertyTypeEntity
 import java.math.BigDecimal
 import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.ZonedDateTime
 
 data class PropertyFormEntity(
     val id: Long = 0,
@@ -23,5 +25,5 @@ data class PropertyFormEntity(
     val description: String? = null,
     val photos: List<PhotoEntity>? = null,
     val agent: String? = null,
-    val entryDate: LocalDate? = null,
+    val lastUpdate: LocalDateTime = ZonedDateTime.now().toLocalDateTime(),
 )

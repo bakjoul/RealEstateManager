@@ -42,13 +42,13 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
         private const val DIALOG_WINDOW_WIDTH = 0.5
         private const val DIALOG_WINDOW_HEIGHT = 0.9
 
-        fun newInstance(propertyId: Long?, propertyDraftId: Long?): AddPropertyFragment {
+        fun newInstance(draftId: Long?, newDraftId: Long?): AddPropertyFragment {
             val args = Bundle()
-            if (propertyId != null) {
-                args.putLong("propertyId", propertyId)
+            if (draftId != null) {
+                args.putLong("draftId", draftId)
             }
-            if (propertyDraftId != null) {
-                args.putLong("propertyDraftId", propertyDraftId)
+            if (newDraftId != null) {
+                args.putLong("newDraftId", newDraftId)
             }
             val fragment = AddPropertyFragment()
             fragment.arguments = args
@@ -62,6 +62,7 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
     private val requestCameraPermissionLauncher = activityResultLauncher()
     private val materialDateBuilder: MaterialDatePicker.Builder<*> = MaterialDatePicker.Builder.datePicker()
     private var currentCurrency: DecimalFormat? = null
+    private var isExistingDraftLoaded = false
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return object : CustomThemeDialog(requireContext(), R.style.FullScreenDialog) {
@@ -108,7 +109,9 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
 
         // Property type radio group
         binding.addPropertyTypeRadioGroup.setOnCheckedChangeListener { _, checkedId ->
-            viewModel.onPropertyTypeChanged(checkedId)
+            if (isExistingDraftLoaded) {
+                viewModel.onPropertyTypeChanged(checkedId)
+            }
         }
 
         // Date picker for sale since
@@ -120,7 +123,7 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
 
         forSaleSinceDatePicker.addOnPositiveButtonClickListener {
             viewModel.onForSaleSinceDateChanged(it)
-            binding.addPropertyForSaleSinceTextInputEditText.setText(forSaleSinceDatePicker.headerText)
+            //binding.addPropertyForSaleSinceTextInputEditText.setText(forSaleSinceDatePicker.headerText)
         }
 
         // Sale status toggle
@@ -129,6 +132,7 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
         }
 
         // Price text input end icon
+        binding.addPropertyPriceTextInputEditText.transformationMethod = null
         binding.addPropertyPriceTextInputLayout.isEndIconVisible = false
         binding.addPropertyPriceTextInputLayout.setEndIconOnClickListener {
             viewModel.onPriceTextCleared()
@@ -137,7 +141,10 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
 
         // Surface plus minus view
         binding.addPropertySurfacePlusMinusView.addOnValueChangedListener { newValue ->
-            viewModel.onSurfaceChanged(newValue)
+            if (isExistingDraftLoaded) {
+                viewModel.onSurfaceChanged(newValue)
+            }
+            //viewModel.onSurfaceChanged(newValue)
         }
 
         // Rooms plus minus views
@@ -233,9 +240,20 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
         binding.addPropertyDoneFab.setOnClickListener { viewModel.onDoneButtonClicked() }
 
         viewModel.viewStateLiveData.observe(viewLifecycleOwner) { viewState ->
+            if (!isExistingDraftLoaded) {
+                viewState.propertyTypeEntity?.let { propertyType ->
+                    binding.addPropertyTypeRadioGroup.check(propertyType.radioButtonId)
+                }
+            }
+
+            binding.addPropertyForSaleSinceTextInputEditText.setText(viewState.forSaleSince)
+
             // Sale date picker
             if (viewState.isSold) {
+                binding.addPropertyTypeSaleStatusToggle.isChecked = true
                 binding.addPropertySoldOnTextInputLayout.visibility = View.VISIBLE
+                binding.addPropertySoldOnTextInputEditText.setText(viewState.dateOfSale)
+
                 val soldOnDatePicker: MaterialDatePicker<*> = materialDateBuilder.build()
 
                 binding.addPropertySoldOnTextInputEditText.setOnClickListener {
@@ -244,9 +262,10 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
 
                 soldOnDatePicker.addOnPositiveButtonClickListener {
                     viewModel.onSoldOnDateChanged(it)
-                    binding.addPropertySoldOnTextInputEditText.setText(soldOnDatePicker.headerText)
+                    //binding.addPropertySoldOnTextInputEditText.setText(soldOnDatePicker.headerText)
                 }
             } else {
+                binding.addPropertyTypeSaleStatusToggle.isChecked = false
                 binding.addPropertySoldOnTextInputLayout.visibility = View.GONE
             }
 
@@ -264,7 +283,10 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
 
                             if (originalText.isNotEmpty()) {
                                 val bigDecimalPrice = BigDecimal(originalText.replace(",", "").replace(" ", ""))
-                                viewModel.onPriceChanged(bigDecimalPrice)
+                                if (isExistingDraftLoaded) {
+                                    viewModel.onPriceChanged(bigDecimalPrice)
+                                }
+                                //viewModel.onPriceChanged(bigDecimalPrice)
 
                                 try {
                                     val parsed = viewState.currencyFormat.parse(originalText)
@@ -284,6 +306,13 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
                 })
             }
             currentCurrency = viewState.currencyFormat
+
+            if (!isExistingDraftLoaded) {
+                binding.addPropertyPriceTextInputEditText.setText(viewState.price)
+                binding.addPropertySurfacePlusMinusView.setInitialValue(viewState.surface)
+
+                isExistingDraftLoaded = true
+            }
 
             binding.addPropertySurfacePlusMinusView.setLabel(viewState.surfaceLabel)
 

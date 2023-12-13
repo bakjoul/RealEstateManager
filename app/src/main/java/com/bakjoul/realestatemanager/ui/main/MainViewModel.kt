@@ -11,7 +11,7 @@ import com.bakjoul.realestatemanager.domain.auth.LogOutUseCase
 import com.bakjoul.realestatemanager.domain.navigation.GetCurrentNavigationUseCase
 import com.bakjoul.realestatemanager.domain.navigation.NavigateUseCase
 import com.bakjoul.realestatemanager.domain.navigation.model.To
-import com.bakjoul.realestatemanager.domain.property.GenerateNewDraftIdUseCase
+import com.bakjoul.realestatemanager.domain.property.drafts.GenerateNewDraftIdUseCase
 import com.bakjoul.realestatemanager.domain.property.drafts.AddPropertyDraftUseCase
 import com.bakjoul.realestatemanager.domain.property_form.model.PropertyFormEntity
 import com.bakjoul.realestatemanager.domain.resources.IsTabletUseCase
@@ -71,7 +71,8 @@ class MainViewModel @Inject constructor(
                     MainViewAction.ShowPhotosDialog
                 }
                 is To.DraftDialog -> MainViewAction.ShowPropertyDraftDialog
-                is To.AddProperty -> MainViewAction.ShowAddPropertyDialog(navigation.propertyId, navigation.propertyDraftId)
+                is To.DraftListDialog -> MainViewAction.ShowDraftListDialog
+                is To.AddProperty -> MainViewAction.ShowAddPropertyDialog(navigation.draftId, navigation.newDraftId)
                 is To.CloseAddProperty -> if (isTablet) {
                     MainViewAction.HideDetailsPortrait
                 } else {
@@ -114,5 +115,9 @@ class MainViewModel @Inject constructor(
             addPropertyDraftUseCase.invoke(PropertyFormEntity(propertyDraftId))
             navigateUseCase.invoke(To.AddProperty(null, propertyDraftId))
         }
+    }
+
+    fun onContinueEditingDraftClicked() {
+        navigateUseCase.invoke(To.DraftListDialog)
     }
 }

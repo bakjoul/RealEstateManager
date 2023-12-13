@@ -22,7 +22,7 @@ interface PropertyRepository {
 
     fun getPropertyDraftsFlow(): Flow<List<PropertyFormEntity>>
 
-    fun getPropertyDraftById(id: Long): Flow<PropertyFormEntity?>
+    suspend fun getPropertyDraftById(id: Long): PropertyFormEntity?
 
     suspend fun deletePropertyDraft(id: Long)
 }

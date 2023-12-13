@@ -6,8 +6,11 @@ import java.text.DecimalFormat
 
 data class AddPropertyViewState(
     val propertyTypeEntity: PropertyTypeEntity?,
+    val forSaleSince: String?,
+    val dateOfSale: String?,
     val isSold: Boolean,
     val priceHint: String,
+    val price: String?,
     val currencyFormat: DecimalFormat,
     val surfaceLabel: String,
     val surface: String,

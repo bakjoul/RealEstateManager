@@ -23,6 +23,7 @@ import com.bakjoul.realestatemanager.domain.photos.DeletePhotoUseCase
 import com.bakjoul.realestatemanager.domain.photos.GetPhotosForPropertyIdUseCase
 import com.bakjoul.realestatemanager.domain.property.AddPropertyUseCase
 import com.bakjoul.realestatemanager.domain.property.drafts.DeletePropertyDraftUseCase
+import com.bakjoul.realestatemanager.domain.property.drafts.GetPropertyDraftByIdUseCase
 import com.bakjoul.realestatemanager.domain.property.drafts.UpdatePropertyDraftUseCase
 import com.bakjoul.realestatemanager.domain.property.model.PropertyAddressEntity
 import com.bakjoul.realestatemanager.domain.property.model.PropertyEntity
@@ -47,11 +48,14 @@ import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
+import java.math.RoundingMode
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.time.Instant
+import java.time.LocalDate
 import java.time.ZoneId
 import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 import java.util.Locale
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.milliseconds
@@ -59,7 +63,8 @@ import kotlin.time.Duration.Companion.milliseconds
 @HiltViewModel
 class AddPropertyViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    getCurrentNavigationUseCase: GetCurrentNavigationUseCase,
+    private val getCurrentNavigationUseCase: GetCurrentNavigationUseCase,
+    private val getPropertyDraftByIdUseCase: GetPropertyDraftByIdUseCase,
     private val getCurrentCurrencyUseCase: GetCurrentCurrencyUseCase,
     private val getEuroRateUseCase: GetEuroRateUseCase,
     private val getCurrentSurfaceUnitUseCase: GetCurrentSurfaceUnitUseCase,
@@ -107,12 +112,24 @@ class AddPropertyViewModel @Inject constructor(
     private var isAddressTextCleared = false
 
     init {
-        if (savedStateHandle.get<Long>("propertyId") != null) {
-            propertyId = savedStateHandle.get<Long>("propertyId")
-        } else {
-            propertyId = savedStateHandle.get<Long>("propertyDraftId")
-            propertyFormMutableStateFlow.value = initPropertyForm(propertyId!!)
+        // TODO REFACTO
+        val draftId = savedStateHandle.get<Long>("draftId")
+        val newDraftId = savedStateHandle.get<Long>("newDraftId")
+
+        if (draftId != null) {
+            viewModelScope.launch {
+                val draft = async { getPropertyDraftByIdUseCase.invoke(draftId) }.await()
+                draft?.let {
+                    propertyFormMutableStateFlow.value = it
+                    Log.d("test", "draft loaded : $it")
+                }
+            }
+            propertyId = draftId
+        } else if (newDraftId != null) {
+            propertyFormMutableStateFlow.value = initPropertyForm(newDraftId)
+            propertyId = newDraftId
             isNewDraft = true
+            Log.d("test", "new draft case")
         }
         lastSavedPropertyForm = propertyFormMutableStateFlow.value.copy()
     }
@@ -127,6 +144,7 @@ class AddPropertyViewModel @Inject constructor(
             getPhotosForPropertyIdUseCase.invoke(propertyId),
             errorsMutableStateFlow
         ) { propertyForm, currency, euroRate, surfaceUnit, addressPredictions, photos, errors ->
+            Log.d("test", "combine form : $propertyForm")
             if (hasPropertyFormChanged) {
                 saveJob?.cancelAndJoin()
             }
@@ -135,7 +153,7 @@ class AddPropertyViewModel @Inject constructor(
                 saveJob = viewModelScope.launch {
                     delay(SAVE_DELAY)
 
-                    saveDraft(propertyForm, currency, euroRate.currencyRateEntity.rate)
+                    saveDraft(propertyForm, currency, euroRate.currencyRateEntity.rate, surfaceUnit)
                     lastSavedPropertyForm = propertyForm
                     hasPropertyFormChanged = false
                 }
@@ -143,12 +161,15 @@ class AddPropertyViewModel @Inject constructor(
 
             AddPropertyViewState(
                 propertyTypeEntity = propertyForm.type,
+                forSaleSince = formatDate(propertyForm.forSaleSince),
+                dateOfSale = formatDate(propertyForm.dateOfSale),
                 isSold = propertyForm.isSold ?: false,
+                price = formatSavedPrice(propertyForm.price, currency, euroRate.currencyRateEntity.rate),
                 priceHint = formatPriceHint(currency),
                 currencyFormat = getCurrencyFormat(currency),
                 surfaceLabel = formatSurfaceLabel(surfaceUnit),
-                surface = formatSurfaceValue(propertyForm.surface),
-                numberOfRooms = (propertyForm.rooms ?: 0).toString(),
+                surface = formatSurfaceValue(propertyForm.surface, surfaceUnit),
+                numberOfRooms = propertyForm.rooms.toString(),
                 numberOfBathrooms = propertyForm.bathrooms.toString(),
                 numberOfBedrooms = propertyForm.bedrooms.toString(),
                 addressPredictions = mapAddressPredictions(addressPredictions),
@@ -183,15 +204,21 @@ class AddPropertyViewModel @Inject constructor(
         }
     }
 
-    private fun saveDraft(propertyForm: PropertyFormEntity, currency: AppCurrency, euroRate: Double) {
+    private fun saveDraft(propertyForm: PropertyFormEntity, currency: AppCurrency, euroRate: Double, surfaceUnit: SurfaceUnit) {
         val price = if (currency == AppCurrency.EUR) {
             propertyForm.price?.times(BigDecimal(euroRate))
         } else {
             propertyForm.price
         }
 
+        val surface = if (surfaceUnit == SurfaceUnit.Feet) {
+            propertyForm.surface?.divide(BigDecimal(3.28084), 0, RoundingMode.HALF_UP)
+        } else {
+            propertyForm.surface
+        }
+
         viewModelScope.launch {
-            updatePropertyDraftUseCase.invoke(propertyId!!, propertyForm.copy(price = price))
+            updatePropertyDraftUseCase.invoke(propertyId!!, propertyForm.copy(price = price, surface = surface))
         }
     }
 
@@ -216,18 +243,31 @@ class AddPropertyViewModel @Inject constructor(
         forSaleSince = null,
         dateOfSale = null,
         price = null,
-        surface = BigDecimal.ZERO,
-        rooms = 0,
-        bathrooms = 0,
-        bedrooms = 0,
+        surface = null,
+        rooms = null,
+        bathrooms = null,
+        bedrooms = null,
         pointsOfInterest = emptyList(),
         autoCompleteAddress = null,
         address = PropertyFormAddress(),
         description = null,
         photos = emptyList(),
         agent = null,
-        entryDate = null
+        lastUpdate = ZonedDateTime.now().toLocalDateTime()
     )
+
+    private fun formatDate(localDate: LocalDate?): String {
+        return if (localDate == null) {
+            ""
+        } else {
+            val formatter = if (Locale.getDefault().language == "fr") {
+                DateTimeFormatter.ofPattern("d MMM yyyy", Locale.FRENCH)
+            } else {
+                DateTimeFormatter.ofPattern("MMM d, yyyy", Locale.ENGLISH)
+            }
+            localDate.format(formatter)
+        }
+    }
 
     private fun getCurrencyFormat(currency: AppCurrency): DecimalFormat {
         val symbols = DecimalFormatSymbols(Locale.getDefault())
@@ -239,11 +279,27 @@ class AddPropertyViewModel @Inject constructor(
 
     private fun formatPriceHint(currency: AppCurrency): String = "Price (${currency.symbol})"
 
+    private fun formatSavedPrice(price: BigDecimal?, currency: AppCurrency, euroRate: Double): String? {
+        // TODO NEED TO BE FIXED, CONVERT DIRECTLY IN FORM WHEN LOADING
+        val convertedPrice = when (currency) {
+            AppCurrency.EUR -> price?.divide(BigDecimal(euroRate), 0, RoundingMode.HALF_UP)
+            else -> price
+        }
+
+        return convertedPrice?.toString()
+    }
+
     private fun formatSurfaceLabel(surfaceUnit: SurfaceUnit): String = "Surface (${surfaceUnit.unit})"
 
-    private fun formatSurfaceValue(surface: BigDecimal?): String {
+    private fun formatSurfaceValue(surface: BigDecimal?, surfaceUnit: SurfaceUnit): String {
+        // TODO NEED TO BE FIXED, SAME ISSUE
         return surface?.let {
-            if (it.scale() <= 0) it.toBigInteger().toString() else it.toString()
+            val formattedSurface = if (surfaceUnit == SurfaceUnit.Feet) {
+                surface.times(BigDecimal(3.28084)).setScale(0, RoundingMode.HALF_UP)
+            } else {
+                surface
+            }
+            formattedSurface.toString()
         } ?: "0"
     }
 
@@ -409,7 +465,7 @@ class AddPropertyViewModel @Inject constructor(
 
     fun onPriceTextCleared() {
         propertyFormMutableStateFlow.update {
-            it.copy(price = BigDecimal.ZERO)
+            it.copy(price = null)
         }
 
         errorsMutableStateFlow.update {
@@ -602,8 +658,8 @@ class AddPropertyViewModel @Inject constructor(
                             price = propertyFormMutableStateFlow.value.price!!,
                             surface = propertyFormMutableStateFlow.value.surface!!,
                             rooms = propertyFormMutableStateFlow.value.rooms!!,
-                            bathrooms = propertyFormMutableStateFlow.value.bathrooms!!,
-                            bedrooms = propertyFormMutableStateFlow.value.bedrooms!!,
+                            bathrooms = propertyFormMutableStateFlow.value.bathrooms ?: 0,
+                            bedrooms = propertyFormMutableStateFlow.value.bedrooms ?: 0,
                             amenities = propertyFormMutableStateFlow.value.pointsOfInterest!!,
                             address = PropertyAddressEntity(
                                 streetNumber = propertyFormMutableStateFlow.value.autoCompleteAddress!!.streetNumber!!,
@@ -711,7 +767,7 @@ class AddPropertyViewModel @Inject constructor(
             }
         }
 
-        if (propertyFormMutableStateFlow.value.surface!! <= BigDecimal.ZERO) {
+        if (propertyFormMutableStateFlow.value.surface == null || propertyFormMutableStateFlow.value.surface == BigDecimal.ZERO) {
             errorsMutableStateFlow.update {
                 it.copy(isSurfaceErrorVisible = true)
             }
@@ -722,7 +778,7 @@ class AddPropertyViewModel @Inject constructor(
             }
         }
 
-        if (propertyFormMutableStateFlow.value.rooms!! <= 0) {
+        if (propertyFormMutableStateFlow.value.rooms == null || propertyFormMutableStateFlow.value.rooms!! < 1) {
             errorsMutableStateFlow.update {
                 it.copy(isRoomsErrorVisible = true)
             }

@@ -13,12 +13,14 @@ import com.bakjoul.realestatemanager.domain.property.model.PropertyAddressEntity
 import com.bakjoul.realestatemanager.domain.property.model.PropertyEntity
 import com.bakjoul.realestatemanager.domain.property.model.PropertyPoiEntity
 import com.bakjoul.realestatemanager.domain.property.model.PropertyTypeEntity
+import com.bakjoul.realestatemanager.domain.property_form.model.PropertyFormAddress
 import com.bakjoul.realestatemanager.domain.property_form.model.PropertyFormEntity
 import com.bakjoul.realestatemanager.ui.utils.IdGenerator
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
+import java.time.ZonedDateTime
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -74,9 +76,11 @@ class PropertyRepositoryRoom @Inject constructor(
         }
     }.flowOn(coroutineDispatcherProvider.io)
 
-    override fun getPropertyDraftById(id: Long): Flow<PropertyFormEntity?> = propertyFormDao.getPropertyFormById(id).map {
-        it?.let { mapPropertyFormDtoToDomainEntity(it) }
-    }.flowOn(coroutineDispatcherProvider.io)
+    override suspend fun getPropertyDraftById(id: Long): PropertyFormEntity? = withContext(coroutineDispatcherProvider.io) {
+        propertyFormDao.getPropertyFormById(id)?.let {
+            mapPropertyFormDtoToDomainEntity(it)
+        }
+    }
 
     override suspend fun deletePropertyDraft(id: Long) = withContext(coroutineDispatcherProvider.io) {
         propertyFormDao.delete(id)
@@ -219,6 +223,7 @@ class PropertyRepositoryRoom @Inject constructor(
             longitude = propertyForm.address?.longitude,
             description = propertyForm.description,
             agent = propertyForm.agent,
+            lastUpdate = ZonedDateTime.now().toLocalDateTime()
         )
 
     private fun mapPropertyFormDtoToDomainEntity(propertyFormWithPhotosDto: PropertyFormWithPhotosDto) : PropertyFormEntity =
@@ -234,6 +239,30 @@ class PropertyRepositoryRoom @Inject constructor(
             bathrooms = propertyFormWithPhotosDto.propertyFormDto.bathrooms,
             bedrooms = propertyFormWithPhotosDto.propertyFormDto.bedrooms,
             pointsOfInterest = mapPropertyFormDtoAmenitiesToPoiListEntity(propertyFormWithPhotosDto.propertyFormDto),
+            autoCompleteAddress = PropertyFormAddress(
+                streetNumber = propertyFormWithPhotosDto.propertyFormDto.autoCompleteStreetNumber,
+                route = propertyFormWithPhotosDto.propertyFormDto.autoCompleteRoute,
+                complementaryAddress = propertyFormWithPhotosDto.propertyFormDto.autoCompleteComplementaryAddress,
+                zipcode = propertyFormWithPhotosDto.propertyFormDto.autoCompleteZipcode,
+                city = propertyFormWithPhotosDto.propertyFormDto.autoCompleteCity,
+                state = propertyFormWithPhotosDto.propertyFormDto.autoCompleteState,
+                country = propertyFormWithPhotosDto.propertyFormDto.autoCompleteCountry,
+                latitude = propertyFormWithPhotosDto.propertyFormDto.autoCompleteLatitude,
+                longitude = propertyFormWithPhotosDto.propertyFormDto.autoCompleteLongitude),
+            address = PropertyFormAddress(
+                streetNumber = propertyFormWithPhotosDto.propertyFormDto.streetNumber,
+                route = propertyFormWithPhotosDto.propertyFormDto.route,
+                complementaryAddress = propertyFormWithPhotosDto.propertyFormDto.complementaryAddress,
+                zipcode = propertyFormWithPhotosDto.propertyFormDto.zipcode,
+                city = propertyFormWithPhotosDto.propertyFormDto.city,
+                state = propertyFormWithPhotosDto.propertyFormDto.state,
+                country = propertyFormWithPhotosDto.propertyFormDto.country,
+                latitude = propertyFormWithPhotosDto.propertyFormDto.latitude,
+                longitude = propertyFormWithPhotosDto.propertyFormDto.longitude),
+            description = propertyFormWithPhotosDto.propertyFormDto.description,
+            photos = mapPhotos(propertyFormWithPhotosDto.photos),
+            agent = propertyFormWithPhotosDto.propertyFormDto.agent,
+            lastUpdate = propertyFormWithPhotosDto.propertyFormDto.lastUpdate
         )
 
     private fun mapPropertyFormDtoAmenitiesToPoiListEntity(propertyFormDto: PropertyFormDto): List<PropertyPoiEntity> = buildList {

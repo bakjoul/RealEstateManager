@@ -8,5 +8,11 @@ class BigDecimalTypeConverter {
     fun bigDecimalToString(bigDecimal: BigDecimal?): String? = bigDecimal?.toString()
 
     @TypeConverter
-    fun stringToBigDecimal(bigDecimalString: String?): BigDecimal = BigDecimal(bigDecimalString)
+    fun stringToBigDecimal(bigDecimalString: String?): BigDecimal? {
+        return if (bigDecimalString.isNullOrEmpty()) {
+            null
+        } else {
+            BigDecimal(bigDecimalString)
+        }
+    }
 }

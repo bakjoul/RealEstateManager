@@ -30,7 +30,7 @@ interface PropertyFormDao {
 
     @Query("SELECT * FROM property_drafts WHERE id = :propertyFormId")
     @Transaction
-    fun getPropertyFormById(propertyFormId: Long): Flow<PropertyFormWithPhotosDto?>
+    suspend fun getPropertyFormById(propertyFormId: Long): PropertyFormWithPhotosDto?
 
     @Query("DELETE FROM property_drafts WHERE id = :id")
     suspend fun delete(id: Long)

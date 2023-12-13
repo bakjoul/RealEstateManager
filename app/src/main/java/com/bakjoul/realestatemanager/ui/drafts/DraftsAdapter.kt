@@ -5,7 +5,9 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.databinding.FragmentDraftsItemBinding
+import com.bumptech.glide.Glide
 
 class DraftsAdapter : ListAdapter<DraftsItemViewState, DraftsAdapter.ViewHolder>(ViewHolder.DraftsDiffCallback) {
 
@@ -19,7 +21,16 @@ class DraftsAdapter : ListAdapter<DraftsItemViewState, DraftsAdapter.ViewHolder>
 
     class ViewHolder(private val binding: FragmentDraftsItemBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(item: DraftsItemViewState) {
-
+            if (item.photoUrl.isEmpty()) {
+                binding.draftItemPhoto.setImageResource(R.drawable.baseline_photo_24)
+            } else {
+                Glide.with(binding.draftItemPhoto.context).load(item.photoUrl).into(binding.draftItemPhoto)
+            }
+            binding.draftItemLastUpdate.text = item.lastUpdate
+            binding.draftItemTypeAndLocation.text = item.typeAndLocation
+            binding.draftItemOverview.text = item.overview
+            binding.draftItemDescription.text = item.description
+            binding.draftsItemLayout.setOnClickListener { item.onDraftItemClicked.invoke() }
         }
 
         object DraftsDiffCallback : DiffUtil.ItemCallback<DraftsItemViewState>() {

@@ -20,6 +20,7 @@ import com.bakjoul.realestatemanager.databinding.ActivityMainBinding
 import com.bakjoul.realestatemanager.ui.add.AddPropertyFragment
 import com.bakjoul.realestatemanager.ui.details.DetailsFragment
 import com.bakjoul.realestatemanager.ui.dispatcher.DispatcherActivity
+import com.bakjoul.realestatemanager.ui.drafts.DraftsFragment
 import com.bakjoul.realestatemanager.ui.list.PropertyListFragment
 import com.bakjoul.realestatemanager.ui.photos.PhotosFragment
 import com.bakjoul.realestatemanager.ui.settings.SettingsFragment
@@ -36,6 +37,7 @@ class MainActivity : AppCompatActivity() {
         private const val DETAILS_TABLET_TAG = "DetailsFragmentTablet"
         private const val DETAILS_PORTRAIT_TAG = "DetailsFragmentPortrait"
         private const val PHOTOS_DIALOG_TAG = "PhotosDialogFragment"
+        private const val DRAFTS_DIALOG_TAG = "DraftsDialogFragment"
         private const val ADD_PROPERTY_DIALOG_TAG = "AddPropertyDialogFragment"
         private const val SETTINGS_DIALOG_TAG = "SettingsDialogFragment"
     }
@@ -140,9 +142,16 @@ class MainActivity : AppCompatActivity() {
                             viewModel.onAddNewPropertyClicked()
                         }
                         .setPositiveButton(getString(R.string.draft_dialog_positive)) { dialog, _ ->
-
+                            viewModel.onContinueEditingDraftClicked()
                         }
                         .show()
+                }
+
+                MainViewAction.ShowDraftListDialog -> {
+                    val existingFragment = supportFragmentManager.findFragmentByTag(DRAFTS_DIALOG_TAG)
+                    if (existingFragment == null) {
+                        DraftsFragment().show(supportFragmentManager, DRAFTS_DIALOG_TAG)
+                    }
                 }
 
                 is MainViewAction.ShowAddPropertyDialog -> {

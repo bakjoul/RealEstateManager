@@ -1,18 +1,103 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/drafts_item_layout"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    style="@style/CustomCardView">
 
-    <TextView
-        android:id="@+id/drafts_item_entry_date"
-        android:layout_width="wrap_content"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="Draft item" />
+        android:layout_margin="8dp">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <ImageView
+            android:id="@+id/draft_item_photo"
+            android:layout_width="99.75dp"
+            android:layout_height="75dp"
+            android:importantForAccessibility="no"
+            android:scaleType="centerCrop"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src="@drawable/penthouse_upper_east_side" />
+
+        <TextView
+            android:id="@+id/draft_item_sold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/ribbon_small"
+            android:fontFamily="monospace"
+            android:gravity="center_vertical"
+            android:paddingStart="14dp"
+            android:paddingEnd="0dp"
+            android:text="@string/property_sold"
+            android:textColor="@color/white"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@id/draft_item_photo"
+            app:layout_constraintEnd_toEndOf="@id/draft_item_photo" />
+
+        <TextView
+            android:id="@+id/draft_item_last_update"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="4dp"
+            android:ellipsize="end"
+            android:lines="1"
+            android:textColor="?attr/colorAccent"
+            android:textStyle="bold"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toTopOf="@id/draft_item_type_and_location"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/draft_item_photo"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Last edited on 2023-11-27 18:18" />
+
+        <TextView
+            android:id="@+id/draft_item_type_and_location"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:lines="1"
+            android:textColor="@color/black"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toTopOf="@id/draft_item_overview"
+            app:layout_constraintEnd_toEndOf="@id/draft_item_last_update"
+            app:layout_constraintStart_toStartOf="@id/draft_item_last_update"
+            app:layout_constraintTop_toBottomOf="@id/draft_item_last_update"
+            tools:text="Flat - New York - 740 Park Avenue " />
+
+        <TextView
+            android:id="@+id/draft_item_overview"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:lines="1"
+            android:textColor="@color/grey_text"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toTopOf="@id/draft_item_description"
+            app:layout_constraintEnd_toEndOf="@id/draft_item_type_and_location"
+            app:layout_constraintStart_toStartOf="@id/draft_item_type_and_location"
+            app:layout_constraintTop_toBottomOf="@id/draft_item_type_and_location"
+            tools:text="$1 000 000 - 14 452 sqft - 9 rooms - 4 bed. - 5 bath." />
+
+        <TextView
+            android:id="@+id/draft_item_description"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:lines="1"
+            android:textColor="@color/grey_text"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/draft_item_overview"
+            app:layout_constraintStart_toStartOf="@id/draft_item_overview"
+            app:layout_constraintTop_toBottomOf="@id/draft_item_overview"
+            tools:text="Anchored by a vast marble gallery with sweeping staircase, the entertaining floor includes a baronial living room facing Park Avenue, handsome library with original paneling, and tremendous dining room; all of which enjoy fireplaces. The state-of-the-art St. Charles designed kitchen includes a sunny breakfast room and staff quarters. Upstairs, the expansive master suite overlooks Park Avenue and includes two marble baths, two dressing rooms, and two offices. Additionally there are three large bedrooms with en-suite baths and a media room." />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.cardview.widget.CardView>

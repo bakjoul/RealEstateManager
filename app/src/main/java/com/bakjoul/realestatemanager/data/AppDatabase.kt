@@ -16,6 +16,7 @@ import com.bakjoul.realestatemanager.data.property.PropertyFormDao
 import com.bakjoul.realestatemanager.data.property.model.PropertyDto
 import com.bakjoul.realestatemanager.data.property.model.PropertyFormDto
 import com.bakjoul.realestatemanager.data.utils.type_converters.BigDecimalTypeConverter
+import com.bakjoul.realestatemanager.data.utils.type_converters.LocalDateTimeTypeConverter
 import com.bakjoul.realestatemanager.data.utils.type_converters.LocalDateTypeConverter
 import com.bakjoul.realestatemanager.domain.property.model.PropertyTypeEntity
 import com.google.gson.Gson
@@ -33,6 +34,7 @@ import java.time.LocalDate
 )
 @TypeConverters(
     LocalDateTypeConverter::class,
+    LocalDateTimeTypeConverter::class,
     BigDecimalTypeConverter::class
 )
 abstract class AppDatabase : RoomDatabase() {

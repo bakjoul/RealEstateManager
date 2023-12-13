@@ -35,7 +35,6 @@ class PlusMinusView @JvmOverloads constructor(
     private val listeners = CopyOnWriteArraySet<(Number) -> Unit>()
 
     // FIXME When Context.withStyledAttributes is updated to guarantee variable value
-    private var isBigDecimal: Boolean = false
     private var count: BigDecimal = BigDecimal.ZERO
         set(value) {
             field = value
@@ -52,8 +51,6 @@ class PlusMinusView @JvmOverloads constructor(
             getString(R.styleable.PlusMinusView_plusMinusLabel)?.let {
                 binding.viewPlusMinusLabelText.text = it
             }
-            // Value type
-            isBigDecimal = getBoolean(R.styleable.PlusMinusView_plusMinusIsBigDecimal, false)
             // Error text
             getString(R.styleable.PlusMinusView_plusMinusErrorText)?.let {
                 binding.viewPlusMinusErrorTextView.text = it
@@ -188,6 +185,11 @@ class PlusMinusView @JvmOverloads constructor(
 
     fun setLabel(label: String) {
         binding.viewPlusMinusLabelText.text = label
+    }
+
+    fun setInitialValue(value: String) {
+        count = value.toBigDecimalOrNull() ?: BigDecimal.ZERO
+        binding.viewPlusMinusValueEditText.text = SpannableStringBuilder(count.toString())
     }
 
     fun addOnValueChangedListener(listener: (Number) -> Unit) {
