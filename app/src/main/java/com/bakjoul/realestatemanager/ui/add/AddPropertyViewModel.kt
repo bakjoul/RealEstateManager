@@ -393,6 +393,7 @@ class AddPropertyViewModel @Inject constructor(
     }
 
     fun onPropertyTypeChanged(checkedId: Int) {
+        Log.d("test", "onPropertyTypeChanged: ")
         propertyFormMutableSharedFlow.tryEmit(
             propertyFormMutableSharedFlow.replayCache.first().copy(
                 type = when (checkedId) {
@@ -413,6 +414,7 @@ class AddPropertyViewModel @Inject constructor(
     }
 
     fun onSaleStatusChanged(isSold: Boolean) {
+        Log.d("test", "onSaleStatusChanged: ")
         propertyFormMutableSharedFlow.tryEmit(
             propertyFormMutableSharedFlow.replayCache.first().copy(
                 isSold = isSold
@@ -432,6 +434,7 @@ class AddPropertyViewModel @Inject constructor(
     }
 
     fun onForSaleSinceDateChanged(date: Any?) {
+        Log.d("test", "onForSaleSinceDateChanged: ")
         val instant = Instant.ofEpochMilli(date as Long)
         val zonedDateTime = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault())
 
@@ -462,6 +465,7 @@ class AddPropertyViewModel @Inject constructor(
     }
 
     fun onPriceChanged(price: BigDecimal) {
+        Log.d("test", "onPriceChanged: ")
         if (price >= BigDecimal.ZERO) {
             propertyFormMutableSharedFlow.tryEmit(
                 propertyFormMutableSharedFlow.replayCache.first().copy(
@@ -484,6 +488,7 @@ class AddPropertyViewModel @Inject constructor(
     }
 
     fun onSurfaceChanged(surface: Number) {
+        Log.d("test", "onSurfaceChanged: ")
         propertyFormMutableSharedFlow.tryEmit(
             propertyFormMutableSharedFlow.replayCache.first().copy(
                 surfaceFromUser = BigDecimal(surface.toString())
@@ -492,6 +497,7 @@ class AddPropertyViewModel @Inject constructor(
     }
 
     fun onRoomsCountChanged(rooms: Number) {
+        Log.d("test", "onRoomsCountChanged: ")
         propertyFormMutableSharedFlow.tryEmit(
             propertyFormMutableSharedFlow.replayCache.first().copy(
                 rooms = rooms.toInt()
@@ -500,6 +506,7 @@ class AddPropertyViewModel @Inject constructor(
     }
 
     fun onBathroomsCountChanged(bathrooms: Number) {
+        Log.d("test", "onBathroomsCountChanged: ")
         propertyFormMutableSharedFlow.tryEmit(
             propertyFormMutableSharedFlow.replayCache.first().copy(
                 bathrooms = bathrooms.toInt()
@@ -508,6 +515,7 @@ class AddPropertyViewModel @Inject constructor(
     }
 
     fun onBedroomsCountChanged(bedrooms: Number) {
+        Log.d("test", "onBedroomsCountChanged: ")
         propertyFormMutableSharedFlow.tryEmit(
             propertyFormMutableSharedFlow.replayCache.first().copy(
                 bedrooms = bedrooms.toInt()
@@ -516,6 +524,7 @@ class AddPropertyViewModel @Inject constructor(
     }
 
     fun onChipCheckedChanged(chipText: String, isChecked: Boolean) {
+        Log.d("test", "onChipCheckedChanged: $chipText")
         val poiEntity = PropertyPoiEntity.values().find { it.name.equals(chipText, ignoreCase = true) }
 
         if (poiEntity != null) {

@@ -123,12 +123,13 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
 
         forSaleSinceDatePicker.addOnPositiveButtonClickListener {
             viewModel.onForSaleSinceDateChanged(it)
-            //binding.addPropertyForSaleSinceTextInputEditText.setText(forSaleSinceDatePicker.headerText)
         }
 
         // Sale status toggle
         binding.addPropertyTypeSaleStatusToggle.setOnCheckedChangeListener { _, isChecked ->
-            viewModel.onSaleStatusChanged(isChecked)
+            if (isExistingDraftLoaded) {
+                viewModel.onSaleStatusChanged(isChecked)
+            }
         }
 
         // Price text input end icon
@@ -144,22 +145,27 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
             if (isExistingDraftLoaded) {
                 viewModel.onSurfaceChanged(newValue)
             }
-            //viewModel.onSurfaceChanged(newValue)
         }
 
         // Rooms plus minus views
         binding.addPropertyRoomsPlusMinusView.addOnValueChangedListener { newValue ->
-            viewModel.onRoomsCountChanged(newValue)
+            if (isExistingDraftLoaded) {
+                viewModel.onRoomsCountChanged(newValue)
+            }
         }
 
         // Bathrooms plus minus views
         binding.addPropertyBathroomsPlusMinusView.addOnValueChangedListener { newValue ->
-            viewModel.onBathroomsCountChanged(newValue)
+            if (isExistingDraftLoaded) {
+                viewModel.onBathroomsCountChanged(newValue)
+            }
         }
 
         // Bedrooms plus minus views
         binding.addPropertyBedroomsPlusMinusView.addOnValueChangedListener { newValue ->
-            viewModel.onBedroomsCountChanged(newValue)
+            if (isExistingDraftLoaded) {
+                viewModel.onBedroomsCountChanged(newValue)
+            }
         }
 
         // Chip listeners
@@ -243,6 +249,11 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
             if (!isExistingDraftLoaded) {
                 viewState.propertyTypeEntity?.let { propertyType ->
                     binding.addPropertyTypeRadioGroup.check(propertyType.radioButtonId)
+
+                    // Scrolls to checked radio button
+                    val checkedRadioButton = binding.addPropertyTypeRadioGroup.findViewById<View>(propertyType.radioButtonId)
+                    val scrollX = checkedRadioButton.right + checkedRadioButton.paddingEnd - binding.addPropertyTypeHorizontalScrollView.width
+                    binding.addPropertyTypeHorizontalScrollView.scrollTo(scrollX, 0)
                 }
             }
 
@@ -262,7 +273,6 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
 
                 soldOnDatePicker.addOnPositiveButtonClickListener {
                     viewModel.onSoldOnDateChanged(it)
-                    //binding.addPropertySoldOnTextInputEditText.setText(soldOnDatePicker.headerText)
                 }
             } else {
                 binding.addPropertyTypeSaleStatusToggle.isChecked = false
@@ -310,6 +320,9 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
             if (!isExistingDraftLoaded) {
                 binding.addPropertyPriceTextInputEditText.setText(viewState.price)
                 binding.addPropertySurfacePlusMinusView.setInitialValue(viewState.surface)
+                binding.addPropertyRoomsPlusMinusView.setInitialValue(viewState.numberOfRooms)
+                binding.addPropertyBathroomsPlusMinusView.setInitialValue(viewState.numberOfBathrooms)
+                binding.addPropertyBedroomsPlusMinusView.setInitialValue(viewState.numberOfBedrooms)
 
                 isExistingDraftLoaded = true
             }
