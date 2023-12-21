@@ -104,12 +104,12 @@ class DraftsViewModel @Inject constructor(
         surfaceUnit: SurfaceUnit
     ) = buildString {
         var formattedSurface: Pair<Int, String>? = null
-        if (propertyDraft.surface != null) {
-            formattedSurface = formatSurface(propertyDraft.surface, surfaceUnit)
+        if (propertyDraft.referenceSurface != null) {
+            formattedSurface = formatSurface(propertyDraft.referenceSurface, surfaceUnit)
         }
 
-        if (propertyDraft.price != null) {
-            append(formatPrice(propertyDraft.price, currency, euroRate))
+        if (propertyDraft.referencePrice != null) {
+            append(formatPrice(propertyDraft.referencePrice, currency, euroRate))
         } else {
             append("Price N/A")
         }

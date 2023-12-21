@@ -5,8 +5,8 @@
         <item>USD ($)</item>
     </string-array>
     <string-array name="surface_unit_options">
-        <item>Feet (sqft)</item>
-        <item>Meters (sqm)</item>
+        <item>Feet (sq ft)</item>
+        <item>Meters (sq m)</item>
     </string-array>
     <string-array name="property_type_options">
         <item>Flat</item>

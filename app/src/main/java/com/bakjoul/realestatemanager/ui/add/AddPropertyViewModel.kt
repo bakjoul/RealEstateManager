@@ -65,12 +65,12 @@ import kotlin.time.Duration.Companion.seconds
 
 @HiltViewModel
 class AddPropertyViewModel @Inject constructor(
+    getCurrentCurrencyUseCase: GetCurrentCurrencyUseCase,
+    getCurrentSurfaceUnitUseCase: GetCurrentSurfaceUnitUseCase,
     savedStateHandle: SavedStateHandle,
-    private val getCurrentNavigationUseCase: GetCurrentNavigationUseCase,
-    private val getPropertyDraftByIdUseCase: GetPropertyDraftByIdUseCase,
-    private val getCurrentCurrencyUseCase: GetCurrentCurrencyUseCase,
     private val getEuroRateUseCase: GetEuroRateUseCase,
-    private val getCurrentSurfaceUnitUseCase: GetCurrentSurfaceUnitUseCase,
+    private val getPropertyDraftByIdUseCase: GetPropertyDraftByIdUseCase,
+    private val getCurrentNavigationUseCase: GetCurrentNavigationUseCase,
     private val getAddressPredictionsUseCase: GetAddressPredictionsUseCase,
     private val getAddressDetailsUseCase: GetAddressDetailsUseCase,
     private val getPhotosForPropertyIdUseCase: GetPhotosForPropertyIdUseCase,
@@ -125,8 +125,8 @@ class AddPropertyViewModel @Inject constructor(
             surfaceUnit
         )
     }.onEach { (propertyForm, currency, euroRate, surfaceUnit) ->
+        saveJob?.cancel()
         saveJob = viewModelScope.launch {
-            saveJob?.cancel()
             delay(SAVE_DELAY)
 
             saveDraft(propertyForm, currency, euroRate.currencyRateEntity.rate, surfaceUnit)
@@ -135,7 +135,6 @@ class AddPropertyViewModel @Inject constructor(
 
     val viewStateLiveData: LiveData<AddPropertyViewState> = liveData {
         if (latestValue == null) {
-            // TODO REFACTO
             val draftId = savedStateHandle.get<Long>("draftId")
             val newDraftId = savedStateHandle.get<Long>("newDraftId")
 
@@ -162,17 +161,16 @@ class AddPropertyViewModel @Inject constructor(
             getPhotosForPropertyIdUseCase.invoke(propertyId),
             errorsMutableStateFlow
         ) { (propertyForm, currency, euroRate, surfaceUnit), addressPredictions, photos, errors ->
-            Log.d("test", "combine form : $propertyForm")
             AddPropertyViewState(
                 propertyTypeEntity = propertyForm.type,
                 forSaleSince = formatDate(propertyForm.forSaleSince),
                 dateOfSale = formatDate(propertyForm.dateOfSale),
                 isSold = propertyForm.isSold ?: false,
-                price = formatSavedPrice(propertyForm.initialPrice, propertyForm.priceFromUser, currency, euroRate.currencyRateEntity.rate),
+                price = formatSavedPrice(propertyForm.referencePrice, propertyForm.priceFromUser, currency, euroRate.currencyRateEntity.rate),
                 priceHint = formatPriceHint(currency),
                 currencyFormat = getCurrencyFormat(currency),
                 surfaceLabel = formatSurfaceLabel(surfaceUnit),
-                surface = formatSurfaceValue(propertyForm.surface, surfaceUnit),
+                surface = formatSurfaceValue(propertyForm.referenceSurface, propertyForm.surfaceFromUser, surfaceUnit),
                 numberOfRooms = propertyForm.rooms.toString(),
                 numberOfBathrooms = propertyForm.bathrooms.toString(),
                 numberOfBedrooms = propertyForm.bedrooms.toString(),
@@ -209,20 +207,24 @@ class AddPropertyViewModel @Inject constructor(
     }
 
     private fun saveDraft(propertyForm: PropertyFormEntity, currency: AppCurrency, euroRate: Double, surfaceUnit: SurfaceUnit) {
-        val dollarsPrice = if (currency == AppCurrency.EUR && propertyForm.priceFromUser != null) {
-            propertyForm.priceFromUser.times(BigDecimal(euroRate))
-        } else {
-            propertyForm.initialPrice
-        }
+        val priceInDollars = propertyForm.priceFromUser?.let {
+            if (currency == AppCurrency.EUR) {
+                it.times(BigDecimal(euroRate)).setScale(0, RoundingMode.CEILING)
+            }
+            else it
+        } ?: propertyForm.referencePrice
 
-        val surface = if (surfaceUnit == SurfaceUnit.Feet) {
-            propertyForm.surface?.divide(BigDecimal(3.28084), 0, RoundingMode.HALF_UP)
-        } else {
-            propertyForm.surface
-        }
+        val surfaceInMeters = propertyForm.surfaceFromUser?.let {
+            if (surfaceUnit == SurfaceUnit.Feet) {
+                it.divide(BigDecimal(3.28084), 0, RoundingMode.CEILING)
+            }
+            else it
+        } ?: propertyForm.referenceSurface
+
+        Log.d("test", "saveDraft: $propertyForm\npriceInDollars: $priceInDollars\nsurfaceInMeters: $surfaceInMeters")
 
         viewModelScope.launch {
-            updatePropertyDraftUseCase.invoke(propertyId!!, propertyForm.copy(initialPrice = dollarsPrice, surface = surface))
+            updatePropertyDraftUseCase.invoke(propertyId!!, propertyForm.copy(referencePrice = priceInDollars, referenceSurface = surfaceInMeters))
         }
     }
 
@@ -246,8 +248,10 @@ class AddPropertyViewModel @Inject constructor(
         isSold = false,
         forSaleSince = null,
         dateOfSale = null,
-        price = null,
-        surface = null,
+        referencePrice = null,
+        priceFromUser = null,
+        referenceSurface = null,
+        surfaceFromUser = null,
         rooms = null,
         bathrooms = null,
         bedrooms = null,
@@ -283,11 +287,10 @@ class AddPropertyViewModel @Inject constructor(
 
     private fun formatPriceHint(currency: AppCurrency): String = "Price (${currency.symbol})"
 
-    private fun formatSavedPrice(initialPrice: BigDecimal?, priceFromUser: BigDecimal?, currency: AppCurrency, euroRate: Double): String? {
-        // TODO NEED TO BE FIXED, CONVERT DIRECTLY IN FORM WHEN LOADING
+    private fun formatSavedPrice(referencePrice: BigDecimal?, priceFromUser: BigDecimal?, currency: AppCurrency, euroRate: Double): String? {
         val convertedPrice = when (currency) {
-            AppCurrency.EUR -> (priceFromUser?: initialPrice)?.divide(BigDecimal(euroRate), 0, RoundingMode.HALF_UP)
-            else -> priceFromUser?: initialPrice
+            AppCurrency.EUR -> (priceFromUser ?: referencePrice)?.divide(BigDecimal(euroRate), 0, RoundingMode.CEILING)
+            else -> priceFromUser?: referencePrice
         }
 
         return convertedPrice?.toString()
@@ -295,13 +298,12 @@ class AddPropertyViewModel @Inject constructor(
 
     private fun formatSurfaceLabel(surfaceUnit: SurfaceUnit): String = "Surface (${surfaceUnit.unit})"
 
-    private fun formatSurfaceValue(surface: BigDecimal?, surfaceUnit: SurfaceUnit): String {
-        // TODO NEED TO BE FIXED, SAME ISSUE
-        return surface?.let {
+    private fun formatSurfaceValue(referenceSurface: BigDecimal?, surfaceFromUser: BigDecimal?, surfaceUnit: SurfaceUnit): String {
+        return referenceSurface?.let {
             val formattedSurface = if (surfaceUnit == SurfaceUnit.Feet) {
-                surface.times(BigDecimal(3.28084)).setScale(0, RoundingMode.HALF_UP)
+                (surfaceFromUser ?: referenceSurface).times(BigDecimal(3.28084)).setScale(0, RoundingMode.CEILING)
             } else {
-                surface
+                referenceSurface
             }
             formattedSurface.toString()
         } ?: "0"
@@ -345,12 +347,14 @@ class AddPropertyViewModel @Inject constructor(
                                             second = false,
                                         )
                                     }
-                                    propertyFormMutableSharedFlow.update {
-                                        it.copy(
-                                            autoCompleteAddress = it.address?.copy(
+
+                                    val propertyFormReplayCache = propertyFormMutableSharedFlow.replayCache.first()
+                                    propertyFormMutableSharedFlow.tryEmit(
+                                        propertyFormReplayCache.copy(
+                                            autoCompleteAddress = propertyFormReplayCache.autoCompleteAddress?.copy(
                                                 streetNumber = geocodingResult.result.streetNumber,
                                                 route = geocodingResult.result.route,
-                                                complementaryAddress = it.address.complementaryAddress,
+                                                complementaryAddress = propertyFormReplayCache.address?.complementaryAddress,
                                                 zipcode = geocodingResult.result.zipcode,
                                                 city = geocodingResult.result.city,
                                                 state = geocodingResult.result.state,
@@ -358,10 +362,10 @@ class AddPropertyViewModel @Inject constructor(
                                                 latitude = geocodingResult.result.latitude,
                                                 longitude = geocodingResult.result.longitude
                                             ),
-                                            address = it.address?.copy(
+                                            address = propertyFormReplayCache.autoCompleteAddress?.copy(
                                                 streetNumber = geocodingResult.result.streetNumber,
                                                 route = geocodingResult.result.route,
-                                                complementaryAddress = it.address.complementaryAddress,
+                                                complementaryAddress = propertyFormReplayCache.address?.complementaryAddress,
                                                 zipcode = geocodingResult.result.zipcode,
                                                 city = geocodingResult.result.city,
                                                 state = geocodingResult.result.state,
@@ -370,7 +374,7 @@ class AddPropertyViewModel @Inject constructor(
                                                 longitude = geocodingResult.result.longitude
                                             )
                                         )
-                                    }
+                                    )
                                 }
                             }
                         }
@@ -380,17 +384,17 @@ class AddPropertyViewModel @Inject constructor(
         } ?: emptyList()
 
     private fun resetAddressFields() {
-        propertyFormMutableSharedFlow.update {
-            it.copy(
+        propertyFormMutableSharedFlow.tryEmit(
+            propertyFormMutableSharedFlow.replayCache.first().copy(
                 autoCompleteAddress = null,
                 address = PropertyFormAddress()
             )
-        }
+        )
     }
 
     fun onPropertyTypeChanged(checkedId: Int) {
-        propertyFormMutableSharedFlow.update {
-            it.copy(
+        propertyFormMutableSharedFlow.tryEmit(
+            propertyFormMutableSharedFlow.replayCache.first().copy(
                 type = when (checkedId) {
                     R.id.add_property_type_flat_RadioButton -> PropertyTypeEntity.FLAT
                     R.id.add_property_type_house_RadioButton -> PropertyTypeEntity.HOUSE
@@ -401,131 +405,129 @@ class AddPropertyViewModel @Inject constructor(
                     else -> null
                 }
             )
-        }
+        )
 
         errorsMutableStateFlow.update {
             it.copy(isTypeErrorVisible = false)
         }
-
-        hasPropertyFormChanged = true
     }
 
     fun onSaleStatusChanged(isSold: Boolean) {
-        propertyFormMutableSharedFlow.update {
-            it.copy(isSold = isSold)
-        }
+        propertyFormMutableSharedFlow.tryEmit(
+            propertyFormMutableSharedFlow.replayCache.first().copy(
+                isSold = isSold
+            )
+        )
 
         if (!isSold) {
-            propertyFormMutableSharedFlow.update {
-                it.copy(dateOfSale = null)
-            }
+            propertyFormMutableSharedFlow.tryEmit(
+                propertyFormMutableSharedFlow.replayCache.first().copy(
+                    dateOfSale = null
+                )
+            )
             errorsMutableStateFlow.update {
                 it.copy(dateOfSaleError = null)
             }
         }
-
-        hasPropertyFormChanged = true
     }
 
     fun onForSaleSinceDateChanged(date: Any?) {
         val instant = Instant.ofEpochMilli(date as Long)
         val zonedDateTime = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault())
 
-        propertyFormMutableSharedFlow.update {
-            it.copy(forSaleSince = zonedDateTime.toLocalDate())
-        }
+        propertyFormMutableSharedFlow.tryEmit(
+            propertyFormMutableSharedFlow.replayCache.first().copy(
+                forSaleSince = zonedDateTime.toLocalDate()
+            )
+        )
 
         errorsMutableStateFlow.update {
             it.copy(forSaleSinceError = null)
         }
-
-        hasPropertyFormChanged = true
     }
 
     fun onSoldOnDateChanged(date: Any?) {
         val instant = Instant.ofEpochMilli(date as Long)
         val zonedDateTime = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault())
 
-        propertyFormMutableSharedFlow.update {
-            it.copy(dateOfSale = zonedDateTime.toLocalDate())
-        }
+        propertyFormMutableSharedFlow.tryEmit(
+            propertyFormMutableSharedFlow.replayCache.first().copy(
+                dateOfSale = zonedDateTime.toLocalDate()
+            )
+        )
 
         errorsMutableStateFlow.update {
             it.copy(dateOfSaleError = null)
         }
-
-        hasPropertyFormChanged = true
     }
 
     fun onPriceChanged(price: BigDecimal) {
         if (price >= BigDecimal.ZERO) {
-            propertyFormMutableSharedFlow.update {
-                it.copy(price = price)
-            }
-
-            hasPropertyFormChanged = true
+            propertyFormMutableSharedFlow.tryEmit(
+                propertyFormMutableSharedFlow.replayCache.first().copy(
+                    priceFromUser = price
+                )
+            )
         }
     }
 
     fun onPriceTextCleared() {
-        propertyFormMutableSharedFlow.update {
-            it.copy(price = null)
-        }
+        propertyFormMutableSharedFlow.tryEmit(
+            propertyFormMutableSharedFlow.replayCache.first().copy(
+                priceFromUser = null
+            )
+        )
 
         errorsMutableStateFlow.update {
             it.copy(priceError = null)
         }
-
-        hasPropertyFormChanged = true
     }
 
     fun onSurfaceChanged(surface: Number) {
-        propertyFormMutableSharedFlow.update {
-            it.copy(surface = BigDecimal(surface.toString()))
-        }
-
-        hasPropertyFormChanged = true
+        propertyFormMutableSharedFlow.tryEmit(
+            propertyFormMutableSharedFlow.replayCache.first().copy(
+                surfaceFromUser = BigDecimal(surface.toString())
+            )
+        )
     }
 
     fun onRoomsCountChanged(rooms: Number) {
-        propertyFormMutableSharedFlow.update {
-            it.copy(rooms = rooms.toInt())
-        }
-
-        hasPropertyFormChanged = true
+        propertyFormMutableSharedFlow.tryEmit(
+            propertyFormMutableSharedFlow.replayCache.first().copy(
+                rooms = rooms.toInt()
+            )
+        )
     }
 
     fun onBathroomsCountChanged(bathrooms: Number) {
-        propertyFormMutableSharedFlow.update {
-            it.copy(bathrooms = bathrooms.toInt())
-        }
-
-        hasPropertyFormChanged = true
+        propertyFormMutableSharedFlow.tryEmit(
+            propertyFormMutableSharedFlow.replayCache.first().copy(
+                bathrooms = bathrooms.toInt()
+            )
+        )
     }
 
     fun onBedroomsCountChanged(bedrooms: Number) {
-        propertyFormMutableSharedFlow.update {
-            it.copy(bedrooms = bedrooms.toInt())
-        }
-
-        hasPropertyFormChanged = true
+        propertyFormMutableSharedFlow.tryEmit(
+            propertyFormMutableSharedFlow.replayCache.first().copy(
+                bedrooms = bedrooms.toInt()
+            )
+        )
     }
 
     fun onChipCheckedChanged(chipText: String, isChecked: Boolean) {
         val poiEntity = PropertyPoiEntity.values().find { it.name.equals(chipText, ignoreCase = true) }
 
         if (poiEntity != null) {
-            propertyFormMutableSharedFlow.update {
-                it.copy(
+            propertyFormMutableSharedFlow.tryEmit(
+                propertyFormMutableSharedFlow.replayCache.first().copy(
                     pointsOfInterest = if (isChecked) {
-                        propertyFormMutableSharedFlow.value.pointsOfInterest?.plus(poiEntity)
+                        propertyFormMutableSharedFlow.replayCache.first().pointsOfInterest?.plus(poiEntity)
                     } else {
-                        propertyFormMutableSharedFlow.value.pointsOfInterest?.minus(poiEntity)
+                        propertyFormMutableSharedFlow.replayCache.first().pointsOfInterest?.minus(poiEntity)
                     }
                 )
-            }
-
-            hasPropertyFormChanged = true
+            )
         }
     }
 
@@ -533,7 +535,6 @@ class AddPropertyViewModel @Inject constructor(
         errorsMutableStateFlow.update {
             it.copy(addressError = null)
         }
-        hasPropertyFormChanged = true
 
         // Reset address fields if address clear button was clicked
         if (isAddressTextCleared) {
@@ -548,8 +549,9 @@ class AddPropertyViewModel @Inject constructor(
         }
 
         // Reset address fields if current address input different from address selected from suggestions
-        if (propertyFormMutableSharedFlow.value.autoCompleteAddress != null
-            && formatAddress(propertyFormMutableSharedFlow.value.address) != address
+        val propertyFormReplaceCache = propertyFormMutableSharedFlow.replayCache.first()
+        if (propertyFormReplaceCache.autoCompleteAddress != null
+            && formatAddress(propertyFormReplaceCache.address) != address
         ) {
             resetAddressFields()
         }
@@ -559,45 +561,42 @@ class AddPropertyViewModel @Inject constructor(
         isAddressTextCleared = true
         currentAddressInputMutableStateFlow.value = "" to true
 
-        hasPropertyFormChanged = true
     }
 
     fun onComplementaryAddressChanged(complementaryAddress: String) {
-        propertyFormMutableSharedFlow.update {
-            it.copy(address = it.address?.copy(complementaryAddress = complementaryAddress))
-        }
-
-        hasPropertyFormChanged = true
+        val propertyFormReplaceCache = propertyFormMutableSharedFlow.replayCache.first()
+        propertyFormMutableSharedFlow.tryEmit(
+            propertyFormReplaceCache.copy(
+                address = propertyFormReplaceCache.address?.copy(complementaryAddress = complementaryAddress)
+            )
+        )
     }
 
     fun onComplementaryAddressTextCleared() {
-        propertyFormMutableSharedFlow.update {
-            it.copy(address = it.address?.copy(complementaryAddress = null))
-        }
-
-        hasPropertyFormChanged = true
+        val propertyFormReplaceCache = propertyFormMutableSharedFlow.replayCache.first()
+        propertyFormMutableSharedFlow.tryEmit(
+            propertyFormReplaceCache.copy(
+                address = propertyFormReplaceCache.address?.copy(complementaryAddress = null)
+            )
+        )
     }
 
     fun onDescriptionChanged(description: String) {
-        propertyFormMutableSharedFlow.update {
-            it.copy(description = description)
-        }
+        propertyFormMutableSharedFlow.tryEmit(
+            propertyFormMutableSharedFlow.replayCache.first().copy(description = description)
+        )
 
         if (description.isNotEmpty()) {
             errorsMutableStateFlow.update {
                 it.copy(descriptionError = null)
             }
         }
-
-        hasPropertyFormChanged = true
     }
 
     fun onDescriptionTextCleared() {
-        propertyFormMutableSharedFlow.update {
-            it.copy(description = null)
-        }
-
-        hasPropertyFormChanged = true
+        propertyFormMutableSharedFlow.tryEmit(
+            propertyFormMutableSharedFlow.replayCache.first().copy(description = null)
+        )
     }
 
     fun onCameraPermissionGranted() {
@@ -609,21 +608,21 @@ class AddPropertyViewModel @Inject constructor(
     }
 
     fun closeDialog() {
+        val propertyFormReplaceCache = propertyFormMutableSharedFlow.replayCache.first()
         if (isNewDraft &&
-            propertyFormMutableSharedFlow.value.type == null &&
-            propertyFormMutableSharedFlow.value.forSaleSince == null &&
-            propertyFormMutableSharedFlow.value.dateOfSale == null &&
-            propertyFormMutableSharedFlow.value.price == null &&
-            propertyFormMutableSharedFlow.value.surface == BigDecimal.ZERO &&
-            propertyFormMutableSharedFlow.value.rooms == 0 &&
-            propertyFormMutableSharedFlow.value.bathrooms == 0 &&
-            propertyFormMutableSharedFlow.value.bedrooms == 0 &&
-            propertyFormMutableSharedFlow.value.pointsOfInterest!!.isEmpty() &&
-            propertyFormMutableSharedFlow.value.address == PropertyFormAddress() &&
-            propertyFormMutableSharedFlow.value.autoCompleteAddress == null &&
-            propertyFormMutableSharedFlow.value.description == null
+            propertyFormReplaceCache.type == null &&
+            propertyFormReplaceCache.forSaleSince == null &&
+            propertyFormReplaceCache.dateOfSale == null &&
+            propertyFormReplaceCache.priceFromUser == null &&
+            propertyFormReplaceCache.referenceSurface == BigDecimal.ZERO &&
+            propertyFormReplaceCache.rooms == 0 &&
+            propertyFormReplaceCache.bathrooms == 0 &&
+            propertyFormReplaceCache.bedrooms == 0 &&
+            propertyFormReplaceCache.pointsOfInterest!!.isEmpty() &&
+            propertyFormReplaceCache.address == PropertyFormAddress() &&
+            propertyFormReplaceCache.autoCompleteAddress == null &&
+            propertyFormReplaceCache.description == null
         ) {
-
             dropDraft()
         } else {
             navigateUseCase.invoke(To.SaveDraftDialog)
@@ -654,32 +653,33 @@ class AddPropertyViewModel @Inject constructor(
         if (isFormValid()) {
             viewModelScope.launch {
                 val newPropertyId = async {
+                    val propertyFormReplaceCache = propertyFormMutableSharedFlow.replayCache.first()
                     addPropertyUseCase.invoke(
                         PropertyEntity(
-                            id = propertyFormMutableSharedFlow.value.id,
-                            type = propertyFormMutableSharedFlow.value.type!!.name,
-                            forSaleSince = propertyFormMutableSharedFlow.value.forSaleSince!!,
-                            saleDate = propertyFormMutableSharedFlow.value.dateOfSale,
-                            price = propertyFormMutableSharedFlow.value.price!!,
-                            surface = propertyFormMutableSharedFlow.value.surface!!,
-                            rooms = propertyFormMutableSharedFlow.value.rooms!!,
-                            bathrooms = propertyFormMutableSharedFlow.value.bathrooms ?: 0,
-                            bedrooms = propertyFormMutableSharedFlow.value.bedrooms ?: 0,
-                            amenities = propertyFormMutableSharedFlow.value.pointsOfInterest!!,
+                            id = propertyFormReplaceCache.id,
+                            type = propertyFormReplaceCache.type!!.name,
+                            forSaleSince = propertyFormReplaceCache.forSaleSince!!,
+                            saleDate = propertyFormReplaceCache.dateOfSale,
+                            price = propertyFormReplaceCache.priceFromUser!!,
+                            surface = propertyFormReplaceCache.surfaceFromUser!!,
+                            rooms = propertyFormReplaceCache.rooms!!,
+                            bathrooms = propertyFormReplaceCache.bathrooms ?: 0,
+                            bedrooms = propertyFormReplaceCache.bedrooms ?: 0,
+                            amenities = propertyFormReplaceCache.pointsOfInterest!!,
                             address = PropertyAddressEntity(
-                                streetNumber = propertyFormMutableSharedFlow.value.autoCompleteAddress!!.streetNumber!!,
-                                route = propertyFormMutableSharedFlow.value.autoCompleteAddress!!.route!!,
-                                complementaryAddress = propertyFormMutableSharedFlow.value.autoCompleteAddress!!.complementaryAddress,
-                                zipcode = propertyFormMutableSharedFlow.value.autoCompleteAddress!!.zipcode!!,
-                                city = propertyFormMutableSharedFlow.value.autoCompleteAddress!!.city!!,
-                                state = propertyFormMutableSharedFlow.value.autoCompleteAddress!!.state!!,
-                                country = propertyFormMutableSharedFlow.value.autoCompleteAddress!!.country!!,
-                                latitude = propertyFormMutableSharedFlow.value.autoCompleteAddress!!.latitude!!,
-                                longitude = propertyFormMutableSharedFlow.value.autoCompleteAddress!!.longitude!!
+                                streetNumber = propertyFormReplaceCache.autoCompleteAddress!!.streetNumber!!,
+                                route = propertyFormReplaceCache.autoCompleteAddress.route!!,
+                                complementaryAddress = propertyFormReplaceCache.autoCompleteAddress.complementaryAddress,
+                                zipcode = propertyFormReplaceCache.autoCompleteAddress.zipcode!!,
+                                city = propertyFormReplaceCache.autoCompleteAddress.city!!,
+                                state = propertyFormReplaceCache.autoCompleteAddress.state!!,
+                                country = propertyFormReplaceCache.autoCompleteAddress.country!!,
+                                latitude = propertyFormReplaceCache.autoCompleteAddress.latitude!!,
+                                longitude = propertyFormReplaceCache.autoCompleteAddress.longitude!!
                             ),
-                            description = propertyFormMutableSharedFlow.value.description!!,
-                            photos = propertyFormMutableSharedFlow.value.photos!!,
-                            agent = propertyFormMutableSharedFlow.value.agent ?: "John Doe",
+                            description = propertyFormReplaceCache.description!!,
+                            photos = propertyFormReplaceCache.photos!!,
+                            agent = propertyFormReplaceCache.agent ?: "John Doe",
                             entryDate = ZonedDateTime.now().toLocalDate()
                         )
                     )
@@ -699,9 +699,10 @@ class AddPropertyViewModel @Inject constructor(
     }
 
     private fun isFormValid(): Boolean {
+        val propertyFormReplaceCache = propertyFormMutableSharedFlow.replayCache.first()
         var isFormValid = true
 
-        if (propertyFormMutableSharedFlow.value.type == null) {
+        if (propertyFormReplaceCache.type == null) {
             errorsMutableStateFlow.update {
                 it.copy(isTypeErrorVisible = true)
             }
@@ -712,16 +713,15 @@ class AddPropertyViewModel @Inject constructor(
             }
         }
 
-        if (propertyFormMutableSharedFlow.value.forSaleSince == null) {
+        if (propertyFormReplaceCache.forSaleSince == null) {
             errorsMutableStateFlow.update {
                 it.copy(forSaleSinceError = "Date required")
             }
             isFormValid = false
         } else {
-            if (propertyFormMutableSharedFlow.value.isSold == true && propertyFormMutableSharedFlow.value.dateOfSale != null && propertyFormMutableSharedFlow.value.forSaleSince!!.isAfter(
-                    propertyFormMutableSharedFlow.value.dateOfSale
-                )
-            ) {
+            if (propertyFormReplaceCache.isSold == true &&
+                propertyFormReplaceCache.dateOfSale != null &&
+                propertyFormReplaceCache.forSaleSince.isAfter(propertyFormReplaceCache.dateOfSale)) {
                 errorsMutableStateFlow.update {
                     it.copy(forSaleSinceError = "Invalid date")
                 }
@@ -733,16 +733,15 @@ class AddPropertyViewModel @Inject constructor(
             }
         }
 
-        if (propertyFormMutableSharedFlow.value.isSold == true) {
-            if (propertyFormMutableSharedFlow.value.dateOfSale == null) {
+        if (propertyFormReplaceCache.isSold == true) {
+            if (propertyFormReplaceCache.dateOfSale == null) {
                 errorsMutableStateFlow.update {
                     it.copy(dateOfSaleError = "Date required")
                 }
                 isFormValid = false
             } else {
-                if (propertyFormMutableSharedFlow.value.forSaleSince != null && propertyFormMutableSharedFlow.value.dateOfSale!!.isBefore(
-                        propertyFormMutableSharedFlow.value.forSaleSince
-                    )
+                if (propertyFormReplaceCache.forSaleSince != null &&
+                    propertyFormReplaceCache.dateOfSale.isBefore(propertyFormReplaceCache.forSaleSince)
                 ) {
                     errorsMutableStateFlow.update {
                         it.copy(dateOfSaleError = "Invalid date")
@@ -760,13 +759,13 @@ class AddPropertyViewModel @Inject constructor(
             }
         }
 
-        if (propertyFormMutableSharedFlow.value.price == null) {
+        if (propertyFormReplaceCache.priceFromUser == null) {
             errorsMutableStateFlow.update {
                 it.copy(priceError = "Price required")
             }
             isFormValid = false
         } else {
-            if (propertyFormMutableSharedFlow.value.price!! <= BigDecimal.ZERO) {
+            if (propertyFormReplaceCache.priceFromUser <= BigDecimal.ZERO) {
                 errorsMutableStateFlow.update {
                     it.copy(priceError = "Invalid price")
                 }
@@ -778,7 +777,8 @@ class AddPropertyViewModel @Inject constructor(
             }
         }
 
-        if (propertyFormMutableSharedFlow.value.surface == null || propertyFormMutableSharedFlow.value.surface == BigDecimal.ZERO) {
+        if (propertyFormReplaceCache.surfaceFromUser == null ||
+            propertyFormReplaceCache.surfaceFromUser == BigDecimal.ZERO) {
             errorsMutableStateFlow.update {
                 it.copy(isSurfaceErrorVisible = true)
             }
@@ -789,7 +789,8 @@ class AddPropertyViewModel @Inject constructor(
             }
         }
 
-        if (propertyFormMutableSharedFlow.value.rooms == null || propertyFormMutableSharedFlow.value.rooms!! < 1) {
+        if (propertyFormReplaceCache.rooms == null ||
+            propertyFormReplaceCache.rooms < 1) {
             errorsMutableStateFlow.update {
                 it.copy(isRoomsErrorVisible = true)
             }
@@ -800,7 +801,7 @@ class AddPropertyViewModel @Inject constructor(
             }
         }
 
-        if (propertyFormMutableSharedFlow.value.autoCompleteAddress == null) {
+        if (propertyFormReplaceCache.autoCompleteAddress == null) {
             errorsMutableStateFlow.update {
                 it.copy(
                     addressError = "Address required",
@@ -821,9 +822,7 @@ class AddPropertyViewModel @Inject constructor(
             }
         }
 
-        if (propertyFormMutableSharedFlow.value.description == null ||
-            propertyFormMutableSharedFlow.value.description!!.isEmpty()
-        ) {
+        if (propertyFormReplaceCache.description.isNullOrEmpty()) {
             errorsMutableStateFlow.update {
                 it.copy(descriptionError = "Description required")
             }
