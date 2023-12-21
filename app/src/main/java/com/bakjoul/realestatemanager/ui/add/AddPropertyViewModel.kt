@@ -38,7 +38,6 @@ import com.bakjoul.realestatemanager.ui.utils.EquatableCallback
 import com.bakjoul.realestatemanager.ui.utils.Event
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -67,7 +66,7 @@ import kotlin.time.Duration.Companion.seconds
 class AddPropertyViewModel @Inject constructor(
     getCurrentCurrencyUseCase: GetCurrentCurrencyUseCase,
     getCurrentSurfaceUnitUseCase: GetCurrentSurfaceUnitUseCase,
-    savedStateHandle: SavedStateHandle,
+    private val savedStateHandle: SavedStateHandle,
     private val getEuroRateUseCase: GetEuroRateUseCase,
     private val getPropertyDraftByIdUseCase: GetPropertyDraftByIdUseCase,
     private val getCurrentNavigationUseCase: GetCurrentNavigationUseCase,
@@ -107,12 +106,17 @@ class AddPropertyViewModel @Inject constructor(
         }
     private val errorsMutableStateFlow: MutableStateFlow<PropertyFormErrors> = MutableStateFlow(PropertyFormErrors())
 
-    private var propertyId: Long? = null
+    private val propertyId: Long = requireNotNull(
+        savedStateHandle.get<Long>("draftId") ?: savedStateHandle.get<Long>("newDraftId")
+    ) {
+        "No ID passed as parameter !"
+    }
+
     private var isNewDraft = false
     private var saveJob: Job? = null
     private var isAddressTextCleared = false
 
-    private val propertyInformationFlow : Flow<PropertyInformation> = combine(
+    private val propertyInformationFlow: Flow<PropertyInformation> = combine(
         propertyFormMutableSharedFlow,
         getCurrentCurrencyUseCase.invoke(),
         flow { emit(getEuroRateUseCase.invoke()) },
@@ -146,10 +150,8 @@ class AddPropertyViewModel @Inject constructor(
                         Log.d("test", "draft loaded : $draft")
                     }
                 }
-                propertyId = draftId
             } else if (newDraftId != null) {
                 propertyFormMutableSharedFlow.tryEmit(initPropertyForm(newDraftId))
-                propertyId = newDraftId
                 isNewDraft = true
                 Log.d("test", "new draft case")
             }
@@ -166,7 +168,12 @@ class AddPropertyViewModel @Inject constructor(
                 forSaleSince = formatDate(propertyForm.forSaleSince),
                 dateOfSale = formatDate(propertyForm.dateOfSale),
                 isSold = propertyForm.isSold ?: false,
-                price = formatSavedPrice(propertyForm.referencePrice, propertyForm.priceFromUser, currency, euroRate.currencyRateEntity.rate),
+                price = formatSavedPrice(
+                    propertyForm.referencePrice,
+                    propertyForm.priceFromUser,
+                    currency,
+                    euroRate.currencyRateEntity.rate
+                ),
                 priceHint = formatPriceHint(currency),
                 currencyFormat = getCurrencyFormat(currency),
                 surfaceLabel = formatSurfaceLabel(surfaceUnit),
@@ -209,22 +216,27 @@ class AddPropertyViewModel @Inject constructor(
     private fun saveDraft(propertyForm: PropertyFormEntity, currency: AppCurrency, euroRate: Double, surfaceUnit: SurfaceUnit) {
         val priceInDollars = propertyForm.priceFromUser?.let {
             if (currency == AppCurrency.EUR) {
-                it.times(BigDecimal(euroRate)).setScale(0, RoundingMode.CEILING)
+                it.fromEurosToDollars(euroRate)
+            } else {
+                it
             }
-            else it
         } ?: propertyForm.referencePrice
 
         val surfaceInMeters = propertyForm.surfaceFromUser?.let {
             if (surfaceUnit == SurfaceUnit.Feet) {
-                it.divide(BigDecimal(3.28084), 0, RoundingMode.CEILING)
+                it.fromFeetSquaredToMeterSquared()
+            } else {
+                it
             }
-            else it
         } ?: propertyForm.referenceSurface
 
         Log.d("test", "saveDraft: $propertyForm\npriceInDollars: $priceInDollars\nsurfaceInMeters: $surfaceInMeters")
 
         viewModelScope.launch {
-            updatePropertyDraftUseCase.invoke(propertyId!!, propertyForm.copy(referencePrice = priceInDollars, referenceSurface = surfaceInMeters))
+            updatePropertyDraftUseCase.invoke(
+                propertyId,
+                propertyForm.copy(referencePrice = priceInDollars, referenceSurface = surfaceInMeters)
+            )
         }
     }
 
@@ -264,33 +276,47 @@ class AddPropertyViewModel @Inject constructor(
         lastUpdate = ZonedDateTime.now().toLocalDateTime()
     )
 
-    private fun formatDate(localDate: LocalDate?): String {
-        return if (localDate == null) {
-            ""
-        } else {
-            val formatter = if (Locale.getDefault().language == "fr") {
+    private fun formatDate(localDate: LocalDate?): String = if (localDate == null) {
+        ""
+    } else {
+        localDate.format(
+            if (Locale.getDefault().language == "fr") {
                 DateTimeFormatter.ofPattern("d MMM yyyy", Locale.FRENCH)
             } else {
                 DateTimeFormatter.ofPattern("MMM d, yyyy", Locale.ENGLISH)
             }
-            localDate.format(formatter)
-        }
+        )
     }
 
     private fun getCurrencyFormat(currency: AppCurrency): DecimalFormat {
-        val symbols = DecimalFormatSymbols(Locale.getDefault())
-        symbols.groupingSeparator = if (currency == AppCurrency.EUR) ' ' else ','
-        symbols.decimalSeparator = if (currency == AppCurrency.EUR) ',' else '.'
+        val symbols = DecimalFormatSymbols(Locale.getDefault()).apply {
+            groupingSeparator = if (currency == AppCurrency.EUR) {
+                ' '
+            } else {
+                ','
+            }
+            decimalSeparator = if (currency == AppCurrency.EUR) {
+                ','
+            } else {
+                '.'
+            }
+        }
 
         return DecimalFormat("#,###.##", symbols)
     }
 
+    // TODO Use Resource String and NativeText
     private fun formatPriceHint(currency: AppCurrency): String = "Price (${currency.symbol})"
 
-    private fun formatSavedPrice(referencePrice: BigDecimal?, priceFromUser: BigDecimal?, currency: AppCurrency, euroRate: Double): String? {
+    private fun formatSavedPrice(
+        referencePrice: BigDecimal?,
+        priceFromUser: BigDecimal?,
+        currency: AppCurrency,
+        euroRate: Double
+    ): String? {
         val convertedPrice = when (currency) {
             AppCurrency.EUR -> (priceFromUser ?: referencePrice)?.divide(BigDecimal(euroRate), 0, RoundingMode.CEILING)
-            else -> priceFromUser?: referencePrice
+            else -> priceFromUser ?: referencePrice
         }
 
         return convertedPrice?.toString()
@@ -298,23 +324,21 @@ class AddPropertyViewModel @Inject constructor(
 
     private fun formatSurfaceLabel(surfaceUnit: SurfaceUnit): String = "Surface (${surfaceUnit.unit})"
 
-    private fun formatSurfaceValue(referenceSurface: BigDecimal?, surfaceFromUser: BigDecimal?, surfaceUnit: SurfaceUnit): String {
-        return referenceSurface?.let {
-            val formattedSurface = if (surfaceUnit == SurfaceUnit.Feet) {
+    private fun formatSurfaceValue(referenceSurface: BigDecimal?, surfaceFromUser: BigDecimal?, surfaceUnit: SurfaceUnit): BigDecimal =
+        if (referenceSurface != null) {
+            if (surfaceUnit == SurfaceUnit.Feet) {
                 (surfaceFromUser ?: referenceSurface).times(BigDecimal(3.28084)).setScale(0, RoundingMode.CEILING)
             } else {
                 referenceSurface
             }
-            formattedSurface.toString()
-        } ?: "0"
-    }
-
-    private fun formatAddress(address: PropertyFormAddress?): String? {
-        return if (address?.streetNumber != null && address.route != null) {
-            "${address.streetNumber} ${address.route}"
         } else {
-            null
+            BigDecimal.ZERO
         }
+
+    private fun formatAddress(address: PropertyFormAddress?): String? = if (address?.streetNumber != null && address.route != null) {
+        "${address.streetNumber} ${address.route}"
+    } else {
+        null
     }
 
     private fun mapAddressPredictions(wrapper: AutocompleteWrapper?): List<AddPropertySuggestionItemViewState> =
@@ -433,9 +457,9 @@ class AddPropertyViewModel @Inject constructor(
         }
     }
 
-    fun onForSaleSinceDateChanged(date: Any?) {
+    fun onForSaleSinceDateChanged(date: Long) {
         Log.d("test", "onForSaleSinceDateChanged: ")
-        val instant = Instant.ofEpochMilli(date as Long)
+        val instant = Instant.ofEpochMilli(date)
         val zonedDateTime = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault())
 
         propertyFormMutableSharedFlow.tryEmit(
@@ -449,8 +473,8 @@ class AddPropertyViewModel @Inject constructor(
         }
     }
 
-    fun onSoldOnDateChanged(date: Any?) {
-        val instant = Instant.ofEpochMilli(date as Long)
+    fun onSoldOnDateChanged(date: Long) {
+        val instant = Instant.ofEpochMilli(date)
         val zonedDateTime = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault())
 
         propertyFormMutableSharedFlow.tryEmit(
@@ -487,11 +511,12 @@ class AddPropertyViewModel @Inject constructor(
         }
     }
 
-    fun onSurfaceChanged(surface: Number) {
+    // TODO Bakjoul à faire pareil pour les autres
+    fun onSurfaceChanged(surface: BigDecimal) {
         Log.d("test", "onSurfaceChanged: ")
         propertyFormMutableSharedFlow.tryEmit(
             propertyFormMutableSharedFlow.replayCache.first().copy(
-                surfaceFromUser = BigDecimal(surface.toString())
+                surfaceFromUser = surface
             )
         )
     }
@@ -568,7 +593,7 @@ class AddPropertyViewModel @Inject constructor(
 
     fun onAddressTextCleared() {
         isAddressTextCleared = true
-        currentAddressInputMutableStateFlow.value = "" to true
+        currentAddressInputMutableStateFlow.value = null
 
     }
 
@@ -609,7 +634,7 @@ class AddPropertyViewModel @Inject constructor(
     }
 
     fun onCameraPermissionGranted() {
-        navigateUseCase.invoke(To.Camera(propertyId!!))
+        navigateUseCase.invoke(To.Camera(propertyId))
     }
 
     fun onChangeSettingsClicked() {
@@ -640,7 +665,7 @@ class AddPropertyViewModel @Inject constructor(
 
     fun dropDraft() {
         viewModelScope.launch {
-            deletePropertyDraftUseCase.invoke(propertyId!!)
+            deletePropertyDraftUseCase.invoke(propertyId)
             navigateUseCase.invoke(To.Toast("Draft has been discarded"))
             navigateUseCase.invoke(To.CloseAddProperty)
         }
@@ -661,38 +686,36 @@ class AddPropertyViewModel @Inject constructor(
     fun onDoneButtonClicked() {
         if (isFormValid()) {
             viewModelScope.launch {
-                val newPropertyId = async {
-                    val propertyFormReplaceCache = propertyFormMutableSharedFlow.replayCache.first()
-                    addPropertyUseCase.invoke(
-                        PropertyEntity(
-                            id = propertyFormReplaceCache.id,
-                            type = propertyFormReplaceCache.type!!.name,
-                            forSaleSince = propertyFormReplaceCache.forSaleSince!!,
-                            saleDate = propertyFormReplaceCache.dateOfSale,
-                            price = propertyFormReplaceCache.priceFromUser!!,
-                            surface = propertyFormReplaceCache.surfaceFromUser!!,
-                            rooms = propertyFormReplaceCache.rooms!!,
-                            bathrooms = propertyFormReplaceCache.bathrooms ?: 0,
-                            bedrooms = propertyFormReplaceCache.bedrooms ?: 0,
-                            amenities = propertyFormReplaceCache.pointsOfInterest!!,
-                            address = PropertyAddressEntity(
-                                streetNumber = propertyFormReplaceCache.autoCompleteAddress!!.streetNumber!!,
-                                route = propertyFormReplaceCache.autoCompleteAddress.route!!,
-                                complementaryAddress = propertyFormReplaceCache.autoCompleteAddress.complementaryAddress,
-                                zipcode = propertyFormReplaceCache.autoCompleteAddress.zipcode!!,
-                                city = propertyFormReplaceCache.autoCompleteAddress.city!!,
-                                state = propertyFormReplaceCache.autoCompleteAddress.state!!,
-                                country = propertyFormReplaceCache.autoCompleteAddress.country!!,
-                                latitude = propertyFormReplaceCache.autoCompleteAddress.latitude!!,
-                                longitude = propertyFormReplaceCache.autoCompleteAddress.longitude!!
-                            ),
-                            description = propertyFormReplaceCache.description!!,
-                            photos = propertyFormReplaceCache.photos!!,
-                            agent = propertyFormReplaceCache.agent ?: "John Doe",
-                            entryDate = ZonedDateTime.now().toLocalDate()
-                        )
+                val propertyFormReplaceCache = propertyFormMutableSharedFlow.replayCache.first()
+                val newPropertyId = addPropertyUseCase.invoke(
+                    PropertyEntity(
+                        id = propertyFormReplaceCache.id,
+                        type = propertyFormReplaceCache.type!!.name,
+                        forSaleSince = propertyFormReplaceCache.forSaleSince!!,
+                        saleDate = propertyFormReplaceCache.dateOfSale,
+                        price = propertyFormReplaceCache.priceFromUser!!,
+                        surface = propertyFormReplaceCache.surfaceFromUser!!,
+                        rooms = propertyFormReplaceCache.rooms!!,
+                        bathrooms = propertyFormReplaceCache.bathrooms ?: 0,
+                        bedrooms = propertyFormReplaceCache.bedrooms ?: 0,
+                        amenities = propertyFormReplaceCache.pointsOfInterest!!,
+                        address = PropertyAddressEntity(
+                            streetNumber = propertyFormReplaceCache.autoCompleteAddress!!.streetNumber!!,
+                            route = propertyFormReplaceCache.autoCompleteAddress.route!!,
+                            complementaryAddress = propertyFormReplaceCache.autoCompleteAddress.complementaryAddress,
+                            zipcode = propertyFormReplaceCache.autoCompleteAddress.zipcode!!,
+                            city = propertyFormReplaceCache.autoCompleteAddress.city!!,
+                            state = propertyFormReplaceCache.autoCompleteAddress.state!!,
+                            country = propertyFormReplaceCache.autoCompleteAddress.country!!,
+                            latitude = propertyFormReplaceCache.autoCompleteAddress.latitude!!,
+                            longitude = propertyFormReplaceCache.autoCompleteAddress.longitude!!
+                        ),
+                        description = propertyFormReplaceCache.description!!,
+                        photos = propertyFormReplaceCache.photos!!,
+                        agent = propertyFormReplaceCache.agent ?: "John Doe",
+                        entryDate = ZonedDateTime.now().toLocalDate()
                     )
-                }.await()
+                )
 
                 if (newPropertyId != null) {
                     deletePropertyDraftUseCase.invoke(newPropertyId)
@@ -727,18 +750,17 @@ class AddPropertyViewModel @Inject constructor(
                 it.copy(forSaleSinceError = "Date required")
             }
             isFormValid = false
+        } else if (propertyFormReplaceCache.isSold == true &&
+            propertyFormReplaceCache.dateOfSale != null &&
+            propertyFormReplaceCache.forSaleSince.isAfter(propertyFormReplaceCache.dateOfSale)
+        ) {
+            errorsMutableStateFlow.update {
+                it.copy(forSaleSinceError = "Invalid date")
+            }
+            isFormValid = false
         } else {
-            if (propertyFormReplaceCache.isSold == true &&
-                propertyFormReplaceCache.dateOfSale != null &&
-                propertyFormReplaceCache.forSaleSince.isAfter(propertyFormReplaceCache.dateOfSale)) {
-                errorsMutableStateFlow.update {
-                    it.copy(forSaleSinceError = "Invalid date")
-                }
-                isFormValid = false
-            } else {
-                errorsMutableStateFlow.update {
-                    it.copy(forSaleSinceError = null)
-                }
+            errorsMutableStateFlow.update {
+                it.copy(forSaleSinceError = null)
             }
         }
 
@@ -748,18 +770,16 @@ class AddPropertyViewModel @Inject constructor(
                     it.copy(dateOfSaleError = "Date required")
                 }
                 isFormValid = false
+            } else if (propertyFormReplaceCache.forSaleSince != null &&
+                propertyFormReplaceCache.dateOfSale.isBefore(propertyFormReplaceCache.forSaleSince)
+            ) {
+                errorsMutableStateFlow.update {
+                    it.copy(dateOfSaleError = "Invalid date")
+                }
+                isFormValid = false
             } else {
-                if (propertyFormReplaceCache.forSaleSince != null &&
-                    propertyFormReplaceCache.dateOfSale.isBefore(propertyFormReplaceCache.forSaleSince)
-                ) {
-                    errorsMutableStateFlow.update {
-                        it.copy(dateOfSaleError = "Invalid date")
-                    }
-                    isFormValid = false
-                } else {
-                    errorsMutableStateFlow.update {
-                        it.copy(dateOfSaleError = null)
-                    }
+                errorsMutableStateFlow.update {
+                    it.copy(dateOfSaleError = null)
                 }
             }
         } else {
@@ -773,21 +793,20 @@ class AddPropertyViewModel @Inject constructor(
                 it.copy(priceError = "Price required")
             }
             isFormValid = false
+        } else if (propertyFormReplaceCache.priceFromUser <= BigDecimal.ZERO) {
+            errorsMutableStateFlow.update {
+                it.copy(priceError = "Invalid price")
+            }
+            isFormValid = false
         } else {
-            if (propertyFormReplaceCache.priceFromUser <= BigDecimal.ZERO) {
-                errorsMutableStateFlow.update {
-                    it.copy(priceError = "Invalid price")
-                }
-                isFormValid = false
-            } else {
-                errorsMutableStateFlow.update {
-                    it.copy(priceError = null)
-                }
+            errorsMutableStateFlow.update {
+                it.copy(priceError = null)
             }
         }
 
         if (propertyFormReplaceCache.surfaceFromUser == null ||
-            propertyFormReplaceCache.surfaceFromUser == BigDecimal.ZERO) {
+            propertyFormReplaceCache.surfaceFromUser == BigDecimal.ZERO
+        ) {
             errorsMutableStateFlow.update {
                 it.copy(isSurfaceErrorVisible = true)
             }
@@ -799,7 +818,8 @@ class AddPropertyViewModel @Inject constructor(
         }
 
         if (propertyFormReplaceCache.rooms == null ||
-            propertyFormReplaceCache.rooms < 1) {
+            propertyFormReplaceCache.rooms < 1
+        ) {
             errorsMutableStateFlow.update {
                 it.copy(isRoomsErrorVisible = true)
             }
@@ -865,4 +885,7 @@ class AddPropertyViewModel @Inject constructor(
         val euroRate: CurrencyRateWrapper,
         val surfaceUnit: SurfaceUnit,
     )
+
+    private fun BigDecimal.fromFeetSquaredToMeterSquared(): BigDecimal = divide(BigDecimal(3.28084), 0, RoundingMode.CEILING)
+    private fun BigDecimal.fromEurosToDollars(euroRate: Double): BigDecimal = times(BigDecimal(euroRate)).setScale(0, RoundingMode.CEILING)
 }

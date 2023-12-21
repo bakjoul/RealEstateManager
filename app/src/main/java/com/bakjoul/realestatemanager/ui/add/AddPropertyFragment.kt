@@ -60,7 +60,7 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
     private val viewModel by viewModels<AddPropertyViewModel>()
 
     private val requestCameraPermissionLauncher = activityResultLauncher()
-    private val materialDateBuilder: MaterialDatePicker.Builder<*> = MaterialDatePicker.Builder.datePicker()
+    private val materialDateBuilder: MaterialDatePicker.Builder<Long> = MaterialDatePicker.Builder.datePicker()
     private var currentCurrency: DecimalFormat? = null
     private var isExistingDraftLoaded = false
 
@@ -115,7 +115,7 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
         }
 
         // Date picker for sale since
-        val forSaleSinceDatePicker: MaterialDatePicker<*> = materialDateBuilder.build()
+        val forSaleSinceDatePicker: MaterialDatePicker<Long> = materialDateBuilder.build()
 
         binding.addPropertyForSaleSinceTextInputEditText.setOnClickListener {
             forSaleSinceDatePicker.show(childFragmentManager, "FOR_SALE_DATE_PICKER")
@@ -265,7 +265,7 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
                 binding.addPropertySoldOnTextInputLayout.visibility = View.VISIBLE
                 binding.addPropertySoldOnTextInputEditText.setText(viewState.dateOfSale)
 
-                val soldOnDatePicker: MaterialDatePicker<*> = materialDateBuilder.build()
+                val soldOnDatePicker: MaterialDatePicker<Long> = materialDateBuilder.build()
 
                 binding.addPropertySoldOnTextInputEditText.setOnClickListener {
                     soldOnDatePicker.show(childFragmentManager, "SOLD_ON_DATE_PICKER")

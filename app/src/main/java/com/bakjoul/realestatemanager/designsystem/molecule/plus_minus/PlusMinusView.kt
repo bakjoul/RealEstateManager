@@ -16,6 +16,7 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.withStyledAttributes
+import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.databinding.ViewPlusMinusBinding
@@ -32,7 +33,7 @@ class PlusMinusView @JvmOverloads constructor(
 
     private val binding = ViewPlusMinusBinding.inflate(LayoutInflater.from(context), this, true)
 
-    private val listeners = CopyOnWriteArraySet<(Number) -> Unit>()
+    private val listeners = CopyOnWriteArraySet<(BigDecimal) -> Unit>()
 
     // FIXME When Context.withStyledAttributes is updated to guarantee variable value
     private var count: BigDecimal = BigDecimal.ZERO
@@ -136,7 +137,7 @@ class PlusMinusView @JvmOverloads constructor(
         }
     }
 
-    private fun publishNewValueToListeners(newValue: Number) {
+    private fun publishNewValueToListeners(newValue: BigDecimal) {
         listeners.forEach { listener ->
             listener.invoke(newValue)
         }
@@ -187,25 +188,21 @@ class PlusMinusView @JvmOverloads constructor(
         binding.viewPlusMinusLabelText.text = label
     }
 
-    fun setInitialValue(value: String) {
-        count = value.toBigDecimalOrNull() ?: BigDecimal.ZERO
+    fun setInitialValue(value: BigDecimal) {
+        count = value
         binding.viewPlusMinusValueEditText.text = SpannableStringBuilder(count.toString())
     }
 
-    fun addOnValueChangedListener(listener: (Number) -> Unit) {
+    fun addOnValueChangedListener(listener: (BigDecimal) -> Unit) {
         listeners.add(listener)
     }
 
-    fun removeOnValueChangeListener(listener: (Number) -> Unit) {
+    fun removeOnValueChangeListener(listener: (BigDecimal) -> Unit) {
         listeners.remove(listener)
     }
 
     fun isErrorVisible(isErrorVisible: Boolean) {
-        binding.viewPlusMinusErrorTextView.visibility = if (isErrorVisible) {
-            View.VISIBLE
-        } else {
-            View.GONE
-        }
+        binding.viewPlusMinusErrorTextView.isVisible = isErrorVisible
     }
 
     internal class SavedState : BaseSavedState {

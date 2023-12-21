@@ -27,5 +27,5 @@ data class PropertyFormEntity(
     val description: String? = null,
     val photos: List<PhotoEntity>? = null,
     val agent: String? = null,
-    val lastUpdate: LocalDateTime = ZonedDateTime.now().toLocalDateTime(),
+    val lastUpdate: LocalDateTime,
 )
