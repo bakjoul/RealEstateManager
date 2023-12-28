@@ -105,12 +105,12 @@ class DetailsViewModel @Inject constructor(
     }
 
     private fun formatType(type: String): String = when (type) {
-        PropertyTypeEntity.DUPLEX.name -> application.resources.getString(PropertyTypeEntity.DUPLEX.stringRes)
-        PropertyTypeEntity.FLAT.name -> application.resources.getString(PropertyTypeEntity.FLAT.stringRes)
-        PropertyTypeEntity.HOUSE.name -> application.resources.getString(PropertyTypeEntity.HOUSE.stringRes)
-        PropertyTypeEntity.LOFT.name -> application.resources.getString(PropertyTypeEntity.LOFT.stringRes)
-        PropertyTypeEntity.OTHER.name -> application.resources.getString(PropertyTypeEntity.OTHER.stringRes)
-        PropertyTypeEntity.PENTHOUSE.name -> application.resources.getString(PropertyTypeEntity.PENTHOUSE.stringRes)
+        PropertyTypeEntity.DUPLEX.name -> application.resources.getString(PropertyTypeEntity.DUPLEX.typeName)
+        PropertyTypeEntity.FLAT.name -> application.resources.getString(PropertyTypeEntity.FLAT.typeName)
+        PropertyTypeEntity.HOUSE.name -> application.resources.getString(PropertyTypeEntity.HOUSE.typeName)
+        PropertyTypeEntity.LOFT.name -> application.resources.getString(PropertyTypeEntity.LOFT.typeName)
+        PropertyTypeEntity.OTHER.name -> application.resources.getString(PropertyTypeEntity.OTHER.typeName)
+        PropertyTypeEntity.PENTHOUSE.name -> application.resources.getString(PropertyTypeEntity.PENTHOUSE.typeName)
         else -> ""
     }
 

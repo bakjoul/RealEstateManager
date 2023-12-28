@@ -3,6 +3,7 @@ package com.bakjoul.realestatemanager.ui.settings
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
+import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
 import com.bakjoul.realestatemanager.data.settings.model.AppCurrency
 import com.bakjoul.realestatemanager.data.settings.model.SurfaceUnit
@@ -15,6 +16,7 @@ import com.bakjoul.realestatemanager.domain.settings.surface_unit.GetCurrentSurf
 import com.bakjoul.realestatemanager.domain.settings.surface_unit.SetSurfaceUnitUseCase
 import com.bakjoul.realestatemanager.ui.utils.Event
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -29,6 +31,20 @@ class SettingsViewModel @Inject constructor(
     private val navigateUseCase: NavigateUseCase
 ) : ViewModel() {
 
+    val viewStateLiveData: LiveData<SettingsViewState> = liveData {
+        combine(
+            getCurrentCurrencyUseCase.invoke(),
+            getCurrentSurfaceUnitUseCase.invoke()
+        ) { currency, surfaceUnit ->
+            SettingsViewState(
+                currency = currency,
+                surfaceUnit = surfaceUnit
+            )
+        }.collect {
+            emit(it)
+        }
+    }
+
     val viewActionLiveData: LiveData<Event<SettingsViewAction>> =
         getCurrentNavigationUseCase.invoke()
             .mapNotNull {
@@ -38,18 +54,15 @@ class SettingsViewModel @Inject constructor(
                 }
             }.asLiveData()
 
-    fun getCurrencyLiveData(): LiveData<AppCurrency> = getCurrentCurrencyUseCase.invoke().asLiveData()
-    fun getSurfaceUnitLiveData(): LiveData<SurfaceUnit> = getCurrentSurfaceUnitUseCase.invoke().asLiveData()
-
-    fun onCurrencySelected(currency: String) {
+    fun onCurrencySelected(currency: AppCurrency) {
         viewModelScope.launch {
             setCurrencyUseCase.invoke(currency)
         }
     }
 
-    fun onSurfaceUnitSelected(unit: String) {
+    fun onSurfaceUnitSelected(surfaceUnit: SurfaceUnit) {
         viewModelScope.launch {
-            setSurfaceUnitUseCase.invoke(unit)
+            setSurfaceUnitUseCase.invoke(surfaceUnit)
         }
     }
 

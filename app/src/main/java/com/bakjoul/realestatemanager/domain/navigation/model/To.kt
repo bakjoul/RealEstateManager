@@ -1,5 +1,7 @@
 package com.bakjoul.realestatemanager.domain.navigation.model
 
+import com.bakjoul.realestatemanager.ui.utils.NativeText
+
 sealed class To {
     object Details: To()
     object CloseDetails: To()
@@ -19,5 +21,5 @@ sealed class To {
     object Dispatcher: To()
     object Settings : To()
     object CloseSettings : To()
-    data class Toast(val message: String) : To()
+    data class Toast(val message: NativeText) : To()
 }

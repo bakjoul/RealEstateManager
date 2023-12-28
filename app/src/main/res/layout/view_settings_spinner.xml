@@ -35,7 +35,7 @@
         android:id="@+id/settings_spinner_desc"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:maxLines="2"
+        android:maxLines="3"
         android:textColor="@color/grey_text"
         android:textSize="15sp"
         app:layout_constraintEnd_toEndOf="@id/settings_spinner_label"

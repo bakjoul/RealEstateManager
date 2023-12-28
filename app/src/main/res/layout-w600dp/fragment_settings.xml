@@ -56,7 +56,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/settings_currency_spinner"
-        app:spinnerDescription="Changes the unit used for the property surface"
+        app:spinnerDescription="@string/settings_surface_unit_desc"
         app:spinnerEntries="@array/surface_unit_options"
         app:spinnerImageSrc="@drawable/meter_to_feet_128"
         app:spinnerLabel="Surface unit" />

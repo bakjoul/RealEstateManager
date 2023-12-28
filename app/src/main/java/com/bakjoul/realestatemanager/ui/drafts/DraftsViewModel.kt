@@ -103,7 +103,8 @@ class DraftsViewModel @Inject constructor(
         euroRate: Double,
         surfaceUnit: SurfaceUnit
     ) = buildString {
-        var formattedSurface: Pair<Int, String>? = null
+        // TODO FIX surface
+        var formattedSurface: Pair<Int, Int>? = null
         if (propertyDraft.referenceSurface != null) {
             formattedSurface = formatSurface(propertyDraft.referenceSurface, surfaceUnit)
         }

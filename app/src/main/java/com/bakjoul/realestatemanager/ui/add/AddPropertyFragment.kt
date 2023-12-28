@@ -23,6 +23,7 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.databinding.FragmentAddPropertyBinding
+import com.bakjoul.realestatemanager.domain.property.model.PropertyPoiEntity
 import com.bakjoul.realestatemanager.ui.camera.activity.CameraActivity
 import com.bakjoul.realestatemanager.ui.utils.CustomThemeDialog
 import com.bakjoul.realestatemanager.ui.utils.Event.Companion.observeEvent
@@ -182,7 +183,9 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
             binding.addPropertyTransportationAirportChip
         ).forEach {
             it.setOnCheckedChangeListener { chip, isChecked ->
-                viewModel.onChipCheckedChanged(chip.text.toString(), isChecked)
+                if (isExistingDraftLoaded) {
+                    viewModel.onChipCheckedChanged(chip.id, isChecked)
+                }
             }
         }
 
@@ -192,7 +195,9 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
             val address = editable?.toString() ?: ""
 
             binding.addPropertyAddressTextInputLayout.isEndIconVisible = address.isNotEmpty()
-            viewModel.onAddressChanged(address)
+            if (isExistingDraftLoaded) {
+                viewModel.onAddressChanged(address)
+            }
         }
 
         binding.addPropertyAddressTextInputLayout.setEndIconOnClickListener {
@@ -217,7 +222,9 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
             val complementaryAddress = editable?.toString() ?: ""
 
             binding.addPropertyComplementaryAddressTextInputLayout.isEndIconVisible = complementaryAddress.isNotEmpty()
-            viewModel.onComplementaryAddressChanged(complementaryAddress)
+            if (isExistingDraftLoaded) {
+                viewModel.onComplementaryAddressChanged(complementaryAddress)
+            }
         }
 
         binding.addPropertyComplementaryAddressTextInputLayout.setEndIconOnClickListener {
@@ -231,7 +238,9 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
             val description = editable?.toString() ?: ""
 
             binding.addPropertyDescriptionTextInputLayout.isEndIconVisible = description.isNotEmpty()
-            viewModel.onDescriptionChanged(description)
+            if (isExistingDraftLoaded) {
+                viewModel.onDescriptionChanged(description)
+            }
         }
 
         binding.addPropertyDescriptionTextInputLayout.setEndIconOnClickListener {
@@ -280,7 +289,6 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
             }
 
             // Price formatting
-            binding.addPropertyPriceTextInputLayout.hint = viewState.priceHint
             if (currentCurrency != viewState.currencyFormat) {
                 binding.addPropertyPriceTextInputEditText.addTextChangedListener(object : TextWatcher {
                     override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -296,7 +304,6 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
                                 if (isExistingDraftLoaded) {
                                     viewModel.onPriceChanged(bigDecimalPrice)
                                 }
-                                //viewModel.onPriceChanged(bigDecimalPrice)
 
                                 try {
                                     val parsed = viewState.currencyFormat.parse(originalText)
@@ -318,16 +325,39 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
             currentCurrency = viewState.currencyFormat
 
             if (!isExistingDraftLoaded) {
+                // Price hint
+                binding.addPropertyPriceTextInputLayout.hint = viewState.priceHint.toCharSequence(requireContext())
+                // Price
                 binding.addPropertyPriceTextInputEditText.setText(viewState.price)
+                // Surface hint
+                binding.addPropertySurfacePlusMinusView.setLabel(viewState.surfaceLabel.toCharSequence(requireContext()).toString())
+                // Features
                 binding.addPropertySurfacePlusMinusView.setInitialValue(viewState.surface)
                 binding.addPropertyRoomsPlusMinusView.setInitialValue(viewState.numberOfRooms)
                 binding.addPropertyBathroomsPlusMinusView.setInitialValue(viewState.numberOfBathrooms)
                 binding.addPropertyBedroomsPlusMinusView.setInitialValue(viewState.numberOfBedrooms)
+                // Amenities
+                binding.addPropertyAmenitiesSchoolChip.isChecked = viewState.amenities.contains(PropertyPoiEntity.SCHOOL)
+                binding.addPropertyAmenitiesStoreChip.isChecked = viewState.amenities.contains(PropertyPoiEntity.STORE)
+                binding.addPropertyAmenitiesParkChip.isChecked = viewState.amenities.contains(PropertyPoiEntity.PARK)
+                binding.addPropertyAmenitiesRestaurantChip.isChecked = viewState.amenities.contains(PropertyPoiEntity.RESTAURANT)
+                binding.addPropertyAmenitiesHospitalChip.isChecked = viewState.amenities.contains(PropertyPoiEntity.HOSPITAL)
+                binding.addPropertyTransportationBusChip.isChecked = viewState.amenities.contains(PropertyPoiEntity.BUS)
+                binding.addPropertyTransportationSubwayChip.isChecked = viewState.amenities.contains(PropertyPoiEntity.SUBWAY)
+                binding.addPropertyTransportationTramwayChip.isChecked = viewState.amenities.contains(PropertyPoiEntity.TRAMWAY)
+                binding.addPropertyTransportationTrainChip.isChecked = viewState.amenities.contains(PropertyPoiEntity.TRAIN)
+                binding.addPropertyTransportationAirportChip.isChecked = viewState.amenities.contains(PropertyPoiEntity.AIRPORT)
+                // Address fields
+                //binding.addPropertyAddressTextInputEditText.setText(viewState.address)
+                binding.addPropertyComplementaryAddressTextInputEditText.setText(viewState.complementaryAddress)
+                binding.addPropertyCityTextInputEditText.setText(viewState.city)
+                binding.addPropertyStateRegionTextInputEditText.setText(viewState.state)
+                binding.addPropertyZipcodeTextInputEditText.setText(viewState.zipcode)
+                // Description
+                binding.addPropertyDescriptionTextInputEditText.setText(viewState.description)
 
                 isExistingDraftLoaded = true
             }
-
-            binding.addPropertySurfacePlusMinusView.setLabel(viewState.surfaceLabel)
 
             // Updates address fields on autocomplete selection
             if (viewState.address != null && viewState.address != binding.addPropertyAddressTextInputEditText.text.toString()) {
@@ -356,16 +386,16 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
                 binding.addPropertyTypeRadioGroup.background = ContextCompat.getDrawable(requireContext(), R.drawable.type_background)
                 binding.addPropertyTypeErrorTextView.visibility = View.GONE
             }
-            binding.addPropertyForSaleSinceTextInputLayout.error = viewState.forSaleSinceError
-            binding.addPropertySoldOnTextInputLayout.error = viewState.dateOfSaleError
-            binding.addPropertyPriceTextInputLayout.error = viewState.priceError
+            binding.addPropertyForSaleSinceTextInputLayout.error = viewState.forSaleSinceError?.toCharSequence(requireContext())
+            binding.addPropertySoldOnTextInputLayout.error = viewState.dateOfSaleError?.toCharSequence(requireContext())
+            binding.addPropertyPriceTextInputLayout.error = viewState.priceError?.toCharSequence(requireContext())
             binding.addPropertySurfacePlusMinusView.isErrorVisible(viewState.isSurfaceErrorVisible)
             binding.addPropertyRoomsPlusMinusView.isErrorVisible(viewState.isRoomsErrorVisible)
-            binding.addPropertyAddressTextInputLayout.error = viewState.addressError
-            binding.addPropertyCityTextInputLayout.error = viewState.cityError
-            binding.addPropertyStateRegionTextInputLayout.error = viewState.stateError
-            binding.addPropertyZipcodeTextInputLayout.error = viewState.zipcodeError
-            binding.addPropertyDescriptionTextInputLayout.error = viewState.descriptionError
+            binding.addPropertyAddressTextInputLayout.error = viewState.addressError?.toCharSequence(requireContext())
+            binding.addPropertyCityTextInputLayout.error = viewState.cityError?.toCharSequence(requireContext())
+            binding.addPropertyStateRegionTextInputLayout.error = viewState.stateError?.toCharSequence(requireContext())
+            binding.addPropertyZipcodeTextInputLayout.error = viewState.zipcodeError?.toCharSequence(requireContext())
+            binding.addPropertyDescriptionTextInputLayout.error = viewState.descriptionError?.toCharSequence(requireContext())
         }
 
         viewModel.viewActionLiveData.observeEvent(viewLifecycleOwner) {
@@ -383,7 +413,7 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
                     MaterialAlertDialogBuilder(requireContext())
                         .setTitle(getString(R.string.save_draft_dialog_title))
                         .setMessage(getString(R.string.save_draft))
-                        .setNegativeButton(getString(R.string.discard)) { _, _ ->
+                        .setNegativeButton(getString(R.string.discard_draft)) { _, _ ->
                             viewModel.dropDraft()
                         }
                         .setPositiveButton(getString(R.string.save_draft_dialog_positive)) { dialog, _ ->
@@ -401,7 +431,9 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
                     startActivity(intent)
                 }
 
-                is AddPropertyViewAction.ShowToast -> Toast.makeText(requireContext(), it.message, Toast.LENGTH_SHORT).show()
+                is AddPropertyViewAction.ShowToast -> {
+                    Toast.makeText(requireContext(), it.message.toCharSequence(requireContext()), Toast.LENGTH_SHORT).show()
+                }
             }
         }
     }

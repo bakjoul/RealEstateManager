@@ -285,27 +285,27 @@
                     <com.google.android.material.chip.Chip
                         android:id="@+id/add_property_amenities_school_Chip"
                         style="@style/Chip"
-                        android:text="@string/property_poi_desc_school" />
+                        android:text="@string/property_poi_school" />
 
                     <com.google.android.material.chip.Chip
                         android:id="@+id/add_property_amenities_store_Chip"
                         style="@style/Chip"
-                        android:text="@string/property_poi_desc_store" />
+                        android:text="@string/property_poi_store" />
 
                     <com.google.android.material.chip.Chip
                         android:id="@+id/add_property_amenities_park_Chip"
                         style="@style/Chip"
-                        android:text="@string/property_poi_desc_park" />
+                        android:text="@string/property_poi_park" />
 
                     <com.google.android.material.chip.Chip
                         android:id="@+id/add_property_amenities_restaurant_Chip"
                         style="@style/Chip"
-                        android:text="@string/property_poi_desc_restaurant" />
+                        android:text="@string/property_poi_restaurant" />
 
                     <com.google.android.material.chip.Chip
                         android:id="@+id/add_property_amenities_hospital_Chip"
                         style="@style/Chip"
-                        android:text="@string/property_poi_desc_hospital" />
+                        android:text="@string/property_poi_hospital" />
                 </com.google.android.material.chip.ChipGroup>
 
                 <TextView
@@ -334,27 +334,27 @@
                     <com.google.android.material.chip.Chip
                         android:id="@+id/add_property_transportation_bus_Chip"
                         style="@style/Chip"
-                        android:text="@string/property_poi_desc_bus" />
+                        android:text="@string/property_poi_bus" />
 
                     <com.google.android.material.chip.Chip
                         android:id="@+id/add_property_transportation_subway_Chip"
                         style="@style/Chip"
-                        android:text="@string/property_poi_desc_subway" />
+                        android:text="@string/property_poi_subway" />
 
                     <com.google.android.material.chip.Chip
                         android:id="@+id/add_property_transportation_tramway_Chip"
                         style="@style/Chip"
-                        android:text="@string/property_poi_desc_tramway" />
+                        android:text="@string/property_poi_tramway" />
 
                     <com.google.android.material.chip.Chip
                         android:id="@+id/add_property_transportation_train_Chip"
                         style="@style/Chip"
-                        android:text="@string/property_poi_desc_train" />
+                        android:text="@string/property_poi_train" />
 
                     <com.google.android.material.chip.Chip
                         android:id="@+id/add_property_transportation_airport_Chip"
                         style="@style/Chip"
-                        android:text="@string/property_poi_desc_airport" />
+                        android:text="@string/property_poi_airport" />
                 </com.google.android.material.chip.ChipGroup>
 
                 <com.google.android.material.textfield.TextInputLayout

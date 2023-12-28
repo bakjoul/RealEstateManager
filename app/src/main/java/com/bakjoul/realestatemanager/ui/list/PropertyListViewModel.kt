@@ -17,9 +17,9 @@ import com.bakjoul.realestatemanager.domain.currency_rate.GetEuroRateUseCase
 import com.bakjoul.realestatemanager.domain.current_property.SetCurrentPropertyIdUseCase
 import com.bakjoul.realestatemanager.domain.navigation.NavigateUseCase
 import com.bakjoul.realestatemanager.domain.navigation.model.To
-import com.bakjoul.realestatemanager.domain.property.drafts.GenerateNewDraftIdUseCase
 import com.bakjoul.realestatemanager.domain.property.GetPropertiesFlowUseCase
 import com.bakjoul.realestatemanager.domain.property.drafts.AddPropertyDraftUseCase
+import com.bakjoul.realestatemanager.domain.property.drafts.GenerateNewDraftIdUseCase
 import com.bakjoul.realestatemanager.domain.property.drafts.HasPropertyDraftsUseCase
 import com.bakjoul.realestatemanager.domain.property.model.PropertyTypeEntity
 import com.bakjoul.realestatemanager.domain.property_form.model.PropertyFormEntity
@@ -27,6 +27,7 @@ import com.bakjoul.realestatemanager.domain.resources.IsTabletUseCase
 import com.bakjoul.realestatemanager.domain.settings.currency.GetCurrentCurrencyUseCase
 import com.bakjoul.realestatemanager.domain.settings.surface_unit.GetCurrentSurfaceUnitUseCase
 import com.bakjoul.realestatemanager.ui.utils.EquatableCallback
+import com.bakjoul.realestatemanager.ui.utils.NativeText
 import com.bakjoul.realestatemanager.ui.utils.ViewModelUtils.Companion.formatPrice
 import com.bakjoul.realestatemanager.ui.utils.ViewModelUtils.Companion.formatSurface
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -88,28 +89,28 @@ class PropertyListViewModel @Inject constructor(
         }
     }
 
-    private fun formatType(type: String): String = when (type) {
-        PropertyTypeEntity.DUPLEX.name -> application.resources.getString(PropertyTypeEntity.DUPLEX.stringRes)
-        PropertyTypeEntity.FLAT.name -> application.resources.getString(PropertyTypeEntity.FLAT.stringRes)
-        PropertyTypeEntity.HOUSE.name -> application.resources.getString(PropertyTypeEntity.HOUSE.stringRes)
-        PropertyTypeEntity.LOFT.name -> application.resources.getString(PropertyTypeEntity.LOFT.stringRes)
-        PropertyTypeEntity.OTHER.name -> application.resources.getString(PropertyTypeEntity.OTHER.stringRes)
-        PropertyTypeEntity.PENTHOUSE.name -> application.resources.getString(PropertyTypeEntity.PENTHOUSE.stringRes)
-        else -> ""
+    private fun formatType(type: String): NativeText = when (type) {
+        PropertyTypeEntity.DUPLEX.name -> NativeText.Resource(PropertyTypeEntity.DUPLEX.typeName)
+        PropertyTypeEntity.FLAT.name -> NativeText.Resource(PropertyTypeEntity.FLAT.typeName)
+        PropertyTypeEntity.HOUSE.name -> NativeText.Resource(PropertyTypeEntity.HOUSE.typeName)
+        PropertyTypeEntity.LOFT.name -> NativeText.Resource(PropertyTypeEntity.LOFT.typeName)
+        PropertyTypeEntity.OTHER.name -> NativeText.Resource(PropertyTypeEntity.OTHER.typeName)
+        PropertyTypeEntity.PENTHOUSE.name -> NativeText.Resource(PropertyTypeEntity.PENTHOUSE.typeName)
+        else -> NativeText.Simple("")
     }
 
-    private fun formatFeatures(bedrooms: Int, bathrooms: Int, surface: BigDecimal, surfaceUnit: SurfaceUnit, isTablet: Boolean): String {
+    private fun formatFeatures(bedrooms: BigDecimal, bathrooms: BigDecimal, surface: BigDecimal, surfaceUnit: SurfaceUnit, isTablet: Boolean): String {
         val (mappedSurface, mappedSurfaceUnit) = formatSurface(surface, surfaceUnit)
 
         return if (isTablet) {
             application.resources.getString(
                 R.string.property_features_tablet,
-                application.resources.getQuantityString(R.plurals.bedroom_plural, bedrooms, bedrooms),
-                application.resources.getQuantityString(R.plurals.bathroom_plural, bathrooms, bathrooms),
+                application.resources.getQuantityString(R.plurals.bedroom_plural, bedrooms.toInt(), bedrooms),
+                application.resources.getQuantityString(R.plurals.bathroom_plural, bathrooms.toInt(), bathrooms),
                 application.resources.getString(R.string.property_surface, mappedSurface, mappedSurfaceUnit)
             )
         } else {
-            application.resources.getString(R.string.property_features, bedrooms, bathrooms, mappedSurface, mappedSurfaceUnit)
+            application.resources.getString(R.string.property_features, bedrooms.toInt(), bathrooms.toInt(), mappedSurface, mappedSurfaceUnit)
         }
     }
 
