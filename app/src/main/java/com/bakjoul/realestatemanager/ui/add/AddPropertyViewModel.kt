@@ -1,5 +1,6 @@
 package com.bakjoul.realestatemanager.ui.add
 
+import android.app.Application
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
@@ -36,6 +37,7 @@ import com.bakjoul.realestatemanager.domain.settings.currency.GetCurrentCurrency
 import com.bakjoul.realestatemanager.domain.settings.surface_unit.GetCurrentSurfaceUnitUseCase
 import com.bakjoul.realestatemanager.ui.utils.EquatableCallback
 import com.bakjoul.realestatemanager.ui.utils.Event
+import com.bakjoul.realestatemanager.ui.utils.NativeText
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -66,6 +68,7 @@ import kotlin.time.Duration.Companion.seconds
 class AddPropertyViewModel @Inject constructor(
     getCurrentCurrencyUseCase: GetCurrentCurrencyUseCase,
     getCurrentSurfaceUnitUseCase: GetCurrentSurfaceUnitUseCase,
+    private val application: Application,
     private val savedStateHandle: SavedStateHandle,
     private val getEuroRateUseCase: GetEuroRateUseCase,
     private val getPropertyDraftByIdUseCase: GetPropertyDraftByIdUseCase,
@@ -178,14 +181,17 @@ class AddPropertyViewModel @Inject constructor(
                 currencyFormat = getCurrencyFormat(currency),
                 surfaceLabel = formatSurfaceLabel(surfaceUnit),
                 surface = formatSurfaceValue(propertyForm.referenceSurface, propertyForm.surfaceFromUser, surfaceUnit),
-                numberOfRooms = propertyForm.rooms.toString(),
-                numberOfBathrooms = propertyForm.bathrooms.toString(),
-                numberOfBedrooms = propertyForm.bedrooms.toString(),
+                numberOfRooms = propertyForm.rooms ?: BigDecimal.ZERO,
+                numberOfBathrooms = propertyForm.bathrooms ?: BigDecimal.ZERO,
+                numberOfBedrooms = propertyForm.bedrooms ?: BigDecimal.ZERO,
+                amenities = propertyForm.pointsOfInterest ?: emptyList(),
                 addressPredictions = mapAddressPredictions(addressPredictions),
                 address = formatAddress(propertyForm.autoCompleteAddress),
+                complementaryAddress = propertyForm.address?.complementaryAddress ?: "",
                 city = propertyForm.address?.city ?: "",
                 state = propertyForm.address?.state ?: "",
                 zipcode = propertyForm.address?.zipcode ?: "",
+                description = propertyForm.description ?: "",
                 photos = PhotoListMapper().map(
                     photos,
                     { SelectType.NOT_SELECTABLE },
@@ -223,7 +229,7 @@ class AddPropertyViewModel @Inject constructor(
         } ?: propertyForm.referencePrice
 
         val surfaceInMeters = propertyForm.surfaceFromUser?.let {
-            if (surfaceUnit == SurfaceUnit.Feet) {
+            if (surfaceUnit == SurfaceUnit.FEET) {
                 it.fromFeetSquaredToMeterSquared()
             } else {
                 it
@@ -279,13 +285,8 @@ class AddPropertyViewModel @Inject constructor(
     private fun formatDate(localDate: LocalDate?): String = if (localDate == null) {
         ""
     } else {
-        localDate.format(
-            if (Locale.getDefault().language == "fr") {
-                DateTimeFormatter.ofPattern("d MMM yyyy", Locale.FRENCH)
-            } else {
-                DateTimeFormatter.ofPattern("MMM d, yyyy", Locale.ENGLISH)
-            }
-        )
+        // TODO NativeText ?
+        localDate.format(DateTimeFormatter.ofPattern(application.resources.getString(R.string.date_format)))
     }
 
     private fun getCurrencyFormat(currency: AppCurrency): DecimalFormat {
@@ -305,8 +306,9 @@ class AddPropertyViewModel @Inject constructor(
         return DecimalFormat("#,###.##", symbols)
     }
 
-    // TODO Use Resource String and NativeText
-    private fun formatPriceHint(currency: AppCurrency): String = "Price (${currency.symbol})"
+    private fun formatPriceHint(currency: AppCurrency): NativeText {
+        return NativeText.Argument(R.string.add_property_price_hint, currency.currencySymbol)
+    }
 
     private fun formatSavedPrice(
         referencePrice: BigDecimal?,
@@ -322,12 +324,18 @@ class AddPropertyViewModel @Inject constructor(
         return convertedPrice?.toString()
     }
 
-    private fun formatSurfaceLabel(surfaceUnit: SurfaceUnit): String = "Surface (${surfaceUnit.unit})"
+    // TODO Fix NativeText access to enum string resource
+    private fun formatSurfaceLabel(surfaceUnit: SurfaceUnit): NativeText = NativeText.Multi(
+        listOf(
+            NativeText.Resource(R.string.property_label_surface),
+            NativeText.Simple(" (${surfaceUnit.unitSymbol})")
+        )
+    )
 
     private fun formatSurfaceValue(referenceSurface: BigDecimal?, surfaceFromUser: BigDecimal?, surfaceUnit: SurfaceUnit): BigDecimal =
         if (referenceSurface != null) {
-            if (surfaceUnit == SurfaceUnit.Feet) {
-                (surfaceFromUser ?: referenceSurface).times(BigDecimal(3.28084)).setScale(0, RoundingMode.CEILING)
+            if (surfaceUnit == SurfaceUnit.FEET) {
+                (surfaceFromUser ?: referenceSurface).fromMeterSquaredToFeetSquared()
             } else {
                 referenceSurface
             }
@@ -353,19 +361,22 @@ class AddPropertyViewModel @Inject constructor(
                         viewModelScope.launch {
                             when (val geocodingResult = getAddressDetailsUseCase.invoke(predictionEntity.placeId)) {
                                 is GeocodingWrapper.Error -> {
-                                    navigateUseCase.invoke(To.Toast("An error occurred while trying to get selected address details"))
+                                    navigateUseCase.invoke(To.Toast(NativeText.Resource(R.string.toast_selected_address_details_error)))
                                     Log.d(TAG, "Geocoding error: ${geocodingResult.exception.message}")
                                 }
 
                                 is GeocodingWrapper.Failure -> {
-                                    navigateUseCase.invoke(To.Toast("Failed to get selected address details"))
+                                    navigateUseCase.invoke(To.Toast(NativeText.Resource(R.string.toast_selected_address_details_failure)))
                                     Log.d(TAG, "Geocoding failure: ${geocodingResult.message}")
                                 }
 
-                                is GeocodingWrapper.NoResults -> navigateUseCase.invoke(To.Toast("No results found for selected address"))
+                                is GeocodingWrapper.NoResults -> {
+                                    navigateUseCase.invoke(To.Toast(NativeText.Resource(R.string.toast_selected_address_no_results)))
+                                }
 
                                 is GeocodingWrapper.Success -> {
                                     currentAddressInputMutableStateFlow.update {
+                                        Log.d("test", "mapAddressPredictions: $it")
                                         it?.copy(
                                             first = "${geocodingResult.result.streetNumber} ${geocodingResult.result.route}",
                                             second = false,
@@ -511,7 +522,6 @@ class AddPropertyViewModel @Inject constructor(
         }
     }
 
-    // TODO Bakjoul à faire pareil pour les autres
     fun onSurfaceChanged(surface: BigDecimal) {
         Log.d("test", "onSurfaceChanged: ")
         propertyFormMutableSharedFlow.tryEmit(
@@ -521,36 +531,36 @@ class AddPropertyViewModel @Inject constructor(
         )
     }
 
-    fun onRoomsCountChanged(rooms: Number) {
+    fun onRoomsCountChanged(rooms: BigDecimal) {
         Log.d("test", "onRoomsCountChanged: ")
         propertyFormMutableSharedFlow.tryEmit(
             propertyFormMutableSharedFlow.replayCache.first().copy(
-                rooms = rooms.toInt()
+                rooms = rooms
             )
         )
     }
 
-    fun onBathroomsCountChanged(bathrooms: Number) {
+    fun onBathroomsCountChanged(bathrooms: BigDecimal) {
         Log.d("test", "onBathroomsCountChanged: ")
         propertyFormMutableSharedFlow.tryEmit(
             propertyFormMutableSharedFlow.replayCache.first().copy(
-                bathrooms = bathrooms.toInt()
+                bathrooms = bathrooms
             )
         )
     }
 
-    fun onBedroomsCountChanged(bedrooms: Number) {
+    fun onBedroomsCountChanged(bedrooms: BigDecimal) {
         Log.d("test", "onBedroomsCountChanged: ")
         propertyFormMutableSharedFlow.tryEmit(
             propertyFormMutableSharedFlow.replayCache.first().copy(
-                bedrooms = bedrooms.toInt()
+                bedrooms = bedrooms
             )
         )
     }
 
-    fun onChipCheckedChanged(chipText: String, isChecked: Boolean) {
-        Log.d("test", "onChipCheckedChanged: $chipText")
-        val poiEntity = PropertyPoiEntity.values().find { it.name.equals(chipText, ignoreCase = true) }
+    fun onChipCheckedChanged(chipId: Int, isChecked: Boolean) {
+        Log.d("test", "onChipCheckedChanged: $chipId")
+        val poiEntity = PropertyPoiEntity.values().find { it.poiResId == chipId }
 
         if (poiEntity != null) {
             propertyFormMutableSharedFlow.tryEmit(
@@ -649,9 +659,9 @@ class AddPropertyViewModel @Inject constructor(
             propertyFormReplaceCache.dateOfSale == null &&
             propertyFormReplaceCache.priceFromUser == null &&
             propertyFormReplaceCache.referenceSurface == BigDecimal.ZERO &&
-            propertyFormReplaceCache.rooms == 0 &&
-            propertyFormReplaceCache.bathrooms == 0 &&
-            propertyFormReplaceCache.bedrooms == 0 &&
+            propertyFormReplaceCache.rooms == BigDecimal.ZERO &&
+            propertyFormReplaceCache.bathrooms == BigDecimal.ZERO &&
+            propertyFormReplaceCache.bedrooms == BigDecimal.ZERO &&
             propertyFormReplaceCache.pointsOfInterest!!.isEmpty() &&
             propertyFormReplaceCache.address == PropertyFormAddress() &&
             propertyFormReplaceCache.autoCompleteAddress == null &&
@@ -666,7 +676,7 @@ class AddPropertyViewModel @Inject constructor(
     fun dropDraft() {
         viewModelScope.launch {
             deletePropertyDraftUseCase.invoke(propertyId)
-            navigateUseCase.invoke(To.Toast("Draft has been discarded"))
+            navigateUseCase.invoke(To.Toast(NativeText.Resource(R.string.toast_draft_discarded)))
             navigateUseCase.invoke(To.CloseAddProperty)
         }
     }
@@ -674,7 +684,7 @@ class AddPropertyViewModel @Inject constructor(
     fun onSaveDraftButtonClicked() {
         if (saveJob?.isActive == true) {
             viewModelScope.launch {
-                navigateUseCase.invoke(To.Toast("Saving draft..."))
+                navigateUseCase.invoke(To.Toast(NativeText.Resource(R.string.toast_saving_draft)))
                 saveJob!!.join()
                 navigateUseCase.invoke(To.CloseAddProperty)
             }
@@ -696,8 +706,8 @@ class AddPropertyViewModel @Inject constructor(
                         price = propertyFormReplaceCache.priceFromUser!!,
                         surface = propertyFormReplaceCache.surfaceFromUser!!,
                         rooms = propertyFormReplaceCache.rooms!!,
-                        bathrooms = propertyFormReplaceCache.bathrooms ?: 0,
-                        bedrooms = propertyFormReplaceCache.bedrooms ?: 0,
+                        bathrooms = propertyFormReplaceCache.bathrooms!!,
+                        bedrooms = propertyFormReplaceCache.bedrooms!!,
                         amenities = propertyFormReplaceCache.pointsOfInterest!!,
                         address = PropertyAddressEntity(
                             streetNumber = propertyFormReplaceCache.autoCompleteAddress!!.streetNumber!!,
@@ -712,7 +722,7 @@ class AddPropertyViewModel @Inject constructor(
                         ),
                         description = propertyFormReplaceCache.description!!,
                         photos = propertyFormReplaceCache.photos!!,
-                        agent = propertyFormReplaceCache.agent ?: "John Doe",
+                        agent = propertyFormReplaceCache.agent ?: "John Doe", // TODO: get agent name from settings
                         entryDate = ZonedDateTime.now().toLocalDate()
                     )
                 )
@@ -725,8 +735,6 @@ class AddPropertyViewModel @Inject constructor(
                     Log.d("test", "onDoneButtonClicked: there was a problem adding the new property")
                 }
             }
-        } else {
-            Log.d("test", "onDoneButtonClicked: else")
         }
     }
 
@@ -747,7 +755,7 @@ class AddPropertyViewModel @Inject constructor(
 
         if (propertyFormReplaceCache.forSaleSince == null) {
             errorsMutableStateFlow.update {
-                it.copy(forSaleSinceError = "Date required")
+                it.copy(forSaleSinceError = NativeText.Resource(R.string.add_property_error_date_required))
             }
             isFormValid = false
         } else if (propertyFormReplaceCache.isSold == true &&
@@ -755,7 +763,7 @@ class AddPropertyViewModel @Inject constructor(
             propertyFormReplaceCache.forSaleSince.isAfter(propertyFormReplaceCache.dateOfSale)
         ) {
             errorsMutableStateFlow.update {
-                it.copy(forSaleSinceError = "Invalid date")
+                it.copy(forSaleSinceError = NativeText.Resource(R.string.add_property_error_invalid_date))
             }
             isFormValid = false
         } else {
@@ -767,14 +775,14 @@ class AddPropertyViewModel @Inject constructor(
         if (propertyFormReplaceCache.isSold == true) {
             if (propertyFormReplaceCache.dateOfSale == null) {
                 errorsMutableStateFlow.update {
-                    it.copy(dateOfSaleError = "Date required")
+                    it.copy(dateOfSaleError = NativeText.Resource(R.string.add_property_error_date_required))
                 }
                 isFormValid = false
             } else if (propertyFormReplaceCache.forSaleSince != null &&
                 propertyFormReplaceCache.dateOfSale.isBefore(propertyFormReplaceCache.forSaleSince)
             ) {
                 errorsMutableStateFlow.update {
-                    it.copy(dateOfSaleError = "Invalid date")
+                    it.copy(dateOfSaleError = NativeText.Resource(R.string.add_property_error_invalid_date))
                 }
                 isFormValid = false
             } else {
@@ -790,12 +798,12 @@ class AddPropertyViewModel @Inject constructor(
 
         if (propertyFormReplaceCache.priceFromUser == null) {
             errorsMutableStateFlow.update {
-                it.copy(priceError = "Price required")
+                it.copy(priceError = NativeText.Resource(R.string.add_property_error_price_required))
             }
             isFormValid = false
         } else if (propertyFormReplaceCache.priceFromUser <= BigDecimal.ZERO) {
             errorsMutableStateFlow.update {
-                it.copy(priceError = "Invalid price")
+                it.copy(priceError = NativeText.Resource(R.string.add_property_error_invalid_price))
             }
             isFormValid = false
         } else {
@@ -818,7 +826,7 @@ class AddPropertyViewModel @Inject constructor(
         }
 
         if (propertyFormReplaceCache.rooms == null ||
-            propertyFormReplaceCache.rooms < 1
+            propertyFormReplaceCache.rooms < BigDecimal(1)
         ) {
             errorsMutableStateFlow.update {
                 it.copy(isRoomsErrorVisible = true)
@@ -833,10 +841,10 @@ class AddPropertyViewModel @Inject constructor(
         if (propertyFormReplaceCache.autoCompleteAddress == null) {
             errorsMutableStateFlow.update {
                 it.copy(
-                    addressError = "Address required",
-                    cityError = " ",
-                    stateError = " ",
-                    zipcodeError = " "
+                    addressError = NativeText.Resource(R.string.add_property_error_address_required),
+                    cityError = NativeText.Simple(" "),
+                    stateError = NativeText.Simple(" "),
+                    zipcodeError = NativeText.Simple(" ")
                 )
             }
             isFormValid = false
@@ -853,7 +861,7 @@ class AddPropertyViewModel @Inject constructor(
 
         if (propertyFormReplaceCache.description.isNullOrEmpty()) {
             errorsMutableStateFlow.update {
-                it.copy(descriptionError = "Description required")
+                it.copy(descriptionError = NativeText.Resource(R.string.add_property_error_description_required))
             }
             isFormValid = false
         } else {
@@ -867,16 +875,16 @@ class AddPropertyViewModel @Inject constructor(
 
     data class PropertyFormErrors(
         val isTypeErrorVisible: Boolean = false,
-        val forSaleSinceError: String? = null,
-        val dateOfSaleError: String? = null,
-        val priceError: String? = null,
+        val forSaleSinceError: NativeText? = null,
+        val dateOfSaleError: NativeText? = null,
+        val priceError: NativeText? = null,
         val isSurfaceErrorVisible: Boolean = false,
         val isRoomsErrorVisible: Boolean = false,
-        val addressError: String? = null,
-        val cityError: String? = null,
-        val stateError: String? = null,
-        val zipcodeError: String? = null,
-        val descriptionError: String? = null
+        val addressError: NativeText? = null,
+        val cityError: NativeText? = null,
+        val stateError: NativeText? = null,
+        val zipcodeError: NativeText? = null,
+        val descriptionError: NativeText? = null
     )
 
     private data class PropertyInformation(
@@ -887,5 +895,6 @@ class AddPropertyViewModel @Inject constructor(
     )
 
     private fun BigDecimal.fromFeetSquaredToMeterSquared(): BigDecimal = divide(BigDecimal(3.28084), 0, RoundingMode.CEILING)
+    private fun BigDecimal.fromMeterSquaredToFeetSquared(): BigDecimal = times(BigDecimal(3.28084)).setScale(0, RoundingMode.CEILING)
     private fun BigDecimal.fromEurosToDollars(euroRate: Double): BigDecimal = times(BigDecimal(euroRate)).setScale(0, RoundingMode.CEILING)
 }

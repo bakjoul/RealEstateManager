@@ -286,35 +286,35 @@
                         <ImageView
                             android:id="@+id/details_poi_school"
                             style="@style/PointOfInterest"
-                            android:contentDescription="@string/property_poi_desc_school"
+                            android:contentDescription="@string/property_poi_school"
                             android:src="@drawable/baseline_school_24"
                             tools:visibility="visible" />
 
                         <ImageView
                             android:id="@+id/details_poi_store"
                             style="@style/PointOfInterest"
-                            android:contentDescription="@string/property_poi_desc_store"
+                            android:contentDescription="@string/property_poi_store"
                             android:src="@drawable/baseline_store_24"
                             tools:visibility="visible" />
 
                         <ImageView
                             android:id="@+id/details_poi_park"
                             style="@style/PointOfInterest"
-                            android:contentDescription="@string/property_poi_desc_park"
+                            android:contentDescription="@string/property_poi_park"
                             android:src="@drawable/baseline_park_24"
                             tools:visibility="visible" />
 
                         <ImageView
                             android:id="@+id/details_poi_restaurant"
                             style="@style/PointOfInterest"
-                            android:contentDescription="@string/property_poi_desc_restaurant"
+                            android:contentDescription="@string/property_poi_restaurant"
                             android:src="@drawable/baseline_restaurant_24"
                             tools:visibility="visible" />
 
                         <ImageView
                             android:id="@+id/details_poi_hospital"
                             style="@style/PointOfInterest"
-                            android:contentDescription="@string/property_poi_desc_hospital"
+                            android:contentDescription="@string/property_poi_hospital"
                             android:src="@drawable/baseline_local_hospital_24"
                             tools:visibility="visible" />
                     </LinearLayout>
@@ -331,35 +331,35 @@
                         <ImageView
                             android:id="@+id/details_poi_bus"
                             style="@style/PointOfInterest"
-                            android:contentDescription="@string/property_poi_desc_bus"
+                            android:contentDescription="@string/property_poi_bus"
                             android:src="@drawable/baseline_directions_bus_24"
                             tools:visibility="visible" />
 
                         <ImageView
                             android:id="@+id/details_poi_subway"
                             style="@style/PointOfInterest"
-                            android:contentDescription="@string/property_poi_desc_subway"
+                            android:contentDescription="@string/property_poi_subway"
                             android:src="@drawable/baseline_subway_24"
                             tools:visibility="visible" />
 
                         <ImageView
                             android:id="@+id/details_poi_tramway"
                             style="@style/PointOfInterest"
-                            android:contentDescription="@string/property_poi_desc_tramway"
+                            android:contentDescription="@string/property_poi_tramway"
                             android:src="@drawable/baseline_tram_24"
                             tools:visibility="visible" />
 
                         <ImageView
                             android:id="@+id/details_poi_train"
                             style="@style/PointOfInterest"
-                            android:contentDescription="@string/property_poi_desc_train"
+                            android:contentDescription="@string/property_poi_train"
                             android:src="@drawable/baseline_train_24"
                             tools:visibility="visible" />
 
                         <ImageView
                             android:id="@+id/details_poi_airport"
                             style="@style/PointOfInterest"
-                            android:contentDescription="@string/property_poi_desc_airport"
+                            android:contentDescription="@string/property_poi_airport"
                             android:src="@drawable/baseline_local_airport_24"
                             tools:visibility="visible" />
                     </LinearLayout>

@@ -11,6 +11,8 @@ import android.widget.AdapterView
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import com.bakjoul.realestatemanager.R
+import com.bakjoul.realestatemanager.data.settings.model.AppCurrency
+import com.bakjoul.realestatemanager.data.settings.model.SurfaceUnit
 import com.bakjoul.realestatemanager.databinding.FragmentSettingsBinding
 import com.bakjoul.realestatemanager.ui.utils.Event.Companion.observeEvent
 import com.bakjoul.realestatemanager.ui.utils.viewBinding
@@ -62,10 +64,6 @@ class SettingsFragment : DialogFragment(R.layout.fragment_settings) {
         val currencyOptions = binding.settingsCurrencySpinner.getEntries()
         var isCurrencyFirstSelection = true
 
-        viewModel.getCurrencyLiveData().observe(viewLifecycleOwner) { initialCurrency ->
-            currencySpinner.setSelection(currencyOptions.indexOf(initialCurrency.nameWithSymbol))
-        }
-
         currencySpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 if (isCurrencyFirstSelection) {
@@ -73,7 +71,11 @@ class SettingsFragment : DialogFragment(R.layout.fragment_settings) {
                     return
                 }
 
-                viewModel.onCurrencySelected(currencyOptions[position])
+                AppCurrency.values().find {
+                    "${getString(it.currencyName)} (${getString(it.currencySymbol)})" == currencyOptions[position]
+                }?.let {
+                    viewModel.onCurrencySelected(it)
+                }
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {}
@@ -83,10 +85,6 @@ class SettingsFragment : DialogFragment(R.layout.fragment_settings) {
         val surfaceUnitOptions = binding.settingsUnitSpinner.getEntries()
         var isSurfaceUnitFirstSelection = true
 
-        viewModel.getSurfaceUnitLiveData().observe(viewLifecycleOwner) { initialSurfaceUnit ->
-            surfaceUnitSpinner.setSelection(surfaceUnitOptions.indexOf(initialSurfaceUnit.nameWithUnit))
-        }
-
         surfaceUnitSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 if (isSurfaceUnitFirstSelection) {
@@ -94,10 +92,23 @@ class SettingsFragment : DialogFragment(R.layout.fragment_settings) {
                     return
                 }
 
-                viewModel.onSurfaceUnitSelected(surfaceUnitOptions[position])
+                SurfaceUnit.values().find {
+                    "${getString(it.unitName)} (${getString(it.unitSymbol)})" == surfaceUnitOptions[position]
+
+                }?.let {
+                    viewModel.onSurfaceUnitSelected(it)
+                }
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {}
+        }
+
+        viewModel.viewStateLiveData.observe(viewLifecycleOwner) {
+            val currencyEntryName = "${getString(it.currency.currencyName)} (${getString(it.currency.currencySymbol)})"
+            currencySpinner.setSelection(currencyOptions.indexOf(currencyEntryName))
+
+            val surfaceEntryName = "${getString(it.surfaceUnit.unitName)} (${getString(it.surfaceUnit.unitSymbol)})"
+            surfaceUnitSpinner.setSelection(surfaceUnitOptions.indexOf(surfaceEntryName))
         }
 
         viewModel.viewActionLiveData.observeEvent(viewLifecycleOwner) {

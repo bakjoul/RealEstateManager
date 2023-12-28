@@ -5,8 +5,5 @@ import com.bakjoul.realestatemanager.domain.settings.SettingsRepository
 import javax.inject.Inject
 
 class SetCurrencyUseCase @Inject constructor(private val settingsRepository: SettingsRepository) {
-    suspend fun invoke(currency: String) =
-        AppCurrency.values().find { it.nameWithSymbol == currency }?.let {
-            settingsRepository.setCurrency(it)
-        }
+    suspend fun invoke(currency: AppCurrency) = settingsRepository.setCurrency(currency)
 }

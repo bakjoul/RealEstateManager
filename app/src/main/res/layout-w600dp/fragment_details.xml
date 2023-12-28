@@ -298,7 +298,7 @@
                             android:id="@+id/details_poi_school"
                             style="@style/PointOfInterestTablet"
                             android:background="@drawable/poi_border"
-                            android:text="@string/property_poi_desc_school"
+                            android:text="@string/property_poi_school"
                             app:drawableStartCompat="@drawable/baseline_school_24"
                             tools:visibility="visible" />
 
@@ -306,7 +306,7 @@
                             android:id="@+id/details_poi_store"
                             style="@style/PointOfInterestTablet"
                             android:background="@drawable/poi_border"
-                            android:text="@string/property_poi_desc_store"
+                            android:text="@string/property_poi_store"
                             app:drawableStartCompat="@drawable/baseline_store_24"
                             tools:visibility="visible" />
 
@@ -314,7 +314,7 @@
                             android:id="@+id/details_poi_park"
                             style="@style/PointOfInterestTablet"
                             android:background="@drawable/poi_border"
-                            android:text="@string/property_poi_desc_park"
+                            android:text="@string/property_poi_park"
                             app:drawableStartCompat="@drawable/baseline_park_24"
                             tools:visibility="visible" />
 
@@ -322,7 +322,7 @@
                             android:id="@+id/details_poi_restaurant"
                             style="@style/PointOfInterestTablet"
                             android:background="@drawable/poi_border"
-                            android:text="@string/property_poi_desc_restaurant"
+                            android:text="@string/property_poi_restaurant"
                             app:drawableStartCompat="@drawable/baseline_restaurant_24"
                             tools:visibility="visible" />
 
@@ -330,7 +330,7 @@
                             android:id="@+id/details_poi_hospital"
                             style="@style/PointOfInterestTablet"
                             android:background="@drawable/poi_border"
-                            android:text="@string/property_poi_desc_hospital"
+                            android:text="@string/property_poi_hospital"
                             app:drawableStartCompat="@drawable/baseline_local_hospital_24"
                             tools:visibility="visible" />
                     </com.google.android.flexbox.FlexboxLayout>
@@ -362,7 +362,7 @@
                             android:id="@+id/details_poi_bus"
                             style="@style/PointOfInterestTablet"
                             android:background="@drawable/poi_border"
-                            android:text="@string/property_poi_desc_bus"
+                            android:text="@string/property_poi_bus"
                             app:drawableStartCompat="@drawable/baseline_directions_bus_24"
                             tools:visibility="visible" />
 
@@ -370,7 +370,7 @@
                             android:id="@+id/details_poi_subway"
                             style="@style/PointOfInterestTablet"
                             android:background="@drawable/poi_border"
-                            android:text="@string/property_poi_desc_subway"
+                            android:text="@string/property_poi_subway"
                             app:drawableStartCompat="@drawable/baseline_subway_24"
                             tools:visibility="visible" />
 
@@ -378,7 +378,7 @@
                             android:id="@+id/details_poi_tramway"
                             style="@style/PointOfInterestTablet"
                             android:background="@drawable/poi_border"
-                            android:text="@string/property_poi_desc_tramway"
+                            android:text="@string/property_poi_tramway"
                             app:drawableStartCompat="@drawable/baseline_tram_24"
                             tools:visibility="visible" />
 
@@ -386,7 +386,7 @@
                             android:id="@+id/details_poi_train"
                             style="@style/PointOfInterestTablet"
                             android:background="@drawable/poi_border"
-                            android:text="@string/property_poi_desc_train"
+                            android:text="@string/property_poi_train"
                             app:drawableStartCompat="@drawable/baseline_train_24"
                             tools:visibility="visible" />
 
@@ -394,7 +394,7 @@
                             android:id="@+id/details_poi_airport"
                             style="@style/PointOfInterestTablet"
                             android:background="@drawable/poi_border"
-                            android:text="@string/property_poi_desc_airport"
+                            android:text="@string/property_poi_airport"
                             app:drawableStartCompat="@drawable/baseline_local_airport_24"
                             tools:visibility="visible" />
                     </com.google.android.flexbox.FlexboxLayout>

@@ -7,5 +7,5 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class GetCurrentSurfaceUnitUseCase @Inject constructor(private val settingsRepository: SettingsRepository) {
-    fun invoke(): Flow<SurfaceUnit> = settingsRepository.getSurfaceUnitFlow().map { it ?: SurfaceUnit.Feet }
+    fun invoke(): Flow<SurfaceUnit> = settingsRepository.getSurfaceUnitFlow().map { it ?: SurfaceUnit.FEET }
 }

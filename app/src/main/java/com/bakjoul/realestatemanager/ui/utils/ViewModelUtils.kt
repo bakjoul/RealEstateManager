@@ -12,9 +12,10 @@ class ViewModelUtils {
 
     companion object {
 
-        fun formatSurface(surface: BigDecimal, surfaceUnit: SurfaceUnit): Pair<Int, String> = when (surfaceUnit) {
-            SurfaceUnit.Meters -> surface.setScale(1, RoundingMode.HALF_DOWN).toInt() to surfaceUnit.unit
-            SurfaceUnit.Feet -> (surface * BigDecimal(3.28084)).setScale(1, RoundingMode.HALF_DOWN).toInt() to surfaceUnit.unit
+        // TODO how to use NativeText here ?
+        fun formatSurface(surface: BigDecimal, surfaceUnit: SurfaceUnit): Pair<Int, Int> = when (surfaceUnit) {
+            SurfaceUnit.METERS -> surface.setScale(0, RoundingMode.CEILING).toInt() to surfaceUnit.unitSymbol
+            SurfaceUnit.FEET -> (surface * BigDecimal(3.28084)).setScale(0, RoundingMode.CEILING).toInt() to surfaceUnit.unitSymbol
         }
 
         fun formatPrice(price: BigDecimal, currency: AppCurrency, euroRate: Double): String {

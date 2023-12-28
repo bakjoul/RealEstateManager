@@ -5,7 +5,7 @@
         <item>Dollar ($)</item>
     </string-array>
     <string-array name="surface_unit_options">
-        <item>Feet (sq ft)</item>
-        <item>Meters (sq m)</item>
+        <item>Pieds (pi²)</item>
+        <item>Mètres (m²)</item>
     </string-array>
 </resources>

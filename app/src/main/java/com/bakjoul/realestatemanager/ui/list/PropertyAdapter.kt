@@ -30,7 +30,7 @@ class PropertyAdapter : ListAdapter<PropertyItemViewState, PropertyAdapter.ViewH
             Glide.with(binding.listItemPhoto.context).load(item.photoUrl).into(binding.listItemPhoto)
             binding.listItemPhotoOverlay.visibility = if (item.isSold) View.VISIBLE else View.GONE
             binding.listItemSold.visibility = if (item.isSold) View.VISIBLE else View.GONE
-            binding.listItemType.text = item.type
+            binding.listItemType.text = item.type.toCharSequence(binding.root.context)
             binding.listItemCity.text = item.city
             binding.listItemFeatures.text = item.features
             binding.listItemPrice.text = item.price
