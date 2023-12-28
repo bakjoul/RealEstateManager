@@ -99,6 +99,7 @@ class PropertyListViewModel @Inject constructor(
         else -> NativeText.Simple("")
     }
 
+    // TODO NEEDS TO BE REFACTORED
     private fun formatFeatures(bedrooms: BigDecimal, bathrooms: BigDecimal, surface: BigDecimal, surfaceUnit: SurfaceUnit, isTablet: Boolean): String {
         val (mappedSurface, mappedSurfaceUnit) = formatSurface(surface, surfaceUnit)
 
