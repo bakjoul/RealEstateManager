@@ -76,7 +76,11 @@ class PropertyListViewModel @Inject constructor(
                     city = it.address.city,
                     features = formatFeatures(it.bedrooms, it.bathrooms, it.surface, surfaceUnit, isTablet),
                     price = formatPrice(it.price, currency, euroRateWrapper.currencyRateEntity.rate),
-                    currencyRate = formatRate(currency, euroRateWrapper.currencyRateEntity.rate, euroRateWrapper.currencyRateEntity.updateDate.format(dateFormatter)),
+                    currencyRate = formatRate(
+                        currency,
+                        euroRateWrapper.currencyRateEntity.rate,
+                        euroRateWrapper.currencyRateEntity.updateDate.format(dateFormatter)
+                    ),
                     isSold = it.saleDate != null,
                     onPropertyClicked = EquatableCallback {
                         setCurrentPropertyIdUseCase.invoke(it.id)
@@ -100,18 +104,40 @@ class PropertyListViewModel @Inject constructor(
     }
 
     // TODO NEEDS TO BE REFACTORED
-    private fun formatFeatures(bedrooms: BigDecimal, bathrooms: BigDecimal, surface: BigDecimal, surfaceUnit: SurfaceUnit, isTablet: Boolean): String {
-        val (mappedSurface, mappedSurfaceUnit) = formatSurface(surface, surfaceUnit)
+    private fun formatFeatures(
+        bedrooms: BigDecimal,
+        bathrooms: BigDecimal,
+        surface: BigDecimal,
+        surfaceUnit: SurfaceUnit,
+        isTablet: Boolean
+    ): NativeText {
+        val mappedSurface = formatSurface(surface, surfaceUnit)
 
         return if (isTablet) {
-            application.resources.getString(
+            NativeText.Arguments(
                 R.string.property_features_tablet,
-                application.resources.getQuantityString(R.plurals.bedroom_plural, bedrooms.toInt(), bedrooms),
-                application.resources.getQuantityString(R.plurals.bathroom_plural, bathrooms.toInt(), bathrooms),
-                application.resources.getString(R.string.property_surface, mappedSurface, mappedSurfaceUnit)
+                listOf(
+                    NativeText.Plural(R.plurals.bedroom_plural, bedrooms.toInt(), listOf(bedrooms.toInt())),
+                    NativeText.Plural(R.plurals.bathroom_plural, bathrooms.toInt(), listOf(bathrooms.toInt())),
+                    NativeText.Arguments(
+                        R.string.property_surface,
+                        listOf(
+                            mappedSurface,
+                            NativeText.Resource(surfaceUnit.unitSymbol),
+                        )
+                    ),
+                )
             )
         } else {
-            application.resources.getString(R.string.property_features, bedrooms.toInt(), bathrooms.toInt(), mappedSurface, mappedSurfaceUnit)
+            NativeText.Arguments(
+                R.string.property_features,
+                listOf(
+                    bedrooms.toInt(),
+                    bathrooms.toInt(),
+                    mappedSurface,
+                    surfaceUnit.unitSymbol,
+                )
+            )
         }
     }
 

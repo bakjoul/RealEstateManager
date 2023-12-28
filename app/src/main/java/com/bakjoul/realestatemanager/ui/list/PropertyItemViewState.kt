@@ -11,7 +11,7 @@ data class PropertyItemViewState(
     val city: String,
     val price: String,
     val currencyRate: SpannableString,
-    val features: String,
+    val features: NativeText,
     val isSold: Boolean,
     val onPropertyClicked: EquatableCallback
 )

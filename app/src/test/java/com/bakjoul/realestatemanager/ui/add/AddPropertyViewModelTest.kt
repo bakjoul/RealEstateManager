@@ -29,6 +29,7 @@ import com.bakjoul.realestatemanager.ui.utils.NativeText
 import com.bakjoul.realestatemanager.utils.TestCoroutineRule
 import com.bakjoul.realestatemanager.utils.observeForTesting
 import io.mockk.coEvery
+import io.mockk.coJustRun
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.flow.flowOf
@@ -44,6 +45,10 @@ import java.util.Locale
 
 class AddPropertyViewModelTest {
 
+    companion object {
+        private const val DEFAULT_DRAFT_ID = 1L
+    }
+
     @get:Rule
     val instantTaskExecutorRule = InstantTaskExecutorRule()
 
@@ -52,7 +57,6 @@ class AddPropertyViewModelTest {
 
     private val getCurrentCurrencyUseCase: GetCurrentCurrencyUseCase = mockk()
     private val getCurrentSurfaceUnitUseCase: GetCurrentSurfaceUnitUseCase = mockk()
-    private val application: Application = mockk()
     private val savedStateHandle: SavedStateHandle = mockk()
     private val getEuroRateUseCase: GetEuroRateUseCase = mockk()
     private val getPropertyDraftByIdUseCase: GetPropertyDraftByIdUseCase = mockk()
@@ -72,17 +76,16 @@ class AddPropertyViewModelTest {
     fun setUp() {
         every { getCurrentCurrencyUseCase.invoke() } returns flowOf(AppCurrency.USD)
         every { getCurrentSurfaceUnitUseCase.invoke() } returns flowOf(SurfaceUnit.METERS)
-        every { application.getString(any()) } returns ""
-        every { savedStateHandle.get<Long>("draftId") } returns null
-        every { savedStateHandle.get<Long>("newDraftId") } returns 1
+        every { savedStateHandle.get<Long>("draftId") } returns DEFAULT_DRAFT_ID
+        every { savedStateHandle.get<Boolean>("isNewDraft") } returns true
         coEvery { getEuroRateUseCase.invoke() } returns CurrencyRateWrapper.Success(
             CurrencyRateEntity(
                 currency = AppCurrency.EUR,
                 rate = 1.1109,
                 updateDate = LocalDate.of(2023, 12, 28))
         )
-        coEvery { getPropertyDraftByIdUseCase.invoke(any()) } returns PropertyFormEntity(
-            id = 1,
+        coEvery { getPropertyDraftByIdUseCase.invoke(DEFAULT_DRAFT_ID) } returns PropertyFormEntity(
+            id = DEFAULT_DRAFT_ID,
             type = null,
             isSold = null,
             forSaleSince = null,
@@ -106,16 +109,15 @@ class AddPropertyViewModelTest {
         coEvery { getAddressPredictionsUseCase.invoke(any()) } returns AutocompleteWrapper.NoResults
         coEvery { getAddressDetailsUseCase.invoke(any()) } returns GeocodingWrapper.NoResults
         coEvery { getPhotosForPropertyIdUseCase.invoke(any()) } returns flowOf(emptyList())
-        coEvery { deletePhotoUseCase.invoke(any()) } returns Unit
-        coEvery { navigateUseCase.invoke(any()) } returns Unit
-        coEvery { deletePropertyDraftUseCase.invoke(any()) } returns Unit
+        coJustRun { deletePhotoUseCase.invoke(any()) }
+        coJustRun { navigateUseCase.invoke(any()) }
+        coJustRun { deletePropertyDraftUseCase.invoke(any()) }
         coEvery { updatePropertyDraftUseCase.invoke(any(), any()) } returns 1
         coEvery { addPropertyUseCase.invoke(any()) } returns 1L
 
         viewModel = AddPropertyViewModel(
             getCurrentCurrencyUseCase = getCurrentCurrencyUseCase,
             getCurrentSurfaceUnitUseCase = getCurrentSurfaceUnitUseCase,
-            application = application,
             savedStateHandle = savedStateHandle,
             getEuroRateUseCase = getEuroRateUseCase,
             getPropertyDraftByIdUseCase = getPropertyDraftByIdUseCase,

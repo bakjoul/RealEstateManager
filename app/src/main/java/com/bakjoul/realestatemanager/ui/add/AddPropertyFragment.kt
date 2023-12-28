@@ -43,7 +43,7 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
         private const val DIALOG_WINDOW_WIDTH = 0.5
         private const val DIALOG_WINDOW_HEIGHT = 0.9
 
-        fun newInstance(draftId: Long?, newDraftId: Long?): AddPropertyFragment {
+        fun newInstance(draftId: Long, isNewDraft: Boolean): AddPropertyFragment {
             val args = Bundle()
             if (draftId != null) {
                 args.putLong("draftId", draftId)

@@ -71,11 +71,7 @@ class SettingsFragment : DialogFragment(R.layout.fragment_settings) {
                     return
                 }
 
-                AppCurrency.values().find {
-                    "${getString(it.currencyName)} (${getString(it.currencySymbol)})" == currencyOptions[position]
-                }?.let {
-                    viewModel.onCurrencySelected(it)
-                }
+                viewModel.onCurrencySelected(AppCurrency.values()[position])
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {}

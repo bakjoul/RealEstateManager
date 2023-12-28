@@ -1,6 +1,5 @@
 package com.bakjoul.realestatemanager.ui.add
 
-import android.app.Application
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
@@ -68,7 +67,6 @@ import kotlin.time.Duration.Companion.seconds
 class AddPropertyViewModel @Inject constructor(
     getCurrentCurrencyUseCase: GetCurrentCurrencyUseCase,
     getCurrentSurfaceUnitUseCase: GetCurrentSurfaceUnitUseCase,
-    private val application: Application,
     private val savedStateHandle: SavedStateHandle,
     private val getEuroRateUseCase: GetEuroRateUseCase,
     private val getPropertyDraftByIdUseCase: GetPropertyDraftByIdUseCase,
@@ -109,13 +107,14 @@ class AddPropertyViewModel @Inject constructor(
         }
     private val errorsMutableStateFlow: MutableStateFlow<PropertyFormErrors> = MutableStateFlow(PropertyFormErrors())
 
-    private val propertyId: Long = requireNotNull(
-        savedStateHandle.get<Long>("draftId") ?: savedStateHandle.get<Long>("newDraftId")
-    ) {
+    private val draftId: Long = requireNotNull(savedStateHandle.get<Long>("draftId")) {
         "No ID passed as parameter !"
     }
 
-    private var isNewDraft = false
+    private val isNewDraft = requireNotNull(savedStateHandle.get<Boolean>("isNewDraft")) {
+        "No information about new draft passed as parameter !"
+    }
+
     private var saveJob: Job? = null
     private var isAddressTextCleared = false
 
@@ -142,10 +141,10 @@ class AddPropertyViewModel @Inject constructor(
 
     val viewStateLiveData: LiveData<AddPropertyViewState> = liveData {
         if (latestValue == null) {
-            val draftId = savedStateHandle.get<Long>("draftId")
-            val newDraftId = savedStateHandle.get<Long>("newDraftId")
-
-            if (draftId != null) {
+            if (isNewDraft) {
+                propertyFormMutableSharedFlow.tryEmit(initPropertyForm(draftId))
+                Log.d("test", "new draft case")
+            } else {
                 viewModelScope.launch {
                     val draft = getPropertyDraftByIdUseCase.invoke(draftId)
                     if (draft != null) {
@@ -153,17 +152,13 @@ class AddPropertyViewModel @Inject constructor(
                         Log.d("test", "draft loaded : $draft")
                     }
                 }
-            } else if (newDraftId != null) {
-                propertyFormMutableSharedFlow.tryEmit(initPropertyForm(newDraftId))
-                isNewDraft = true
-                Log.d("test", "new draft case")
             }
         }
 
         combine(
             propertyInformationFlow,
             addressPredictionsFlow,
-            getPhotosForPropertyIdUseCase.invoke(propertyId),
+            getPhotosForPropertyIdUseCase.invoke(draftId),
             errorsMutableStateFlow
         ) { (propertyForm, currency, euroRate, surfaceUnit), addressPredictions, photos, errors ->
             AddPropertyViewState(
@@ -240,7 +235,7 @@ class AddPropertyViewModel @Inject constructor(
 
         viewModelScope.launch {
             updatePropertyDraftUseCase.invoke(
-                propertyId,
+                draftId,
                 propertyForm.copy(referencePrice = priceInDollars, referenceSurface = surfaceInMeters)
             )
         }
@@ -644,7 +639,7 @@ class AddPropertyViewModel @Inject constructor(
     }
 
     fun onCameraPermissionGranted() {
-        navigateUseCase.invoke(To.Camera(propertyId))
+        navigateUseCase.invoke(To.Camera(draftId))
     }
 
     fun onChangeSettingsClicked() {
@@ -675,7 +670,7 @@ class AddPropertyViewModel @Inject constructor(
 
     fun dropDraft() {
         viewModelScope.launch {
-            deletePropertyDraftUseCase.invoke(propertyId)
+            deletePropertyDraftUseCase.invoke(draftId)
             navigateUseCase.invoke(To.Toast(NativeText.Resource(R.string.toast_draft_discarded)))
             navigateUseCase.invoke(To.CloseAddProperty)
         }

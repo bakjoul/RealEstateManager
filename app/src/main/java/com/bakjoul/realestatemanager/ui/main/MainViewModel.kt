@@ -21,6 +21,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
 import javax.inject.Inject
 
 @HiltViewModel
@@ -112,7 +113,7 @@ class MainViewModel @Inject constructor(
     fun onAddNewPropertyClicked() {
         viewModelScope.launch {
             val propertyDraftId = generateNewDraftIdUseCase.invoke()
-            addPropertyDraftUseCase.invoke(PropertyFormEntity(propertyDraftId))
+            addPropertyDraftUseCase.invoke(PropertyFormEntity(propertyDraftId, lastUpdate = LocalDateTime.now()))
             navigateUseCase.invoke(To.AddProperty(null, propertyDraftId))
         }
     }
