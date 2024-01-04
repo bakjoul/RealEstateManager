@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
+import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.data.settings.model.AppCurrency
 import com.bakjoul.realestatemanager.data.settings.model.SurfaceUnit
 import com.bakjoul.realestatemanager.domain.CoroutineDispatcherProvider
@@ -17,6 +18,7 @@ import com.bakjoul.realestatemanager.domain.settings.currency.GetCurrentCurrency
 import com.bakjoul.realestatemanager.domain.settings.surface_unit.GetCurrentSurfaceUnitUseCase
 import com.bakjoul.realestatemanager.ui.utils.EquatableCallback
 import com.bakjoul.realestatemanager.ui.utils.Event
+import com.bakjoul.realestatemanager.ui.utils.NativeText
 import com.bakjoul.realestatemanager.ui.utils.ViewModelUtils.Companion.formatPrice
 import com.bakjoul.realestatemanager.ui.utils.ViewModelUtils.Companion.formatSurface
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -57,7 +59,7 @@ class DraftsViewModel @Inject constructor(
                     overview = formatOverview(propertyDraft, currency, euroRateWrapper.currencyRateEntity.rate, surfaceUnit),
                     description = formatDescription(propertyDraft.description),
                     onDraftItemClicked = EquatableCallback {
-                        navigateUseCase.invoke(To.AddProperty(propertyDraft.id, null))
+                        navigateUseCase.invoke(To.AddProperty(propertyDraft.id, false))
                     }
                 )
             }
@@ -102,42 +104,71 @@ class DraftsViewModel @Inject constructor(
         currency: AppCurrency,
         euroRate: Double,
         surfaceUnit: SurfaceUnit
-    ) = buildString {
-        // TODO FIX surface
-        var formattedSurface: Pair<Int, Int>? = null
-        if (propertyDraft.referenceSurface != null) {
-            formattedSurface = formatSurface(propertyDraft.referenceSurface, surfaceUnit)
+    ) : NativeText {
+        val price = if (propertyDraft.referencePrice != null) {
+            NativeText.Simple(formatPrice(propertyDraft.referencePrice, currency, euroRate))
+        } else {
+            NativeText.Simple("Price N/A")
         }
 
-        if (propertyDraft.referencePrice != null) {
-            append(formatPrice(propertyDraft.referencePrice, currency, euroRate))
+        val surface = if (propertyDraft.referenceSurface != null) {
+            NativeText.Arguments(
+                R.string.draft_overview_field,
+                listOf(
+                    formatSurface(propertyDraft.referenceSurface, surfaceUnit),
+                    NativeText.Resource(surfaceUnit.unitSymbol),
+                )
+            )
         } else {
-            append("Price N/A")
+            NativeText.Simple("Surf. N/A")
         }
-        append(" - ")
-        if (formattedSurface != null) {
-            append("${formattedSurface.first} ${formattedSurface.second}")
+
+        val rooms = if (propertyDraft.rooms != null) {
+            NativeText.Arguments(
+                R.string.draft_overview_field,
+                listOf(
+                    propertyDraft.rooms,
+                    NativeText.Resource(R.string.add_property_label_rooms),
+                )
+            )
         } else {
-            append("Surf. N/A")
+            NativeText.Simple("Rooms N/A")
         }
-        append(" - ")
-        if (propertyDraft.rooms != null) {
-            append("${propertyDraft.rooms} rooms")
+
+        val bedrooms = if (propertyDraft.bedrooms != null) {
+            NativeText.Arguments(
+                R.string.draft_overview_field,
+                listOf(
+                    propertyDraft.bedrooms,
+                    NativeText.Resource(R.string.draft_overview_label_bedrooms),
+                )
+            )
         } else {
-            append("Rooms N/A")
+            NativeText.Simple("Bed. N/A")
         }
-        append(" - ")
-        if (propertyDraft.bedrooms != null) {
-            append("${propertyDraft.bedrooms} bedrooms")
+
+        val bathrooms = if (propertyDraft.bathrooms != null) {
+            NativeText.Arguments(
+                R.string.draft_overview_field,
+                listOf(
+                    propertyDraft.bathrooms,
+                    NativeText.Resource(R.string.draft_overview_label_bathrooms),
+                )
+            )
         } else {
-            append("Bed. N/A")
+            NativeText.Simple("Bath. N/A")
         }
-        append(" - ")
-        if (propertyDraft.bathrooms != null) {
-            append("${propertyDraft.bathrooms} bathrooms")
-        } else {
-            append("Bath. N/A")
-        }
+
+        return NativeText.Multi(
+            listOf(
+                price,
+                surface,
+                rooms,
+                bedrooms,
+                bathrooms,
+            ),
+            separator = " - "
+        )
     }
 
     private fun formatDescription(description: String?): String {

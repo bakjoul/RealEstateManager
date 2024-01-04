@@ -6,7 +6,6 @@ import com.bakjoul.realestatemanager.domain.property.model.PropertyTypeEntity
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.ZonedDateTime
 
 data class PropertyFormEntity(
     val id: Long = 0,

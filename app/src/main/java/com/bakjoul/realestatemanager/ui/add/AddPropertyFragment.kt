@@ -45,12 +45,8 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
 
         fun newInstance(draftId: Long, isNewDraft: Boolean): AddPropertyFragment {
             val args = Bundle()
-            if (draftId != null) {
-                args.putLong("draftId", draftId)
-            }
-            if (newDraftId != null) {
-                args.putLong("newDraftId", newDraftId)
-            }
+            args.putLong("draftId", draftId)
+            args.putBoolean("isNewDraft", isNewDraft)
             val fragment = AddPropertyFragment()
             fragment.arguments = args
             return fragment
@@ -266,13 +262,13 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
                 }
             }
 
-            binding.addPropertyForSaleSinceTextInputEditText.setText(viewState.forSaleSince)
+            binding.addPropertyForSaleSinceTextInputEditText.setText(viewState.forSaleSince?.toCharSequence(requireContext()))
 
             // Sale date picker
             if (viewState.isSold) {
                 binding.addPropertyTypeSaleStatusToggle.isChecked = true
                 binding.addPropertySoldOnTextInputLayout.visibility = View.VISIBLE
-                binding.addPropertySoldOnTextInputEditText.setText(viewState.dateOfSale)
+                binding.addPropertySoldOnTextInputEditText.setText(viewState.dateOfSale?.toCharSequence(requireContext()))
 
                 val soldOnDatePicker: MaterialDatePicker<Long> = materialDateBuilder.build()
 
@@ -416,7 +412,7 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
                         .setNegativeButton(getString(R.string.discard_draft)) { _, _ ->
                             viewModel.dropDraft()
                         }
-                        .setPositiveButton(getString(R.string.save_draft_dialog_positive)) { dialog, _ ->
+                        .setPositiveButton(getString(R.string.save_draft_dialog_positive)) { _, _ ->
                             viewModel.onSaveDraftButtonClicked()
                         }
                         .show()

@@ -159,7 +159,7 @@ class MainActivity : AppCompatActivity() {
 
                     val existingFragment = supportFragmentManager.findFragmentByTag(ADD_PROPERTY_DIALOG_TAG)
                     if (existingFragment == null) {
-                        AddPropertyFragment.newInstance(it.propertyId, it.propertyDraftId).show(supportFragmentManager, ADD_PROPERTY_DIALOG_TAG)
+                        AddPropertyFragment.newInstance(it.draftId, it.isNewDraft).show(supportFragmentManager, ADD_PROPERTY_DIALOG_TAG)
                     }
                 }
 

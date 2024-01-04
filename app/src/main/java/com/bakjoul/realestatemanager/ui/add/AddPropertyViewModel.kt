@@ -55,9 +55,9 @@ import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.time.Instant
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
-import java.time.format.DateTimeFormatter
 import java.util.Locale
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.milliseconds
@@ -274,15 +274,12 @@ class AddPropertyViewModel @Inject constructor(
         description = null,
         photos = emptyList(),
         agent = null,
-        lastUpdate = ZonedDateTime.now().toLocalDateTime()
+        lastUpdate = LocalDateTime.now()
     )
 
-    private fun formatDate(localDate: LocalDate?): String = if (localDate == null) {
-        ""
-    } else {
-        // TODO NativeText ?
-        localDate.format(DateTimeFormatter.ofPattern(application.resources.getString(R.string.date_format)))
-    }
+    private fun formatDate(localDate: LocalDate?): NativeText = localDate?.let {
+        NativeText.Date(R.string.date_format, it)
+    } ?: NativeText.Simple("")
 
     private fun getCurrencyFormat(currency: AppCurrency): DecimalFormat {
         val symbols = DecimalFormatSymbols(Locale.getDefault()).apply {

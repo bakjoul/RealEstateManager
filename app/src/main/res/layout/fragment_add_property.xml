@@ -224,7 +224,7 @@
                         app:plusMinusEditTextWidth="38dp"
                         app:plusMinusErrorText="@string/plus_minus_surface_error"
                         app:plusMinusImageSrc="@drawable/baseline_settings_overscan_16"
-                        app:plusMinusLabel="Surface" />
+                        app:plusMinusLabel="@string/property_label_surface" />
 
                     <com.bakjoul.realestatemanager.designsystem.molecule.plus_minus.PlusMinusView
                         android:id="@+id/add_property_rooms_PlusMinusView"
@@ -235,7 +235,7 @@
                         app:plusMinusDrawablePadding="2dp"
                         app:plusMinusErrorText="@string/plus_minus_rooms_error"
                         app:plusMinusImageSrc="@drawable/baseline_home_16"
-                        app:plusMinusLabel="Rooms" />
+                        app:plusMinusLabel="@string/add_property_label_rooms" />
 
                     <com.bakjoul.realestatemanager.designsystem.molecule.plus_minus.PlusMinusView
                         android:id="@+id/add_property_bathrooms_PlusMinusView"
@@ -245,7 +245,7 @@
                         app:layout_flexGrow="1"
                         app:plusMinusDrawablePadding="3.5dp"
                         app:plusMinusImageSrc="@drawable/hot_tub_black_16dp"
-                        app:plusMinusLabel="Bathrooms" />
+                        app:plusMinusLabel="@string/add_property_label_bathrooms" />
 
                     <com.bakjoul.realestatemanager.designsystem.molecule.plus_minus.PlusMinusView
                         android:id="@+id/add_property_bedrooms_PlusMinusView"
@@ -256,7 +256,7 @@
                         app:plusMinusDrawablePadding="3.5dp"
                         app:plusMinusImageSrc="@drawable/hotel_black_16dp"
                         app:plusMinusImeOptions="actionDone"
-                        app:plusMinusLabel="Bedrooms" />
+                        app:plusMinusLabel="@string/add_property_label_bedrooms" />
                 </com.google.android.flexbox.FlexboxLayout>
 
                 <TextView

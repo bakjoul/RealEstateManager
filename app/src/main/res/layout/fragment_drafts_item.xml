@@ -83,7 +83,7 @@
             app:layout_constraintEnd_toEndOf="@id/draft_item_type_and_location"
             app:layout_constraintStart_toStartOf="@id/draft_item_type_and_location"
             app:layout_constraintTop_toBottomOf="@id/draft_item_type_and_location"
-            tools:text="$1 000 000 - 14 452 sqft - 9 rooms - 4 bed. - 5 bath." />
+            tools:text="$1 000 000 - 14 452 sq ft - 9 rooms - 4 bed. - 5 bath." />
 
         <TextView
             android:id="@+id/draft_item_description"

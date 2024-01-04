@@ -18,10 +18,7 @@ sealed class NativeText {
         override fun toCharSequence(context: Context): CharSequence = context.getString(id)
     }
 
-    data class Date(
-        @StringRes val formatterPatternStringRes: Int,
-        val date: TemporalAccessor,
-    ) : NativeText() {
+    data class Date(@StringRes val formatterPatternStringRes: Int, val date: TemporalAccessor) : NativeText() {
         override fun toCharSequence(context: Context): CharSequence =
             DateTimeFormatter
                 .ofPattern(context.getString(formatterPatternStringRes))
@@ -33,13 +30,13 @@ sealed class NativeText {
             context.resources.getQuantityString(
                 id,
                 number,
-                args.map {
+                *args.map {
                     if (it is NativeText) {
                         it.toCharSequence(context)
                     } else {
                         it
                     }
-                }
+                }.toTypedArray()
             )
     }
 
@@ -57,18 +54,18 @@ sealed class NativeText {
     data class Arguments(@StringRes val id: Int, val args: List<Any>) : NativeText() {
         override fun toCharSequence(context: Context): CharSequence = context.getString(
             id,
-            args.map {
+            *args.map {
                 if (it is NativeText) {
                     it.toCharSequence(context)
                 } else {
                     it
                 }
-            },
+            }.toTypedArray()
         )
     }
 
-    data class Multi(val text: List<NativeText>) : NativeText() {
+    data class Multi(val text: List<NativeText>, val separator: CharSequence? = null) : NativeText() {
         override fun toCharSequence(context: Context): CharSequence =
-            text.joinToString(separator = "") { it.toCharSequence(context) }
+            text.joinToString(separator = separator ?: "") { it.toCharSequence(context) }
     }
 }

@@ -13,7 +13,7 @@
     <string name="google_web_client_id" translatable="false">77269002192-r4c88c9efvrrfb410rd7ps27fa3khj9h.apps.googleusercontent.com</string>
 
     <string name="property_surface" translatable="false">%d %s</string>
-    <string name="property_features">%d bed. - %d bath. - %d %s</string>
+    <string name="property_features">%d bed. - %d bath. - %s</string>
     <string name="property_features_tablet" translatable="false">%s - %s - %s</string>
     <string name="description_label">Description</string>
     <string name="property_label_surface">Surface</string>
@@ -120,4 +120,11 @@
     <string name="currency_dollar_name" translatable="false">Dollar</string>
     <string name="currency_dollar_symbol" translatable="false">$</string>
     <string name="settings_surface_unit_desc">Changes the surface unit used throughout the app</string>
+    <string name="draft_overview">%s - %s - %s - %s - %s</string>
+    <string name="draft_overview_field">%s %s</string>
+    <string name="add_property_label_rooms">Rooms</string>
+    <string name="add_property_label_bathrooms">Bathrooms</string>
+    <string name="add_property_label_bedrooms">Bedrooms</string>
+    <string name="draft_overview_label_bedrooms">Bed.</string>
+    <string name="draft_overview_label_bathrooms">bath.</string>
 </resources>

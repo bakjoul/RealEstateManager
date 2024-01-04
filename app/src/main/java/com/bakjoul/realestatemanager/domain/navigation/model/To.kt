@@ -11,7 +11,7 @@ sealed class To {
     object DraftListDialog : To()
     object CloseDraftDialog : To()
     object SaveDraftDialog: To()
-    data class AddProperty(val draftId: Long?, val newDraftId: Long?) : To()
+    data class AddProperty(val draftId: Long, val isNewDraft: Boolean) : To()
     object CloseAddProperty : To()
     object HideAddressSuggestions : To()
     data class Camera(val propertyId: Long) : To()

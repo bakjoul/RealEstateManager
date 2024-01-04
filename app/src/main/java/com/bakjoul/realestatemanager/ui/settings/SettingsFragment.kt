@@ -88,12 +88,7 @@ class SettingsFragment : DialogFragment(R.layout.fragment_settings) {
                     return
                 }
 
-                SurfaceUnit.values().find {
-                    "${getString(it.unitName)} (${getString(it.unitSymbol)})" == surfaceUnitOptions[position]
-
-                }?.let {
-                    viewModel.onSurfaceUnitSelected(it)
-                }
+                viewModel.onSurfaceUnitSelected(SurfaceUnit.values()[position])
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {}

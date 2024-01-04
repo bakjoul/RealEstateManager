@@ -1,6 +1,5 @@
 package com.bakjoul.realestatemanager.ui.list
 
-import android.app.Application
 import android.graphics.Typeface
 import android.text.SpannableString
 import android.text.SpannableStringBuilder
@@ -37,6 +36,7 @@ import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import java.text.ParseException
 import java.text.SimpleDateFormat
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
@@ -45,7 +45,6 @@ import javax.inject.Inject
 @HiltViewModel
 class PropertyListViewModel @Inject constructor(
     coroutineDispatcherProvider: CoroutineDispatcherProvider,
-    private val application: Application,
     private val getPropertiesFlowUseCase: GetPropertiesFlowUseCase,
     private val setCurrentPropertyIdUseCase: SetCurrentPropertyIdUseCase,
     private val getCurrentCurrencyUseCase: GetCurrentCurrencyUseCase,
@@ -125,7 +124,7 @@ class PropertyListViewModel @Inject constructor(
                             mappedSurface,
                             NativeText.Resource(surfaceUnit.unitSymbol),
                         )
-                    ),
+                    )
                 )
             )
         } else {
@@ -134,8 +133,13 @@ class PropertyListViewModel @Inject constructor(
                 listOf(
                     bedrooms.toInt(),
                     bathrooms.toInt(),
-                    mappedSurface,
-                    surfaceUnit.unitSymbol,
+                    NativeText.Arguments(
+                        R.string.property_surface,
+                        listOf(
+                            mappedSurface,
+                            NativeText.Resource(surfaceUnit.unitSymbol),
+                        )
+                    )
                 )
             )
         }
@@ -179,8 +183,8 @@ class PropertyListViewModel @Inject constructor(
                 navigateUseCase.invoke(To.DraftDialog)
             } else {
                 val propertyDraftId = generateNewDraftIdUseCase.invoke()
-                addPropertyDraftUseCase.invoke(PropertyFormEntity(propertyDraftId))
-                navigateUseCase.invoke(To.AddProperty(null, propertyDraftId))
+                addPropertyDraftUseCase.invoke(PropertyFormEntity(propertyDraftId, lastUpdate = LocalDateTime.now()))
+                navigateUseCase.invoke(To.AddProperty(propertyDraftId, true))
             }
         }
     }

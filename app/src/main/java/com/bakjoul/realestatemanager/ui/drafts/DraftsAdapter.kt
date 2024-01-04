@@ -28,7 +28,7 @@ class DraftsAdapter : ListAdapter<DraftsItemViewState, DraftsAdapter.ViewHolder>
             }
             binding.draftItemLastUpdate.text = item.lastUpdate
             binding.draftItemTypeAndLocation.text = item.typeAndLocation
-            binding.draftItemOverview.text = item.overview
+            binding.draftItemOverview.text = item.overview.toCharSequence(binding.root.context)
             binding.draftItemDescription.text = item.description
             binding.draftsItemLayout.setOnClickListener { item.onDraftItemClicked.invoke() }
         }

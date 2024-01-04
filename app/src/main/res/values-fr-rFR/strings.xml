@@ -11,7 +11,7 @@
         <item quantity="other">%d salle de bain</item>
         <item quantity="many">%d salle de bains</item>
     </plurals>-->
-    <string name="property_features">%d ch. - %d sdb - %d</string>
+    <string name="property_features">%d ch. - %d sdb - %d %s</string>
     <string name="description_label">Description</string>
     <string name="property_label_surface">Surface</string>
     <string name="property_label_rooms">Nb. de pièces</string>

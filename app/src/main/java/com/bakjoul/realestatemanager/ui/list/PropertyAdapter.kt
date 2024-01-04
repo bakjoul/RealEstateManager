@@ -32,7 +32,7 @@ class PropertyAdapter : ListAdapter<PropertyItemViewState, PropertyAdapter.ViewH
             binding.listItemSold.visibility = if (item.isSold) View.VISIBLE else View.GONE
             binding.listItemType.text = item.type.toCharSequence(binding.root.context)
             binding.listItemCity.text = item.city
-            binding.listItemFeatures.text = item.features
+            binding.listItemFeatures.text = item.features.toCharSequence(binding.root.context)
             binding.listItemPrice.text = item.price
             binding.listItemPrice.paintFlags = if (item.isSold) binding.listItemPrice.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG else 0
 

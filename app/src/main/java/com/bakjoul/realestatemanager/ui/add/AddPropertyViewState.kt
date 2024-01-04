@@ -9,8 +9,8 @@ import java.text.DecimalFormat
 
 data class AddPropertyViewState(
     val propertyTypeEntity: PropertyTypeEntity?,
-    val forSaleSince: String?,
-    val dateOfSale: String?,
+    val forSaleSince: NativeText?,
+    val dateOfSale: NativeText?,
     val isSold: Boolean,
     val priceHint: NativeText,
     val price: String?,

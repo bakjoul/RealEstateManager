@@ -64,7 +64,7 @@ class DetailsViewModel @Inject constructor(
                 city = property.address.city,
                 saleStatus = getSaleStatus(property.saleDate, property.entryDate),
                 description = property.description,
-                surface = "${formattedSurface.first} ${formattedSurface.second}",
+                surface = "", // TODO
                 rooms = property.rooms.toString(),
                 bedrooms = property.bedrooms.toString(),
                 bathrooms = property.bathrooms.toString(),
