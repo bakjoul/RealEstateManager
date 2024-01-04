@@ -85,18 +85,23 @@ class DraftsViewModel @Inject constructor(
         }
     }
 
-    private fun formatTypeAndLocation(propertyDraft: PropertyFormEntity) = buildString {
-        if (propertyDraft.type != null) {
-            append(propertyDraft.type.name)
+    private fun formatTypeAndLocation(propertyDraft: PropertyFormEntity): NativeText {
+        val type = if (propertyDraft.type != null) {
+            NativeText.Resource(propertyDraft.type.typeName)
         } else {
-            append("Type N/A")
+            NativeText.Resource(R.string.draft_overview_type_na)
         }
-        append(" - ")
-        if (propertyDraft.address?.city != null) {
-            append(propertyDraft.address.city)
+
+        val city = if (propertyDraft.address?.city != null) {
+            NativeText.Simple(propertyDraft.address.city)
         } else {
-            append("City N/A")
+            NativeText.Resource(R.string.draft_overview_city_na)
         }
+
+        return NativeText.Multi(
+            listOf(type, city),
+            separator = " - "
+        )
     }
 
     private fun formatOverview(
@@ -108,7 +113,7 @@ class DraftsViewModel @Inject constructor(
         val price = if (propertyDraft.referencePrice != null) {
             NativeText.Simple(formatPrice(propertyDraft.referencePrice, currency, euroRate))
         } else {
-            NativeText.Simple("Price N/A")
+            NativeText.Resource(R.string.add_draft_overview_price_na)
         }
 
         val surface = if (propertyDraft.referenceSurface != null) {
@@ -120,7 +125,7 @@ class DraftsViewModel @Inject constructor(
                 )
             )
         } else {
-            NativeText.Simple("Surf. N/A")
+            NativeText.Resource(R.string.add_draft_overview_surface_na)
         }
 
         val rooms = if (propertyDraft.rooms != null) {
@@ -128,11 +133,11 @@ class DraftsViewModel @Inject constructor(
                 R.string.draft_overview_field,
                 listOf(
                     propertyDraft.rooms,
-                    NativeText.Resource(R.string.add_property_label_rooms),
+                    NativeText.Resource(R.string.add_draft_overview_label_rooms),
                 )
             )
         } else {
-            NativeText.Simple("Rooms N/A")
+            NativeText.Resource(R.string.add_draft_overview_rooms_na)
         }
 
         val bedrooms = if (propertyDraft.bedrooms != null) {
@@ -144,7 +149,7 @@ class DraftsViewModel @Inject constructor(
                 )
             )
         } else {
-            NativeText.Simple("Bed. N/A")
+            NativeText.Resource(R.string.draft_overview_bedrooms_na)
         }
 
         val bathrooms = if (propertyDraft.bathrooms != null) {
@@ -156,7 +161,7 @@ class DraftsViewModel @Inject constructor(
                 )
             )
         } else {
-            NativeText.Simple("Bath. N/A")
+            NativeText.Resource(R.string.draft_overview_bathrooms_na)
         }
 
         return NativeText.Multi(
@@ -171,11 +176,11 @@ class DraftsViewModel @Inject constructor(
         )
     }
 
-    private fun formatDescription(description: String?): String {
+    private fun formatDescription(description: String?): NativeText {
         return if (!description.isNullOrEmpty()) {
-            description
+            NativeText.Simple(description)
         } else {
-            "Description N/A"
+            NativeText.Resource(R.string.draft_overview_description_na)
         }
     }
 

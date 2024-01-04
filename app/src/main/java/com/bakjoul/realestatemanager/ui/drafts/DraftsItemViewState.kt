@@ -7,8 +7,8 @@ data class DraftsItemViewState(
     val id: Long,
     val photoUrl: String,
     val lastUpdate: String,
-    val typeAndLocation: String,
+    val typeAndLocation: NativeText,
     val overview: NativeText,
-    val description: String,
+    val description: NativeText,
     val onDraftItemClicked: EquatableCallback
 )

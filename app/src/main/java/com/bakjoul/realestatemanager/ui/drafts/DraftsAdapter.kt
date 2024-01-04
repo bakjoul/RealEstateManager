@@ -27,9 +27,9 @@ class DraftsAdapter : ListAdapter<DraftsItemViewState, DraftsAdapter.ViewHolder>
                 Glide.with(binding.draftItemPhoto.context).load(item.photoUrl).into(binding.draftItemPhoto)
             }
             binding.draftItemLastUpdate.text = item.lastUpdate
-            binding.draftItemTypeAndLocation.text = item.typeAndLocation
+            binding.draftItemTypeAndLocation.text = item.typeAndLocation.toCharSequence(binding.root.context)
             binding.draftItemOverview.text = item.overview.toCharSequence(binding.root.context)
-            binding.draftItemDescription.text = item.description
+            binding.draftItemDescription.text = item.description.toCharSequence(binding.root.context)
             binding.draftsItemLayout.setOnClickListener { item.onDraftItemClicked.invoke() }
         }
 

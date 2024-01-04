@@ -299,7 +299,10 @@ class AddPropertyViewModel @Inject constructor(
     }
 
     private fun formatPriceHint(currency: AppCurrency): NativeText {
-        return NativeText.Argument(R.string.add_property_price_hint, currency.currencySymbol)
+        return NativeText.Argument(
+            R.string.add_property_price_hint,
+            NativeText.Resource(currency.currencySymbol)
+        )
     }
 
     private fun formatSavedPrice(
@@ -316,13 +319,12 @@ class AddPropertyViewModel @Inject constructor(
         return convertedPrice?.toString()
     }
 
-    // TODO Fix NativeText access to enum string resource
-    private fun formatSurfaceLabel(surfaceUnit: SurfaceUnit): NativeText = NativeText.Multi(
-        listOf(
-            NativeText.Resource(R.string.property_label_surface),
-            NativeText.Simple(" (${surfaceUnit.unitSymbol})")
+    private fun formatSurfaceLabel(surfaceUnit: SurfaceUnit): NativeText {
+        return NativeText.Argument(
+            R.string.add_property_label_surface,
+            NativeText.Resource(surfaceUnit.unitSymbol)
         )
-    )
+    }
 
     private fun formatSurfaceValue(referenceSurface: BigDecimal?, surfaceFromUser: BigDecimal?, surfaceUnit: SurfaceUnit): BigDecimal =
         if (referenceSurface != null) {

@@ -120,11 +120,21 @@
     <string name="currency_dollar_name" translatable="false">Dollar</string>
     <string name="currency_dollar_symbol" translatable="false">$</string>
     <string name="settings_surface_unit_desc">Changes the surface unit used throughout the app</string>
-    <string name="draft_overview">%s - %s - %s - %s - %s</string>
-    <string name="draft_overview_field">%s %s</string>
+    <string name="draft_overview" translatable="false">%s - %s - %s - %s - %s</string>
+    <string name="draft_overview_field" translatable="false">%s %s</string>
+    <string name="add_property_label_surface" translatable="false">Surface (%s)</string>
     <string name="add_property_label_rooms">Rooms</string>
     <string name="add_property_label_bathrooms">Bathrooms</string>
     <string name="add_property_label_bedrooms">Bedrooms</string>
-    <string name="draft_overview_label_bedrooms">Bed.</string>
+    <string name="draft_overview_label_bedrooms">bed.</string>
     <string name="draft_overview_label_bathrooms">bath.</string>
+    <string name="add_draft_overview_label_rooms">rooms</string>
+    <string name="add_draft_overview_price_na">Price n/a</string>
+    <string name="add_draft_overview_surface_na">surf. n/a</string>
+    <string name="add_draft_overview_rooms_na">rooms n/a</string>
+    <string name="draft_overview_bedrooms_na">bed. n/a</string>
+    <string name="draft_overview_bathrooms_na">bath. n/a</string>
+    <string name="draft_overview_type_na">Type not available</string>
+    <string name="draft_overview_city_na">City not available</string>
+    <string name="draft_overview_description_na">Description not available</string>
 </resources>

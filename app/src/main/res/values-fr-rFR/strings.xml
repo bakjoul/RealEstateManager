@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Real Estate Manager</string>
-<!--    <plurals name="bedroom_plural">
+    <plurals name="bedroom_plural">
         <item quantity="one">%d chambre</item>
-        <item quantity="other">%d chambre</item>
+        <item quantity="other">%d chambres</item>
         <item quantity="many">%d chambres</item>
     </plurals>
     <plurals name="bathroom_plural">
         <item quantity="one">%d salle de bain</item>
-        <item quantity="other">%d salle de bain</item>
-        <item quantity="many">%d salle de bains</item>
-    </plurals>-->
-    <string name="property_features">%d ch. - %d sdb - %d %s</string>
+        <item quantity="other">%d salles de bain</item>
+        <item quantity="many">%d salles de bain</item>
+    </plurals>
+    <string name="property_features">%d ch. - %d sdb. - %s</string>
     <string name="description_label">Description</string>
     <string name="property_label_surface">Surface</string>
     <string name="property_label_rooms">Nb. de pièces</string>
@@ -108,4 +108,18 @@
     <string name="surface_feet_name">Pieds</string>
     <string name="surface_meters_name">Mètres</string>
     <string name="settings_surface_unit_desc">Modifie l\'unité de surface utilisée dans l\'application</string>
+    <string name="add_property_label_rooms">Pièces</string>
+    <string name="add_property_label_bathrooms">Salles de bain</string>
+    <string name="add_property_label_bedrooms">Chambres</string>
+    <string name="draft_overview_label_bedrooms">ch.</string>
+    <string name="draft_overview_label_bathrooms">sdb.</string>
+    <string name="add_draft_overview_label_rooms">pcs</string>
+    <string name="add_draft_overview_price_na">Prix nr</string>
+    <string name="add_draft_overview_surface_na">surf. nr</string>
+    <string name="add_draft_overview_rooms_na">pièc. nr</string>
+    <string name="draft_overview_bedrooms_na">ch. nr</string>
+    <string name="draft_overview_bathrooms_na">sdb. nr</string>
+    <string name="draft_overview_type_na">Type non renseigné</string>
+    <string name="draft_overview_city_na">Ville non renseignée</string>
+    <string name="draft_overview_description_na">Description non renseignée</string>
 </resources>
