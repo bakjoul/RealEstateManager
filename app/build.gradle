@@ -64,6 +64,10 @@ android {
         viewBinding true
     }
 
+    testOptions {
+        unitTests.returnDefaultValues true
+    }
+
     composeOptions {
         kotlinCompilerExtensionVersion '1.4.3'
     }

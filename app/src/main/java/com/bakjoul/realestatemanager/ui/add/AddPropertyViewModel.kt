@@ -182,11 +182,11 @@ class AddPropertyViewModel @Inject constructor(
                 amenities = propertyForm.pointsOfInterest ?: emptyList(),
                 addressPredictions = mapAddressPredictions(addressPredictions),
                 address = formatAddress(propertyForm.autoCompleteAddress),
-                complementaryAddress = propertyForm.address?.complementaryAddress ?: "",
-                city = propertyForm.address?.city ?: "",
-                state = propertyForm.address?.state ?: "",
-                zipcode = propertyForm.address?.zipcode ?: "",
-                description = propertyForm.description ?: "",
+                complementaryAddress = propertyForm.address?.complementaryAddress,
+                city = propertyForm.address?.city,
+                state = propertyForm.address?.state,
+                zipcode = propertyForm.address?.zipcode,
+                description = propertyForm.description,
                 photos = PhotoListMapper().map(
                     photos,
                     { SelectType.NOT_SELECTABLE },
@@ -277,9 +277,9 @@ class AddPropertyViewModel @Inject constructor(
         lastUpdate = LocalDateTime.now()
     )
 
-    private fun formatDate(localDate: LocalDate?): NativeText = localDate?.let {
+    private fun formatDate(localDate: LocalDate?): NativeText? = localDate?.let {
         NativeText.Date(R.string.date_format, it)
-    } ?: NativeText.Simple("")
+    }
 
     private fun getCurrencyFormat(currency: AppCurrency): DecimalFormat {
         val symbols = DecimalFormatSymbols(Locale.getDefault()).apply {

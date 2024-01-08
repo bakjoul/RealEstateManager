@@ -1,10 +1,10 @@
 package com.bakjoul.realestatemanager.ui.add
 
-import android.app.Application
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.SavedStateHandle
 import assertk.assertThat
 import assertk.assertions.isEqualTo
+import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.data.currency_rate.model.CurrencyRateWrapper
 import com.bakjoul.realestatemanager.data.settings.model.AppCurrency
 import com.bakjoul.realestatemanager.data.settings.model.SurfaceUnit
@@ -43,10 +43,11 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.Locale
 
-class AddPropertyViewModelTest {
+class AddPropertyViewModelTestNewDraft {
 
     companion object {
         private const val DEFAULT_DRAFT_ID = 1L
+        private const val DEFAULT_EURO_RATE = 1.1109
     }
 
     @get:Rule
@@ -75,36 +76,16 @@ class AddPropertyViewModelTest {
     @Before
     fun setUp() {
         every { getCurrentCurrencyUseCase.invoke() } returns flowOf(AppCurrency.USD)
-        every { getCurrentSurfaceUnitUseCase.invoke() } returns flowOf(SurfaceUnit.METERS)
+        every { getCurrentSurfaceUnitUseCase.invoke() } returns flowOf(SurfaceUnit.FEET)
         every { savedStateHandle.get<Long>("draftId") } returns DEFAULT_DRAFT_ID
         every { savedStateHandle.get<Boolean>("isNewDraft") } returns true
         coEvery { getEuroRateUseCase.invoke() } returns CurrencyRateWrapper.Success(
             CurrencyRateEntity(
                 currency = AppCurrency.EUR,
-                rate = 1.1109,
+                rate = DEFAULT_EURO_RATE,
                 updateDate = LocalDate.of(2023, 12, 28))
         )
-        coEvery { getPropertyDraftByIdUseCase.invoke(DEFAULT_DRAFT_ID) } returns PropertyFormEntity(
-            id = DEFAULT_DRAFT_ID,
-            type = null,
-            isSold = null,
-            forSaleSince = null,
-            dateOfSale = null,
-            referencePrice = null,
-            priceFromUser = null,
-            referenceSurface = null,
-            surfaceFromUser = null,
-            rooms = null,
-            bathrooms = null,
-            bedrooms = null,
-            pointsOfInterest = null,
-            autoCompleteAddress = null,
-            address = null,
-            description = null,
-            photos = null,
-            agent = null,
-            lastUpdate = LocalDateTime.of(2021, 1, 1, 0, 0, 0)
-        )
+        coEvery { getPropertyDraftByIdUseCase.invoke(DEFAULT_DRAFT_ID) } returns getDefaultPropertyFormEntity()
         every { getCurrentNavigationUseCase.invoke() } returns flowOf()
         coEvery { getAddressPredictionsUseCase.invoke(any()) } returns AutocompleteWrapper.NoResults
         coEvery { getAddressDetailsUseCase.invoke(any()) } returns GeocodingWrapper.NoResults
@@ -143,16 +124,46 @@ class AddPropertyViewModelTest {
         }
     }
 
+    // region IN
+    private fun getDefaultPropertyFormEntity() = PropertyFormEntity(
+        id = DEFAULT_DRAFT_ID,
+        type = null,
+        isSold = null,
+        forSaleSince = null,
+        dateOfSale = null,
+        referencePrice = null,
+        priceFromUser = null,
+        referenceSurface = null,
+        surfaceFromUser = null,
+        rooms = null,
+        bathrooms = null,
+        bedrooms = null,
+        pointsOfInterest = null,
+        autoCompleteAddress = null,
+        address = null,
+        description = null,
+        photos = null,
+        agent = null,
+        lastUpdate = LocalDateTime.of(2024, 1, 1, 0, 0, 0)
+    )
+    // endregion IN
+
     // region OUT
     private fun getExpectedAddPropertyViewState(): AddPropertyViewState = AddPropertyViewState(
         propertyTypeEntity = null,
         forSaleSince = null,
         dateOfSale = null,
         isSold = false,
-        priceHint = NativeText.Simple(""),
+        priceHint = NativeText.Argument(
+            R.string.add_property_price_hint,
+            NativeText.Resource(AppCurrency.USD.currencySymbol)
+        ),
         price = null,
         currencyFormat = getDefaultCurrencyFormat(),
-        surfaceLabel = NativeText.Simple(""),
+        surfaceLabel = NativeText.Argument(
+            R.string.add_property_label_surface,
+            NativeText.Resource(SurfaceUnit.FEET.unitSymbol)
+        ),
         surface = BigDecimal.ZERO,
         numberOfRooms = BigDecimal.ZERO,
         numberOfBathrooms = BigDecimal.ZERO,
@@ -180,6 +191,7 @@ class AddPropertyViewModelTest {
     )
 
     private fun getDefaultCurrencyFormat(): DecimalFormat {
+        // Currency is USD in this test
         val symbols = DecimalFormatSymbols(Locale.getDefault()).apply {
             groupingSeparator = ','
             decimalSeparator = '.'
