@@ -320,6 +320,11 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
             }
             currentCurrency = viewState.currencyFormat
 
+            // Updates address fields on autocomplete selection
+            if (viewState.address != null && viewState.address != binding.addPropertyAddressTextInputEditText.text.toString()) {
+                binding.addPropertyAddressTextInputEditText.setText(viewState.address)
+            }
+
             if (!isExistingDraftLoaded) {
                 // Price hint
                 binding.addPropertyPriceTextInputLayout.hint = viewState.priceHint.toCharSequence(requireContext())
@@ -344,7 +349,6 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
                 binding.addPropertyTransportationTrainChip.isChecked = viewState.amenities.contains(PropertyPoiEntity.TRAIN)
                 binding.addPropertyTransportationAirportChip.isChecked = viewState.amenities.contains(PropertyPoiEntity.AIRPORT)
                 // Address fields
-                //binding.addPropertyAddressTextInputEditText.setText(viewState.address)
                 binding.addPropertyComplementaryAddressTextInputEditText.setText(viewState.complementaryAddress)
                 binding.addPropertyCityTextInputEditText.setText(viewState.city)
                 binding.addPropertyStateRegionTextInputEditText.setText(viewState.state)
@@ -353,11 +357,6 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
                 binding.addPropertyDescriptionTextInputEditText.setText(viewState.description)
 
                 isExistingDraftLoaded = true
-            }
-
-            // Updates address fields on autocomplete selection
-            if (viewState.address != null && viewState.address != binding.addPropertyAddressTextInputEditText.text.toString()) {
-                binding.addPropertyAddressTextInputEditText.setText(viewState.address)
             }
 
             // Hides suggestions when a suggestion is selected

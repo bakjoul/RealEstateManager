@@ -95,7 +95,10 @@ class PlusMinusView @JvmOverloads constructor(
             val editTextValue = editable?.toString()?.toBigDecimalOrNull() ?: BigDecimal.ZERO
             binding.viewPlusMinusDecrementButton.isEnabled = editTextValue != BigDecimal.ZERO
             binding.viewPlusMinusDecrementButton.alpha = if (editTextValue == BigDecimal.ZERO) 0.5f else 1f
-            count = editTextValue
+
+            if (editTextValue != count) {
+                count = editTextValue
+            }
         }
 
         // Decrements value when decrement button is clicked

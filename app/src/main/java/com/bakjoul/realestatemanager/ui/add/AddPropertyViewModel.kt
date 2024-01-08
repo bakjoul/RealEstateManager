@@ -370,7 +370,6 @@ class AddPropertyViewModel @Inject constructor(
 
                                 is GeocodingWrapper.Success -> {
                                     currentAddressInputMutableStateFlow.update {
-                                        Log.d("test", "mapAddressPredictions: $it")
                                         it?.copy(
                                             first = "${geocodingResult.result.streetNumber} ${geocodingResult.result.route}",
                                             second = false,
@@ -378,30 +377,21 @@ class AddPropertyViewModel @Inject constructor(
                                     }
 
                                     val propertyFormReplayCache = propertyFormMutableSharedFlow.replayCache.first()
+                                    val selectedAddress = PropertyFormAddress(
+                                        streetNumber = geocodingResult.result.streetNumber,
+                                        route = geocodingResult.result.route,
+                                        complementaryAddress = propertyFormReplayCache.address?.complementaryAddress,
+                                        zipcode = geocodingResult.result.zipcode,
+                                        city = geocodingResult.result.city,
+                                        state = geocodingResult.result.state,
+                                        country = geocodingResult.result.country,
+                                        latitude = geocodingResult.result.latitude,
+                                        longitude = geocodingResult.result.longitude
+                                    )
                                     propertyFormMutableSharedFlow.tryEmit(
                                         propertyFormReplayCache.copy(
-                                            autoCompleteAddress = propertyFormReplayCache.autoCompleteAddress?.copy(
-                                                streetNumber = geocodingResult.result.streetNumber,
-                                                route = geocodingResult.result.route,
-                                                complementaryAddress = propertyFormReplayCache.address?.complementaryAddress,
-                                                zipcode = geocodingResult.result.zipcode,
-                                                city = geocodingResult.result.city,
-                                                state = geocodingResult.result.state,
-                                                country = geocodingResult.result.country,
-                                                latitude = geocodingResult.result.latitude,
-                                                longitude = geocodingResult.result.longitude
-                                            ),
-                                            address = propertyFormReplayCache.autoCompleteAddress?.copy(
-                                                streetNumber = geocodingResult.result.streetNumber,
-                                                route = geocodingResult.result.route,
-                                                complementaryAddress = propertyFormReplayCache.address?.complementaryAddress,
-                                                zipcode = geocodingResult.result.zipcode,
-                                                city = geocodingResult.result.city,
-                                                state = geocodingResult.result.state,
-                                                country = geocodingResult.result.country,
-                                                latitude = geocodingResult.result.latitude,
-                                                longitude = geocodingResult.result.longitude
-                                            )
+                                            autoCompleteAddress = selectedAddress,
+                                            address = selectedAddress
                                         )
                                     )
                                 }
@@ -413,6 +403,7 @@ class AddPropertyViewModel @Inject constructor(
         } ?: emptyList()
 
     private fun resetAddressFields() {
+        Log.d("test", "resetAddressFields: ")
         propertyFormMutableSharedFlow.tryEmit(
             propertyFormMutableSharedFlow.replayCache.first().copy(
                 autoCompleteAddress = null,
@@ -479,6 +470,7 @@ class AddPropertyViewModel @Inject constructor(
     }
 
     fun onSoldOnDateChanged(date: Long) {
+        Log.d("test", "onSoldOnDateChanged: ")
         val instant = Instant.ofEpochMilli(date)
         val zonedDateTime = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault())
 
@@ -570,12 +562,14 @@ class AddPropertyViewModel @Inject constructor(
     }
 
     fun onAddressChanged(address: String) {
+        Log.d("test", "onAddressChanged: ")
         errorsMutableStateFlow.update {
             it.copy(addressError = null)
         }
 
         // Reset address fields if address clear button was clicked
         if (isAddressTextCleared) {
+            Log.d("test", "onAddressChanged: address text cleared")
             isAddressTextCleared = false
             resetAddressFields()
             return
@@ -583,6 +577,7 @@ class AddPropertyViewModel @Inject constructor(
 
         // Updates current address if needed
         if (currentAddressInputMutableStateFlow.value?.first != address) {
+            Log.d("test", "onAddressChanged: current address changed")
             currentAddressInputMutableStateFlow.value = address to true
         }
 
@@ -602,6 +597,7 @@ class AddPropertyViewModel @Inject constructor(
     }
 
     fun onComplementaryAddressChanged(complementaryAddress: String) {
+        Log.d("test", "onComplementaryAddressChanged: ")
         val propertyFormReplaceCache = propertyFormMutableSharedFlow.replayCache.first()
         propertyFormMutableSharedFlow.tryEmit(
             propertyFormReplaceCache.copy(
@@ -620,6 +616,7 @@ class AddPropertyViewModel @Inject constructor(
     }
 
     fun onDescriptionChanged(description: String) {
+        Log.d("test", "onDescriptionChanged: ")
         propertyFormMutableSharedFlow.tryEmit(
             propertyFormMutableSharedFlow.replayCache.first().copy(description = description)
         )
