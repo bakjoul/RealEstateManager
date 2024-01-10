@@ -1,0 +1,51 @@
+koverReport {
+    filters {
+        includes {
+            classes(
+                    "InitializeDatabaseWorker",
+                    "CoroutineDispatcherProvider",
+                    "*ViewModel",
+                    "*RepositoryImplementation",
+                    "*RepositoryRoom",
+                    "*RepositoryInMemory",
+                    "*UseCase"
+            )
+        }
+    }
+}
+
+def openReport(htmlOutDir) {
+    final reportPath = "$htmlOutDir/index.html"
+
+    println "HTML Report: $reportPath"
+
+    def os = org.gradle.internal.os.OperatingSystem.current()
+    if (os.isWindows()) {
+        exec { commandLine 'cmd', '/c', "start $reportPath" }
+    } else if (os.isMacOsX()) {
+        exec { commandLine 'open', "$reportPath" }
+    } else if (os.isLinux()) {
+        try {
+            exec { commandLine 'xdg-open', "$reportPath" }
+        } catch (Exception ignored) {
+            if (localProperties.containsKey("linux-html-cmd")) {
+                exec { commandLine properties.get("linux-html-cmd"), "$reportPath" }
+            } else {
+                println "'linux-html-cmd' property could not be found in 'local.properties'"
+            }
+        }
+    }
+}
+
+afterEvaluate {
+    android.applicationVariants.configureEach { variant ->
+        def variantName = variant.name.capitalize()
+        def htmlOutDir = file("$buildDir/reports/kover/html${variantName}")
+
+        tasks.matching { it.name == "koverHtmlReport${variantName}"}.configureEach {
+            doLast {
+                openReport htmlOutDir
+            }
+        }
+    }
+}
