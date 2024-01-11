@@ -42,6 +42,7 @@ import java.text.DecimalFormatSymbols
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.Locale
+import org.junit.Assert.assertThrows
 
 class AddPropertyViewModelTestNewDraft {
 
@@ -77,8 +78,6 @@ class AddPropertyViewModelTestNewDraft {
     fun setUp() {
         every { getCurrentCurrencyUseCase.invoke() } returns flowOf(AppCurrency.USD)
         every { getCurrentSurfaceUnitUseCase.invoke() } returns flowOf(SurfaceUnit.FEET)
-        every { savedStateHandle.get<Long>("draftId") } returns DEFAULT_DRAFT_ID
-        every { savedStateHandle.get<Boolean>("isNewDraft") } returns true
         coEvery { getEuroRateUseCase.invoke() } returns CurrencyRateWrapper.Success(
             CurrencyRateEntity(
                 currency = AppCurrency.EUR,
@@ -95,7 +94,9 @@ class AddPropertyViewModelTestNewDraft {
         coJustRun { deletePropertyDraftUseCase.invoke(any()) }
         coEvery { updatePropertyDraftUseCase.invoke(any(), any()) } returns 1
         coEvery { addPropertyUseCase.invoke(any()) } returns 1L
+    }
 
+    private fun initViewModel() {
         viewModel = AddPropertyViewModel(
             getCurrentCurrencyUseCase = getCurrentCurrencyUseCase,
             getCurrentSurfaceUnitUseCase = getCurrentSurfaceUnitUseCase,
@@ -115,12 +116,46 @@ class AddPropertyViewModelTestNewDraft {
     }
 
     @Test
-    fun `initial case`() = testCoroutineRule.runTest {
+    fun `nominal case`() = testCoroutineRule.runTest {
+        // Given
+        every { savedStateHandle.get<Long>("draftId") } returns DEFAULT_DRAFT_ID
+        every { savedStateHandle.get<Boolean>("isNewDraft") } returns true
+        initViewModel()
+
         // When
         viewModel.viewStateLiveData.observeForTesting(this) {
 
             // Then
             assertThat(it.value).isEqualTo(getExpectedAddPropertyViewState())
+        }
+    }
+
+    @Test
+    fun `draftId null`() = testCoroutineRule.runTest {
+        // Given
+        every { savedStateHandle.get<Long>("draftId") } returns null
+
+        // When
+        assertThrows(IllegalArgumentException::class.java) {
+            initViewModel()
+        }.also { exception ->
+            // Then
+            assert(exception.message == "No ID passed as parameter !")
+        }
+    }
+
+    @Test
+    fun `isNewDraft null`() = testCoroutineRule.runTest {
+        // Given
+        every { savedStateHandle.get<Long>("draftId") } returns DEFAULT_DRAFT_ID
+        every { savedStateHandle.get<Boolean>("isNewDraft") } returns null
+
+        // When
+        assertThrows(IllegalArgumentException::class.java) {
+            initViewModel()
+        }.also { exception ->
+            // Then
+            assert(exception.message == "No information about new draft passed as parameter !")
         }
     }
 
