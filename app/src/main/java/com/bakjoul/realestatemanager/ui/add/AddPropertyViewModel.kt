@@ -582,8 +582,8 @@ class AddPropertyViewModel @Inject constructor(
         }
 
         // Reset address fields if current address input different from address selected from suggestions
-        val propertyFormReplaceCache = propertyFormMutableSharedFlow.replayCache.first()
-        if (propertyFormReplaceCache.autoCompleteAddress != null
+        val propertyFormReplaceCache = propertyFormMutableSharedFlow.replayCache.firstOrNull()
+        if (propertyFormReplaceCache?.autoCompleteAddress != null
             && formatAddress(propertyFormReplaceCache.address) != address
         ) {
             resetAddressFields()

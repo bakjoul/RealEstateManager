@@ -10,6 +10,7 @@ import com.bakjoul.realestatemanager.data.settings.model.AppCurrency
 import com.bakjoul.realestatemanager.data.settings.model.SurfaceUnit
 import com.bakjoul.realestatemanager.domain.autocomplete.GetAddressPredictionsUseCase
 import com.bakjoul.realestatemanager.domain.autocomplete.model.AutocompleteWrapper
+import com.bakjoul.realestatemanager.domain.autocomplete.model.PredictionEntity
 import com.bakjoul.realestatemanager.domain.currency_rate.GetEuroRateUseCase
 import com.bakjoul.realestatemanager.domain.currency_rate.model.CurrencyRateEntity
 import com.bakjoul.realestatemanager.domain.geocoding.GetAddressDetailsUseCase
@@ -25,6 +26,7 @@ import com.bakjoul.realestatemanager.domain.property.drafts.UpdatePropertyDraftU
 import com.bakjoul.realestatemanager.domain.property_form.model.PropertyFormEntity
 import com.bakjoul.realestatemanager.domain.settings.currency.GetCurrentCurrencyUseCase
 import com.bakjoul.realestatemanager.domain.settings.surface_unit.GetCurrentSurfaceUnitUseCase
+import com.bakjoul.realestatemanager.ui.utils.EquatableCallback
 import com.bakjoul.realestatemanager.ui.utils.NativeText
 import com.bakjoul.realestatemanager.utils.TestCoroutineRule
 import com.bakjoul.realestatemanager.utils.observeForTesting
@@ -33,6 +35,7 @@ import io.mockk.coJustRun
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.advanceTimeBy
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -156,6 +159,56 @@ class AddPropertyViewModelTestNewDraft {
         }.also { exception ->
             // Then
             assert(exception.message == "No information about new draft passed as parameter !")
+        }
+    }
+
+    @Test
+    fun `current address input shorter than 5 should emit empty address predictions list`() = testCoroutineRule.runTest {
+        // Given
+        every { savedStateHandle.get<Long>("draftId") } returns DEFAULT_DRAFT_ID
+        every { savedStateHandle.get<Boolean>("isNewDraft") } returns true
+        initViewModel()
+
+        // When
+        viewModel.onAddressChanged("test")
+
+        // Then
+        viewModel.viewStateLiveData.observeForTesting(this) {
+            assertThat(it.value?.addressPredictions).isEqualTo(emptyList())
+        }
+    }
+
+    @Test
+    fun `current address input greater than or equal to 5 should emit address predictions list`() = testCoroutineRule.runTest {
+        // Given
+        every { savedStateHandle.get<Long>("draftId") } returns DEFAULT_DRAFT_ID
+        every { savedStateHandle.get<Boolean>("isNewDraft") } returns true
+
+        coEvery { getAddressPredictionsUseCase.invoke("testing") } returns AutocompleteWrapper.Success(
+            listOf(
+                PredictionEntity(
+                    address = "test address",
+                    placeId = "test placeId",
+                )
+            )
+        )
+        initViewModel()
+
+        // When
+        viewModel.onAddressChanged("testing")
+        advanceTimeBy(400)
+
+        // Then
+        viewModel.viewStateLiveData.observeForTesting(this) {
+            assertThat(it.value?.addressPredictions).isEqualTo(
+                listOf(
+                    AddPropertySuggestionItemViewState(
+                        id = "test placeId",
+                        address = "test address",
+                        onSuggestionClicked = EquatableCallback {}
+                    )
+                )
+            )
         }
     }
 
