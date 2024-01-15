@@ -83,6 +83,7 @@ class AddPropertyViewModel @Inject constructor(
 
     private companion object {
         private const val TAG = "AddPropertyViewModel"
+        private val ADDRESS_INPUT_DELAY = 300.milliseconds
         private val SAVE_DELAY = 3.seconds
     }
 
@@ -99,7 +100,7 @@ class AddPropertyViewModel @Inject constructor(
                     if (input.isEmpty() || input.length < 5) {
                         emit(null)
                     } else {
-                        delay(300.milliseconds)
+                        delay(ADDRESS_INPUT_DELAY)
                         emit(getAddressPredictionsUseCase.invoke(input))
                     }
                 }
@@ -131,7 +132,10 @@ class AddPropertyViewModel @Inject constructor(
             surfaceUnit
         )
     }.onEach { (propertyForm, currency, euroRate, surfaceUnit) ->
-        saveJob?.cancel()
+        if (saveJob?.isActive == true) {
+            saveJob?.cancel()
+        }
+
         saveJob = viewModelScope.launch {
             delay(SAVE_DELAY)
 
@@ -413,7 +417,7 @@ class AddPropertyViewModel @Inject constructor(
     }
 
     fun onPropertyTypeChanged(checkedId: Int) {
-        Log.d("test", "onPropertyTypeChanged: ")
+        Log.d("test", "onPropertyTypeChanged: $checkedId")
         propertyFormMutableSharedFlow.tryEmit(
             propertyFormMutableSharedFlow.replayCache.first().copy(
                 type = when (checkedId) {
@@ -582,8 +586,8 @@ class AddPropertyViewModel @Inject constructor(
         }
 
         // Reset address fields if current address input different from address selected from suggestions
-        val propertyFormReplaceCache = propertyFormMutableSharedFlow.replayCache.firstOrNull()
-        if (propertyFormReplaceCache?.autoCompleteAddress != null
+        val propertyFormReplaceCache = propertyFormMutableSharedFlow.replayCache.first()
+        if (propertyFormReplaceCache.autoCompleteAddress != null
             && formatAddress(propertyFormReplaceCache.address) != address
         ) {
             resetAddressFields()

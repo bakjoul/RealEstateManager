@@ -23,6 +23,7 @@ import com.bakjoul.realestatemanager.domain.property.AddPropertyUseCase
 import com.bakjoul.realestatemanager.domain.property.drafts.DeletePropertyDraftUseCase
 import com.bakjoul.realestatemanager.domain.property.drafts.GetPropertyDraftByIdUseCase
 import com.bakjoul.realestatemanager.domain.property.drafts.UpdatePropertyDraftUseCase
+import com.bakjoul.realestatemanager.domain.property.model.PropertyTypeEntity
 import com.bakjoul.realestatemanager.domain.property_form.model.PropertyFormEntity
 import com.bakjoul.realestatemanager.domain.settings.currency.GetCurrentCurrencyUseCase
 import com.bakjoul.realestatemanager.domain.settings.surface_unit.GetCurrentSurfaceUnitUseCase
@@ -36,6 +37,9 @@ import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.advanceTimeBy
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runCurrent
+import org.junit.Assert.assertThrows
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -45,13 +49,14 @@ import java.text.DecimalFormatSymbols
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.Locale
-import org.junit.Assert.assertThrows
+import kotlin.time.Duration.Companion.seconds
 
 class AddPropertyViewModelTestNewDraft {
 
     companion object {
         private const val DEFAULT_DRAFT_ID = 1L
         private const val DEFAULT_EURO_RATE = 1.1109
+        private val SAVE_DELAY = 3.seconds
     }
 
     @get:Rule
@@ -170,10 +175,10 @@ class AddPropertyViewModelTestNewDraft {
         initViewModel()
 
         // When
-        viewModel.onAddressChanged("test")
-
-        // Then
         viewModel.viewStateLiveData.observeForTesting(this) {
+            viewModel.onAddressChanged("test")
+
+            // Then
             assertThat(it.value?.addressPredictions).isEqualTo(emptyList())
         }
     }
@@ -194,12 +199,14 @@ class AddPropertyViewModelTestNewDraft {
         )
         initViewModel()
 
-        // When
-        viewModel.onAddressChanged("testing")
-        advanceTimeBy(400)
-
         // Then
         viewModel.viewStateLiveData.observeForTesting(this) {
+            // When
+            viewModel.onAddressChanged("testing")
+            advanceTimeBy(SAVE_DELAY)
+            runCurrent()
+
+            // Then
             assertThat(it.value?.addressPredictions).isEqualTo(
                 listOf(
                     AddPropertySuggestionItemViewState(
@@ -210,6 +217,27 @@ class AddPropertyViewModelTestNewDraft {
                 )
             )
         }
+    }
+
+    @Test
+    fun `property form update within save delay should cancel latest draft save job`() = testCoroutineRule.runTest {
+        // Given
+        every { savedStateHandle.get<Long>("draftId") } returns DEFAULT_DRAFT_ID
+        every { savedStateHandle.get<Boolean>("isNewDraft") } returns true
+        initViewModel()
+
+        // When
+        viewModel.viewStateLiveData.observeForTesting(this) {
+            advanceUntilIdle()  // Lets the first save job completes
+
+            // Form update starts a new save job
+            viewModel.onPropertyTypeChanged(PropertyTypeEntity.FLAT.radioButtonId)
+            // Advances times but not enough to cancel the latest save job
+            advanceTimeBy(1000)
+            // Another form update cancels latest save job and starts a new one
+            viewModel.onPropertyTypeChanged(PropertyTypeEntity.HOUSE.radioButtonId)
+        }
+
     }
 
     // region IN
