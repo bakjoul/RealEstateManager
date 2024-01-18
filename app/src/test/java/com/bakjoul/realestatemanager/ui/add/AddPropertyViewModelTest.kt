@@ -8,6 +8,8 @@ import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.data.currency_rate.model.CurrencyRateWrapper
 import com.bakjoul.realestatemanager.data.settings.model.AppCurrency
 import com.bakjoul.realestatemanager.data.settings.model.SurfaceUnit
+import com.bakjoul.realestatemanager.designsystem.molecule.photo_list.PhotoListItemViewState
+import com.bakjoul.realestatemanager.designsystem.molecule.photo_list.SelectType
 import com.bakjoul.realestatemanager.domain.autocomplete.GetAddressPredictionsUseCase
 import com.bakjoul.realestatemanager.domain.autocomplete.model.AutocompleteWrapper
 import com.bakjoul.realestatemanager.domain.autocomplete.model.PredictionEntity
@@ -19,10 +21,12 @@ import com.bakjoul.realestatemanager.domain.navigation.GetCurrentNavigationUseCa
 import com.bakjoul.realestatemanager.domain.navigation.NavigateUseCase
 import com.bakjoul.realestatemanager.domain.photos.DeletePhotoUseCase
 import com.bakjoul.realestatemanager.domain.photos.GetPhotosForPropertyIdUseCase
+import com.bakjoul.realestatemanager.domain.photos.model.PhotoEntity
 import com.bakjoul.realestatemanager.domain.property.AddPropertyUseCase
 import com.bakjoul.realestatemanager.domain.property.drafts.DeletePropertyDraftUseCase
 import com.bakjoul.realestatemanager.domain.property.drafts.GetPropertyDraftByIdUseCase
 import com.bakjoul.realestatemanager.domain.property.drafts.UpdatePropertyDraftUseCase
+import com.bakjoul.realestatemanager.domain.property.model.PropertyPoiEntity
 import com.bakjoul.realestatemanager.domain.property.model.PropertyTypeEntity
 import com.bakjoul.realestatemanager.domain.property_form.model.PropertyFormEntity
 import com.bakjoul.realestatemanager.domain.settings.currency.GetCurrentCurrencyUseCase
@@ -51,7 +55,7 @@ import java.time.LocalDateTime
 import java.util.Locale
 import kotlin.time.Duration.Companion.seconds
 
-class AddPropertyViewModelTestNewDraft {
+class AddPropertyViewModelTest {
 
     companion object {
         private const val DEFAULT_DRAFT_ID = 1L
@@ -124,7 +128,7 @@ class AddPropertyViewModelTestNewDraft {
     }
 
     @Test
-    fun `nominal case`() = testCoroutineRule.runTest {
+    fun `nominal case - usd and feet`() = testCoroutineRule.runTest {
         // Given
         every { savedStateHandle.get<Long>("draftId") } returns DEFAULT_DRAFT_ID
         every { savedStateHandle.get<Boolean>("isNewDraft") } returns true
@@ -134,7 +138,29 @@ class AddPropertyViewModelTestNewDraft {
         viewModel.viewStateLiveData.observeForTesting(this) {
 
             // Then
-            assertThat(it.value).isEqualTo(getExpectedAddPropertyViewState())
+            assertThat(it.value).isEqualTo(getDefaultViewState())
+        }
+    }
+
+    @Test
+    fun `nominal case - euros and meters`() = testCoroutineRule.runTest {
+        // Given
+        every { getCurrentCurrencyUseCase.invoke() } returns flowOf(AppCurrency.EUR)
+        every { getCurrentSurfaceUnitUseCase.invoke() } returns flowOf(SurfaceUnit.METERS)
+        every { savedStateHandle.get<Long>("draftId") } returns DEFAULT_DRAFT_ID
+        every { savedStateHandle.get<Boolean>("isNewDraft") } returns true
+        initViewModel()
+
+        // When
+        viewModel.viewStateLiveData.observeForTesting(this) {
+
+            // Then
+            assertThat(it.value).isEqualTo(
+                getDefaultViewState(
+                    isCurrencyEuro = true,
+                    isSurfaceUnitMeters = true
+                )
+            )
         }
     }
 
@@ -236,8 +262,80 @@ class AddPropertyViewModelTestNewDraft {
             advanceTimeBy(1000)
             // Another form update cancels latest save job and starts a new one
             viewModel.onPropertyTypeChanged(PropertyTypeEntity.HOUSE.radioButtonId)
-        }
 
+            // TODO Comment vérifier ?
+        }
+    }
+
+    @Test
+    fun `loading existing draft should emit view state with draft data`() = testCoroutineRule.runTest {
+        // Given
+        every { savedStateHandle.get<Long>("draftId") } returns DEFAULT_DRAFT_ID
+        every { savedStateHandle.get<Boolean>("isNewDraft") } returns false
+        coEvery { getPropertyDraftByIdUseCase.invoke(DEFAULT_DRAFT_ID) } returns getExistingDraftPropertyFormEntity()
+        coEvery { getPhotosForPropertyIdUseCase.invoke(any()) } returns flowOf(
+            listOf(
+                PhotoEntity(
+                    id = 0L,
+                    propertyId = 1L,
+                    url = "test url",
+                    description = "test description"
+                )
+            )
+        )
+        initViewModel()
+
+        // When
+        viewModel.viewStateLiveData.observeForTesting(this) {
+
+            // Then
+            assertThat(it.value).isEqualTo(getExistingDraftExpectedViewState())
+        }
+    }
+
+    @Test
+    fun `validating form with empty fields should emit view state with errors`() = testCoroutineRule.runTest {
+        // Given
+        every { savedStateHandle.get<Long>("draftId") } returns DEFAULT_DRAFT_ID
+        every { savedStateHandle.get<Boolean>("isNewDraft") } returns true
+        initViewModel()
+
+        // When
+        viewModel.viewStateLiveData.observeForTesting(this) {
+            viewModel.onDoneButtonClicked()
+            advanceUntilIdle()
+
+            // Then
+            assertThat(it.value?.isTypeErrorVisible).isEqualTo(true)
+            assertThat(it.value?.forSaleSinceError).isEqualTo(NativeText.Resource(R.string.add_property_error_date_required))
+            assertThat(it.value?.priceError).isEqualTo(NativeText.Resource(R.string.add_property_error_price_required))
+            assertThat(it.value?.isSurfaceErrorVisible).isEqualTo(true)
+            assertThat(it.value?.isRoomsErrorVisible).isEqualTo(true)
+            assertThat(it.value?.addressError).isEqualTo(NativeText.Resource(R.string.add_property_error_address_required))
+            assertThat(it.value?.cityError).isEqualTo(NativeText.Simple(" "))
+            assertThat(it.value?.stateError).isEqualTo(NativeText.Simple(" "))
+            assertThat(it.value?.zipcodeError).isEqualTo(NativeText.Simple(" "))
+            assertThat(it.value?.descriptionError).isEqualTo(NativeText.Resource(R.string.add_property_error_description_required))
+        }
+    }
+
+    @Test
+    fun `saving draft with euros and feet should convert them into usd and meters`() = testCoroutineRule.runTest {
+        // Given
+        every { getCurrentCurrencyUseCase.invoke() } returns flowOf(AppCurrency.EUR)
+        every { getCurrentSurfaceUnitUseCase.invoke() } returns flowOf(SurfaceUnit.METERS)
+        every { savedStateHandle.get<Long>("draftId") } returns DEFAULT_DRAFT_ID
+        every { savedStateHandle.get<Boolean>("isNewDraft") } returns true
+        initViewModel()
+
+        // When
+        viewModel.viewStateLiveData.observeForTesting(this) {
+            viewModel.onPriceChanged(BigDecimal(10000))
+            advanceUntilIdle()
+
+            // Then
+            // TODO Comment vérifier ?
+        }
     }
 
     // region IN
@@ -262,23 +360,67 @@ class AddPropertyViewModelTestNewDraft {
         agent = null,
         lastUpdate = LocalDateTime.of(2024, 1, 1, 0, 0, 0)
     )
+
+    private fun getExistingDraftPropertyFormEntity() = PropertyFormEntity(
+        id = DEFAULT_DRAFT_ID,
+        type = PropertyTypeEntity.FLAT,
+        isSold = true,
+        forSaleSince = LocalDate.of(2020, 1, 1),
+        dateOfSale = LocalDate.of(2020, 2, 1),
+        referencePrice = BigDecimal(10000),
+        priceFromUser = null,
+        referenceSurface = BigDecimal(100),
+        surfaceFromUser = null,
+        rooms = BigDecimal(7),
+        bathrooms = BigDecimal(2),
+        bedrooms = BigDecimal(2),
+        pointsOfInterest = listOf(PropertyPoiEntity.PARK),
+        autoCompleteAddress = null,
+        address = null,
+        description = "test description",
+        photos = listOf(
+            PhotoEntity(
+                id = 0L,
+                propertyId = 1L,
+                url = "test url",
+                description = "test description"
+            )
+        ),
+        agent = null,
+        lastUpdate = LocalDateTime.of(2024, 1, 1, 0, 0, 0)
+    )
     // endregion IN
 
     // region OUT
-    private fun getExpectedAddPropertyViewState(): AddPropertyViewState = AddPropertyViewState(
+    private fun getDefaultViewState(
+        isCurrencyEuro: Boolean = false,
+        isSurfaceUnitMeters: Boolean = false
+    ): AddPropertyViewState = AddPropertyViewState(
         propertyTypeEntity = null,
         forSaleSince = null,
         dateOfSale = null,
         isSold = false,
         priceHint = NativeText.Argument(
             R.string.add_property_price_hint,
-            NativeText.Resource(AppCurrency.USD.currencySymbol)
+            NativeText.Resource(
+                if (isCurrencyEuro) {
+                    AppCurrency.EUR.currencySymbol
+                } else {
+                    AppCurrency.USD.currencySymbol
+                }
+            )
         ),
         price = null,
-        currencyFormat = getDefaultCurrencyFormat(),
+        currencyFormat = getCurrencyFormat(isCurrencyEuro),
         surfaceLabel = NativeText.Argument(
             R.string.add_property_label_surface,
-            NativeText.Resource(SurfaceUnit.FEET.unitSymbol)
+            NativeText.Resource(
+                if (isSurfaceUnitMeters) {
+                    SurfaceUnit.METERS.unitSymbol
+                } else {
+                    SurfaceUnit.FEET.unitSymbol
+                }
+            )
         ),
         surface = BigDecimal.ZERO,
         numberOfRooms = BigDecimal.ZERO,
@@ -306,14 +448,112 @@ class AddPropertyViewModelTestNewDraft {
         descriptionError = null
     )
 
-    private fun getDefaultCurrencyFormat(): DecimalFormat {
-        // Currency is USD in this test
+    private fun getCurrencyFormat(isCurrencyEuro: Boolean = false): DecimalFormat {
         val symbols = DecimalFormatSymbols(Locale.getDefault()).apply {
-            groupingSeparator = ','
-            decimalSeparator = '.'
+            groupingSeparator = if (isCurrencyEuro) {
+                ' '
+            } else {
+                ','
+            }
+            decimalSeparator = if (isCurrencyEuro) {
+                ','
+            } else {
+                '.'
+            }
         }
 
         return DecimalFormat("#,###.##", symbols)
     }
+
+    private fun getExistingDraftExpectedViewState(): AddPropertyViewState = AddPropertyViewState(
+        propertyTypeEntity = PropertyTypeEntity.FLAT,
+        forSaleSince = NativeText.Date(R.string.date_format, LocalDate.of(2020, 1, 1)),
+        dateOfSale = NativeText.Date(R.string.date_format, LocalDate.of(2020, 2, 1)),
+        isSold = true,
+        priceHint = NativeText.Argument(
+            R.string.add_property_price_hint,
+            NativeText.Resource(AppCurrency.USD.currencySymbol)
+        ),
+        price = "10000",
+        currencyFormat = getCurrencyFormat(),
+        surfaceLabel = NativeText.Argument(
+            R.string.add_property_label_surface,
+            NativeText.Resource(SurfaceUnit.FEET.unitSymbol)
+        ),
+        surface = BigDecimal(329),
+        numberOfRooms = BigDecimal(7),
+        numberOfBathrooms = BigDecimal(2),
+        numberOfBedrooms = BigDecimal(2),
+        amenities = listOf(PropertyPoiEntity.PARK),
+        addressPredictions = emptyList(),
+        address = null,
+        complementaryAddress = null,
+        city = null,
+        state = null,
+        zipcode = null,
+        description = "test description",
+        photos = listOf(
+            PhotoListItemViewState(
+                id = 0,
+                url = "test url",
+                description = "test description",
+                selectType = SelectType.NOT_SELECTABLE,
+                onPhotoClicked = EquatableCallback {},
+                onDeletePhotoClicked = EquatableCallback {}
+            )
+        ),
+        isTypeErrorVisible = false,
+        forSaleSinceError = null,
+        dateOfSaleError = null,
+        priceError = null,
+        isSurfaceErrorVisible = false,
+        isRoomsErrorVisible = false,
+        addressError = null,
+        cityError = null,
+        stateError = null,
+        zipcodeError = null,
+        descriptionError = null
+    )
+
+    private fun getDefaultViewStateWithErrors() = AddPropertyViewState(
+        propertyTypeEntity = null,
+        forSaleSince = null,
+        dateOfSale = null,
+        isSold = false,
+        priceHint = NativeText.Argument(
+            R.string.add_property_price_hint,
+            NativeText.Resource(AppCurrency.USD.currencySymbol)
+        ),
+        price = null,
+        currencyFormat = getCurrencyFormat(),
+        surfaceLabel = NativeText.Argument(
+            R.string.add_property_label_surface,
+            NativeText.Resource(SurfaceUnit.FEET.unitSymbol)
+        ),
+        surface = BigDecimal.ZERO,
+        numberOfRooms = BigDecimal.ZERO,
+        numberOfBathrooms = BigDecimal.ZERO,
+        numberOfBedrooms = BigDecimal.ZERO,
+        amenities = emptyList(),
+        addressPredictions = emptyList(),
+        address = null,
+        complementaryAddress = null,
+        city = null,
+        state = null,
+        zipcode = null,
+        description = null,
+        photos = emptyList(),
+        isTypeErrorVisible = true,
+        forSaleSinceError = NativeText.Resource(R.string.add_property_error_date_required),
+        dateOfSaleError = null,
+        priceError = NativeText.Resource(R.string.add_property_error_price_required),
+        isSurfaceErrorVisible = true,
+        isRoomsErrorVisible = true,
+        addressError = NativeText.Resource(R.string.add_property_error_address_required),
+        cityError = NativeText.Simple(" "),
+        stateError = NativeText.Simple(" "),
+        zipcodeError = NativeText.Simple(" "),
+        descriptionError = NativeText.Resource(R.string.add_property_error_description_required)
+    )
     // endregion OUT
 }

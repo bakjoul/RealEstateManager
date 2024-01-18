@@ -97,7 +97,7 @@ class AddPropertyViewModel @Inject constructor(
             } else {
                 val (input, fromUser) = addressData
                 if (fromUser) {
-                    if (input.isEmpty() || input.length < 5) {
+                    if (input.length < 5) {
                         emit(null)
                     } else {
                         delay(ADDRESS_INPUT_DELAY)
@@ -169,7 +169,7 @@ class AddPropertyViewModel @Inject constructor(
                 propertyTypeEntity = propertyForm.type,
                 forSaleSince = formatDate(propertyForm.forSaleSince),
                 dateOfSale = formatDate(propertyForm.dateOfSale),
-                isSold = propertyForm.isSold ?: false,
+                isSold = propertyForm.isSold!!,
                 price = formatSavedPrice(
                     propertyForm.referencePrice,
                     propertyForm.priceFromUser,
@@ -183,7 +183,7 @@ class AddPropertyViewModel @Inject constructor(
                 numberOfRooms = propertyForm.rooms ?: BigDecimal.ZERO,
                 numberOfBathrooms = propertyForm.bathrooms ?: BigDecimal.ZERO,
                 numberOfBedrooms = propertyForm.bedrooms ?: BigDecimal.ZERO,
-                amenities = propertyForm.pointsOfInterest ?: emptyList(),
+                amenities = propertyForm.pointsOfInterest!!,
                 addressPredictions = mapAddressPredictions(addressPredictions),
                 address = formatAddress(propertyForm.autoCompleteAddress),
                 complementaryAddress = propertyForm.address?.complementaryAddress,
