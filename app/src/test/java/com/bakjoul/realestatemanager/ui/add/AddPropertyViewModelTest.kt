@@ -37,8 +37,11 @@ import com.bakjoul.realestatemanager.utils.TestCoroutineRule
 import com.bakjoul.realestatemanager.utils.observeForTesting
 import io.mockk.coEvery
 import io.mockk.coJustRun
+import io.mockk.coVerify
+import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -100,11 +103,11 @@ class AddPropertyViewModelTest {
         every { getCurrentNavigationUseCase.invoke() } returns flowOf()
         coEvery { getAddressPredictionsUseCase.invoke(any()) } returns AutocompleteWrapper.NoResults
         coEvery { getAddressDetailsUseCase.invoke(any()) } returns GeocodingWrapper.NoResults
-        coEvery { getPhotosForPropertyIdUseCase.invoke(any()) } returns flowOf(emptyList())
+        coEvery { getPhotosForPropertyIdUseCase.invoke(DEFAULT_DRAFT_ID) } returns flowOf(emptyList())
         coJustRun { deletePhotoUseCase.invoke(any()) }
         coJustRun { navigateUseCase.invoke(any()) }
         coJustRun { deletePropertyDraftUseCase.invoke(any()) }
-        coEvery { updatePropertyDraftUseCase.invoke(any(), any()) } returns 1
+        coEvery { updatePropertyDraftUseCase.invoke(DEFAULT_DRAFT_ID, any()) } returns 1
         coEvery { addPropertyUseCase.invoke(any()) } returns 1L
     }
 
@@ -139,6 +142,20 @@ class AddPropertyViewModelTest {
 
             // Then
             assertThat(it.value).isEqualTo(getDefaultViewState())
+
+            verify(exactly = 1) { getCurrentCurrencyUseCase.invoke() }
+            verify(exactly = 1) { getCurrentSurfaceUnitUseCase.invoke() }
+            verify(exactly = 1) { savedStateHandle.get<Long>("draftId") }
+            verify(exactly = 1) { savedStateHandle.get<Boolean>("isNewDraft") }
+            coVerify(exactly = 1) { getEuroRateUseCase.invoke()  }
+            coVerify(exactly = 1) { getPhotosForPropertyIdUseCase.invoke(DEFAULT_DRAFT_ID) }
+            confirmVerified(
+                getCurrentCurrencyUseCase,
+                getCurrentSurfaceUnitUseCase,
+                savedStateHandle,
+                getEuroRateUseCase,
+                getPhotosForPropertyIdUseCase
+            )
         }
     }
 
@@ -161,6 +178,20 @@ class AddPropertyViewModelTest {
                     isSurfaceUnitMeters = true
                 )
             )
+
+            verify(exactly = 1) { getCurrentCurrencyUseCase.invoke() }
+            verify(exactly = 1) { getCurrentSurfaceUnitUseCase.invoke() }
+            verify(exactly = 1) { savedStateHandle.get<Long>("draftId") }
+            verify(exactly = 1) { savedStateHandle.get<Boolean>("isNewDraft") }
+            coVerify(exactly = 1) { getEuroRateUseCase.invoke()  }
+            coVerify(exactly = 1) { getPhotosForPropertyIdUseCase.invoke(DEFAULT_DRAFT_ID) }
+            confirmVerified(
+                getCurrentCurrencyUseCase,
+                getCurrentSurfaceUnitUseCase,
+                savedStateHandle,
+                getEuroRateUseCase,
+                getPhotosForPropertyIdUseCase
+            )
         }
     }
 
@@ -176,6 +207,9 @@ class AddPropertyViewModelTest {
             // Then
             assert(exception.message == "No ID passed as parameter !")
         }
+
+        verify(exactly = 1) { savedStateHandle.get<Long>("draftId") }
+        confirmVerified(savedStateHandle)
     }
 
     @Test
@@ -191,6 +225,10 @@ class AddPropertyViewModelTest {
             // Then
             assert(exception.message == "No information about new draft passed as parameter !")
         }
+
+        verify(exactly = 1) { savedStateHandle.get<Long>("draftId") }
+        verify(exactly = 1) { savedStateHandle.get<Long>("isNewDraft") }
+        confirmVerified(savedStateHandle)
     }
 
     @Test
@@ -206,6 +244,20 @@ class AddPropertyViewModelTest {
 
             // Then
             assertThat(it.value?.addressPredictions).isEqualTo(emptyList())
+
+            verify(exactly = 1) { getCurrentCurrencyUseCase.invoke() }
+            verify(exactly = 1) { getCurrentSurfaceUnitUseCase.invoke() }
+            verify(exactly = 1) { savedStateHandle.get<Long>("draftId") }
+            verify(exactly = 1) { savedStateHandle.get<Boolean>("isNewDraft") }
+            coVerify(exactly = 1) { getEuroRateUseCase.invoke()  }
+            coVerify(exactly = 1) { getPhotosForPropertyIdUseCase.invoke(DEFAULT_DRAFT_ID) }
+            confirmVerified(
+                getCurrentCurrencyUseCase,
+                getCurrentSurfaceUnitUseCase,
+                savedStateHandle,
+                getEuroRateUseCase,
+                getPhotosForPropertyIdUseCase
+            )
         }
     }
 
@@ -243,6 +295,22 @@ class AddPropertyViewModelTest {
                 )
             )
         }
+
+        verify(exactly = 1) { getCurrentCurrencyUseCase.invoke() }
+        verify(exactly = 1) { getCurrentSurfaceUnitUseCase.invoke() }
+        verify(exactly = 1) { savedStateHandle.get<Long>("draftId") }
+        verify(exactly = 1) { savedStateHandle.get<Boolean>("isNewDraft") }
+        coVerify(exactly = 1) { getEuroRateUseCase.invoke()  }
+        coVerify(exactly = 1) { getPhotosForPropertyIdUseCase.invoke(DEFAULT_DRAFT_ID) }
+        coVerify(exactly = 1) { getAddressPredictionsUseCase.invoke("testing") }
+        confirmVerified(
+            getCurrentCurrencyUseCase,
+            getCurrentSurfaceUnitUseCase,
+            savedStateHandle,
+            getEuroRateUseCase,
+            getPhotosForPropertyIdUseCase,
+            getAddressPredictionsUseCase
+        )
     }
 
     @Test
@@ -291,6 +359,22 @@ class AddPropertyViewModelTest {
             // Then
             assertThat(it.value).isEqualTo(getExistingDraftExpectedViewState())
         }
+
+        verify(exactly = 1) { getCurrentCurrencyUseCase.invoke() }
+        verify(exactly = 1) { getCurrentSurfaceUnitUseCase.invoke() }
+        verify(exactly = 1) { savedStateHandle.get<Long>("draftId") }
+        verify(exactly = 1) { savedStateHandle.get<Boolean>("isNewDraft") }
+        coVerify(exactly = 1) { getEuroRateUseCase.invoke()  }
+        coVerify(exactly = 1) { getPropertyDraftByIdUseCase.invoke(DEFAULT_DRAFT_ID) }
+        coVerify(exactly = 1) { getPhotosForPropertyIdUseCase.invoke(DEFAULT_DRAFT_ID) }
+        confirmVerified(
+            getCurrentCurrencyUseCase,
+            getCurrentSurfaceUnitUseCase,
+            savedStateHandle,
+            getEuroRateUseCase,
+            getPropertyDraftByIdUseCase,
+            getPhotosForPropertyIdUseCase
+        )
     }
 
     @Test
@@ -317,6 +401,20 @@ class AddPropertyViewModelTest {
             assertThat(it.value?.zipcodeError).isEqualTo(NativeText.Simple(" "))
             assertThat(it.value?.descriptionError).isEqualTo(NativeText.Resource(R.string.add_property_error_description_required))
         }
+
+        verify(exactly = 1) { getCurrentCurrencyUseCase.invoke() }
+        verify(exactly = 1) { getCurrentSurfaceUnitUseCase.invoke() }
+        verify(exactly = 1) { savedStateHandle.get<Long>("draftId") }
+        verify(exactly = 1) { savedStateHandle.get<Boolean>("isNewDraft") }
+        coVerify(exactly = 1) { getEuroRateUseCase.invoke()  }
+        coVerify(exactly = 1) { getPhotosForPropertyIdUseCase.invoke(DEFAULT_DRAFT_ID) }
+        confirmVerified(
+            getCurrentCurrencyUseCase,
+            getCurrentSurfaceUnitUseCase,
+            savedStateHandle,
+            getEuroRateUseCase,
+            getPhotosForPropertyIdUseCase
+        )
     }
 
     @Test
