@@ -21,6 +21,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.time.Clock
 import java.util.concurrent.TimeUnit
 import javax.inject.Qualifier
 import javax.inject.Singleton
@@ -130,6 +131,10 @@ class DataModule {
     @Singleton
     @Provides
     fun providePropertyFormDao(appDatabase: AppDatabase): PropertyFormDao = appDatabase.getPropertyFormDao()
+
+    @Singleton
+    @Provides
+    fun provideClock(): Clock = Clock.systemDefaultZone()
 }
 
 @Qualifier

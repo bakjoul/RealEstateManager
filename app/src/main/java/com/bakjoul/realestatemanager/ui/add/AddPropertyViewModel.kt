@@ -53,6 +53,7 @@ import java.math.BigDecimal
 import java.math.RoundingMode
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
+import java.time.Clock
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -77,6 +78,7 @@ class AddPropertyViewModel @Inject constructor(
     private val deletePhotoUseCase: DeletePhotoUseCase,
     private val navigateUseCase: NavigateUseCase,
     private val deletePropertyDraftUseCase: DeletePropertyDraftUseCase,
+    private val clock: Clock,
     private val updatePropertyDraftUseCase: UpdatePropertyDraftUseCase,
     private val addPropertyUseCase: AddPropertyUseCase,
 ) : ViewModel() {
@@ -278,7 +280,7 @@ class AddPropertyViewModel @Inject constructor(
         description = null,
         photos = emptyList(),
         agent = null,
-        lastUpdate = LocalDateTime.now()
+        lastUpdate = LocalDateTime.now(clock)
     )
 
     private fun formatDate(localDate: LocalDate?): NativeText? = localDate?.let {
@@ -718,7 +720,7 @@ class AddPropertyViewModel @Inject constructor(
                         description = propertyFormReplaceCache.description!!,
                         photos = propertyFormReplaceCache.photos!!,
                         agent = propertyFormReplaceCache.agent ?: "John Doe", // TODO: get agent name from settings
-                        entryDate = ZonedDateTime.now().toLocalDate()
+                        entryDate = ZonedDateTime.now(clock).toLocalDate()
                     )
                 )
 

@@ -28,6 +28,7 @@ import com.bakjoul.realestatemanager.domain.property.drafts.GetPropertyDraftById
 import com.bakjoul.realestatemanager.domain.property.drafts.UpdatePropertyDraftUseCase
 import com.bakjoul.realestatemanager.domain.property.model.PropertyPoiEntity
 import com.bakjoul.realestatemanager.domain.property.model.PropertyTypeEntity
+import com.bakjoul.realestatemanager.domain.property_form.model.PropertyFormAddress
 import com.bakjoul.realestatemanager.domain.property_form.model.PropertyFormEntity
 import com.bakjoul.realestatemanager.domain.settings.currency.GetCurrentCurrencyUseCase
 import com.bakjoul.realestatemanager.domain.settings.surface_unit.GetCurrentSurfaceUnitUseCase
@@ -42,6 +43,7 @@ import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -53,8 +55,11 @@ import org.junit.Test
 import java.math.BigDecimal
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
+import java.time.Clock
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.ZoneOffset
+import java.time.ZonedDateTime
 import java.util.Locale
 import kotlin.time.Duration.Companion.seconds
 
@@ -84,6 +89,10 @@ class AddPropertyViewModelTest {
     private val deletePhotoUseCase: DeletePhotoUseCase = mockk()
     private val navigateUseCase: NavigateUseCase = mockk()
     private val deletePropertyDraftUseCase: DeletePropertyDraftUseCase = mockk()
+    private val clock: Clock = Clock.fixed(
+        ZonedDateTime.of(2024, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC).toInstant(),
+        ZoneOffset.UTC
+    )
     private val updatePropertyDraftUseCase: UpdatePropertyDraftUseCase = mockk()
     private val addPropertyUseCase: AddPropertyUseCase = mockk()
 
@@ -125,6 +134,7 @@ class AddPropertyViewModelTest {
             deletePhotoUseCase = deletePhotoUseCase,
             navigateUseCase = navigateUseCase,
             deletePropertyDraftUseCase = deletePropertyDraftUseCase,
+            clock = clock,
             updatePropertyDraftUseCase = updatePropertyDraftUseCase,
             addPropertyUseCase = addPropertyUseCase
         )
@@ -139,22 +149,30 @@ class AddPropertyViewModelTest {
 
         // When
         viewModel.viewStateLiveData.observeForTesting(this) {
+            advanceUntilIdle()
 
             // Then
             assertThat(it.value).isEqualTo(getDefaultViewState())
 
-            verify(exactly = 1) { getCurrentCurrencyUseCase.invoke() }
-            verify(exactly = 1) { getCurrentSurfaceUnitUseCase.invoke() }
             verify(exactly = 1) { savedStateHandle.get<Long>("draftId") }
             verify(exactly = 1) { savedStateHandle.get<Boolean>("isNewDraft") }
+            verify(exactly = 1) { getCurrentCurrencyUseCase.invoke() }
+            verify(exactly = 1) { getCurrentSurfaceUnitUseCase.invoke() }
             coVerify(exactly = 1) { getEuroRateUseCase.invoke()  }
             coVerify(exactly = 1) { getPhotosForPropertyIdUseCase.invoke(DEFAULT_DRAFT_ID) }
+            coVerify(exactly = 1) {
+                updatePropertyDraftUseCase.invoke(
+                    DEFAULT_DRAFT_ID,
+                    getDefaultPropertyFormEntity()
+                )
+            }
             confirmVerified(
                 getCurrentCurrencyUseCase,
                 getCurrentSurfaceUnitUseCase,
                 savedStateHandle,
                 getEuroRateUseCase,
-                getPhotosForPropertyIdUseCase
+                getPhotosForPropertyIdUseCase,
+                updatePropertyDraftUseCase
             )
         }
     }
@@ -162,14 +180,15 @@ class AddPropertyViewModelTest {
     @Test
     fun `nominal case - euros and meters`() = testCoroutineRule.runTest {
         // Given
-        every { getCurrentCurrencyUseCase.invoke() } returns flowOf(AppCurrency.EUR)
-        every { getCurrentSurfaceUnitUseCase.invoke() } returns flowOf(SurfaceUnit.METERS)
         every { savedStateHandle.get<Long>("draftId") } returns DEFAULT_DRAFT_ID
         every { savedStateHandle.get<Boolean>("isNewDraft") } returns true
+        every { getCurrentCurrencyUseCase.invoke() } returns flowOf(AppCurrency.EUR)
+        every { getCurrentSurfaceUnitUseCase.invoke() } returns flowOf(SurfaceUnit.METERS)
         initViewModel()
 
         // When
         viewModel.viewStateLiveData.observeForTesting(this) {
+            advanceUntilIdle()
 
             // Then
             assertThat(it.value).isEqualTo(
@@ -179,18 +198,25 @@ class AddPropertyViewModelTest {
                 )
             )
 
-            verify(exactly = 1) { getCurrentCurrencyUseCase.invoke() }
-            verify(exactly = 1) { getCurrentSurfaceUnitUseCase.invoke() }
             verify(exactly = 1) { savedStateHandle.get<Long>("draftId") }
             verify(exactly = 1) { savedStateHandle.get<Boolean>("isNewDraft") }
+            verify(exactly = 1) { getCurrentCurrencyUseCase.invoke() }
+            verify(exactly = 1) { getCurrentSurfaceUnitUseCase.invoke() }
             coVerify(exactly = 1) { getEuroRateUseCase.invoke()  }
             coVerify(exactly = 1) { getPhotosForPropertyIdUseCase.invoke(DEFAULT_DRAFT_ID) }
+            coVerify(exactly = 1) {
+                updatePropertyDraftUseCase.invoke(
+                    DEFAULT_DRAFT_ID,
+                    getDefaultPropertyFormEntity()
+                )
+            }
             confirmVerified(
+                savedStateHandle,
                 getCurrentCurrencyUseCase,
                 getCurrentSurfaceUnitUseCase,
-                savedStateHandle,
                 getEuroRateUseCase,
-                getPhotosForPropertyIdUseCase
+                getPhotosForPropertyIdUseCase,
+                updatePropertyDraftUseCase
             )
         }
     }
@@ -229,6 +255,39 @@ class AddPropertyViewModelTest {
         verify(exactly = 1) { savedStateHandle.get<Long>("draftId") }
         verify(exactly = 1) { savedStateHandle.get<Long>("isNewDraft") }
         confirmVerified(savedStateHandle)
+    }
+
+    @Test
+    fun `view state sources null should emit view state null`() = testCoroutineRule.runTest {
+        // Given
+        every { savedStateHandle.get<Long>("draftId") } returns DEFAULT_DRAFT_ID
+        every { savedStateHandle.get<Boolean>("isNewDraft") } returns true
+        every { getCurrentCurrencyUseCase.invoke() } returns emptyFlow()
+        every { getCurrentSurfaceUnitUseCase.invoke() } returns emptyFlow()
+        coEvery { getPhotosForPropertyIdUseCase.invoke(DEFAULT_DRAFT_ID) } returns emptyFlow()
+
+        initViewModel()
+
+        // When
+        viewModel.viewStateLiveData.observeForTesting(this) {
+
+            // Then
+            assertThat(it.value).isEqualTo(null)
+
+            verify(exactly = 1) { savedStateHandle.get<Long>("draftId") }
+            verify(exactly = 1) { savedStateHandle.get<Boolean>("isNewDraft") }
+            verify(exactly = 1) { getCurrentCurrencyUseCase.invoke() }
+            verify(exactly = 1) { getCurrentSurfaceUnitUseCase.invoke() }
+            coVerify(exactly = 1) { getEuroRateUseCase.invoke()  }
+            coVerify(exactly = 1) { getPhotosForPropertyIdUseCase.invoke(DEFAULT_DRAFT_ID) }
+            confirmVerified(
+                savedStateHandle,
+                getCurrentCurrencyUseCase,
+                getCurrentSurfaceUnitUseCase,
+                getEuroRateUseCase,
+                getPhotosForPropertyIdUseCase
+            )
+        }
     }
 
     @Test
@@ -314,28 +373,6 @@ class AddPropertyViewModelTest {
     }
 
     @Test
-    fun `property form update within save delay should cancel latest draft save job`() = testCoroutineRule.runTest {
-        // Given
-        every { savedStateHandle.get<Long>("draftId") } returns DEFAULT_DRAFT_ID
-        every { savedStateHandle.get<Boolean>("isNewDraft") } returns true
-        initViewModel()
-
-        // When
-        viewModel.viewStateLiveData.observeForTesting(this) {
-            advanceUntilIdle()  // Lets the first save job completes
-
-            // Form update starts a new save job
-            viewModel.onPropertyTypeChanged(PropertyTypeEntity.FLAT.radioButtonId)
-            // Advances times but not enough to cancel the latest save job
-            advanceTimeBy(1000)
-            // Another form update cancels latest save job and starts a new one
-            viewModel.onPropertyTypeChanged(PropertyTypeEntity.HOUSE.radioButtonId)
-
-            // TODO Comment vérifier ?
-        }
-    }
-
-    @Test
     fun `loading existing draft should emit view state with draft data`() = testCoroutineRule.runTest {
         // Given
         every { savedStateHandle.get<Long>("draftId") } returns DEFAULT_DRAFT_ID
@@ -402,10 +439,10 @@ class AddPropertyViewModelTest {
             assertThat(it.value?.descriptionError).isEqualTo(NativeText.Resource(R.string.add_property_error_description_required))
         }
 
-        verify(exactly = 1) { getCurrentCurrencyUseCase.invoke() }
-        verify(exactly = 1) { getCurrentSurfaceUnitUseCase.invoke() }
         verify(exactly = 1) { savedStateHandle.get<Long>("draftId") }
         verify(exactly = 1) { savedStateHandle.get<Boolean>("isNewDraft") }
+        verify(exactly = 1) { getCurrentCurrencyUseCase.invoke() }
+        verify(exactly = 1) { getCurrentSurfaceUnitUseCase.invoke() }
         coVerify(exactly = 1) { getEuroRateUseCase.invoke()  }
         coVerify(exactly = 1) { getPhotosForPropertyIdUseCase.invoke(DEFAULT_DRAFT_ID) }
         confirmVerified(
@@ -420,19 +457,92 @@ class AddPropertyViewModelTest {
     @Test
     fun `saving draft with euros and feet should convert them into usd and meters`() = testCoroutineRule.runTest {
         // Given
-        every { getCurrentCurrencyUseCase.invoke() } returns flowOf(AppCurrency.EUR)
-        every { getCurrentSurfaceUnitUseCase.invoke() } returns flowOf(SurfaceUnit.METERS)
         every { savedStateHandle.get<Long>("draftId") } returns DEFAULT_DRAFT_ID
         every { savedStateHandle.get<Boolean>("isNewDraft") } returns true
+        every { getCurrentCurrencyUseCase.invoke() } returns flowOf(AppCurrency.EUR)
+        every { getCurrentSurfaceUnitUseCase.invoke() } returns flowOf(SurfaceUnit.FEET)
         initViewModel()
 
         // When
         viewModel.viewStateLiveData.observeForTesting(this) {
             viewModel.onPriceChanged(BigDecimal(10000))
+            runCurrent()
+            viewModel.onSurfaceChanged(BigDecimal(100))
             advanceUntilIdle()
 
             // Then
-            // TODO Comment vérifier ?
+            coVerify(exactly = 1) {
+                updatePropertyDraftUseCase.invoke(
+                    DEFAULT_DRAFT_ID,
+                    getExpectedPropertyForm(
+                        referencePrice = BigDecimal(11109),
+                        priceFromUser = BigDecimal(10000),
+                        referenceSurface = BigDecimal(31),
+                        surfaceFromUser = BigDecimal(100)
+                    )
+                )
+            }
+
+            verify(exactly = 1) { savedStateHandle.get<Long>("draftId") }
+            verify(exactly = 1) { savedStateHandle.get<Boolean>("isNewDraft") }
+            verify(exactly = 1) { getCurrentCurrencyUseCase.invoke() }
+            verify(exactly = 1) { getCurrentSurfaceUnitUseCase.invoke() }
+            coVerify(exactly = 1) { getEuroRateUseCase.invoke()  }
+            coVerify(exactly = 1) { getPhotosForPropertyIdUseCase.invoke(DEFAULT_DRAFT_ID) }
+            confirmVerified(
+                updatePropertyDraftUseCase,
+                getCurrentCurrencyUseCase,
+                getCurrentSurfaceUnitUseCase,
+                savedStateHandle,
+                getEuroRateUseCase,
+                getPhotosForPropertyIdUseCase
+            )
+        }
+    }
+
+    @Test
+    fun `saving draft with dollars and meters should not convert them`() = testCoroutineRule.runTest {
+        // Given
+        every { savedStateHandle.get<Long>("draftId") } returns DEFAULT_DRAFT_ID
+        every { savedStateHandle.get<Boolean>("isNewDraft") } returns true
+        every { getCurrentCurrencyUseCase.invoke() } returns flowOf(AppCurrency.USD)
+        every { getCurrentSurfaceUnitUseCase.invoke() } returns flowOf(SurfaceUnit.METERS)
+        initViewModel()
+
+        // When
+        viewModel.viewStateLiveData.observeForTesting(this) {
+            viewModel.onPriceChanged(BigDecimal(10000))
+            runCurrent()
+            viewModel.onSurfaceChanged(BigDecimal(100))
+            advanceUntilIdle()
+
+            // Then
+            coVerify(exactly = 1) {
+                updatePropertyDraftUseCase.invoke(
+                    DEFAULT_DRAFT_ID,
+                    getExpectedPropertyForm(
+                        referencePrice = BigDecimal(10000),
+                        priceFromUser = BigDecimal(10000),
+                        referenceSurface = BigDecimal(100),
+                        surfaceFromUser = BigDecimal(100)
+                    )
+                )
+            }
+
+            verify(exactly = 1) { savedStateHandle.get<Long>("draftId") }
+            verify(exactly = 1) { savedStateHandle.get<Boolean>("isNewDraft") }
+            verify(exactly = 1) { getCurrentCurrencyUseCase.invoke() }
+            verify(exactly = 1) { getCurrentSurfaceUnitUseCase.invoke() }
+            coVerify(exactly = 1) { getEuroRateUseCase.invoke()  }
+            coVerify(exactly = 1) { getPhotosForPropertyIdUseCase.invoke(DEFAULT_DRAFT_ID) }
+            confirmVerified(
+                updatePropertyDraftUseCase,
+                getCurrentCurrencyUseCase,
+                getCurrentSurfaceUnitUseCase,
+                savedStateHandle,
+                getEuroRateUseCase,
+                getPhotosForPropertyIdUseCase
+            )
         }
     }
 
@@ -440,7 +550,7 @@ class AddPropertyViewModelTest {
     private fun getDefaultPropertyFormEntity() = PropertyFormEntity(
         id = DEFAULT_DRAFT_ID,
         type = null,
-        isSold = null,
+        isSold = false,
         forSaleSince = null,
         dateOfSale = null,
         referencePrice = null,
@@ -450,11 +560,11 @@ class AddPropertyViewModelTest {
         rooms = null,
         bathrooms = null,
         bedrooms = null,
-        pointsOfInterest = null,
+        pointsOfInterest = emptyList(),
         autoCompleteAddress = null,
-        address = null,
+        address = PropertyFormAddress(),
         description = null,
-        photos = null,
+        photos = emptyList(),
         agent = null,
         lastUpdate = LocalDateTime.of(2024, 1, 1, 0, 0, 0)
     )
@@ -613,45 +723,46 @@ class AddPropertyViewModelTest {
         descriptionError = null
     )
 
-    private fun getDefaultViewStateWithErrors() = AddPropertyViewState(
-        propertyTypeEntity = null,
-        forSaleSince = null,
-        dateOfSale = null,
-        isSold = false,
-        priceHint = NativeText.Argument(
-            R.string.add_property_price_hint,
-            NativeText.Resource(AppCurrency.USD.currencySymbol)
-        ),
-        price = null,
-        currencyFormat = getCurrencyFormat(),
-        surfaceLabel = NativeText.Argument(
-            R.string.add_property_label_surface,
-            NativeText.Resource(SurfaceUnit.FEET.unitSymbol)
-        ),
-        surface = BigDecimal.ZERO,
-        numberOfRooms = BigDecimal.ZERO,
-        numberOfBathrooms = BigDecimal.ZERO,
-        numberOfBedrooms = BigDecimal.ZERO,
-        amenities = emptyList(),
-        addressPredictions = emptyList(),
-        address = null,
-        complementaryAddress = null,
-        city = null,
-        state = null,
-        zipcode = null,
-        description = null,
-        photos = emptyList(),
-        isTypeErrorVisible = true,
-        forSaleSinceError = NativeText.Resource(R.string.add_property_error_date_required),
-        dateOfSaleError = null,
-        priceError = NativeText.Resource(R.string.add_property_error_price_required),
-        isSurfaceErrorVisible = true,
-        isRoomsErrorVisible = true,
-        addressError = NativeText.Resource(R.string.add_property_error_address_required),
-        cityError = NativeText.Simple(" "),
-        stateError = NativeText.Simple(" "),
-        zipcodeError = NativeText.Simple(" "),
-        descriptionError = NativeText.Resource(R.string.add_property_error_description_required)
+    private fun getExpectedPropertyForm(
+        propertyDraftId: Long = DEFAULT_DRAFT_ID,
+        type: PropertyTypeEntity? = null,
+        isSold: Boolean? = false,
+        forSaleSince: LocalDate? = null,
+        dateOfSale: LocalDate? = null,
+        referencePrice: BigDecimal? = null,
+        priceFromUser: BigDecimal? = null,
+        referenceSurface: BigDecimal? = null,
+        surfaceFromUser: BigDecimal? = null,
+        rooms: BigDecimal? = null,
+        bathrooms: BigDecimal? = null,
+        bedrooms: BigDecimal? = null,
+        pointsOfInterest: List<PropertyPoiEntity>? = emptyList(),
+        autoCompleteAddress: PropertyFormAddress? = null,
+        address: PropertyFormAddress? = PropertyFormAddress(),
+        description: String? = null,
+        photos: List<PhotoEntity>? = emptyList(),
+        agent: String? = null,
+        lastUpdate: LocalDateTime = LocalDateTime.of(2024, 1, 1, 0, 0, 0)
+    ) = PropertyFormEntity(
+        id = propertyDraftId,
+        type = type,
+        isSold = isSold,
+        forSaleSince = forSaleSince,
+        dateOfSale = dateOfSale,
+        referencePrice = referencePrice,
+        priceFromUser = priceFromUser,
+        referenceSurface = referenceSurface,
+        surfaceFromUser = surfaceFromUser,
+        rooms = rooms,
+        bathrooms = bathrooms,
+        bedrooms = bedrooms,
+        pointsOfInterest = pointsOfInterest,
+        autoCompleteAddress = autoCompleteAddress,
+        address = address,
+        description = description,
+        photos = photos,
+        agent = agent,
+        lastUpdate = lastUpdate
     )
     // endregion OUT
 }
