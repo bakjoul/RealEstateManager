@@ -16,9 +16,9 @@ import com.bakjoul.realestatemanager.domain.autocomplete.model.PredictionEntity
 import com.bakjoul.realestatemanager.domain.currency_rate.GetEuroRateUseCase
 import com.bakjoul.realestatemanager.domain.currency_rate.model.CurrencyRateEntity
 import com.bakjoul.realestatemanager.domain.geocoding.GetAddressDetailsUseCase
-import com.bakjoul.realestatemanager.domain.geocoding.model.GeocodingWrapper
 import com.bakjoul.realestatemanager.domain.navigation.GetCurrentNavigationUseCase
 import com.bakjoul.realestatemanager.domain.navigation.NavigateUseCase
+import com.bakjoul.realestatemanager.domain.navigation.model.To
 import com.bakjoul.realestatemanager.domain.photos.DeletePhotoUseCase
 import com.bakjoul.realestatemanager.domain.photos.GetPhotosForPropertyIdUseCase
 import com.bakjoul.realestatemanager.domain.photos.model.PhotoEntity
@@ -33,6 +33,7 @@ import com.bakjoul.realestatemanager.domain.property_form.model.PropertyFormEnti
 import com.bakjoul.realestatemanager.domain.settings.currency.GetCurrentCurrencyUseCase
 import com.bakjoul.realestatemanager.domain.settings.surface_unit.GetCurrentSurfaceUnitUseCase
 import com.bakjoul.realestatemanager.ui.utils.EquatableCallback
+import com.bakjoul.realestatemanager.ui.utils.Event
 import com.bakjoul.realestatemanager.ui.utils.NativeText
 import com.bakjoul.realestatemanager.utils.TestCoroutineRule
 import com.bakjoul.realestatemanager.utils.observeForTesting
@@ -100,6 +101,8 @@ class AddPropertyViewModelTest {
 
     @Before
     fun setUp() {
+        every { savedStateHandle.get<Long>("draftId") } returns DEFAULT_DRAFT_ID
+        every { savedStateHandle.get<Boolean>("isNewDraft") } returns true
         every { getCurrentCurrencyUseCase.invoke() } returns flowOf(AppCurrency.USD)
         every { getCurrentSurfaceUnitUseCase.invoke() } returns flowOf(SurfaceUnit.FEET)
         coEvery { getEuroRateUseCase.invoke() } returns CurrencyRateWrapper.Success(
@@ -109,15 +112,15 @@ class AddPropertyViewModelTest {
                 updateDate = LocalDate.of(2023, 12, 28))
         )
         coEvery { getPropertyDraftByIdUseCase.invoke(DEFAULT_DRAFT_ID) } returns getDefaultPropertyFormEntity()
-        every { getCurrentNavigationUseCase.invoke() } returns flowOf()
-        coEvery { getAddressPredictionsUseCase.invoke(any()) } returns AutocompleteWrapper.NoResults
-        coEvery { getAddressDetailsUseCase.invoke(any()) } returns GeocodingWrapper.NoResults
+        //every { getCurrentNavigationUseCase.invoke() } returns flowOf()
+        //coEvery { getAddressPredictionsUseCase.invoke(any()) } returns AutocompleteWrapper.NoResults
+        //coEvery { getAddressDetailsUseCase.invoke(any()) } returns GeocodingWrapper.NoResults
         coEvery { getPhotosForPropertyIdUseCase.invoke(DEFAULT_DRAFT_ID) } returns flowOf(emptyList())
-        coJustRun { deletePhotoUseCase.invoke(any()) }
-        coJustRun { navigateUseCase.invoke(any()) }
-        coJustRun { deletePropertyDraftUseCase.invoke(any()) }
+        //coJustRun { deletePhotoUseCase.invoke(any()) }
+        //coJustRun { navigateUseCase.invoke(any()) }
+        //coJustRun { deletePropertyDraftUseCase.invoke(any()) }
         coEvery { updatePropertyDraftUseCase.invoke(DEFAULT_DRAFT_ID, any()) } returns 1
-        coEvery { addPropertyUseCase.invoke(any()) } returns 1L
+        //coEvery { addPropertyUseCase.invoke(any()) } returns 1L
     }
 
     private fun initViewModel() {
@@ -143,8 +146,6 @@ class AddPropertyViewModelTest {
     @Test
     fun `nominal case - usd and feet`() = testCoroutineRule.runTest {
         // Given
-        every { savedStateHandle.get<Long>("draftId") } returns DEFAULT_DRAFT_ID
-        every { savedStateHandle.get<Boolean>("isNewDraft") } returns true
         initViewModel()
 
         // When
@@ -180,8 +181,6 @@ class AddPropertyViewModelTest {
     @Test
     fun `nominal case - euros and meters`() = testCoroutineRule.runTest {
         // Given
-        every { savedStateHandle.get<Long>("draftId") } returns DEFAULT_DRAFT_ID
-        every { savedStateHandle.get<Boolean>("isNewDraft") } returns true
         every { getCurrentCurrencyUseCase.invoke() } returns flowOf(AppCurrency.EUR)
         every { getCurrentSurfaceUnitUseCase.invoke() } returns flowOf(SurfaceUnit.METERS)
         initViewModel()
@@ -241,7 +240,6 @@ class AddPropertyViewModelTest {
     @Test
     fun `isNewDraft null`() = testCoroutineRule.runTest {
         // Given
-        every { savedStateHandle.get<Long>("draftId") } returns DEFAULT_DRAFT_ID
         every { savedStateHandle.get<Boolean>("isNewDraft") } returns null
 
         // When
@@ -260,8 +258,6 @@ class AddPropertyViewModelTest {
     @Test
     fun `view state sources null should emit view state null`() = testCoroutineRule.runTest {
         // Given
-        every { savedStateHandle.get<Long>("draftId") } returns DEFAULT_DRAFT_ID
-        every { savedStateHandle.get<Boolean>("isNewDraft") } returns true
         every { getCurrentCurrencyUseCase.invoke() } returns emptyFlow()
         every { getCurrentSurfaceUnitUseCase.invoke() } returns emptyFlow()
         coEvery { getPhotosForPropertyIdUseCase.invoke(DEFAULT_DRAFT_ID) } returns emptyFlow()
@@ -293,8 +289,6 @@ class AddPropertyViewModelTest {
     @Test
     fun `current address input shorter than 5 should emit empty address predictions list`() = testCoroutineRule.runTest {
         // Given
-        every { savedStateHandle.get<Long>("draftId") } returns DEFAULT_DRAFT_ID
-        every { savedStateHandle.get<Boolean>("isNewDraft") } returns true
         initViewModel()
 
         // When
@@ -323,9 +317,6 @@ class AddPropertyViewModelTest {
     @Test
     fun `current address input greater than or equal to 5 should emit address predictions list`() = testCoroutineRule.runTest {
         // Given
-        every { savedStateHandle.get<Long>("draftId") } returns DEFAULT_DRAFT_ID
-        every { savedStateHandle.get<Boolean>("isNewDraft") } returns true
-
         coEvery { getAddressPredictionsUseCase.invoke("testing") } returns AutocompleteWrapper.Success(
             listOf(
                 PredictionEntity(
@@ -375,7 +366,6 @@ class AddPropertyViewModelTest {
     @Test
     fun `loading existing draft should emit view state with draft data`() = testCoroutineRule.runTest {
         // Given
-        every { savedStateHandle.get<Long>("draftId") } returns DEFAULT_DRAFT_ID
         every { savedStateHandle.get<Boolean>("isNewDraft") } returns false
         coEvery { getPropertyDraftByIdUseCase.invoke(DEFAULT_DRAFT_ID) } returns getExistingDraftPropertyFormEntity()
         coEvery { getPhotosForPropertyIdUseCase.invoke(any()) } returns flowOf(
@@ -417,8 +407,6 @@ class AddPropertyViewModelTest {
     @Test
     fun `validating form with empty fields should emit view state with errors`() = testCoroutineRule.runTest {
         // Given
-        every { savedStateHandle.get<Long>("draftId") } returns DEFAULT_DRAFT_ID
-        every { savedStateHandle.get<Boolean>("isNewDraft") } returns true
         initViewModel()
 
         // When
@@ -457,8 +445,6 @@ class AddPropertyViewModelTest {
     @Test
     fun `saving draft with euros and feet should convert them into usd and meters`() = testCoroutineRule.runTest {
         // Given
-        every { savedStateHandle.get<Long>("draftId") } returns DEFAULT_DRAFT_ID
-        every { savedStateHandle.get<Boolean>("isNewDraft") } returns true
         every { getCurrentCurrencyUseCase.invoke() } returns flowOf(AppCurrency.EUR)
         every { getCurrentSurfaceUnitUseCase.invoke() } returns flowOf(SurfaceUnit.FEET)
         initViewModel()
@@ -503,8 +489,6 @@ class AddPropertyViewModelTest {
     @Test
     fun `saving draft with dollars and meters should not convert them`() = testCoroutineRule.runTest {
         // Given
-        every { savedStateHandle.get<Long>("draftId") } returns DEFAULT_DRAFT_ID
-        every { savedStateHandle.get<Boolean>("isNewDraft") } returns true
         every { getCurrentCurrencyUseCase.invoke() } returns flowOf(AppCurrency.USD)
         every { getCurrentSurfaceUnitUseCase.invoke() } returns flowOf(SurfaceUnit.METERS)
         initViewModel()
@@ -537,13 +521,129 @@ class AddPropertyViewModelTest {
             coVerify(exactly = 1) { getPhotosForPropertyIdUseCase.invoke(DEFAULT_DRAFT_ID) }
             confirmVerified(
                 updatePropertyDraftUseCase,
+                savedStateHandle,
                 getCurrentCurrencyUseCase,
                 getCurrentSurfaceUnitUseCase,
-                savedStateHandle,
                 getEuroRateUseCase,
                 getPhotosForPropertyIdUseCase
             )
         }
+    }
+
+    @Test
+    fun `on camera button clicked and camera permission granted, view action live data should expose open camera action`() = testCoroutineRule.runTest {
+        // Given
+        initViewModel()
+        coJustRun { navigateUseCase.invoke(To.Camera(DEFAULT_DRAFT_ID)) }
+        every { getCurrentNavigationUseCase.invoke() } returns flowOf(To.Camera(DEFAULT_DRAFT_ID))
+
+        // When
+        viewModel.viewStateLiveData.observeForTesting(this) {
+            viewModel.onCameraPermissionGranted()
+
+            viewModel.viewActionLiveData.observeForTesting(this) {
+                // Then
+                assertThat(it.value).isEqualTo(Event(AddPropertyViewAction.OpenCamera(DEFAULT_DRAFT_ID)))
+            }
+        }
+
+        verify(exactly = 1) { savedStateHandle.get<Long>("draftId") }
+        verify(exactly = 1) { savedStateHandle.get<Boolean>("isNewDraft") }
+        verify(exactly = 1) { getCurrentCurrencyUseCase.invoke() }
+        verify(exactly = 1) { getCurrentSurfaceUnitUseCase.invoke() }
+        verify(exactly = 1) { getCurrentNavigationUseCase.invoke() }
+        coVerify(exactly = 1) { getPhotosForPropertyIdUseCase.invoke(DEFAULT_DRAFT_ID) }
+        verify(exactly = 1) { navigateUseCase.invoke(To.Camera(DEFAULT_DRAFT_ID)) }
+        confirmVerified(
+            savedStateHandle,
+            getCurrentCurrencyUseCase,
+            getCurrentSurfaceUnitUseCase,
+            getCurrentNavigationUseCase,
+            getPhotosForPropertyIdUseCase,
+            navigateUseCase
+        )
+    }
+
+    @Test
+    fun `on camera permission denied and on snackbar button clicked, view action live data should expose open settings action`() = testCoroutineRule.runTest {
+        // Given
+        initViewModel()
+        coJustRun { navigateUseCase.invoke(To.Settings) }
+        every { getCurrentNavigationUseCase.invoke() } returns flowOf(To.Settings)
+
+        // When
+        viewModel.viewStateLiveData.observeForTesting(this) {
+            viewModel.onChangeSettingsClicked()
+
+            viewModel.viewActionLiveData.observeForTesting(this) {
+                // Then
+                assertThat(it.value).isEqualTo(Event(AddPropertyViewAction.OpenSettings))
+            }
+        }
+
+        verify(exactly = 1) { savedStateHandle.get<Long>("draftId") }
+        verify(exactly = 1) { savedStateHandle.get<Boolean>("isNewDraft") }
+        verify(exactly = 1) { getCurrentCurrencyUseCase.invoke() }
+        verify(exactly = 1) { getCurrentSurfaceUnitUseCase.invoke() }
+        verify(exactly = 1) { getCurrentNavigationUseCase.invoke() }
+        coVerify(exactly = 1) { getPhotosForPropertyIdUseCase.invoke(DEFAULT_DRAFT_ID) }
+        verify(exactly = 1) { navigateUseCase.invoke(To.Settings) }
+        confirmVerified(
+            savedStateHandle,
+            getCurrentCurrencyUseCase,
+            getCurrentSurfaceUnitUseCase,
+            getCurrentNavigationUseCase,
+            getPhotosForPropertyIdUseCase,
+            navigateUseCase
+        )
+    }
+
+    @Test
+    fun `draft being dropped should delete it and view action live data should expose toast`() = testCoroutineRule.runTest {
+        // Given
+        initViewModel()
+        coJustRun { navigateUseCase.invoke(To.Toast(NativeText.Resource(R.string.toast_draft_discarded))) }
+        coJustRun { navigateUseCase.invoke(To.CloseAddProperty) }
+        every { getCurrentNavigationUseCase.invoke() } returns flowOf(
+            To.Toast(NativeText.Resource(R.string.toast_draft_discarded))
+        )
+        coJustRun { deletePropertyDraftUseCase.invoke(any()) }
+
+        // When
+        viewModel.viewStateLiveData.observeForTesting(this) {
+            viewModel.dropDraft()
+
+            viewModel.viewActionLiveData.observeForTesting(this) {
+                // Then
+                assertThat(it.value).isEqualTo(
+                    Event(
+                        AddPropertyViewAction.ShowToast(
+                            NativeText.Resource(R.string.toast_draft_discarded)
+                        )
+                    )
+                )
+            }
+        }
+
+        verify(exactly = 1) { savedStateHandle.get<Long>("draftId") }
+        verify(exactly = 1) { savedStateHandle.get<Boolean>("isNewDraft") }
+        verify(exactly = 1) { getCurrentCurrencyUseCase.invoke() }
+        verify(exactly = 1) { getCurrentSurfaceUnitUseCase.invoke() }
+        verify(exactly = 1) { getCurrentNavigationUseCase.invoke() }
+        coVerify(exactly = 1) { getPhotosForPropertyIdUseCase.invoke(DEFAULT_DRAFT_ID) }
+        coVerify(exactly = 1) { deletePropertyDraftUseCase.invoke(DEFAULT_DRAFT_ID) }
+        verify(exactly = 1) { navigateUseCase.invoke(To.Toast(NativeText.Resource(R.string.toast_draft_discarded))) }
+        // Second event is only verified here as i don't know how to test consecutive events yet
+        verify(exactly = 1) { navigateUseCase.invoke(To.CloseAddProperty) }
+        confirmVerified(
+            savedStateHandle,
+            getCurrentCurrencyUseCase,
+            getCurrentSurfaceUnitUseCase,
+            getCurrentNavigationUseCase,
+            getPhotosForPropertyIdUseCase,
+            deletePropertyDraftUseCase,
+            navigateUseCase
+        )
     }
 
     // region IN

@@ -460,7 +460,7 @@ class AddPropertyViewModel @Inject constructor(
     }
 
     fun onForSaleSinceDateChanged(date: Long) {
-        Log.d("test", "onForSaleSinceDateChanged: ")
+        Log.d("test", "onForSaleSinceDateChanged: $date")
         val instant = Instant.ofEpochMilli(date)
         val zonedDateTime = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault())
 
@@ -653,13 +653,12 @@ class AddPropertyViewModel @Inject constructor(
         if (isNewDraft &&
             propertyFormReplaceCache.type == null &&
             propertyFormReplaceCache.forSaleSince == null &&
-            propertyFormReplaceCache.dateOfSale == null &&
+            (propertyFormReplaceCache.isSold == true && propertyFormReplaceCache.dateOfSale == null) &&
             propertyFormReplaceCache.priceFromUser == null &&
             propertyFormReplaceCache.referenceSurface == BigDecimal.ZERO &&
             propertyFormReplaceCache.rooms == BigDecimal.ZERO &&
             propertyFormReplaceCache.bathrooms == BigDecimal.ZERO &&
             propertyFormReplaceCache.bedrooms == BigDecimal.ZERO &&
-            propertyFormReplaceCache.pointsOfInterest!!.isEmpty() &&
             propertyFormReplaceCache.address == PropertyFormAddress() &&
             propertyFormReplaceCache.autoCompleteAddress == null &&
             propertyFormReplaceCache.description == null
