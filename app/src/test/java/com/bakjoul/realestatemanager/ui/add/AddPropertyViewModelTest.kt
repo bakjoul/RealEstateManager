@@ -36,7 +36,9 @@ import com.bakjoul.realestatemanager.ui.utils.EquatableCallback
 import com.bakjoul.realestatemanager.ui.utils.Event
 import com.bakjoul.realestatemanager.ui.utils.NativeText
 import com.bakjoul.realestatemanager.utils.TestCoroutineRule
+import com.bakjoul.realestatemanager.utils.observe
 import com.bakjoul.realestatemanager.utils.observeForTesting
+import com.google.common.truth.Truth
 import io.mockk.coEvery
 import io.mockk.coJustRun
 import io.mockk.coVerify
@@ -290,12 +292,13 @@ class AddPropertyViewModelTest {
     fun `current address input shorter than 5 should emit empty address predictions list`() = testCoroutineRule.runTest {
         // Given
         initViewModel()
+        viewModel.viewStateLiveData.observeForTesting(this) {}
 
         // When
-        viewModel.viewStateLiveData.observeForTesting(this) {
-            viewModel.onAddressChanged("test")
+        viewModel.onAddressChanged("test")
 
-            // Then
+        // Then
+        viewModel.viewStateLiveData.observeForTesting(this) {
             assertThat(it.value?.addressPredictions).isEqualTo(emptyList())
 
             verify(exactly = 1) { getCurrentCurrencyUseCase.invoke() }
@@ -326,14 +329,14 @@ class AddPropertyViewModelTest {
             )
         )
         initViewModel()
+        viewModel.viewStateLiveData.observeForTesting(this) {}
+
+        // When
+        viewModel.onAddressChanged("testing")
+        advanceTimeBy(SAVE_DELAY)
 
         // Then
         viewModel.viewStateLiveData.observeForTesting(this) {
-            // When
-            viewModel.onAddressChanged("testing")
-            advanceTimeBy(SAVE_DELAY)
-            runCurrent()
-
             // Then
             assertThat(it.value?.addressPredictions).isEqualTo(
                 listOf(
@@ -408,13 +411,13 @@ class AddPropertyViewModelTest {
     fun `validating form with empty fields should emit view state with errors`() = testCoroutineRule.runTest {
         // Given
         initViewModel()
+        viewModel.viewStateLiveData.observeForTesting(this) {}
 
         // When
-        viewModel.viewStateLiveData.observeForTesting(this) {
-            viewModel.onDoneButtonClicked()
-            advanceUntilIdle()
+        viewModel.onDoneButtonClicked()
 
-            // Then
+        // Then
+        viewModel.viewStateLiveData.observeForTesting(this) {
             assertThat(it.value?.isTypeErrorVisible).isEqualTo(true)
             assertThat(it.value?.forSaleSinceError).isEqualTo(NativeText.Resource(R.string.add_property_error_date_required))
             assertThat(it.value?.priceError).isEqualTo(NativeText.Resource(R.string.add_property_error_price_required))
@@ -536,15 +539,14 @@ class AddPropertyViewModelTest {
         initViewModel()
         coJustRun { navigateUseCase.invoke(To.Camera(DEFAULT_DRAFT_ID)) }
         every { getCurrentNavigationUseCase.invoke() } returns flowOf(To.Camera(DEFAULT_DRAFT_ID))
+        viewModel.viewStateLiveData.observeForTesting(this) {}
 
         // When
-        viewModel.viewStateLiveData.observeForTesting(this) {
-            viewModel.onCameraPermissionGranted()
+        viewModel.onCameraPermissionGranted()
 
-            viewModel.viewActionLiveData.observeForTesting(this) {
-                // Then
-                assertThat(it.value).isEqualTo(Event(AddPropertyViewAction.OpenCamera(DEFAULT_DRAFT_ID)))
-            }
+        // Then
+        viewModel.viewActionLiveData.observeForTesting(this) {
+            assertThat(it.value).isEqualTo(Event(AddPropertyViewAction.OpenCamera(DEFAULT_DRAFT_ID)))
         }
 
         verify(exactly = 1) { savedStateHandle.get<Long>("draftId") }
@@ -565,20 +567,19 @@ class AddPropertyViewModelTest {
     }
 
     @Test
-    fun `on camera permission denied and on snackbar button clicked, view action live data should expose open settings action`() = testCoroutineRule.runTest {
+    fun `on camera permission denied and on snack bar button clicked, view action live data should expose open settings action`() = testCoroutineRule.runTest {
         // Given
         initViewModel()
         coJustRun { navigateUseCase.invoke(To.Settings) }
         every { getCurrentNavigationUseCase.invoke() } returns flowOf(To.Settings)
+        viewModel.viewStateLiveData.observeForTesting(this) {}
 
         // When
-        viewModel.viewStateLiveData.observeForTesting(this) {
-            viewModel.onChangeSettingsClicked()
+        viewModel.onChangeSettingsClicked()
 
-            viewModel.viewActionLiveData.observeForTesting(this) {
-                // Then
-                assertThat(it.value).isEqualTo(Event(AddPropertyViewAction.OpenSettings))
-            }
+        // Then
+        viewModel.viewActionLiveData.observeForTesting(this) {
+            assertThat(it.value).isEqualTo(Event(AddPropertyViewAction.OpenSettings))
         }
 
         verify(exactly = 1) { savedStateHandle.get<Long>("draftId") }
@@ -599,31 +600,28 @@ class AddPropertyViewModelTest {
     }
 
     @Test
-    fun `draft being dropped should delete it and view action live data should expose toast`() = testCoroutineRule.runTest {
+    fun `on close dialog clicked, if new draft and form is empty, draft should be deleted and view action live data should expose toast`() = testCoroutineRule.runTest {
         // Given
         initViewModel()
+        coJustRun { deletePropertyDraftUseCase.invoke(any()) }
         coJustRun { navigateUseCase.invoke(To.Toast(NativeText.Resource(R.string.toast_draft_discarded))) }
         coJustRun { navigateUseCase.invoke(To.CloseAddProperty) }
         every { getCurrentNavigationUseCase.invoke() } returns flowOf(
-            To.Toast(NativeText.Resource(R.string.toast_draft_discarded))
+            To.Toast(NativeText.Resource(R.string.toast_draft_discarded)),
+            To.CloseAddProperty
         )
-        coJustRun { deletePropertyDraftUseCase.invoke(any()) }
+        viewModel.viewStateLiveData.observeForTesting(this) {}
+        val actionLiveData = viewModel.viewActionLiveData.observe(this)
 
         // When
-        viewModel.viewStateLiveData.observeForTesting(this) {
-            viewModel.dropDraft()
+        viewModel.closeDialog()
+        runCurrent()
 
-            viewModel.viewActionLiveData.observeForTesting(this) {
-                // Then
-                assertThat(it.value).isEqualTo(
-                    Event(
-                        AddPropertyViewAction.ShowToast(
-                            NativeText.Resource(R.string.toast_draft_discarded)
-                        )
-                    )
-                )
-            }
-        }
+        // Then
+        Truth.assertThat(actionLiveData.values).containsExactly(
+            Event(AddPropertyViewAction.ShowToast(NativeText.Resource(R.string.toast_draft_discarded))),
+            Event(AddPropertyViewAction.CloseDialog)
+        ).inOrder()
 
         verify(exactly = 1) { savedStateHandle.get<Long>("draftId") }
         verify(exactly = 1) { savedStateHandle.get<Boolean>("isNewDraft") }
@@ -633,7 +631,6 @@ class AddPropertyViewModelTest {
         coVerify(exactly = 1) { getPhotosForPropertyIdUseCase.invoke(DEFAULT_DRAFT_ID) }
         coVerify(exactly = 1) { deletePropertyDraftUseCase.invoke(DEFAULT_DRAFT_ID) }
         verify(exactly = 1) { navigateUseCase.invoke(To.Toast(NativeText.Resource(R.string.toast_draft_discarded))) }
-        // Second event is only verified here as i don't know how to test consecutive events yet
         verify(exactly = 1) { navigateUseCase.invoke(To.CloseAddProperty) }
         confirmVerified(
             savedStateHandle,
@@ -645,6 +642,385 @@ class AddPropertyViewModelTest {
             navigateUseCase
         )
     }
+
+    @Test
+    fun `on close dialog clicked, if existing draft, view action live data should expose save draft dialog action`() = testCoroutineRule.runTest {
+        // Given
+        every { savedStateHandle.get<Boolean>("isNewDraft") } returns false
+        initViewModel()
+        coJustRun { navigateUseCase.invoke(To.SaveDraftDialog) }
+        every { getCurrentNavigationUseCase.invoke() } returns flowOf(To.SaveDraftDialog)
+        viewModel.viewStateLiveData.observeForTesting(this) {}
+
+        // When
+        viewModel.closeDialog()
+
+        // Then
+        viewModel.viewActionLiveData.observeForTesting(this) {
+            assertThat(it.value).isEqualTo(Event(AddPropertyViewAction.SaveDraftDialog))
+        }
+
+        verify(exactly = 1) { savedStateHandle.get<Long>("draftId") }
+        verify(exactly = 1) { savedStateHandle.get<Boolean>("isNewDraft") }
+        verify(exactly = 1) { getCurrentCurrencyUseCase.invoke() }
+        verify(exactly = 1) { getCurrentSurfaceUnitUseCase.invoke() }
+        verify(exactly = 1) { getCurrentNavigationUseCase.invoke() }
+        coVerify(exactly = 1) { getPhotosForPropertyIdUseCase.invoke(DEFAULT_DRAFT_ID) }
+        verify(exactly = 1) { navigateUseCase.invoke(To.SaveDraftDialog) }
+        confirmVerified(
+            savedStateHandle,
+            getCurrentCurrencyUseCase,
+            getCurrentSurfaceUnitUseCase,
+            getCurrentNavigationUseCase,
+            getPhotosForPropertyIdUseCase,
+            navigateUseCase
+        )
+    }
+
+    // region other closeDialog() tests
+    @Test
+    fun `on close dialog clicked, if new draft and type is not null, view action live data should expose save draft dialog action`() = testCoroutineRule.runTest {
+        // Given
+        initViewModel()
+        coJustRun { navigateUseCase.invoke(To.SaveDraftDialog) }
+        every { getCurrentNavigationUseCase.invoke() } returns flowOf(To.SaveDraftDialog)
+        viewModel.viewStateLiveData.observeForTesting(this) {}
+
+        // When
+        viewModel.onPropertyTypeChanged(PropertyTypeEntity.FLAT.radioButtonId)
+        viewModel.closeDialog()
+
+        // Then
+        viewModel.viewActionLiveData.observeForTesting(this) {
+            assertThat(it.value).isEqualTo(Event(AddPropertyViewAction.SaveDraftDialog))
+        }
+
+        verify(exactly = 1) { savedStateHandle.get<Long>("draftId") }
+        verify(exactly = 1) { savedStateHandle.get<Boolean>("isNewDraft") }
+        verify(exactly = 1) { getCurrentCurrencyUseCase.invoke() }
+        verify(exactly = 1) { getCurrentSurfaceUnitUseCase.invoke() }
+        verify(exactly = 1) { getCurrentNavigationUseCase.invoke() }
+        coVerify(exactly = 1) { getPhotosForPropertyIdUseCase.invoke(DEFAULT_DRAFT_ID) }
+        verify(exactly = 1) { navigateUseCase.invoke(To.SaveDraftDialog) }
+        confirmVerified(
+            savedStateHandle,
+            getCurrentCurrencyUseCase,
+            getCurrentSurfaceUnitUseCase,
+            getCurrentNavigationUseCase,
+            getPhotosForPropertyIdUseCase,
+            navigateUseCase
+        )
+    }
+
+    @Test
+    fun `on close dialog clicked, if new draft and forSaleSince is not null, view action live data should expose save draft dialog action`() = testCoroutineRule.runTest {
+        // Given
+        initViewModel()
+        coJustRun { navigateUseCase.invoke(To.SaveDraftDialog) }
+        every { getCurrentNavigationUseCase.invoke() } returns flowOf(To.SaveDraftDialog)
+        viewModel.viewStateLiveData.observeForTesting(this) {}
+
+        // When
+        viewModel.onForSaleSinceDateChanged(1706140800000)  // 25/01/2024
+        viewModel.closeDialog()
+
+        // Then
+        viewModel.viewActionLiveData.observeForTesting(this) {
+            assertThat(it.value).isEqualTo(Event(AddPropertyViewAction.SaveDraftDialog))
+        }
+
+        verify(exactly = 1) { savedStateHandle.get<Long>("draftId") }
+        verify(exactly = 1) { savedStateHandle.get<Boolean>("isNewDraft") }
+        verify(exactly = 1) { getCurrentCurrencyUseCase.invoke() }
+        verify(exactly = 1) { getCurrentSurfaceUnitUseCase.invoke() }
+        verify(exactly = 1) { getCurrentNavigationUseCase.invoke() }
+        coVerify(exactly = 1) { getPhotosForPropertyIdUseCase.invoke(DEFAULT_DRAFT_ID) }
+        verify(exactly = 1) { navigateUseCase.invoke(To.SaveDraftDialog) }
+        confirmVerified(
+            savedStateHandle,
+            getCurrentCurrencyUseCase,
+            getCurrentSurfaceUnitUseCase,
+            getCurrentNavigationUseCase,
+            getPhotosForPropertyIdUseCase,
+            navigateUseCase
+        )
+    }
+
+    @Test
+    fun `on close dialog clicked, if new draft and date of sale is not null, view action live data should expose save draft dialog action`() = testCoroutineRule.runTest {
+        // Given
+        initViewModel()
+        coJustRun { navigateUseCase.invoke(To.SaveDraftDialog) }
+        every { getCurrentNavigationUseCase.invoke() } returns flowOf(To.SaveDraftDialog)
+        viewModel.viewStateLiveData.observeForTesting(this) {}
+
+        // When
+        viewModel.onSaleStatusChanged(true)
+        runCurrent()
+        viewModel.onSoldOnDateChanged(1708819200000)  // 25/02/2024
+
+        viewModel.closeDialog()
+
+        // Then
+        viewModel.viewActionLiveData.observeForTesting(this) {
+            assertThat(it.value).isEqualTo(Event(AddPropertyViewAction.SaveDraftDialog))
+        }
+
+        verify(exactly = 1) { savedStateHandle.get<Long>("draftId") }
+        verify(exactly = 1) { savedStateHandle.get<Boolean>("isNewDraft") }
+        verify(exactly = 1) { getCurrentCurrencyUseCase.invoke() }
+        verify(exactly = 1) { getCurrentSurfaceUnitUseCase.invoke() }
+        verify(exactly = 1) { getCurrentNavigationUseCase.invoke() }
+        coVerify(exactly = 1) { getPhotosForPropertyIdUseCase.invoke(DEFAULT_DRAFT_ID) }
+        verify(exactly = 1) { navigateUseCase.invoke(To.SaveDraftDialog) }
+        confirmVerified(
+            savedStateHandle,
+            getCurrentCurrencyUseCase,
+            getCurrentSurfaceUnitUseCase,
+            getCurrentNavigationUseCase,
+            getPhotosForPropertyIdUseCase,
+            navigateUseCase
+        )
+    }
+
+    @Test
+    fun `on close dialog clicked, if new draft and price is not null, view action live data should expose save draft dialog action`() = testCoroutineRule.runTest {
+        // Given
+        initViewModel()
+        coJustRun { navigateUseCase.invoke(To.SaveDraftDialog) }
+        every { getCurrentNavigationUseCase.invoke() } returns flowOf(To.SaveDraftDialog)
+        viewModel.viewStateLiveData.observeForTesting(this) {}
+
+        // When
+        viewModel.onPriceChanged(BigDecimal(10000))
+        viewModel.closeDialog()
+
+        // Then
+        viewModel.viewActionLiveData.observeForTesting(this) {
+            assertThat(it.value).isEqualTo(Event(AddPropertyViewAction.SaveDraftDialog))
+        }
+
+        verify(exactly = 1) { savedStateHandle.get<Long>("draftId") }
+        verify(exactly = 1) { savedStateHandle.get<Boolean>("isNewDraft") }
+        verify(exactly = 1) { getCurrentCurrencyUseCase.invoke() }
+        verify(exactly = 1) { getCurrentSurfaceUnitUseCase.invoke() }
+        verify(exactly = 1) { getCurrentNavigationUseCase.invoke() }
+        coVerify(exactly = 1) { getPhotosForPropertyIdUseCase.invoke(DEFAULT_DRAFT_ID) }
+        verify(exactly = 1) { navigateUseCase.invoke(To.SaveDraftDialog) }
+        confirmVerified(
+            savedStateHandle,
+            getCurrentCurrencyUseCase,
+            getCurrentSurfaceUnitUseCase,
+            getCurrentNavigationUseCase,
+            getPhotosForPropertyIdUseCase,
+            navigateUseCase
+        )
+    }
+
+    @Test
+    fun `on close dialog clicked, if new draft and surface is not null, view action live data should expose save draft dialog action`() = testCoroutineRule.runTest {
+        // Given
+        initViewModel()
+        coJustRun { navigateUseCase.invoke(To.SaveDraftDialog) }
+        every { getCurrentNavigationUseCase.invoke() } returns flowOf(To.SaveDraftDialog)
+        viewModel.viewStateLiveData.observeForTesting(this) {}
+
+        // When
+        viewModel.onSurfaceChanged(BigDecimal(100))
+        viewModel.closeDialog()
+
+        // Then
+        viewModel.viewActionLiveData.observeForTesting(this) {
+            assertThat(it.value).isEqualTo(Event(AddPropertyViewAction.SaveDraftDialog))
+        }
+
+        verify(exactly = 1) { savedStateHandle.get<Long>("draftId") }
+        verify(exactly = 1) { savedStateHandle.get<Boolean>("isNewDraft") }
+        verify(exactly = 1) { getCurrentCurrencyUseCase.invoke() }
+        verify(exactly = 1) { getCurrentSurfaceUnitUseCase.invoke() }
+        verify(exactly = 1) { getCurrentNavigationUseCase.invoke() }
+        coVerify(exactly = 1) { getPhotosForPropertyIdUseCase.invoke(DEFAULT_DRAFT_ID) }
+        verify(exactly = 1) { navigateUseCase.invoke(To.SaveDraftDialog) }
+        confirmVerified(
+            savedStateHandle,
+            getCurrentCurrencyUseCase,
+            getCurrentSurfaceUnitUseCase,
+            getCurrentNavigationUseCase,
+            getPhotosForPropertyIdUseCase,
+            navigateUseCase
+        )
+    }
+
+    @Test
+    fun `on close dialog clicked, if new draft and number of rooms is not null, view action live data should expose save draft dialog action`() = testCoroutineRule.runTest {
+        // Given
+        initViewModel()
+        coJustRun { navigateUseCase.invoke(To.SaveDraftDialog) }
+        every { getCurrentNavigationUseCase.invoke() } returns flowOf(To.SaveDraftDialog)
+        viewModel.viewStateLiveData.observeForTesting(this) {}
+
+        // When
+        viewModel.onRoomsCountChanged(BigDecimal(7))
+        viewModel.closeDialog()
+
+        // Then
+        viewModel.viewActionLiveData.observeForTesting(this) {
+            assertThat(it.value).isEqualTo(Event(AddPropertyViewAction.SaveDraftDialog))
+        }
+
+        verify(exactly = 1) { savedStateHandle.get<Long>("draftId") }
+        verify(exactly = 1) { savedStateHandle.get<Boolean>("isNewDraft") }
+        verify(exactly = 1) { getCurrentCurrencyUseCase.invoke() }
+        verify(exactly = 1) { getCurrentSurfaceUnitUseCase.invoke() }
+        verify(exactly = 1) { getCurrentNavigationUseCase.invoke() }
+        coVerify(exactly = 1) { getPhotosForPropertyIdUseCase.invoke(DEFAULT_DRAFT_ID) }
+        verify(exactly = 1) { navigateUseCase.invoke(To.SaveDraftDialog) }
+        confirmVerified(
+            savedStateHandle,
+            getCurrentCurrencyUseCase,
+            getCurrentSurfaceUnitUseCase,
+            getCurrentNavigationUseCase,
+            getPhotosForPropertyIdUseCase,
+            navigateUseCase
+        )
+    }
+
+    @Test
+    fun `on close dialog clicked, if new draft and number of bathrooms is not null, view action live data should expose save draft dialog action`() = testCoroutineRule.runTest {
+        // Given
+        initViewModel()
+        coJustRun { navigateUseCase.invoke(To.SaveDraftDialog) }
+        every { getCurrentNavigationUseCase.invoke() } returns flowOf(To.SaveDraftDialog)
+        viewModel.viewStateLiveData.observeForTesting(this) {}
+
+        // When
+        viewModel.onBathroomsCountChanged(BigDecimal(2))
+        viewModel.closeDialog()
+
+        // Then
+        viewModel.viewActionLiveData.observeForTesting(this) {
+            assertThat(it.value).isEqualTo(Event(AddPropertyViewAction.SaveDraftDialog))
+        }
+
+        verify(exactly = 1) { savedStateHandle.get<Long>("draftId") }
+        verify(exactly = 1) { savedStateHandle.get<Boolean>("isNewDraft") }
+        verify(exactly = 1) { getCurrentCurrencyUseCase.invoke() }
+        verify(exactly = 1) { getCurrentSurfaceUnitUseCase.invoke() }
+        verify(exactly = 1) { getCurrentNavigationUseCase.invoke() }
+        coVerify(exactly = 1) { getPhotosForPropertyIdUseCase.invoke(DEFAULT_DRAFT_ID) }
+        verify(exactly = 1) { navigateUseCase.invoke(To.SaveDraftDialog) }
+        confirmVerified(
+            savedStateHandle,
+            getCurrentCurrencyUseCase,
+            getCurrentSurfaceUnitUseCase,
+            getCurrentNavigationUseCase,
+            getPhotosForPropertyIdUseCase,
+            navigateUseCase
+        )
+    }
+
+    @Test
+    fun `on close dialog clicked, if new draft and number of bedrooms is not null, view action live data should expose save draft dialog action`() = testCoroutineRule.runTest {
+        // Given
+        initViewModel()
+        coJustRun { navigateUseCase.invoke(To.SaveDraftDialog) }
+        every { getCurrentNavigationUseCase.invoke() } returns flowOf(To.SaveDraftDialog)
+        viewModel.viewStateLiveData.observeForTesting(this) {}
+
+        // When
+        viewModel.onBedroomsCountChanged(BigDecimal(2))
+        viewModel.closeDialog()
+
+        // Then
+        viewModel.viewActionLiveData.observeForTesting(this) {
+            assertThat(it.value).isEqualTo(Event(AddPropertyViewAction.SaveDraftDialog))
+        }
+
+        verify(exactly = 1) { savedStateHandle.get<Long>("draftId") }
+        verify(exactly = 1) { savedStateHandle.get<Boolean>("isNewDraft") }
+        verify(exactly = 1) { getCurrentCurrencyUseCase.invoke() }
+        verify(exactly = 1) { getCurrentSurfaceUnitUseCase.invoke() }
+        verify(exactly = 1) { getCurrentNavigationUseCase.invoke() }
+        coVerify(exactly = 1) { getPhotosForPropertyIdUseCase.invoke(DEFAULT_DRAFT_ID) }
+        verify(exactly = 1) { navigateUseCase.invoke(To.SaveDraftDialog) }
+        confirmVerified(
+            savedStateHandle,
+            getCurrentCurrencyUseCase,
+            getCurrentSurfaceUnitUseCase,
+            getCurrentNavigationUseCase,
+            getPhotosForPropertyIdUseCase,
+            navigateUseCase
+        )
+    }
+
+    @Test
+    fun `on close dialog clicked, if new draft and amenities list is not empty, view action live data should expose save draft dialog action`() = testCoroutineRule.runTest {
+        // Given
+        initViewModel()
+        coJustRun { navigateUseCase.invoke(To.SaveDraftDialog) }
+        every { getCurrentNavigationUseCase.invoke() } returns flowOf(To.SaveDraftDialog)
+        viewModel.viewStateLiveData.observeForTesting(this) {}
+
+        // When
+        viewModel.onChipCheckedChanged(PropertyPoiEntity.PARK.poiResId, true)
+        viewModel.closeDialog()
+
+        // Then
+        viewModel.viewActionLiveData.observeForTesting(this) {
+            assertThat(it.value).isEqualTo(Event(AddPropertyViewAction.SaveDraftDialog))
+        }
+
+        verify(exactly = 1) { savedStateHandle.get<Long>("draftId") }
+        verify(exactly = 1) { savedStateHandle.get<Boolean>("isNewDraft") }
+        verify(exactly = 1) { getCurrentCurrencyUseCase.invoke() }
+        verify(exactly = 1) { getCurrentSurfaceUnitUseCase.invoke() }
+        verify(exactly = 1) { getCurrentNavigationUseCase.invoke() }
+        coVerify(exactly = 1) { getPhotosForPropertyIdUseCase.invoke(DEFAULT_DRAFT_ID) }
+        verify(exactly = 1) { navigateUseCase.invoke(To.SaveDraftDialog) }
+        confirmVerified(
+            savedStateHandle,
+            getCurrentCurrencyUseCase,
+            getCurrentSurfaceUnitUseCase,
+            getCurrentNavigationUseCase,
+            getPhotosForPropertyIdUseCase,
+            navigateUseCase
+        )
+    }
+
+    @Test
+    fun `on close dialog clicked, if new draft and description is not null, view action live data should expose save draft dialog action`() = testCoroutineRule.runTest {
+        // Given
+        initViewModel()
+        coJustRun { navigateUseCase.invoke(To.SaveDraftDialog) }
+        every { getCurrentNavigationUseCase.invoke() } returns flowOf(To.SaveDraftDialog)
+        viewModel.viewStateLiveData.observeForTesting(this) {}
+
+        // When
+        viewModel.onDescriptionChanged("test")
+        viewModel.closeDialog()
+
+        // Then
+        viewModel.viewActionLiveData.observeForTesting(this) {
+            assertThat(it.value).isEqualTo(Event(AddPropertyViewAction.SaveDraftDialog))
+        }
+
+        verify(exactly = 1) { savedStateHandle.get<Long>("draftId") }
+        verify(exactly = 1) { savedStateHandle.get<Boolean>("isNewDraft") }
+        verify(exactly = 1) { getCurrentCurrencyUseCase.invoke() }
+        verify(exactly = 1) { getCurrentSurfaceUnitUseCase.invoke() }
+        verify(exactly = 1) { getCurrentNavigationUseCase.invoke() }
+        coVerify(exactly = 1) { getPhotosForPropertyIdUseCase.invoke(DEFAULT_DRAFT_ID) }
+        verify(exactly = 1) { navigateUseCase.invoke(To.SaveDraftDialog) }
+        confirmVerified(
+            savedStateHandle,
+            getCurrentCurrencyUseCase,
+            getCurrentSurfaceUnitUseCase,
+            getCurrentNavigationUseCase,
+            getPhotosForPropertyIdUseCase,
+            navigateUseCase
+        )
+    }
+    // endregion closeDialog() tests
 
     // region IN
     private fun getDefaultPropertyFormEntity() = PropertyFormEntity(

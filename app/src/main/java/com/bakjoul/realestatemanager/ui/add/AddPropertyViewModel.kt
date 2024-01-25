@@ -653,12 +653,13 @@ class AddPropertyViewModel @Inject constructor(
         if (isNewDraft &&
             propertyFormReplaceCache.type == null &&
             propertyFormReplaceCache.forSaleSince == null &&
-            (propertyFormReplaceCache.isSold == true && propertyFormReplaceCache.dateOfSale == null) &&
+            propertyFormReplaceCache.dateOfSale == null &&
             propertyFormReplaceCache.priceFromUser == null &&
-            propertyFormReplaceCache.referenceSurface == BigDecimal.ZERO &&
-            propertyFormReplaceCache.rooms == BigDecimal.ZERO &&
-            propertyFormReplaceCache.bathrooms == BigDecimal.ZERO &&
-            propertyFormReplaceCache.bedrooms == BigDecimal.ZERO &&
+            propertyFormReplaceCache.surfaceFromUser == null &&
+            propertyFormReplaceCache.rooms == null &&
+            propertyFormReplaceCache.bathrooms == null &&
+            propertyFormReplaceCache.bedrooms == null &&
+            propertyFormReplaceCache.pointsOfInterest!!.isEmpty() &&
             propertyFormReplaceCache.address == PropertyFormAddress() &&
             propertyFormReplaceCache.autoCompleteAddress == null &&
             propertyFormReplaceCache.description == null
