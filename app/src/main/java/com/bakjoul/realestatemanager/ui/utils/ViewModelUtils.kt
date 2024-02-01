@@ -32,5 +32,22 @@ class ViewModelUtils {
             }
             return formattedPrice
         }
+
+        fun getCurrencyFormat(currency: AppCurrency): DecimalFormat {
+            val symbols = DecimalFormatSymbols(Locale.getDefault()).apply {
+                groupingSeparator = if (currency == AppCurrency.EUR) {
+                    ' '
+                } else {
+                    ','
+                }
+                decimalSeparator = if (currency == AppCurrency.EUR) {
+                    ','
+                } else {
+                    '.'
+                }
+            }
+
+            return DecimalFormat("#,###.##", symbols)
+        }
     }
 }

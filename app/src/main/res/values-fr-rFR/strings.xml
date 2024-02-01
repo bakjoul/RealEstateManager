@@ -73,7 +73,7 @@
     <string name="camera_cancel_button_desc">Bouton annuler</string>
     <string name="camera_done_button_desc">Bouton valider</string>
     <string name="list_add_property_fab_desc">Bouton ajouter un bien</string>
-    <string name="actions_menu_title">Menu</string>
+    <string name="menu_main_drawer_title">Menu</string>
     <string name="close_button">Fermer</string>
     <string name="add_property_title">Ajouter un bien</string>
     <string name="add_property_delete_photo_desc">Supprimer la photo</string>
@@ -122,4 +122,21 @@
     <string name="draft_overview_type_na">Type non renseigné</string>
     <string name="draft_overview_city_na">Ville non renseignée</string>
     <string name="draft_overview_description_na">Description non renseignée</string>
+    <string name="duration_unit_years">ans</string>
+    <string name="duration_unit_months">mois</string>
+    <string name="main_menu_loan_simulator_title">Simulateur de prêt</string>
+    <string name="loan_simulator_amount_hint">Montant</string>
+    <string name="loan_simulator_down_payment_hint">Apport</string>
+    <string name="loan_simulator_interest_hint">Taux d\'intérêt</string>
+    <string name="loan_simulator_duration_hint">Durée</string>
+    <string name="loan_simulator_reset_button_text">Réinit.</string>
+    <string name="loan_simulator_calculate_button_text">Calculer</string>
+    <string name="loan_simulator_appbar_title">Simulateur de prêt</string>
+    <string name="loan_simulator_error_amount">Montant requis</string>
+    <string name="loan_simulator_error_interest_rate">Taux d\'intérêt requis</string>
+    <string name="loan_simulator_error_duration">Durée requise</string>
+    <string name="loan_simulator_monthly_payment_label">Paiement mensuel</string>
+    <string name="loan_simulator_yearly_payment_label">Paiement annuel</string>
+    <string name="loan_simulator_total_interest_label">Intérêt total</string>
+    <string name="loan_simulator_total_payment_label">Paiement total</string>
 </resources>

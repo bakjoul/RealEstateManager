@@ -90,6 +90,7 @@ class MainViewModel @Inject constructor(
                 } else {
                     null
                 }
+                is To.LoanSimulatorDialog -> MainViewAction.ShowLoanSimulatorDialog
                 else -> null
             }
             viewAction?.let {
@@ -120,5 +121,9 @@ class MainViewModel @Inject constructor(
 
     fun onContinueEditingDraftClicked() {
         navigateUseCase.invoke(To.DraftListDialog)
+    }
+
+    fun onLoanSimulatorClicked() {
+        navigateUseCase.invoke(To.LoanSimulatorDialog)
     }
 }

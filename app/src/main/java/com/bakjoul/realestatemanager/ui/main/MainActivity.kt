@@ -22,6 +22,7 @@ import com.bakjoul.realestatemanager.ui.details.DetailsFragment
 import com.bakjoul.realestatemanager.ui.dispatcher.DispatcherActivity
 import com.bakjoul.realestatemanager.ui.drafts.DraftsFragment
 import com.bakjoul.realestatemanager.ui.list.PropertyListFragment
+import com.bakjoul.realestatemanager.ui.loan_simulator.LoanSimulatorFragment
 import com.bakjoul.realestatemanager.ui.photos.PhotosFragment
 import com.bakjoul.realestatemanager.ui.settings.SettingsFragment
 import com.bakjoul.realestatemanager.ui.utils.Event.Companion.observeEvent
@@ -40,6 +41,7 @@ class MainActivity : AppCompatActivity() {
         private const val DRAFTS_DIALOG_TAG = "DraftsDialogFragment"
         private const val ADD_PROPERTY_DIALOG_TAG = "AddPropertyDialogFragment"
         private const val SETTINGS_DIALOG_TAG = "SettingsDialogFragment"
+        private const val LOAN_SIMULATOR_DIALOG_TAG = "LoanSimulatorDialogFragment"
     }
 
     private val binding by viewBinding { ActivityMainBinding.inflate(it) }
@@ -184,6 +186,13 @@ class MainActivity : AppCompatActivity() {
                 MainViewAction.ShowDetailsPortraitIfNeeded -> showDetailsPortraitIfNeeded(containerMainId)
 
                 MainViewAction.HideDetailsPortrait -> hideDetailsPortrait()
+
+                MainViewAction.ShowLoanSimulatorDialog -> {
+                    val existingFragment = supportFragmentManager.findFragmentByTag(LOAN_SIMULATOR_DIALOG_TAG)
+                    if (existingFragment == null) {
+                        LoanSimulatorFragment().show(supportFragmentManager, LOAN_SIMULATOR_DIALOG_TAG)
+                    }
+                }
             }
         }
     }
@@ -249,6 +258,10 @@ class MainActivity : AppCompatActivity() {
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean = when (menuItem.itemId) {
                 R.id.main_menu_button -> {
                     binding.mainDrawerLayout.openDrawer(GravityCompat.END)
+                    true
+                }
+                R.id.main_loan_simulator_button -> {
+                    viewModel.onLoanSimulatorClicked()
                     true
                 }
 

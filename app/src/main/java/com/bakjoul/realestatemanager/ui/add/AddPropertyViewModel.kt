@@ -37,6 +37,7 @@ import com.bakjoul.realestatemanager.domain.settings.surface_unit.GetCurrentSurf
 import com.bakjoul.realestatemanager.ui.utils.EquatableCallback
 import com.bakjoul.realestatemanager.ui.utils.Event
 import com.bakjoul.realestatemanager.ui.utils.NativeText
+import com.bakjoul.realestatemanager.ui.utils.ViewModelUtils.Companion.getCurrencyFormat
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -51,15 +52,12 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import java.math.RoundingMode
-import java.text.DecimalFormat
-import java.text.DecimalFormatSymbols
 import java.time.Clock
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
-import java.util.Locale
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
@@ -285,23 +283,6 @@ class AddPropertyViewModel @Inject constructor(
 
     private fun formatDate(localDate: LocalDate?): NativeText? = localDate?.let {
         NativeText.Date(R.string.date_format, it)
-    }
-
-    private fun getCurrencyFormat(currency: AppCurrency): DecimalFormat {
-        val symbols = DecimalFormatSymbols(Locale.getDefault()).apply {
-            groupingSeparator = if (currency == AppCurrency.EUR) {
-                ' '
-            } else {
-                ','
-            }
-            decimalSeparator = if (currency == AppCurrency.EUR) {
-                ','
-            } else {
-                '.'
-            }
-        }
-
-        return DecimalFormat("#,###.##", symbols)
     }
 
     private fun formatPriceHint(currency: AppCurrency): NativeText {

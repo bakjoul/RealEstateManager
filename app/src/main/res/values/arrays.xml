@@ -8,4 +8,8 @@
         <item>Feet (sq ft)</item>
         <item>Meters (sq m)</item>
     </string-array>
+    <string-array name="duration_unit_options">
+        <item>years</item>
+        <item>months</item>
+    </string-array>
 </resources>

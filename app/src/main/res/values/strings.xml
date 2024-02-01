@@ -80,7 +80,7 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment" translatable="false">Hello blank fragment</string>
     <string name="list_add_property_fab_desc">Add property button</string>
-    <string name="actions_menu_title">Menu</string>
+    <string name="menu_main_drawer_title">Menu</string>
     <string name="close_button">Close</string>
     <string name="add_property_title">Add a property</string>
     <string name="add_property_delete_photo_desc">Delete photo</string>
@@ -137,4 +137,21 @@
     <string name="draft_overview_type_na">Type not available</string>
     <string name="draft_overview_city_na">City not available</string>
     <string name="draft_overview_description_na">Description not available</string>
+    <string name="duration_unit_years">years</string>
+    <string name="duration_unit_months">months</string>
+    <string name="main_menu_loan_simulator_title">Loan simulator</string>
+    <string name="loan_simulator_amount_hint">Amount</string>
+    <string name="loan_simulator_down_payment_hint">Down payment</string>
+    <string name="loan_simulator_interest_hint">Interest rate</string>
+    <string name="loan_simulator_duration_hint">Duration</string>
+    <string name="loan_simulator_reset_button_text">Reset</string>
+    <string name="loan_simulator_calculate_button_text">Calculate</string>
+    <string name="loan_simulator_appbar_title">Loan simulator</string>
+    <string name="loan_simulator_monthly_payment_label">Monthly payment</string>
+    <string name="loan_simulator_yearly_payment_label">Yearly payment</string>
+    <string name="loan_simulator_total_interest_label">Total interest</string>
+    <string name="loan_simulator_total_payment_label">Total payment</string>
+    <string name="loan_simulator_error_amount">Amount required</string>
+    <string name="loan_simulator_error_interest_rate">Interest rate required</string>
+    <string name="loan_simulator_error_duration">Duration required</string>
 </resources>

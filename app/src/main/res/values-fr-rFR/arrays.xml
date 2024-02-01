@@ -8,4 +8,8 @@
         <item>Pieds (pi²)</item>
         <item>Mètres (m²)</item>
     </string-array>
+    <string-array name="duration_unit_options">
+        <item>ans</item>
+        <item>mois</item>
+    </string-array>
 </resources>
