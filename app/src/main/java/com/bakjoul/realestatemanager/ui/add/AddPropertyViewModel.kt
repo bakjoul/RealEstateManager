@@ -66,7 +66,7 @@ import kotlin.time.Duration.Companion.seconds
 class AddPropertyViewModel @Inject constructor(
     getCurrentCurrencyUseCase: GetCurrentCurrencyUseCase,
     getCurrentSurfaceUnitUseCase: GetCurrentSurfaceUnitUseCase,
-    private val savedStateHandle: SavedStateHandle,
+    savedStateHandle: SavedStateHandle,
     private val getEuroRateUseCase: GetEuroRateUseCase,
     private val getPropertyDraftByIdUseCase: GetPropertyDraftByIdUseCase,
     private val getCurrentNavigationUseCase: GetCurrentNavigationUseCase,
@@ -273,7 +273,7 @@ class AddPropertyViewModel @Inject constructor(
         bathrooms = null,
         bedrooms = null,
         pointsOfInterest = emptyList(),
-        autoCompleteAddress = null,
+        autoCompleteAddress = PropertyFormAddress(),
         address = PropertyFormAddress(),
         description = null,
         photos = emptyList(),
@@ -393,7 +393,7 @@ class AddPropertyViewModel @Inject constructor(
         Log.d("test", "resetAddressFields: ")
         propertyFormMutableSharedFlow.tryEmit(
             propertyFormMutableSharedFlow.replayCache.first().copy(
-                autoCompleteAddress = null,
+                autoCompleteAddress = PropertyFormAddress(),
                 address = PropertyFormAddress()
             )
         )
@@ -472,14 +472,19 @@ class AddPropertyViewModel @Inject constructor(
         }
     }
 
-    fun onPriceChanged(price: BigDecimal) {
-        Log.d("test", "onPriceChanged: ")
-        if (price >= BigDecimal.ZERO) {
-            propertyFormMutableSharedFlow.tryEmit(
-                propertyFormMutableSharedFlow.replayCache.first().copy(
-                    priceFromUser = price
-                )
+    fun onPriceChanged(price: BigDecimal?) {
+        Log.d("test", "onPriceChanged: $price")
+        propertyFormMutableSharedFlow.tryEmit(
+            propertyFormMutableSharedFlow.replayCache.first().copy(
+                priceFromUser = price,
+                referencePrice = price
             )
+        )
+
+        if (price != null) {
+            errorsMutableStateFlow.update {
+                it.copy(priceError = null)
+            }
         }
     }
 
@@ -549,7 +554,7 @@ class AddPropertyViewModel @Inject constructor(
     }
 
     fun onAddressChanged(address: String) {
-        Log.d("test", "onAddressChanged: ")
+        Log.d("test", "onAddressChanged: $address")
         errorsMutableStateFlow.update {
             it.copy(addressError = null)
         }
@@ -570,7 +575,7 @@ class AddPropertyViewModel @Inject constructor(
 
         // Reset address fields if current address input different from address selected from suggestions
         val propertyFormReplaceCache = propertyFormMutableSharedFlow.replayCache.first()
-        if (propertyFormReplaceCache.autoCompleteAddress != null
+        if (propertyFormReplaceCache.autoCompleteAddress != PropertyFormAddress()
             && formatAddress(propertyFormReplaceCache.address) != address
         ) {
             resetAddressFields()
@@ -584,11 +589,12 @@ class AddPropertyViewModel @Inject constructor(
     }
 
     fun onComplementaryAddressChanged(complementaryAddress: String) {
-        Log.d("test", "onComplementaryAddressChanged: ")
+        Log.d("test", "onComplementaryAddressChanged: $complementaryAddress")
+        val parsedComplementaryAddress = complementaryAddress.ifBlank { null }
         val propertyFormReplaceCache = propertyFormMutableSharedFlow.replayCache.first()
         propertyFormMutableSharedFlow.tryEmit(
             propertyFormReplaceCache.copy(
-                address = propertyFormReplaceCache.address?.copy(complementaryAddress = complementaryAddress)
+                address = propertyFormReplaceCache.address?.copy(complementaryAddress = parsedComplementaryAddress)
             )
         )
     }
@@ -603,9 +609,10 @@ class AddPropertyViewModel @Inject constructor(
     }
 
     fun onDescriptionChanged(description: String) {
-        Log.d("test", "onDescriptionChanged: ")
+        Log.d("test", "onDescriptionChanged: $description")
+        val parsedDescription = description.ifBlank { null }
         propertyFormMutableSharedFlow.tryEmit(
-            propertyFormMutableSharedFlow.replayCache.first().copy(description = description)
+            propertyFormMutableSharedFlow.replayCache.first().copy(description = parsedDescription)
         )
 
         if (description.isNotEmpty()) {
@@ -642,7 +649,7 @@ class AddPropertyViewModel @Inject constructor(
             propertyFormReplaceCache.bedrooms == null &&
             propertyFormReplaceCache.pointsOfInterest!!.isEmpty() &&
             propertyFormReplaceCache.address == PropertyFormAddress() &&
-            propertyFormReplaceCache.autoCompleteAddress == null &&
+            propertyFormReplaceCache.autoCompleteAddress == PropertyFormAddress() &&
             propertyFormReplaceCache.description == null
         ) {
             dropDraft()
@@ -717,10 +724,10 @@ class AddPropertyViewModel @Inject constructor(
     }
 
     private fun isFormValid(): Boolean {
-        val propertyFormReplaceCache = propertyFormMutableSharedFlow.replayCache.first()
+        val propertyFormReplayCache = propertyFormMutableSharedFlow.replayCache.first()
         var isFormValid = true
 
-        if (propertyFormReplaceCache.type == null) {
+        if (propertyFormReplayCache.type == null) {
             errorsMutableStateFlow.update {
                 it.copy(isTypeErrorVisible = true)
             }
@@ -731,14 +738,14 @@ class AddPropertyViewModel @Inject constructor(
             }
         }
 
-        if (propertyFormReplaceCache.forSaleSince == null) {
+        if (propertyFormReplayCache.forSaleSince == null) {
             errorsMutableStateFlow.update {
                 it.copy(forSaleSinceError = NativeText.Resource(R.string.add_property_error_date_required))
             }
             isFormValid = false
-        } else if (propertyFormReplaceCache.isSold == true &&
-            propertyFormReplaceCache.dateOfSale != null &&
-            propertyFormReplaceCache.forSaleSince.isAfter(propertyFormReplaceCache.dateOfSale)
+        } else if (propertyFormReplayCache.isSold == true &&
+            propertyFormReplayCache.dateOfSale != null &&
+            propertyFormReplayCache.forSaleSince.isAfter(propertyFormReplayCache.dateOfSale)
         ) {
             errorsMutableStateFlow.update {
                 it.copy(forSaleSinceError = NativeText.Resource(R.string.add_property_error_invalid_date))
@@ -750,14 +757,14 @@ class AddPropertyViewModel @Inject constructor(
             }
         }
 
-        if (propertyFormReplaceCache.isSold == true) {
-            if (propertyFormReplaceCache.dateOfSale == null) {
+        if (propertyFormReplayCache.isSold == true) {
+            if (propertyFormReplayCache.dateOfSale == null) {
                 errorsMutableStateFlow.update {
                     it.copy(dateOfSaleError = NativeText.Resource(R.string.add_property_error_date_required))
                 }
                 isFormValid = false
-            } else if (propertyFormReplaceCache.forSaleSince != null &&
-                propertyFormReplaceCache.dateOfSale.isBefore(propertyFormReplaceCache.forSaleSince)
+            } else if (propertyFormReplayCache.forSaleSince != null &&
+                propertyFormReplayCache.dateOfSale.isBefore(propertyFormReplayCache.forSaleSince)
             ) {
                 errorsMutableStateFlow.update {
                     it.copy(dateOfSaleError = NativeText.Resource(R.string.add_property_error_invalid_date))
@@ -774,12 +781,12 @@ class AddPropertyViewModel @Inject constructor(
             }
         }
 
-        if (propertyFormReplaceCache.priceFromUser == null) {
+        if (propertyFormReplayCache.priceFromUser == null) {
             errorsMutableStateFlow.update {
                 it.copy(priceError = NativeText.Resource(R.string.add_property_error_price_required))
             }
             isFormValid = false
-        } else if (propertyFormReplaceCache.priceFromUser <= BigDecimal.ZERO) {
+        } else if (propertyFormReplayCache.priceFromUser <= BigDecimal.ZERO) {
             errorsMutableStateFlow.update {
                 it.copy(priceError = NativeText.Resource(R.string.add_property_error_invalid_price))
             }
@@ -790,8 +797,8 @@ class AddPropertyViewModel @Inject constructor(
             }
         }
 
-        if (propertyFormReplaceCache.surfaceFromUser == null ||
-            propertyFormReplaceCache.surfaceFromUser == BigDecimal.ZERO
+        if (propertyFormReplayCache.surfaceFromUser == null ||
+            propertyFormReplayCache.surfaceFromUser == BigDecimal.ZERO
         ) {
             errorsMutableStateFlow.update {
                 it.copy(isSurfaceErrorVisible = true)
@@ -803,8 +810,8 @@ class AddPropertyViewModel @Inject constructor(
             }
         }
 
-        if (propertyFormReplaceCache.rooms == null ||
-            propertyFormReplaceCache.rooms < BigDecimal(1)
+        if (propertyFormReplayCache.rooms == null ||
+            propertyFormReplayCache.rooms < BigDecimal(1)
         ) {
             errorsMutableStateFlow.update {
                 it.copy(isRoomsErrorVisible = true)
@@ -816,7 +823,7 @@ class AddPropertyViewModel @Inject constructor(
             }
         }
 
-        if (propertyFormReplaceCache.autoCompleteAddress == null) {
+        if (propertyFormReplayCache.autoCompleteAddress == PropertyFormAddress()) {
             errorsMutableStateFlow.update {
                 it.copy(
                     addressError = NativeText.Resource(R.string.add_property_error_address_required),
@@ -837,7 +844,7 @@ class AddPropertyViewModel @Inject constructor(
             }
         }
 
-        if (propertyFormReplaceCache.description.isNullOrEmpty()) {
+        if (propertyFormReplayCache.description.isNullOrEmpty()) {
             errorsMutableStateFlow.update {
                 it.copy(descriptionError = NativeText.Resource(R.string.add_property_error_description_required))
             }

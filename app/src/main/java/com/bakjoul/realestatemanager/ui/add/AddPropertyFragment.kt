@@ -313,6 +313,10 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
                                 } catch (e: Exception) {
                                     e.printStackTrace()
                                 }
+                            } else {    // No formatting if empty
+                                if (isExistingDraftLoaded) {
+                                    viewModel.onPriceChanged(null)
+                                }
                             }
                         }
                     }
