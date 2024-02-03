@@ -116,9 +116,10 @@ class LoanSimulatorViewModel @Inject constructor(
         }
     }
 
-    fun onAmountChanged(amount: BigDecimal) {
+    fun onAmountChanged(amount: String) {
+        val bigDecimalAmount = BigDecimal(amount.replace(",", "").replace(" ", ""))
         loanSimulatorFormMutableStateFlow.update {
-            it.copy(amount = amount)
+            it.copy(amount = bigDecimalAmount)
         }
 
         errorsMutableStateFlow.update {
@@ -126,9 +127,10 @@ class LoanSimulatorViewModel @Inject constructor(
         }
     }
 
-    fun onDownPaymentChanged(downPayment: BigDecimal) {
+    fun onDownPaymentChanged(downPayment: String) {
+        val bigDecimalDownPayment = BigDecimal(downPayment.replace(",", "").replace(" ", ""))
         loanSimulatorFormMutableStateFlow.update {
-            it.copy(downPayment = downPayment)
+            it.copy(downPayment = bigDecimalDownPayment)
         }
     }
 

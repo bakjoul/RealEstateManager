@@ -23,7 +23,6 @@ import com.bakjoul.realestatemanager.ui.utils.hideKeyboard
 import com.bakjoul.realestatemanager.ui.utils.viewBinding
 import com.google.android.material.textfield.TextInputEditText
 import dagger.hilt.android.AndroidEntryPoint
-import java.math.BigDecimal
 import java.text.DecimalFormat
 
 @AndroidEntryPoint
@@ -148,7 +147,7 @@ class LoanSimulatorFragment : DialogFragment(R.layout.fragment_loan_simulator) {
     private fun addTextChangedListenerForAmount(
         textInputEditText: TextInputEditText,
         viewState: LoanSimulatorViewState,
-        updateValue: (value: BigDecimal) -> Unit
+        updateValue: (value: String) -> Unit
     ) {
         textInputEditText.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -159,8 +158,7 @@ class LoanSimulatorFragment : DialogFragment(R.layout.fragment_loan_simulator) {
                     val originalText = amount.toString()
 
                     if (originalText.isNotEmpty()) {
-                        val bigDecimalPrice = BigDecimal(originalText.replace(",", "").replace(" ", ""))
-                        updateValue(bigDecimalPrice)
+                        updateValue(originalText)
 
                         try {
                             val parsed = viewState.currencyFormat.parse(originalText)
