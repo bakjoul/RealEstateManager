@@ -57,6 +57,7 @@ class LoanSimulatorViewModel @Inject constructor(
                     totalInterest = formatPrice(results.totalInterest, currency),
                     totalPayment = formatPrice(results.totalPayment, currency),
                     amountError = errors.amountError,
+                    downPaymentError = errors.downPaymentError,
                     interestRateError = errors.interestRateError,
                     durationError = errors.durationError
                 )
@@ -88,7 +89,7 @@ class LoanSimulatorViewModel @Inject constructor(
         val symbols = DecimalFormatSymbols(Locale.getDefault())
         symbols.groupingSeparator = if (currency == AppCurrency.EUR) ' ' else ','
         symbols.decimalSeparator = if (currency == AppCurrency.EUR) ',' else '.'
-        val decimalFormat = DecimalFormat("#,###.##", symbols)
+        val decimalFormat = DecimalFormat("#,##0.00", symbols)
 
         val formattedPrice = when (currency) {
             AppCurrency.USD -> "$" + decimalFormat.format(price)
@@ -183,9 +184,26 @@ class LoanSimulatorViewModel @Inject constructor(
             }
         }
 
+        if (loanSimulatorFormMutableStateFlow.value.downPayment != null
+            && loanSimulatorFormMutableStateFlow.value.amount != null
+            && (loanSimulatorFormMutableStateFlow.value.downPayment!! >= loanSimulatorFormMutableStateFlow.value.amount)) {
+            errorsMutableStateFlow.update {
+                it.copy(downPaymentError = NativeText.Resource(R.string.loan_simulator_error_down_payment))
+            }
+        } else {
+            errorsMutableStateFlow.update {
+                it.copy(downPaymentError = null)
+            }
+        }
+
         if (loanSimulatorFormMutableStateFlow.value.interestRate == null) {
             errorsMutableStateFlow.update {
-                it.copy(interestRateError = NativeText.Resource(R.string.loan_simulator_error_interest_rate))
+                it.copy(interestRateError = NativeText.Resource(R.string.loan_simulator_error_interest_rate_required))
+            }
+            isFormValid = false
+        } else if (loanSimulatorFormMutableStateFlow.value.interestRate!! >= BigDecimal(100)) {
+            errorsMutableStateFlow.update {
+                it.copy(interestRateError = NativeText.Resource(R.string.loan_simulator_error_interest_rate_invalid))
             }
             isFormValid = false
         } else {
@@ -235,6 +253,7 @@ class LoanSimulatorViewModel @Inject constructor(
 
     data class LoanSimulatorErrors(
         val amountError: NativeText? = null,
+        val downPaymentError: NativeText? = null,
         val interestRateError: NativeText? = null,
         val durationError: NativeText? = null
     )

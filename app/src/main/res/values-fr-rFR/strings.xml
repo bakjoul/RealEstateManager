@@ -133,10 +133,13 @@
     <string name="loan_simulator_calculate_button_text">Calculer</string>
     <string name="loan_simulator_appbar_title">Simulateur de prêt</string>
     <string name="loan_simulator_error_amount">Montant requis</string>
-    <string name="loan_simulator_error_interest_rate">Taux d\'intérêt requis</string>
+    <string name="loan_simulator_error_interest_rate_required">Taux d\'intérêt requis</string>
+    <string name="loan_simulator_error_interest_rate_invalid">Taux d\'intérêt invalide</string>
     <string name="loan_simulator_error_duration">Durée requise</string>
     <string name="loan_simulator_monthly_payment_label">Paiement mensuel</string>
     <string name="loan_simulator_yearly_payment_label">Paiement annuel</string>
     <string name="loan_simulator_total_interest_label">Intérêt total</string>
     <string name="loan_simulator_total_payment_label">Paiement total</string>
+    <string name="loan_simulator_error_down_payment">L\'apport ne peut être supérieur ou égal au montant du prêt</string>
+    <string name="loan_simulator_note">Note : Les résultats affichés sont sujets à des arrondis, ce qui peut entraîner des valeurs décimales potentiellement imprécises.</string>
 </resources>

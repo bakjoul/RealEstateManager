@@ -60,7 +60,7 @@
                 android:id="@+id/loan_simulator_amount_TextInputEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="numberDecimal"
+                android:inputType="numberPassword"
                 android:lines="1" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -79,7 +79,7 @@
                 android:id="@+id/loan_simulator_down_payment_TextInputEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="numberDecimal"
+                android:inputType="numberPassword"
                 android:lines="1" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -118,7 +118,7 @@
                 android:id="@+id/loan_simulator_duration_TextInputEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="numberDecimal"
+                android:inputType="numberPassword"
                 android:lines="1" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -297,6 +297,18 @@
                 android:textSize="16sp"
                 tools:text="500" />
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/loan_simulator_note"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="@string/loan_simulator_note"
+            android:textColor="@color/grey_text"
+            android:textSize="11sp"
+            app:layout_constraintEnd_toEndOf="@id/loan_simulator_total_payment_LinearLayout"
+            app:layout_constraintStart_toStartOf="@id/loan_simulator_total_payment_LinearLayout"
+            app:layout_constraintTop_toBottomOf="@id/loan_simulator_total_payment_LinearLayout" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

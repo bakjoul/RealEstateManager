@@ -19,6 +19,7 @@ import com.bakjoul.realestatemanager.data.loan_simulator.model.DurationUnit
 import com.bakjoul.realestatemanager.databinding.FragmentLoanSimulatorBinding
 import com.bakjoul.realestatemanager.ui.utils.CustomThemeDialog
 import com.bakjoul.realestatemanager.ui.utils.Event.Companion.observeEvent
+import com.bakjoul.realestatemanager.ui.utils.PointBeforeNumberFilter
 import com.bakjoul.realestatemanager.ui.utils.hideKeyboard
 import com.bakjoul.realestatemanager.ui.utils.viewBinding
 import com.google.android.material.textfield.TextInputEditText
@@ -80,6 +81,11 @@ class LoanSimulatorFragment : DialogFragment(R.layout.fragment_loan_simulator) {
         // Workaround to show all items in the dropdown list after a rotation
         binding.loanSimulatorDurationUnitAutoCompleteTextView.threshold = (Integer.MAX_VALUE)
 
+        binding.loanSimulatorAmountTextInputEditText.transformationMethod = null
+        binding.loanSimulatorDownPaymentTextInputEditText.transformationMethod = null
+        binding.loanSimulatorDurationTextInputEditText.transformationMethod = null
+
+        binding.loanSimulatorInterestTextInputEditText.filters = arrayOf(PointBeforeNumberFilter())
         binding.loanSimulatorInterestTextInputEditText.doAfterTextChanged {
             viewModel.onInterestRateChanged(it)
         }
@@ -106,6 +112,7 @@ class LoanSimulatorFragment : DialogFragment(R.layout.fragment_loan_simulator) {
 
         binding.loanSimulatorCalculateButton.setOnClickListener {
             viewModel.onCalculateButtonClicked()
+            hideKeyboard()
         }
 
         viewModel.viewStateLiveData.observe(viewLifecycleOwner) { viewState ->
@@ -128,6 +135,7 @@ class LoanSimulatorFragment : DialogFragment(R.layout.fragment_loan_simulator) {
             binding.loanSimulatorDownPaymentTextInputLayout.startIconDrawable = getDrawable(viewState)
 
             binding.loanSimulatorAmountTextInputLayout.error = viewState.amountError?.toCharSequence(requireContext())
+            binding.loanSimulatorDownPaymentTextInputLayout.error = viewState.downPaymentError?.toCharSequence(requireContext())
             binding.loanSimulatorInterestTextInputLayout.error = viewState.interestRateError?.toCharSequence(requireContext())
             binding.loanSimulatorDurationTextInputLayout.error = viewState.durationError?.toCharSequence(requireContext())
 

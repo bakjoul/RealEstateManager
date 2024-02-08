@@ -14,6 +14,7 @@ data class LoanSimulatorViewState (
     val totalInterest: String,
     val totalPayment: String,
     val amountError: NativeText?,
+    val downPaymentError: NativeText?,
     val interestRateError: NativeText?,
     val durationError: NativeText?,
 )

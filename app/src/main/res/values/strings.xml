@@ -152,6 +152,9 @@
     <string name="loan_simulator_total_interest_label">Total interest</string>
     <string name="loan_simulator_total_payment_label">Total payment</string>
     <string name="loan_simulator_error_amount">Amount required</string>
-    <string name="loan_simulator_error_interest_rate">Interest rate required</string>
+    <string name="loan_simulator_error_down_payment">Down payment cannot be greater than or equal to loan amount</string>
+    <string name="loan_simulator_error_interest_rate_required">Interest rate required</string>
+    <string name="loan_simulator_error_interest_rate_invalid">Invalid interest rate</string>
     <string name="loan_simulator_error_duration">Duration required</string>
+    <string name="loan_simulator_note">Note: the displayed results are subject to rounding, which may result in potentially imprecise decimal values.</string>
 </resources>

@@ -16,11 +16,23 @@ class GetLoanSimulatorResultsUseCase @Inject constructor() {
     ): LoanSimulatorResultsEntity {
 
         val amountAfterDownPayment = downPayment?.let { amount.subtract(it) } ?: amount
-        val monthlyInterestRate = interest.divide(BigDecimal(12 * 100), 8, RoundingMode.HALF_UP)
+        val monthlyInterestRate = interest.divide(BigDecimal(12 * 100), 8, RoundingMode.HALF_EVEN)
         val durationInMonths = if (durationUnit == DurationUnit.YEARS) {
             duration.multiply(BigDecimal(12))
         } else {
             duration
+        }
+
+        if (interest.compareTo(BigDecimal.ZERO) == 0) {
+            val monthlyPayment = amountAfterDownPayment.divide(durationInMonths, 2, RoundingMode.HALF_EVEN)
+            val yearlyPayment = monthlyPayment.multiply(BigDecimal(12))
+
+            return LoanSimulatorResultsEntity(
+                monthlyPayment = monthlyPayment,
+                yearlyPayment = yearlyPayment,
+                totalInterest = BigDecimal.ZERO,
+                totalPayment = amountAfterDownPayment
+            )
         }
 
         val numerator = amountAfterDownPayment
@@ -28,7 +40,7 @@ class GetLoanSimulatorResultsUseCase @Inject constructor() {
             .multiply((BigDecimal.ONE + monthlyInterestRate).pow(durationInMonths.toInt()))
         val denominator = (BigDecimal.ONE + monthlyInterestRate).pow(durationInMonths.toInt()) - BigDecimal.ONE
 
-        val monthlyPayment = numerator.divide(denominator, 2, RoundingMode.HALF_UP)
+        val monthlyPayment = numerator.divide(denominator, 2, RoundingMode.HALF_EVEN)
         val yearlyPayment = monthlyPayment.multiply(BigDecimal(12))
         val totalInterest = monthlyPayment.multiply(durationInMonths).subtract(amountAfterDownPayment)
         val totalPayment = amountAfterDownPayment.add(totalInterest)
