@@ -36,6 +36,7 @@ import com.bakjoul.realestatemanager.ui.utils.EquatableCallback
 import com.bakjoul.realestatemanager.ui.utils.Event
 import com.bakjoul.realestatemanager.ui.utils.NativeText
 import com.bakjoul.realestatemanager.utils.TestCoroutineRule
+import com.bakjoul.realestatemanager.utils.ViewModelTestUtils.Companion.getCurrencyFormat
 import com.bakjoul.realestatemanager.utils.observe
 import com.bakjoul.realestatemanager.utils.observeForTesting
 import com.google.common.truth.Truth
@@ -56,14 +57,11 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import java.math.BigDecimal
-import java.text.DecimalFormat
-import java.text.DecimalFormatSymbols
 import java.time.Clock
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
-import java.util.Locale
 import kotlin.time.Duration.Companion.seconds
 
 class AddPropertyViewModelTest {
@@ -1132,22 +1130,7 @@ class AddPropertyViewModelTest {
         descriptionError = null
     )
 
-    private fun getCurrencyFormat(isCurrencyEuro: Boolean = false): DecimalFormat {
-        val symbols = DecimalFormatSymbols(Locale.getDefault()).apply {
-            groupingSeparator = if (isCurrencyEuro) {
-                ' '
-            } else {
-                ','
-            }
-            decimalSeparator = if (isCurrencyEuro) {
-                ','
-            } else {
-                '.'
-            }
-        }
 
-        return DecimalFormat("#,###.##", symbols)
-    }
 
     private fun getExistingDraftExpectedViewState(): AddPropertyViewState = AddPropertyViewState(
         propertyTypeEntity = PropertyTypeEntity.FLAT,

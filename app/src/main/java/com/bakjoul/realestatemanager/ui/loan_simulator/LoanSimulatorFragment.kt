@@ -1,6 +1,9 @@
 package com.bakjoul.realestatemanager.ui.loan_simulator
 
 import android.app.Dialog
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.text.Editable
@@ -10,6 +13,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import android.widget.ArrayAdapter
+import android.widget.TextView
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.DialogFragment
@@ -87,11 +91,13 @@ class LoanSimulatorFragment : DialogFragment(R.layout.fragment_loan_simulator) {
 
         binding.loanSimulatorInterestTextInputEditText.filters = arrayOf(PointBeforeNumberFilter())
         binding.loanSimulatorInterestTextInputEditText.doAfterTextChanged {
-            viewModel.onInterestRateChanged(it)
+            val interestRate = it?.toString() ?: ""
+            viewModel.onInterestRateChanged(interestRate)
         }
 
         binding.loanSimulatorDurationTextInputEditText.doAfterTextChanged {
-            viewModel.onDurationChanged(it)
+            val duration = it?.toString() ?: ""
+            viewModel.onDurationChanged(duration)
         }
         binding.loanSimulatorDurationUnitAutoCompleteTextView.setOnItemClickListener { _, _, position, _ ->
             viewModel.onDurationUnitChanged(DurationUnit.values()[position])
@@ -143,6 +149,11 @@ class LoanSimulatorFragment : DialogFragment(R.layout.fragment_loan_simulator) {
             binding.loanSimulatorYearlyPaymentResult.text = viewState.yearlyPayment
             binding.loanSimulatorTotalInterestResult.text = viewState.totalInterest
             binding.loanSimulatorTotalPaymentResult.text = viewState.totalPayment
+
+            setOnLongClickListenerCopyToClipboard(binding.loanSimulatorMonthlyPaymentResult, "monthlyPayment", viewState.monthlyPayment)
+            setOnLongClickListenerCopyToClipboard(binding.loanSimulatorYearlyPaymentResult, "yearlyPayment", viewState.yearlyPayment)
+            setOnLongClickListenerCopyToClipboard(binding.loanSimulatorTotalInterestResult, "totalInterest", viewState.totalInterest)
+            setOnLongClickListenerCopyToClipboard(binding.loanSimulatorTotalPaymentResult, "totalPayment", viewState.totalPayment)
         }
 
         viewModel.viewActionLiveData.observeEvent(viewLifecycleOwner) {
@@ -201,6 +212,15 @@ class LoanSimulatorFragment : DialogFragment(R.layout.fragment_loan_simulator) {
                     }
                 })
             }
+        }
+    }
+
+    private fun setOnLongClickListenerCopyToClipboard(textView: TextView, label: String, data: String) {
+        textView.setOnLongClickListener {
+            val clipboardManager = requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            val clipData = ClipData.newPlainText(label, data)
+            clipboardManager.setPrimaryClip(clipData)
+            true
         }
     }
 

@@ -1,6 +1,6 @@
 package com.bakjoul.realestatemanager.ui.loan_simulator
 
-import android.text.Editable
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
@@ -135,10 +135,17 @@ class LoanSimulatorViewModel @Inject constructor(
         }
     }
 
-    fun onInterestRateChanged(interestRate: Editable?) {
-        if (!interestRate.isNullOrEmpty()) {
+    fun onInterestRateChanged(interestRate: String) {
+        Log.d("test", "onInterestRateChanged: called")
+        if (interestRate.isEmpty()) {
+            Log.d("test", "onInterestRateChanged: updated to null")
             loanSimulatorFormMutableStateFlow.update {
-                it.copy(interestRate = BigDecimal(interestRate.toString()))
+                it.copy(interestRate = null)
+            }
+        } else {
+            Log.d("test", "onInterestRateChanged: updated to $interestRate")
+            loanSimulatorFormMutableStateFlow.update {
+                it.copy(interestRate = BigDecimal(interestRate))
             }
 
             errorsMutableStateFlow.update {
@@ -147,10 +154,17 @@ class LoanSimulatorViewModel @Inject constructor(
         }
     }
 
-    fun onDurationChanged(duration: Editable?) {
-        if (!duration.isNullOrEmpty()) {
+    fun onDurationChanged(duration: String) {
+        Log.d("test", "onDurationChanged: called")
+        if (duration.isEmpty()) {
+            Log.d("test", "onDurationChanged: updated to null")
             loanSimulatorFormMutableStateFlow.update {
-                it.copy(duration = BigDecimal(duration.toString()))
+                it.copy(duration = null)
+            }
+        } else {
+            Log.d("test", "onDurationChanged: updated to $duration")
+            loanSimulatorFormMutableStateFlow.update {
+                it.copy(duration = BigDecimal(duration))
             }
 
             errorsMutableStateFlow.update {
