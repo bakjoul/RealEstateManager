@@ -41,7 +41,7 @@ class LoanSimulatorFragment : DialogFragment(R.layout.fragment_loan_simulator) {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return object : CustomThemeDialog(requireContext(), R.style.FloatingDialog) {
             override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
-                if (currentFocus != null) {
+                if (currentFocus != null && !currentFocus!!.hasFocus()) {
                     hideKeyboard()
                     currentFocus!!.clearFocus()
                 }

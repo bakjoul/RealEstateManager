@@ -64,7 +64,7 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return object : CustomThemeDialog(requireContext(), R.style.FullScreenDialog) {
             override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
-                if (currentFocus != null) {
+                if (currentFocus != null && !currentFocus!!.hasFocus()) {
                     hideKeyboard()
                     currentFocus!!.clearFocus()
                 }
