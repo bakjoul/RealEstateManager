@@ -141,8 +141,8 @@ class LoanSimulatorViewModelTest {
             assertThat(it.value).isEqualTo(getDefaultViewState())
         }
 
-        verify(exactly = 1) { getCurrentCurrencyUseCase.invoke() }
         verify(exactly = 1) {
+            getCurrentCurrencyUseCase.invoke()
             getLoanSimulatorResultUseCase.invoke(
                 BigDecimal(100000),
                 BigDecimal(20000),
@@ -201,8 +201,8 @@ class LoanSimulatorViewModelTest {
             )
         }
 
-        verify(exactly = 1) { getCurrentCurrencyUseCase.invoke() }
         verify(exactly = 1) {
+            getCurrentCurrencyUseCase.invoke()
             getLoanSimulatorResultUseCase.invoke(
                 BigDecimal(100000),
                 null,
@@ -331,9 +331,11 @@ class LoanSimulatorViewModelTest {
                 assertThat(it.value).isEqualTo(Event(LoanSimulatorViewAction.CloseDialog))
             }
 
-            verify(exactly = 1) { getCurrentCurrencyUseCase.invoke() }
-            verify(exactly = 1) { getCurrentNavigationUseCase.invoke() }
-            verify(exactly = 1) { navigateUseCase.invoke(To.CloseLoanSimulator) }
+            verify(exactly = 1) {
+                getCurrentCurrencyUseCase.invoke()
+                getCurrentNavigationUseCase.invoke()
+                navigateUseCase.invoke(To.CloseLoanSimulator)
+            }
             confirmVerified(
                 getCurrentCurrencyUseCase,
                 getCurrentNavigationUseCase,
@@ -342,29 +344,32 @@ class LoanSimulatorViewModelTest {
         }
 
     @Test
-    fun `edge case - on close button clicked, view action exposes another event`() = testCoroutineRule.runTest {
-        // Given
-        coJustRun { navigateUseCase.invoke(To.CloseLoanSimulator) }
-        every { getCurrentNavigationUseCase.invoke() } returns flowOf(To.CloseAddProperty)
-        viewModel.viewStateLiveData.observeForTesting(this) {}
+    fun `edge case - on close button clicked, view action exposes another event`() =
+        testCoroutineRule.runTest {
+            // Given
+            coJustRun { navigateUseCase.invoke(To.CloseLoanSimulator) }
+            every { getCurrentNavigationUseCase.invoke() } returns flowOf(To.CloseAddProperty)
+            viewModel.viewStateLiveData.observeForTesting(this) {}
 
-        // When
-        viewModel.onCloseButtonClicked()
+            // When
+            viewModel.onCloseButtonClicked()
 
-        // Then
-        viewModel.viewActionLiveData.observeForTesting(this) {
-            assertThat(it.value).isNotEqualTo(Event(LoanSimulatorViewAction.CloseDialog))
+            // Then
+            viewModel.viewActionLiveData.observeForTesting(this) {
+                assertThat(it.value).isNotEqualTo(Event(LoanSimulatorViewAction.CloseDialog))
+            }
+
+            verify(exactly = 1) {
+                getCurrentCurrencyUseCase.invoke()
+                getCurrentNavigationUseCase.invoke()
+                navigateUseCase.invoke(To.CloseLoanSimulator)
+            }
+            confirmVerified(
+                getCurrentCurrencyUseCase,
+                getCurrentNavigationUseCase,
+                navigateUseCase
+            )
         }
-
-        verify(exactly = 1) { getCurrentCurrencyUseCase.invoke() }
-        verify(exactly = 1) { getCurrentNavigationUseCase.invoke() }
-        verify(exactly = 1) { navigateUseCase.invoke(To.CloseLoanSimulator) }
-        confirmVerified(
-            getCurrentCurrencyUseCase,
-            getCurrentNavigationUseCase,
-            navigateUseCase
-        )
-    }
 
     // region OUT
     private fun getDefaultViewState(): LoanSimulatorViewState = LoanSimulatorViewState(
