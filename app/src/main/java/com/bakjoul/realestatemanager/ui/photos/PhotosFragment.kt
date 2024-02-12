@@ -63,7 +63,7 @@ class PhotosFragment @Inject constructor() : DialogFragment(R.layout.fragment_ph
 
             binding.photosThumbnailsPhotoListView.bind(viewState.thumbnails)
             if (viewState.currentPhotoId != -1) {
-                binding.photosThumbnailsPhotoListView.smoothScrollToPosition(viewState.currentPhotoId)
+                binding.photosThumbnailsPhotoListView.scrollToPosition(viewState.currentPhotoId)
             }
         }
 
