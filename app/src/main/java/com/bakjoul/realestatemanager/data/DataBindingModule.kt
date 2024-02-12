@@ -8,6 +8,7 @@ import com.bakjoul.realestatemanager.data.currency_rate.CurrencyRateRepositoryIm
 import com.bakjoul.realestatemanager.data.current_photo.CurrentPhotoIdRepositoryImplementation
 import com.bakjoul.realestatemanager.data.current_property.CurrentPropertyIdRepositoryImplementation
 import com.bakjoul.realestatemanager.data.geocoding.GeocodingRepositoryImplementation
+import com.bakjoul.realestatemanager.data.main.MainToastStateRepositoryInMemory
 import com.bakjoul.realestatemanager.data.navigation.NavigationRepositoryInMemory
 import com.bakjoul.realestatemanager.data.photos.PhotoRepositoryRoom
 import com.bakjoul.realestatemanager.data.property.PropertyRepositoryRoom
@@ -21,6 +22,7 @@ import com.bakjoul.realestatemanager.domain.currency_rate.CurrencyRateRepository
 import com.bakjoul.realestatemanager.domain.current_photo.CurrentPhotoIdRepository
 import com.bakjoul.realestatemanager.domain.current_property.CurrentPropertyIdRepository
 import com.bakjoul.realestatemanager.domain.geocoding.GeocodingRepository
+import com.bakjoul.realestatemanager.domain.main.MainToastStateRepository
 import com.bakjoul.realestatemanager.domain.navigation.NavigationRepository
 import com.bakjoul.realestatemanager.domain.photos.PhotoRepository
 import com.bakjoul.realestatemanager.domain.property.PropertyRepository
@@ -87,4 +89,8 @@ abstract class DataBindingModule {
     @Singleton
     @Binds
     abstract fun bindPhotoRepository(photoRepositoryRoom: PhotoRepositoryRoom): PhotoRepository
+
+    @Singleton
+    @Binds
+    abstract fun bindMainToastStateRepository(mainToastStateRepositoryInMemory: MainToastStateRepositoryInMemory): MainToastStateRepository
 }

@@ -150,10 +150,10 @@ class LoanSimulatorFragment : DialogFragment(R.layout.fragment_loan_simulator) {
             binding.loanSimulatorTotalInterestResult.text = viewState.totalInterest
             binding.loanSimulatorTotalPaymentResult.text = viewState.totalPayment
 
-            setOnLongClickListenerCopyToClipboard(binding.loanSimulatorMonthlyPaymentResult, "monthlyPayment", viewState.monthlyPayment)
-            setOnLongClickListenerCopyToClipboard(binding.loanSimulatorYearlyPaymentResult, "yearlyPayment", viewState.yearlyPayment)
-            setOnLongClickListenerCopyToClipboard(binding.loanSimulatorTotalInterestResult, "totalInterest", viewState.totalInterest)
-            setOnLongClickListenerCopyToClipboard(binding.loanSimulatorTotalPaymentResult, "totalPayment", viewState.totalPayment)
+            setOnClickListenerCopyToClipboard(binding.loanSimulatorMonthlyPaymentResult, "monthlyPayment", viewState.monthlyPayment)
+            setOnClickListenerCopyToClipboard(binding.loanSimulatorYearlyPaymentResult, "yearlyPayment", viewState.yearlyPayment)
+            setOnClickListenerCopyToClipboard(binding.loanSimulatorTotalInterestResult, "totalInterest", viewState.totalInterest)
+            setOnClickListenerCopyToClipboard(binding.loanSimulatorTotalPaymentResult, "totalPayment", viewState.totalPayment)
         }
 
         viewModel.viewActionLiveData.observeEvent(viewLifecycleOwner) {
@@ -215,12 +215,11 @@ class LoanSimulatorFragment : DialogFragment(R.layout.fragment_loan_simulator) {
         }
     }
 
-    private fun setOnLongClickListenerCopyToClipboard(textView: TextView, label: String, data: String) {
-        textView.setOnLongClickListener {
+    private fun setOnClickListenerCopyToClipboard(textView: TextView, label: String, data: String) {
+        textView.setOnClickListener {
             val clipboardManager = requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
             val clipData = ClipData.newPlainText(label, data)
             clipboardManager.setPrimaryClip(clipData)
-            true
         }
     }
 

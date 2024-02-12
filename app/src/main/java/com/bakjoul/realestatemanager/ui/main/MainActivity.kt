@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -70,14 +71,7 @@ class MainActivity : AppCompatActivity() {
             when (it) {
                 MainViewAction.ShowDetailsTablet -> {
                     hideDetailsPortrait()
-
-                    val existingDetailsTabletFragment = supportFragmentManager.findFragmentByTag(DETAILS_TABLET_TAG)
-                    if (containerDetailsId != null && existingDetailsTabletFragment == null) {
-                        supportFragmentManager.commit {
-                            setCustomAnimations(R.anim.slide_in_left, 0)
-                            replace(containerDetailsId, DetailsFragment(), DETAILS_TABLET_TAG)
-                        }
-                    }
+                    showDetailsTablet(containerDetailsId)
                 }
 
                 MainViewAction.CloseDetailsTablet -> {
@@ -124,6 +118,27 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
 
+                MainViewAction.ShowDetailsPortraitIfNeeded -> showDetailsPortraitIfNeeded(containerMainId)
+
+                MainViewAction.HideDetailsPortrait -> hideDetailsPortrait()
+
+                is MainViewAction.ShowClipboardToastAndDetailsTabletIfNeeded -> {
+                    if (it.showToast) {
+                        Toast.makeText(this, it.message.toCharSequence(this), Toast.LENGTH_SHORT).show()
+                        viewModel.onClipboardToastShown()
+                    }
+                    hideDetailsPortrait()
+                    showDetailsTablet(containerDetailsId)
+                }
+
+                is MainViewAction.ShowClipboardToastAndDetailsPortraitIfNeeded -> {
+                    if (it.showToast) {
+                        Toast.makeText(this, it.message.toCharSequence(this), Toast.LENGTH_SHORT).show()
+                        viewModel.onClipboardToastShown()
+                    }
+                    showDetailsPortraitIfNeeded(containerMainId)
+                }
+
                 MainViewAction.ShowPhotosDialog -> {
                     showDetailsPortraitIfNeeded(containerMainId)
                     showPhotosDialog()
@@ -143,7 +158,7 @@ class MainActivity : AppCompatActivity() {
                         .setNegativeButton(getString(R.string.draft_dialog_negative)) { _, _ ->
                             viewModel.onAddNewPropertyClicked()
                         }
-                        .setPositiveButton(getString(R.string.draft_dialog_positive)) { dialog, _ ->
+                        .setPositiveButton(getString(R.string.draft_dialog_positive)) { _, _ ->
                             viewModel.onContinueEditingDraftClicked()
                         }
                         .show()
@@ -183,16 +198,23 @@ class MainActivity : AppCompatActivity() {
                     showSettings()
                 }
 
-                MainViewAction.ShowDetailsPortraitIfNeeded -> showDetailsPortraitIfNeeded(containerMainId)
-
-                MainViewAction.HideDetailsPortrait -> hideDetailsPortrait()
-
                 MainViewAction.ShowLoanSimulatorDialog -> {
                     val existingFragment = supportFragmentManager.findFragmentByTag(LOAN_SIMULATOR_DIALOG_TAG)
                     if (existingFragment == null) {
                         LoanSimulatorFragment().show(supportFragmentManager, LOAN_SIMULATOR_DIALOG_TAG)
                     }
                 }
+            }
+        }
+    }
+
+    private fun showDetailsTablet(containerDetailsId: Int?) {
+        val existingDetailsTabletFragment =
+            supportFragmentManager.findFragmentByTag(DETAILS_TABLET_TAG)
+        if (containerDetailsId != null && existingDetailsTabletFragment == null) {
+            supportFragmentManager.commit {
+                setCustomAnimations(R.anim.slide_in_left, 0)
+                replace(containerDetailsId, DetailsFragment(), DETAILS_TABLET_TAG)
             }
         }
     }

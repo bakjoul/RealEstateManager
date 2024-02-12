@@ -1,5 +1,6 @@
 package com.bakjoul.realestatemanager.ui.details
 
+import android.annotation.SuppressLint
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
@@ -12,7 +13,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupWindow
 import android.widget.TextView
-import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
@@ -52,7 +52,7 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
 
         binding.detailsFabBack?.setOnClickListener { viewModel.onBackButtonPressed() }
 
-        viewModel.detailsLiveData.observe(viewLifecycleOwner) { details ->
+        viewModel.viewStateLiveData.observe(viewLifecycleOwner) { details ->
             Glide.with(binding.detailsToolbarPhoto).load(details.mainPhotoUrl).into(binding.detailsToolbarPhoto)
             binding.detailsToolbarType.text = details.type
             binding.detailsToolbarPrice.text = details.price
@@ -80,12 +80,11 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
 
             binding.detailsPhotoListView.bind(details.medias)
 
-            binding.detailsItemLocation.setOnLongClickListener {
+            binding.detailsItemLocation.setOnClickListener {
                 val clipboardManager = requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                 val clipData = ClipData.newPlainText("address", details.clipboardAddress)
                 clipboardManager.setPrimaryClip(clipData)
-                Toast.makeText(requireContext(), getString(R.string.property_address_clipboard), Toast.LENGTH_SHORT).show()
-                true
+                viewModel.onLocationClicked()
             }
             Glide.with(binding.detailsStaticMap).load(details.staticMapUrl).into(binding.detailsStaticMap)
             binding.detailsStaticMap.setOnClickListener {
@@ -94,7 +93,6 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
                 startActivity(intent)
             }
         }
-
     }
 
     private fun setToolbarInfoAnimation() {
@@ -140,6 +138,7 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
         }
     }
 
+    @SuppressLint("InflateParams")
     private fun createPopupWindow(context: Context, text: String): PopupWindow {
         val tooltipView = LayoutInflater.from(context).inflate(R.layout.fragment_list_tooltip, null)
         val tooltipTextView = tooltipView.findViewById<TextView>(R.id.tooltip_text)

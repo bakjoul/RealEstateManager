@@ -12,6 +12,7 @@ import com.bakjoul.realestatemanager.domain.CoroutineDispatcherProvider
 import com.bakjoul.realestatemanager.domain.currency_rate.GetEuroRateUseCase
 import com.bakjoul.realestatemanager.domain.current_photo.SetCurrentPhotoIdUseCase
 import com.bakjoul.realestatemanager.domain.current_property.ResetCurrentPropertyIdUseCase
+import com.bakjoul.realestatemanager.domain.main.SetClipboardToastStateUseCase
 import com.bakjoul.realestatemanager.domain.navigation.NavigateUseCase
 import com.bakjoul.realestatemanager.domain.navigation.model.To
 import com.bakjoul.realestatemanager.domain.property.GetCurrentPropertyUseCase
@@ -19,6 +20,7 @@ import com.bakjoul.realestatemanager.domain.property.model.PropertyPoiEntity
 import com.bakjoul.realestatemanager.domain.property.model.PropertyTypeEntity
 import com.bakjoul.realestatemanager.domain.settings.currency.GetCurrentCurrencyUseCase
 import com.bakjoul.realestatemanager.domain.settings.surface_unit.GetCurrentSurfaceUnitUseCase
+import com.bakjoul.realestatemanager.ui.utils.NativeText
 import com.bakjoul.realestatemanager.ui.utils.ViewModelUtils.Companion.formatPrice
 import com.bakjoul.realestatemanager.ui.utils.ViewModelUtils.Companion.formatSurface
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -39,7 +41,8 @@ class DetailsViewModel @Inject constructor(
     private val resetCurrentPropertyIdUseCase: ResetCurrentPropertyIdUseCase,
     private val setCurrentPhotoIdUseCase: SetCurrentPhotoIdUseCase,
     private val getCurrentSurfaceUnitUseCase: GetCurrentSurfaceUnitUseCase,
-    private val navigateUseCase: NavigateUseCase
+    private val navigateUseCase: NavigateUseCase,
+    private val setClipboardToastStateUseCase: SetClipboardToastStateUseCase
 ) : ViewModel() {
 
     private companion object {
@@ -47,7 +50,7 @@ class DetailsViewModel @Inject constructor(
         private const val STATIC_MAP_ZOOM = "17"
     }
 
-    val detailsLiveData: LiveData<DetailsViewState> = liveData(coroutineDispatcherProvider.io) {
+    val viewStateLiveData: LiveData<DetailsViewState> = liveData(coroutineDispatcherProvider.io) {
         combine(
             getCurrentPropertyUseCase.invoke(),
             getCurrentCurrencyUseCase.invoke(),
@@ -95,7 +98,6 @@ class DetailsViewModel @Inject constructor(
             emit(it)
         }
     }
-
 
     private val locale = Locale.getDefault()
     private val formatter: DateTimeFormatter = if (locale.language == "fr") {
@@ -169,5 +171,10 @@ class DetailsViewModel @Inject constructor(
     fun onBackButtonPressed() {
         resetCurrentPropertyIdUseCase.invoke()
         navigateUseCase.invoke(To.CloseDetails)
+    }
+
+    fun onLocationClicked() {
+        setClipboardToastStateUseCase.invoke(true)
+        navigateUseCase.invoke(To.Toast(NativeText.Resource(R.string.property_address_clipboard)))
     }
 }

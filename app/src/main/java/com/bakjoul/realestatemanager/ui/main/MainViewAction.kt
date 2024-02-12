@@ -1,5 +1,7 @@
 package com.bakjoul.realestatemanager.ui.main
 
+import com.bakjoul.realestatemanager.ui.utils.NativeText
+
 sealed class MainViewAction {
     object ShowDetailsTablet : MainViewAction()
     object CloseDetailsTablet : MainViewAction()
@@ -7,6 +9,8 @@ sealed class MainViewAction {
     object CloseDetailsPortrait : MainViewAction()
     object ShowDetailsPortraitIfNeeded : MainViewAction()
     object HideDetailsPortrait : MainViewAction()
+    data class ShowClipboardToastAndDetailsTabletIfNeeded(val message: NativeText, val showToast: Boolean) : MainViewAction()
+    data class ShowClipboardToastAndDetailsPortraitIfNeeded(val message: NativeText, val showToast: Boolean) : MainViewAction()
     object ShowPhotosDialog : MainViewAction()
     object ShowPhotosDialogAndHideDetailsPortrait : MainViewAction()
     object ShowPropertyDraftDialog : MainViewAction()
