@@ -1,6 +1,7 @@
 package com.bakjoul.realestatemanager.ui.utils
 
 import android.content.Context
+import android.widget.Toast
 import androidx.annotation.PluralsRes
 import androidx.annotation.StringRes
 import java.time.format.DateTimeFormatter
@@ -68,4 +69,8 @@ sealed class NativeText {
         override fun toCharSequence(context: Context): CharSequence =
             text.joinToString(separator = separator ?: "") { it.toCharSequence(context) }
     }
+}
+
+fun NativeText.showAsToast(context: Context, duration: Int = Toast.LENGTH_SHORT): Toast {
+    return Toast.makeText(context, toCharSequence(context), duration).apply { show() }
 }

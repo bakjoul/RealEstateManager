@@ -13,7 +13,6 @@ import android.text.TextWatcher
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -28,6 +27,7 @@ import com.bakjoul.realestatemanager.ui.camera.activity.CameraActivity
 import com.bakjoul.realestatemanager.ui.utils.CustomThemeDialog
 import com.bakjoul.realestatemanager.ui.utils.Event.Companion.observeEvent
 import com.bakjoul.realestatemanager.ui.utils.hideKeyboard
+import com.bakjoul.realestatemanager.ui.utils.showAsToast
 import com.bakjoul.realestatemanager.ui.utils.viewBinding
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -430,9 +430,7 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
                     startActivity(intent)
                 }
 
-                is AddPropertyViewAction.ShowToast -> {
-                    Toast.makeText(requireContext(), it.message.toCharSequence(requireContext()), Toast.LENGTH_SHORT).show()
-                }
+                is AddPropertyViewAction.ShowToast -> it.message.showAsToast(requireContext())
             }
         }
     }

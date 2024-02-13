@@ -25,6 +25,7 @@ import com.bakjoul.realestatemanager.ui.utils.CustomThemeDialog
 import com.bakjoul.realestatemanager.ui.utils.Event.Companion.observeEvent
 import com.bakjoul.realestatemanager.ui.utils.PointBeforeNumberFilter
 import com.bakjoul.realestatemanager.ui.utils.hideKeyboard
+import com.bakjoul.realestatemanager.ui.utils.showAsToast
 import com.bakjoul.realestatemanager.ui.utils.viewBinding
 import com.google.android.material.textfield.TextInputEditText
 import dagger.hilt.android.AndroidEntryPoint
@@ -40,6 +41,7 @@ class LoanSimulatorFragment : DialogFragment(R.layout.fragment_loan_simulator) {
 
     private val binding by viewBinding { FragmentLoanSimulatorBinding.bind(it) }
     private val viewModel by viewModels<LoanSimulatorViewModel>()
+    private val clipboardManager by lazy { requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager }
 
     private var currentCurrency: DecimalFormat? = null
 
@@ -159,6 +161,7 @@ class LoanSimulatorFragment : DialogFragment(R.layout.fragment_loan_simulator) {
         viewModel.viewActionLiveData.observeEvent(viewLifecycleOwner) {
             when (it) {
                 is LoanSimulatorViewAction.CloseDialog -> dismiss()
+                is LoanSimulatorViewAction.ShowToast -> it.message.showAsToast(requireContext())
             }
         }
     }
@@ -217,9 +220,11 @@ class LoanSimulatorFragment : DialogFragment(R.layout.fragment_loan_simulator) {
 
     private fun setOnClickListenerCopyToClipboard(textView: TextView, label: String, data: String) {
         textView.setOnClickListener {
-            val clipboardManager = requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-            val clipData = ClipData.newPlainText(label, data)
-            clipboardManager.setPrimaryClip(clipData)
+            if (data.isNotEmpty()) {
+                val clipData = ClipData.newPlainText(label, data)
+                clipboardManager.setPrimaryClip(clipData)
+                viewModel.onResultClicked()
+            }
         }
     }
 

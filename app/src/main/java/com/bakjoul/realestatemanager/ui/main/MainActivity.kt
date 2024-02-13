@@ -6,7 +6,6 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
-import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -27,6 +26,7 @@ import com.bakjoul.realestatemanager.ui.loan_simulator.LoanSimulatorFragment
 import com.bakjoul.realestatemanager.ui.photos.PhotosFragment
 import com.bakjoul.realestatemanager.ui.settings.SettingsFragment
 import com.bakjoul.realestatemanager.ui.utils.Event.Companion.observeEvent
+import com.bakjoul.realestatemanager.ui.utils.showAsToast
 import com.bakjoul.realestatemanager.ui.utils.viewBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
@@ -124,7 +124,7 @@ class MainActivity : AppCompatActivity() {
 
                 is MainViewAction.ShowClipboardToastAndDetailsTabletIfNeeded -> {
                     if (it.showToast) {
-                        Toast.makeText(this, it.message.toCharSequence(this), Toast.LENGTH_SHORT).show()
+                        it.message.showAsToast(this)
                         viewModel.onClipboardToastShown()
                     }
                     hideDetailsPortrait()
@@ -133,7 +133,7 @@ class MainActivity : AppCompatActivity() {
 
                 is MainViewAction.ShowClipboardToastAndDetailsPortraitIfNeeded -> {
                     if (it.showToast) {
-                        Toast.makeText(this, it.message.toCharSequence(this), Toast.LENGTH_SHORT).show()
+                        it.message.showAsToast(this)
                         viewModel.onClipboardToastShown()
                     }
                     showDetailsPortraitIfNeeded(containerMainId)

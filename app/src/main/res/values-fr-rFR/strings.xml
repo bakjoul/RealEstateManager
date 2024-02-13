@@ -142,4 +142,5 @@
     <string name="loan_simulator_total_payment_label">Paiement total</string>
     <string name="loan_simulator_error_down_payment">L\'apport ne peut être supérieur ou égal au montant du prêt</string>
     <string name="loan_simulator_note">Note : Les résultats affichés sont sujets à des arrondis, ce qui peut entraîner des valeurs décimales potentiellement imprécises.</string>
+    <string name="loan_simulator_result_clipboard">Valeur copiée dans le presse-papier</string>
 </resources>

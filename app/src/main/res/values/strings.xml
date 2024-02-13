@@ -157,4 +157,5 @@
     <string name="loan_simulator_error_interest_rate_invalid">Invalid interest rate</string>
     <string name="loan_simulator_error_duration">Duration required</string>
     <string name="loan_simulator_note">Note: the displayed results are subject to rounding, which may result in potentially imprecise decimal values.</string>
+    <string name="loan_simulator_result_clipboard">Value copied to clipboard</string>
 </resources>

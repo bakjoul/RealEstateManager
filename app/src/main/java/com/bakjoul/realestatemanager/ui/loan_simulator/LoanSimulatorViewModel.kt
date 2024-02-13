@@ -69,6 +69,7 @@ class LoanSimulatorViewModel @Inject constructor(
         getCurrentNavigationUseCase.invoke().collect {
             when (it) {
                 is To.CloseLoanSimulator -> emit(Event(LoanSimulatorViewAction.CloseDialog))
+                is To.Toast -> emit(Event(LoanSimulatorViewAction.ShowToast(it.message)))
                 else -> Unit
             }
         }
@@ -263,6 +264,10 @@ class LoanSimulatorViewModel @Inject constructor(
 
     fun onCloseButtonClicked() {
         navigateUseCase.invoke(To.CloseLoanSimulator)
+    }
+
+    fun onResultClicked() {
+        navigateUseCase.invoke(To.Toast(NativeText.Resource(R.string.loan_simulator_result_clipboard)))
     }
 
     data class LoanSimulatorErrors(
