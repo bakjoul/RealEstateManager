@@ -98,7 +98,7 @@ class MainViewModel @Inject constructor(
                 } else {
                     MainViewAction.ShowDetailsPortraitIfNeeded
                 }
-                is To.CloseAddProperty -> if (isTablet) {
+                is To.CloseAddProperty, To.CloseSettings, To.CloseLoanSimulator -> if (isTablet) {
                     MainViewAction.HideDetailsPortrait
                 } else {
                     MainViewAction.ShowDetailsPortraitIfNeeded
@@ -109,12 +109,11 @@ class MainViewModel @Inject constructor(
                 } else {
                     MainViewAction.ShowSettings
                 }
-                is To.CloseSettings -> if (!isTablet) {
-                    MainViewAction.ShowDetailsPortraitIfNeeded
+                is To.LoanSimulatorDialog -> if (isTablet) {
+                    MainViewAction.ShowLoanSimulatorDialogAndHideDetailsPortrait
                 } else {
-                    null
+                    MainViewAction.ShowLoanSimulatorDialog
                 }
-                is To.LoanSimulatorDialog -> MainViewAction.ShowLoanSimulatorDialog
                 else -> null
             }
             viewAction?.let {

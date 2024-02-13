@@ -20,4 +20,5 @@ sealed class MainViewAction {
     object ShowSettings : MainViewAction()
     object ShowSettingsAndHideDetailsPortrait : MainViewAction()
     object ShowLoanSimulatorDialog : MainViewAction()
+    object ShowLoanSimulatorDialogAndHideDetailsPortrait: MainViewAction()
 }

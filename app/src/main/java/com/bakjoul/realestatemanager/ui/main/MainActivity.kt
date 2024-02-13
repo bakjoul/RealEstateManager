@@ -187,7 +187,7 @@ class MainActivity : AppCompatActivity() {
 
                 MainViewAction.ShowSettings -> {
                     binding.mainDrawerLayout.closeDrawer(GravityCompat.END)
-                    showSettings()
+                    showSettingsDialog()
                 }
 
                 MainViewAction.ShowSettingsAndHideDetailsPortrait -> {
@@ -195,14 +195,15 @@ class MainActivity : AppCompatActivity() {
 
                     val detailsPortraitFragment = hideDetailsPortrait()
                     showDetailsTabletIfNeeded(containerDetailsId, detailsPortraitFragment)
-                    showSettings()
+                    showSettingsDialog()
                 }
 
-                MainViewAction.ShowLoanSimulatorDialog -> {
-                    val existingFragment = supportFragmentManager.findFragmentByTag(LOAN_SIMULATOR_DIALOG_TAG)
-                    if (existingFragment == null) {
-                        LoanSimulatorFragment().show(supportFragmentManager, LOAN_SIMULATOR_DIALOG_TAG)
-                    }
+                MainViewAction.ShowLoanSimulatorDialog -> showLoanSimulatorDialog()
+
+                MainViewAction.ShowLoanSimulatorDialogAndHideDetailsPortrait -> {
+                    val detailsPortraitFragment = hideDetailsPortrait()
+                    showDetailsTabletIfNeeded(containerDetailsId, detailsPortraitFragment)
+                    showLoanSimulatorDialog()
                 }
             }
         }
@@ -243,11 +244,15 @@ class MainActivity : AppCompatActivity() {
 
         if (detailsPortraitFragment == null && detailsTabletFragment != null && !detailsTabletFragment.isVisible) {
             supportFragmentManager.commit {
+                setCustomAnimations(R.anim.fade_in, 0)
                 add(containerMainId, DetailsFragment(), DETAILS_PORTRAIT_TAG)
                 addToBackStack(DETAILS_PORTRAIT_TAG)
             }
         } else if (detailsPortraitFragment != null && detailsPortraitFragment.isHidden && detailsTabletFragment != null && !detailsTabletFragment.isVisible) {
-            supportFragmentManager.commit { show(detailsPortraitFragment) }
+            supportFragmentManager.commit {
+                setCustomAnimations(R.anim.fade_in, 0)
+                show(detailsPortraitFragment)
+            }
         }
     }
 
@@ -258,10 +263,17 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun showSettings() {
+    private fun showSettingsDialog() {
         val existingFragment = supportFragmentManager.findFragmentByTag(SETTINGS_DIALOG_TAG)
         if (existingFragment == null) {
             SettingsFragment().show(supportFragmentManager, SETTINGS_DIALOG_TAG)
+        }
+    }
+
+    private fun showLoanSimulatorDialog() {
+        val existingFragment = supportFragmentManager.findFragmentByTag(LOAN_SIMULATOR_DIALOG_TAG)
+        if (existingFragment == null) {
+            LoanSimulatorFragment().show(supportFragmentManager, LOAN_SIMULATOR_DIALOG_TAG)
         }
     }
 
