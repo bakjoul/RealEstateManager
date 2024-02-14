@@ -1,6 +1,7 @@
 package com.bakjoul.realestatemanager.ui.drafts
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -23,10 +24,12 @@ class DraftsAdapter : ListAdapter<DraftsItemViewState, DraftsAdapter.ViewHolder>
         fun bind(item: DraftsItemViewState) {
             if (item.photoUrl.isEmpty()) {
                 binding.draftItemPhoto.setImageResource(R.drawable.baseline_photo_24)
+                binding.draftItemPhoto.scaleX = 1.33f
             } else {
                 Glide.with(binding.draftItemPhoto.context).load(item.photoUrl).into(binding.draftItemPhoto)
             }
-            binding.draftItemLastUpdate.text = item.lastUpdate
+            binding.draftItemSold.visibility = if (item.isSold) View.VISIBLE else View.GONE
+            binding.draftItemLastUpdate.text = item.lastUpdate.toCharSequence(binding.root.context)
             binding.draftItemTypeAndLocation.text = item.typeAndLocation.toCharSequence(binding.root.context)
             binding.draftItemOverview.text = item.overview.toCharSequence(binding.root.context)
             binding.draftItemDescription.text = item.description.toCharSequence(binding.root.context)

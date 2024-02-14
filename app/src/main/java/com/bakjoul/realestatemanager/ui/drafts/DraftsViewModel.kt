@@ -24,7 +24,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
 import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 @HiltViewModel
@@ -38,8 +37,6 @@ class DraftsViewModel @Inject constructor(
     private val navigateUseCase: NavigateUseCase
 ) : ViewModel() {
 
-    private val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
-
     val draftsLiveData: LiveData<List<DraftsItemViewState>> = liveData(coroutineDispatcherProvider.io) {
         combine(
             getPropertyDraftsFlowUseCase.invoke(),
@@ -51,6 +48,7 @@ class DraftsViewModel @Inject constructor(
                 DraftsItemViewState(
                     id = propertyDraft.id,
                     photoUrl = propertyDraft.photos!!.firstOrNull()?.url ?: "",
+                    isSold = propertyDraft.isSold!!,
                     lastUpdate = formatDate(propertyDraft.lastUpdate),
                     typeAndLocation = formatTypeAndLocation(propertyDraft),
                     overview = formatOverview(propertyDraft, currency, euroRateWrapper.currencyRateEntity.rate, surfaceUnit),
@@ -74,6 +72,13 @@ class DraftsViewModel @Inject constructor(
                 else -> Unit
             }
         }
+    }
+
+    private fun formatDate(lastUpdate: LocalDateTime): NativeText {
+        return NativeText.Argument(
+            R.string.draft_overview_date,
+            NativeText.Date(R.string.draft_overview_date_formatter, lastUpdate)
+        )
     }
 
     private fun formatTypeAndLocation(propertyDraft: PropertyFormEntity): NativeText {
@@ -174,8 +179,6 @@ class DraftsViewModel @Inject constructor(
             NativeText.Resource(R.string.draft_overview_description_na)
         }
     }
-
-    private fun formatDate(lastUpdate: LocalDateTime): String = "Last edited on ${lastUpdate.format(dateFormatter)}"
 
     fun closeDialog() {
         navigateUseCase.invoke(To.CloseDraftList)
