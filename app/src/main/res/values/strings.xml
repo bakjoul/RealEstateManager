@@ -85,11 +85,11 @@
     <string name="add_property_title">Add a property</string>
     <string name="add_property_delete_photo_desc">Delete photo</string>
     <string name="photo_preview_description_error">Please enter a description</string>
-    <string name="draft_dialog_title">Drafts available</string>
-    <string name="draft_dialog_message">You have drafts in progress</string>
+    <string name="draft_alert_dialog_title">Drafts available</string>
+    <string name="draft_alert_dialog_message">You have drafts in progress</string>
     <string name="cancel">Cancel</string>
-    <string name="draft_dialog_negative">Add new property</string>
-    <string name="draft_dialog_positive">Continue draft</string>
+    <string name="draft_alert_dialog_negative">Add new property</string>
+    <string name="draft_alert_dialog_positive">Continue draft</string>
     <string name="save_draft_dialog_title">Draft in progress</string>
     <string name="save_draft">Do you want to save this draft ?</string>
     <string name="discard_draft">Discard draft</string>
@@ -158,4 +158,5 @@
     <string name="loan_simulator_error_duration">Duration required</string>
     <string name="loan_simulator_note">Note: the displayed results are subject to rounding, which may result in potentially imprecise decimal values.</string>
     <string name="loan_simulator_result_clipboard">Value copied to clipboard</string>
+    <string name="drafts_title">Available drafts</string>
 </resources>

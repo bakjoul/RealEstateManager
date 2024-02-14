@@ -152,13 +152,13 @@ class MainActivity : AppCompatActivity() {
 
                 MainViewAction.ShowPropertyDraftAlertDialog -> {
                     MaterialAlertDialogBuilder(this)
-                        .setTitle(getString(R.string.draft_dialog_title))
-                        .setMessage(getString(R.string.draft_dialog_message))
+                        .setTitle(getString(R.string.draft_alert_dialog_title))
+                        .setMessage(getString(R.string.draft_alert_dialog_message))
                         .setNeutralButton(getString(R.string.cancel)) { _, _ -> }
-                        .setNegativeButton(getString(R.string.draft_dialog_negative)) { _, _ ->
+                        .setNegativeButton(getString(R.string.draft_alert_dialog_negative)) { _, _ ->
                             viewModel.onAddNewPropertyClicked()
                         }
-                        .setPositiveButton(getString(R.string.draft_dialog_positive)) { _, _ ->
+                        .setPositiveButton(getString(R.string.draft_alert_dialog_positive)) { _, _ ->
                             viewModel.onContinueEditingDraftClicked()
                         }
                         .show()

@@ -80,8 +80,9 @@ class DraftsFragment : DialogFragment(R.layout.fragment_drafts) {
 
     private fun setToolbar() {
         val toolbar = binding.draftsToolbar
-        toolbar.setTitle(R.string.add_property_title)
+        toolbar?.setTitle(R.string.drafts_title)
 
-        toolbar.setNavigationOnClickListener { viewModel.closeDialog() }
+        toolbar?.setNavigationOnClickListener { viewModel.closeDialog() }
+        binding.draftsAppbarCloseButton?.setOnClickListener { viewModel.closeDialog() }
     }
 }

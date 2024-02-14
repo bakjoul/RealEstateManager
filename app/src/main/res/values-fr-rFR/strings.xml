@@ -78,11 +78,11 @@
     <string name="add_property_title">Ajouter un bien</string>
     <string name="add_property_delete_photo_desc">Supprimer la photo</string>
     <string name="photo_preview_description_error">Veuillez entrer une description</string>
-    <string name="draft_dialog_title">Brouillons disponibles</string>
-    <string name="draft_dialog_message">Vous avez des brouillons en cours</string>
+    <string name="draft_alert_dialog_title">Brouillons disponibles</string>
+    <string name="draft_alert_dialog_message">Vous avez des brouillons en cours</string>
     <string name="cancel">Annuler</string>
-    <string name="draft_dialog_negative">Ajouter un nouveau bien</string>
-    <string name="draft_dialog_positive">Continuer un brouillon</string>
+    <string name="draft_alert_dialog_negative">Ajouter un nouveau bien</string>
+    <string name="draft_alert_dialog_positive">Continuer un brouillon</string>
     <string name="save_draft_dialog_title">Brouillon en cours</string>
     <string name="save_draft">Voulez-vous enregistrer ce brouillon ?</string>
     <string name="discard_draft">Supprimer le brouillon</string>
@@ -143,4 +143,5 @@
     <string name="loan_simulator_error_down_payment">L\'apport ne peut être supérieur ou égal au montant du prêt</string>
     <string name="loan_simulator_note">Note : Les résultats affichés sont sujets à des arrondis, ce qui peut entraîner des valeurs décimales potentiellement imprécises.</string>
     <string name="loan_simulator_result_clipboard">Valeur copiée dans le presse-papier</string>
+    <string name="drafts_title">Brouillons disponibles</string>
 </resources>
