@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/colorSurface">
+    android:background="?android:colorBackground">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -507,7 +507,7 @@
                     android:layout_width="@dimen/photo_frame_width"
                     android:layout_height="@dimen/photo_frame_height"
                     android:layout_marginTop="12dp"
-                    android:background="@null"
+                    android:background="@drawable/camera_button_background"
                     android:contentDescription="@string/add_property_camera_btn_desc"
                     android:src="@drawable/baseline_camera_alt_24"
                     app:layout_constraintStart_toStartOf="parent"
@@ -517,6 +517,7 @@
                     android:id="@+id/add_property_PhotoListView"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
+                    android:layout_marginStart="4dp"
                     android:orientation="horizontal"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     app:layout_constraintBottom_toBottomOf="@id/add_property_camera_ImageButton"
@@ -525,6 +526,13 @@
                     app:layout_constraintTop_toTopOf="@id/add_property_camera_ImageButton"
                     tools:itemCount="5"
                     tools:listitem="@layout/view_photo_item" />
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="80dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/add_property_camera_ImageButton" />
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/add_property_address_suggestions_container"

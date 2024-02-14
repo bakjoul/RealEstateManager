@@ -872,6 +872,12 @@ class AddPropertyViewModel @Inject constructor(
         val descriptionError: NativeText? = null
     )
 
+    fun closeDraftDialog() {
+        if (!isNewDraft) {
+            navigateUseCase.invoke(To.CloseDraftDialog)
+        }
+    }
+
     private data class PropertyInformation(
         val propertyForm: PropertyFormEntity,
         val currency: AppCurrency,

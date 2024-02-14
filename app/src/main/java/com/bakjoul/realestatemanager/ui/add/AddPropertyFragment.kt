@@ -20,6 +20,7 @@ import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearSnapHelper
 import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.databinding.FragmentAddPropertyBinding
 import com.bakjoul.realestatemanager.domain.property.model.PropertyPoiEntity
@@ -100,6 +101,8 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
         val photosDivider = DividerItemDecoration(requireContext(), DividerItemDecoration.HORIZONTAL)
         photosDivider.setDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.photos_divider)!!)
         binding.addPropertyPhotoListView.addItemDecoration(photosDivider)
+        val snapHelper = LinearSnapHelper()
+        snapHelper.attachToRecyclerView(binding.addPropertyPhotoListView)
 
         // Save button
         binding.addPropertySaveDraftButton.setOnClickListener { viewModel.onSaveDraftButtonClicked() }
@@ -433,6 +436,12 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
                 is AddPropertyViewAction.ShowToast -> it.message.showAsToast(requireContext())
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        viewModel.closeDraftDialog()
     }
 
     override fun onCancel(dialog: DialogInterface) {

@@ -3,7 +3,6 @@ package com.bakjoul.realestatemanager.ui.drafts
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
-import androidx.lifecycle.viewModelScope
 import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.data.settings.model.AppCurrency
 import com.bakjoul.realestatemanager.data.settings.model.SurfaceUnit
@@ -22,10 +21,8 @@ import com.bakjoul.realestatemanager.ui.utils.NativeText
 import com.bakjoul.realestatemanager.ui.utils.ViewModelUtils.Companion.formatPrice
 import com.bakjoul.realestatemanager.ui.utils.ViewModelUtils.Companion.formatSurface
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
@@ -59,6 +56,7 @@ class DraftsViewModel @Inject constructor(
                     overview = formatOverview(propertyDraft, currency, euroRateWrapper.currencyRateEntity.rate, surfaceUnit),
                     description = formatDescription(propertyDraft.description),
                     onDraftItemClicked = EquatableCallback {
+                        navigateUseCase.invoke(To.ShowDraftLoadingProgressBar)
                         navigateUseCase.invoke(To.AddProperty(propertyDraft.id, false))
                     }
                 )
@@ -71,14 +69,7 @@ class DraftsViewModel @Inject constructor(
     val viewActionLiveData: LiveData<Event<DraftsViewAction>> = liveData {
         getCurrentNavigationUseCase.invoke().collect {
             when (it) {
-                is To.AddProperty -> {
-                    // TODO REFACTO CLOSE WHEN ADD DIALOG OPENED INSTEAD
-                    viewModelScope.launch {
-                        emit(Event(DraftsViewAction.ShowProgressBar))
-                        delay(2000)
-                        emit(Event(DraftsViewAction.CloseDialog))
-                    }
-                }
+                is To.ShowDraftLoadingProgressBar -> emit(Event(DraftsViewAction.ShowProgressBar))
                 is To.CloseDraftDialog -> emit(Event(DraftsViewAction.CloseDialog))
                 else -> Unit
             }

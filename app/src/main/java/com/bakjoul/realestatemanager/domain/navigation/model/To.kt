@@ -9,6 +9,7 @@ sealed class To {
     object ClosePhotosDialog : To()
     object DraftDialog : To()
     object DraftListDialog : To()
+    object ShowDraftLoadingProgressBar : To()
     object CloseDraftDialog : To()
     object SaveDraftDialog : To()
     data class AddProperty(val draftId: Long, val isNewDraft: Boolean) : To()
