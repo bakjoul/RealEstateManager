@@ -180,7 +180,7 @@ class PropertyListViewModel @Inject constructor(
     fun onAddPropertyClicked() {
         viewModelScope.launch {
             if (hasPropertyDraftsUseCase.invoke()) {
-                navigateUseCase.invoke(To.DraftDialog)
+                navigateUseCase.invoke(To.DraftAlertDialog)
             } else {
                 val propertyDraftId = generateNewDraftIdUseCase.invoke()
                 addPropertyDraftUseCase.invoke(PropertyFormEntity(propertyDraftId, lastUpdate = LocalDateTime.now()))

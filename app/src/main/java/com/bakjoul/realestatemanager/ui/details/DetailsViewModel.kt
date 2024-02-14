@@ -87,7 +87,7 @@ class DetailsViewModel @Inject constructor(
                     { SelectType.NOT_SELECTABLE },
                     {
                         setCurrentPhotoIdUseCase.invoke(it)
-                        navigateUseCase.invoke(To.PhotosDialog)
+                        navigateUseCase.invoke(To.Photos)
                     }
                 ),
                 clipboardAddress = getClipboardAddress(property.address.streetNumber, property.address.route, property.address.city, property.address.country),

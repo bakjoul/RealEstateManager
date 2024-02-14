@@ -85,34 +85,42 @@ class MainViewModel @Inject constructor(
                         null
                     }
                 }
-                is To.PhotosDialog -> if (isTablet) {
-                    MainViewAction.ShowPhotosDialogAndHideDetailsPortrait
+                is To.Photos -> if (isTablet) {
+                    MainViewAction.ShowPhotosAndHideDetailsPortrait
                 } else {
-                    MainViewAction.ShowPhotosDialog
+                    MainViewAction.ShowPhotosDialogAndDetailsPortraitIfNeeded
                 }
-                is To.DraftDialog -> MainViewAction.ShowPropertyDraftDialog
-                is To.DraftListDialog -> MainViewAction.ShowDraftListDialog
-                is To.AddProperty -> MainViewAction.ShowAddPropertyDialog(navigation.draftId, navigation.isNewDraft)
-                is To.ClosePhotosDialog -> if (isTablet) {
+                is To.DraftAlertDialog -> MainViewAction.ShowPropertyDraftAlertDialog
+                is To.DraftList -> if (isTablet) {
+                    MainViewAction.ShowDraftListAndHideDetailsPortraitIfNeeded
+                } else {
+                    MainViewAction.ShowDraftListAndDetailsPortraitIfNeeded
+                }
+                is To.AddProperty -> if (isTablet) {
+                    MainViewAction.ShowAddPropertyAndHideDetailsPortraitIfNeeded(navigation.draftId, navigation.isNewDraft)
+                } else {
+                    MainViewAction.ShowAddPropertyAndDetailsPortraitIfNeeded(navigation.draftId, navigation.isNewDraft)
+                }
+                is To.ClosePhotos -> if (isTablet) {
                     MainViewAction.ShowDetailsTablet
                 } else {
                     MainViewAction.ShowDetailsPortraitIfNeeded
                 }
-                is To.CloseDraftDialog, To.CloseAddProperty, To.CloseSettings, To.CloseLoanSimulator -> if (isTablet) {
+                is To.CloseDraftList, To.CloseAddProperty, To.CloseSettings, To.CloseLoanSimulator -> if (isTablet) {
                     MainViewAction.HideDetailsPortrait
                 } else {
                     MainViewAction.ShowDetailsPortraitIfNeeded
                 }
                 is To.Dispatcher -> MainViewAction.ReturnToDispatcher
                 is To.Settings -> if (isTablet) {
-                    MainViewAction.ShowSettingsAndHideDetailsPortrait
+                    MainViewAction.ShowSettingsAndHideDetailsPortraitIfNeeded
                 } else {
-                    MainViewAction.ShowSettings
+                    MainViewAction.ShowSettingsAndDetailsPortraitIfNeeded
                 }
-                is To.LoanSimulatorDialog -> if (isTablet) {
-                    MainViewAction.ShowLoanSimulatorDialogAndHideDetailsPortrait
+                is To.LoanSimulator -> if (isTablet) {
+                    MainViewAction.ShowLoanSimulatorAndHideDetailsPortraitIfNeeded
                 } else {
-                    MainViewAction.ShowLoanSimulatorDialog
+                    MainViewAction.ShowLoanSimulatorAndDetailsPortraitIfNeeded
                 }
                 else -> null
             }
@@ -143,11 +151,11 @@ class MainViewModel @Inject constructor(
     }
 
     fun onContinueEditingDraftClicked() {
-        navigateUseCase.invoke(To.DraftListDialog)
+        navigateUseCase.invoke(To.DraftList)
     }
 
     fun onLoanSimulatorClicked() {
-        navigateUseCase.invoke(To.LoanSimulatorDialog)
+        navigateUseCase.invoke(To.LoanSimulator)
     }
 
     fun onClipboardToastShown() {

@@ -139,18 +139,18 @@ class MainActivity : AppCompatActivity() {
                     showDetailsPortraitIfNeeded(containerMainId)
                 }
 
-                MainViewAction.ShowPhotosDialog -> {
+                MainViewAction.ShowPhotosDialogAndDetailsPortraitIfNeeded -> {
                     showDetailsPortraitIfNeeded(containerMainId)
                     showPhotosDialog()
                 }
 
-                MainViewAction.ShowPhotosDialogAndHideDetailsPortrait -> {
+                MainViewAction.ShowPhotosAndHideDetailsPortrait -> {
                     val detailsPortraitFragment = hideDetailsPortrait()
                     showDetailsTabletIfNeeded(containerDetailsId, detailsPortraitFragment)
                     showPhotosDialog()
                 }
 
-                MainViewAction.ShowPropertyDraftDialog -> {
+                MainViewAction.ShowPropertyDraftAlertDialog -> {
                     MaterialAlertDialogBuilder(this)
                         .setTitle(getString(R.string.draft_dialog_title))
                         .setMessage(getString(R.string.draft_dialog_message))
@@ -164,19 +164,35 @@ class MainActivity : AppCompatActivity() {
                         .show()
                 }
 
-                MainViewAction.ShowDraftListDialog -> {
-                    val existingFragment = supportFragmentManager.findFragmentByTag(DRAFTS_DIALOG_TAG)
-                    if (existingFragment == null) {
-                        DraftsFragment().show(supportFragmentManager, DRAFTS_DIALOG_TAG)
-                    }
+                MainViewAction.ShowDraftListAndDetailsPortraitIfNeeded -> {
+                    showDetailsPortraitIfNeeded(containerMainId)
+                    showDraftListDialog()
                 }
 
-                is MainViewAction.ShowAddPropertyDialog -> {
+                MainViewAction.ShowDraftListAndHideDetailsPortraitIfNeeded -> {
+                    val detailsPortraitFragment = hideDetailsPortrait()
+                    showDetailsTabletIfNeeded(containerDetailsId, detailsPortraitFragment)
+                    showDraftListDialog()
+                }
+
+                is MainViewAction.ShowAddPropertyAndDetailsPortraitIfNeeded -> {
                     showDetailsPortraitIfNeeded(containerMainId)
 
                     val existingFragment = supportFragmentManager.findFragmentByTag(ADD_PROPERTY_DIALOG_TAG)
                     if (existingFragment == null) {
-                        AddPropertyFragment.newInstance(it.draftId, it.isNewDraft).show(supportFragmentManager, ADD_PROPERTY_DIALOG_TAG)
+                        AddPropertyFragment.newInstance(it.draftId, it.isNewDraft)
+                            .show(supportFragmentManager, ADD_PROPERTY_DIALOG_TAG)
+                    }
+                }
+
+                is MainViewAction.ShowAddPropertyAndHideDetailsPortraitIfNeeded -> {
+                    val detailsPortraitFragment = hideDetailsPortrait()
+                    showDetailsTabletIfNeeded(containerDetailsId, detailsPortraitFragment)
+
+                    val existingFragment = supportFragmentManager.findFragmentByTag(ADD_PROPERTY_DIALOG_TAG)
+                    if (existingFragment == null) {
+                        AddPropertyFragment.newInstance(it.draftId, it.isNewDraft)
+                            .show(supportFragmentManager, ADD_PROPERTY_DIALOG_TAG)
                     }
                 }
 
@@ -185,12 +201,14 @@ class MainActivity : AppCompatActivity() {
                     finish()
                 }
 
-                MainViewAction.ShowSettings -> {
+                MainViewAction.ShowSettingsAndDetailsPortraitIfNeeded -> {
                     binding.mainDrawerLayout.closeDrawer(GravityCompat.END)
+
+                    showDetailsPortraitIfNeeded(containerMainId)
                     showSettingsDialog()
                 }
 
-                MainViewAction.ShowSettingsAndHideDetailsPortrait -> {
+                MainViewAction.ShowSettingsAndHideDetailsPortraitIfNeeded -> {
                     binding.mainDrawerLayout.closeDrawer(GravityCompat.END)
 
                     val detailsPortraitFragment = hideDetailsPortrait()
@@ -198,9 +216,12 @@ class MainActivity : AppCompatActivity() {
                     showSettingsDialog()
                 }
 
-                MainViewAction.ShowLoanSimulatorDialog -> showLoanSimulatorDialog()
+                MainViewAction.ShowLoanSimulatorAndDetailsPortraitIfNeeded -> {
+                    showDetailsPortraitIfNeeded(containerMainId)
+                    showLoanSimulatorDialog()
+                }
 
-                MainViewAction.ShowLoanSimulatorDialogAndHideDetailsPortrait -> {
+                MainViewAction.ShowLoanSimulatorAndHideDetailsPortraitIfNeeded -> {
                     val detailsPortraitFragment = hideDetailsPortrait()
                     showDetailsTabletIfNeeded(containerDetailsId, detailsPortraitFragment)
                     showLoanSimulatorDialog()
@@ -260,6 +281,13 @@ class MainActivity : AppCompatActivity() {
         val existingFragment = supportFragmentManager.findFragmentByTag(PHOTOS_DIALOG_TAG)
         if (existingFragment == null) {
             PhotosFragment().show(supportFragmentManager, PHOTOS_DIALOG_TAG)
+        }
+    }
+
+    private fun showDraftListDialog() {
+        val existingFragment = supportFragmentManager.findFragmentByTag(DRAFTS_DIALOG_TAG)
+        if (existingFragment == null) {
+            DraftsFragment().show(supportFragmentManager, DRAFTS_DIALOG_TAG)
         }
     }
 

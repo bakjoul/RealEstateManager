@@ -874,7 +874,7 @@ class AddPropertyViewModel @Inject constructor(
 
     fun closeDraftDialog() {
         if (!isNewDraft) {
-            navigateUseCase.invoke(To.CloseDraftDialog)
+            navigateUseCase.invoke(To.CloseDraftList)
         }
     }
 

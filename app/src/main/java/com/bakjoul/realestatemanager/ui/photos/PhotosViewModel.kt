@@ -52,13 +52,13 @@ class PhotosViewModel @Inject constructor(
         getCurrentNavigationUseCase.invoke()
             .mapNotNull {
                 when (it) {
-                    is To.ClosePhotosDialog -> Event(PhotosViewAction.CloseDialog)
+                    is To.ClosePhotos -> Event(PhotosViewAction.CloseDialog)
                     else -> null
                 }
             }.asLiveData()
 
     fun onCloseButtonClicked() {
-        navigateUseCase.invoke(To.ClosePhotosDialog)
+        navigateUseCase.invoke(To.ClosePhotos)
     }
 
     fun updateCurrentPhotoId(position: Int) {

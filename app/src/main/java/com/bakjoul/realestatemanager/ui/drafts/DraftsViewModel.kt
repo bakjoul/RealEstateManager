@@ -70,7 +70,7 @@ class DraftsViewModel @Inject constructor(
         getCurrentNavigationUseCase.invoke().collect {
             when (it) {
                 is To.ShowDraftLoadingProgressBar -> emit(Event(DraftsViewAction.ShowProgressBar))
-                is To.CloseDraftDialog -> emit(Event(DraftsViewAction.CloseDialog))
+                is To.CloseDraftList -> emit(Event(DraftsViewAction.CloseDialog))
                 else -> Unit
             }
         }
@@ -178,6 +178,6 @@ class DraftsViewModel @Inject constructor(
     private fun formatDate(lastUpdate: LocalDateTime): String = "Last edited on ${lastUpdate.format(dateFormatter)}"
 
     fun closeDialog() {
-        navigateUseCase.invoke(To.CloseDraftDialog)
+        navigateUseCase.invoke(To.CloseDraftList)
     }
 }
