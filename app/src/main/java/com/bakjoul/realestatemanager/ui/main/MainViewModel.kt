@@ -98,7 +98,7 @@ class MainViewModel @Inject constructor(
                 } else {
                     MainViewAction.ShowDetailsPortraitIfNeeded
                 }
-                is To.CloseAddProperty, To.CloseSettings, To.CloseLoanSimulator -> if (isTablet) {
+                is To.CloseDraftDialog, To.CloseAddProperty, To.CloseSettings, To.CloseLoanSimulator -> if (isTablet) {
                     MainViewAction.HideDetailsPortrait
                 } else {
                     MainViewAction.ShowDetailsPortraitIfNeeded

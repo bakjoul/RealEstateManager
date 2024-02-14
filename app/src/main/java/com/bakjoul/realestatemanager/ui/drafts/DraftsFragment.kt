@@ -1,6 +1,7 @@
 package com.bakjoul.realestatemanager.ui.drafts
 
 import android.app.Dialog
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.MotionEvent
 import android.view.View
@@ -69,6 +70,12 @@ class DraftsFragment : DialogFragment(R.layout.fragment_drafts) {
                 DraftsViewAction.CloseDialog -> dismiss()
             }
         }
+    }
+
+    override fun onCancel(dialog: DialogInterface) {
+        super.onCancel(dialog)
+
+        viewModel.closeDialog()
     }
 
     private fun setToolbar() {
