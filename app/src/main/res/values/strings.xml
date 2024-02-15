@@ -162,4 +162,5 @@
     <string name="draft_overview_date">Last edited on %s</string>
     <string name="draft_overview_date_formatter">MM-dd-yyyy hh:mm a</string>
     <string name="details_date_formatter">MM/dd/yy</string>
+    <string name="photo_preview_added_toast">Photo successfully added</string>
 </resources>

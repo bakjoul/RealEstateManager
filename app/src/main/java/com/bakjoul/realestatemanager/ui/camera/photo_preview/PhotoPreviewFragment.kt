@@ -7,6 +7,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.databinding.FragmentPhotoPreviewBinding
+import com.bakjoul.realestatemanager.ui.utils.Event.Companion.observeEvent
+import com.bakjoul.realestatemanager.ui.utils.showAsToast
 import com.bakjoul.realestatemanager.ui.utils.viewBinding
 import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
@@ -20,20 +22,21 @@ class PhotoPreviewFragment : Fragment(R.layout.fragment_photo_preview) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.photoPreviewCancelButton.setOnClickListener { viewModel.onCancelButtonClicked() }
+        binding.photoPreviewDoneButton.setOnClickListener { viewModel.onDoneButtonClicked() }
+
         binding.photoPreviewDescriptionEditText.doAfterTextChanged {
             viewModel.onDescriptionChanged(it)
         }
 
-        viewModel.viewStateLiveData.observe(viewLifecycleOwner) { viewState ->
-            Glide.with(binding.photoPreview).load(viewState.photoUri).into(binding.photoPreview)
-            binding.photoPreviewDescription.error = viewState.descriptionError
+        viewModel.viewStateLiveData.observe(viewLifecycleOwner) {
+            Glide.with(binding.photoPreview).load(it.photoUri).into(binding.photoPreview)
+            binding.photoPreviewDescription.error = it.descriptionError?.toCharSequence(requireContext())
+        }
 
-            binding.photoPreviewCancelButton.setOnClickListener { viewModel.onCancelButtonClicked() }
-
-            binding.photoPreviewDoneButton.setOnClickListener {
-                //Toast.makeText(requireContext(), "Photo successfully added", Toast.LENGTH_SHORT).show()
-
-                viewModel.onDoneButtonClicked()
+        viewModel.viewActionLiveData.observeEvent(viewLifecycleOwner) {
+            when (it) {
+                is PhotoPreviewViewAction.ShowToast -> it.message.showAsToast(requireContext())
             }
         }
     }

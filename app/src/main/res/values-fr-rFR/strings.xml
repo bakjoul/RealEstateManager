@@ -147,4 +147,5 @@
     <string name="draft_overview_date">Dernière modification le %s</string>
     <string name="draft_overview_date_formatter">dd-MM-yyyy HH:mm</string>
     <string name="details_date_formatter">dd/MM/yy</string>
+    <string name="photo_preview_added_toast">Photo ajoutée avec succès</string>
 </resources>
