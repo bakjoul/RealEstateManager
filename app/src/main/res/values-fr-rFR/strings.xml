@@ -46,8 +46,8 @@
     <string name="settings_currency_label">Devise</string>
     <string name="settings_currency_desc">Modifie la devise utilisée dans l\'application</string>
     <string name="info_icon_desc">Icône d\'information</string>
-    <string name="property_sold_on">"Vendu le "</string>
-    <string name="property_for_sale_since">"En vente depuis "</string>
+    <string name="property_sold_on">Vendu le %s</string>
+    <string name="property_for_sale_since">En vente depuis %s</string>
     <string name="property_address_clipboard">Adresse copiée dans le presse-papier</string>
     <string name="close_button_desc">Bouton fermer</string>
     <string name="log_out">Se déconnecter</string>
@@ -146,4 +146,5 @@
     <string name="drafts_title">Brouillons disponibles</string>
     <string name="draft_overview_date">Dernière modification le %s</string>
     <string name="draft_overview_date_formatter">dd-MM-yyyy HH:mm</string>
+    <string name="details_date_formatter">dd/MM/yy</string>
 </resources>

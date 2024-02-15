@@ -54,15 +54,15 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
 
         viewModel.viewStateLiveData.observe(viewLifecycleOwner) { details ->
             Glide.with(binding.detailsToolbarPhoto).load(details.mainPhotoUrl).into(binding.detailsToolbarPhoto)
-            binding.detailsToolbarType.text = details.type
+            binding.detailsToolbarType.text = details.type.toCharSequence(requireContext())
             binding.detailsToolbarPrice.text = details.price
             binding.detailsToolbarPrice.paintFlags = if (details.isSold) binding.detailsToolbarPrice.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG else 0
             binding.detailsToolbarSold.visibility = if (details.isSold) View.VISIBLE else View.GONE
             binding.detailsToolbarCity.text = details.city
-            binding.detailsToolbarSurface.text = details.surface
-            binding.detailsToolbarSaleStatus.text = details.saleStatus
+            binding.detailsToolbarSurface.text = details.surface.toCharSequence(requireContext())
+            binding.detailsToolbarSaleStatus.text = details.saleStatus.toCharSequence(requireContext())
             binding.detailsDescriptionText.text = details.description
-            binding.detailsItemSurface.setText(details.surface)
+            binding.detailsItemSurface.setText(details.surface.toCharSequence(requireContext()))
             binding.detailsItemRooms.setText(details.rooms)
             binding.detailsItemBedrooms.setText(details.bedrooms)
             binding.detailsItemBathrooms.setText(details.bathrooms)

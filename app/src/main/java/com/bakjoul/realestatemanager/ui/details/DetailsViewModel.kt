@@ -1,11 +1,11 @@
 package com.bakjoul.realestatemanager.ui.details
 
-import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import com.bakjoul.realestatemanager.BuildConfig
 import com.bakjoul.realestatemanager.R
+import com.bakjoul.realestatemanager.data.settings.model.SurfaceUnit
 import com.bakjoul.realestatemanager.designsystem.molecule.photo_list.PhotoListMapper
 import com.bakjoul.realestatemanager.designsystem.molecule.photo_list.SelectType
 import com.bakjoul.realestatemanager.domain.CoroutineDispatcherProvider
@@ -22,19 +22,17 @@ import com.bakjoul.realestatemanager.domain.settings.currency.GetCurrentCurrency
 import com.bakjoul.realestatemanager.domain.settings.surface_unit.GetCurrentSurfaceUnitUseCase
 import com.bakjoul.realestatemanager.ui.utils.NativeText
 import com.bakjoul.realestatemanager.ui.utils.ViewModelUtils.Companion.formatPrice
-import com.bakjoul.realestatemanager.ui.utils.ViewModelUtils.Companion.formatSurface
+import com.bakjoul.realestatemanager.ui.utils.ViewModelUtils.Companion.formatSurfaceValue
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
 class DetailsViewModel @Inject constructor(
     coroutineDispatcherProvider: CoroutineDispatcherProvider,
-    private val application: Application,
     private val getCurrentPropertyUseCase: GetCurrentPropertyUseCase,
     private val getCurrentCurrencyUseCase: GetCurrentCurrencyUseCase,
     private val getEuroRateUseCase: GetEuroRateUseCase,
@@ -57,7 +55,7 @@ class DetailsViewModel @Inject constructor(
             flow { emit(getEuroRateUseCase.invoke()) },
             getCurrentSurfaceUnitUseCase.invoke()
         ) { property, currency, euroRateWrapper, surfaceUnit ->
-            val formattedSurface = formatSurface(property.surface, surfaceUnit)
+            val parsedSurfaceValue = formatSurfaceValue(property.surface, surfaceUnit)
 
             DetailsViewState(
                 mainPhotoUrl = property.photos.firstOrNull()?.url ?: "",
@@ -67,7 +65,7 @@ class DetailsViewModel @Inject constructor(
                 city = property.address.city,
                 saleStatus = getSaleStatus(property.saleDate, property.entryDate),
                 description = property.description,
-                surface = "", // TODO
+                surface = formatSurface(parsedSurfaceValue, surfaceUnit),
                 rooms = property.rooms.toString(),
                 bedrooms = property.bedrooms.toString(),
                 bathrooms = property.bathrooms.toString(),
@@ -99,29 +97,44 @@ class DetailsViewModel @Inject constructor(
         }
     }
 
-    private val locale = Locale.getDefault()
-    private val formatter: DateTimeFormatter = if (locale.language == "fr") {
-        DateTimeFormatter.ofPattern("d/MM/yy", locale)
-    } else {
-        DateTimeFormatter.ofPattern("M/d/yy", locale)
+    private fun formatType(type: String): NativeText = when (type) {
+        PropertyTypeEntity.DUPLEX.name -> NativeText.Resource(PropertyTypeEntity.DUPLEX.typeName)
+        PropertyTypeEntity.FLAT.name -> NativeText.Resource(PropertyTypeEntity.FLAT.typeName)
+        PropertyTypeEntity.HOUSE.name -> NativeText.Resource(PropertyTypeEntity.HOUSE.typeName)
+        PropertyTypeEntity.LOFT.name -> NativeText.Resource(PropertyTypeEntity.LOFT.typeName)
+        PropertyTypeEntity.OTHER.name -> NativeText.Resource(PropertyTypeEntity.OTHER.typeName)
+        PropertyTypeEntity.PENTHOUSE.name -> NativeText.Resource(PropertyTypeEntity.PENTHOUSE.typeName)
+        else -> NativeText.Simple("")
     }
 
-    private fun formatType(type: String): String = when (type) {
-        PropertyTypeEntity.DUPLEX.name -> application.resources.getString(PropertyTypeEntity.DUPLEX.typeName)
-        PropertyTypeEntity.FLAT.name -> application.resources.getString(PropertyTypeEntity.FLAT.typeName)
-        PropertyTypeEntity.HOUSE.name -> application.resources.getString(PropertyTypeEntity.HOUSE.typeName)
-        PropertyTypeEntity.LOFT.name -> application.resources.getString(PropertyTypeEntity.LOFT.typeName)
-        PropertyTypeEntity.OTHER.name -> application.resources.getString(PropertyTypeEntity.OTHER.typeName)
-        PropertyTypeEntity.PENTHOUSE.name -> application.resources.getString(PropertyTypeEntity.PENTHOUSE.typeName)
-        else -> ""
-    }
-
-    private fun getSaleStatus(soldDate: LocalDate?, entryDate: LocalDate): String {
+    private fun getSaleStatus(soldDate: LocalDate?, entryDate: LocalDate): NativeText {
         return if (soldDate != null) {
-            application.getString(R.string.property_sold_on) + soldDate.format(formatter)
+            NativeText.Argument(
+                R.string.property_sold_on,
+                NativeText.Date(
+                    R.string.details_date_formatter,
+                    soldDate
+                )
+            )
         } else {
-            application.getString(R.string.property_for_sale_since) + entryDate.format(formatter)
+            NativeText.Argument(
+                R.string.property_for_sale_since,
+                NativeText.Date(
+                    R.string.details_date_formatter,
+                    entryDate
+                )
+            )
         }
+    }
+
+    private fun formatSurface(formattedSurfaceValue: Int, surfaceUnit: SurfaceUnit): NativeText {
+        return NativeText.Arguments(
+            R.string.property_surface,
+            listOf(
+                formattedSurfaceValue,
+                NativeText.Resource(surfaceUnit.unitSymbol)
+            )
+        )
     }
 
     private fun formatLocation(

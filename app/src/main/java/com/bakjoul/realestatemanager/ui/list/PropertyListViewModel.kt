@@ -28,7 +28,7 @@ import com.bakjoul.realestatemanager.domain.settings.surface_unit.GetCurrentSurf
 import com.bakjoul.realestatemanager.ui.utils.EquatableCallback
 import com.bakjoul.realestatemanager.ui.utils.NativeText
 import com.bakjoul.realestatemanager.ui.utils.ViewModelUtils.Companion.formatPrice
-import com.bakjoul.realestatemanager.ui.utils.ViewModelUtils.Companion.formatSurface
+import com.bakjoul.realestatemanager.ui.utils.ViewModelUtils.Companion.formatSurfaceValue
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
@@ -102,7 +102,6 @@ class PropertyListViewModel @Inject constructor(
         else -> NativeText.Simple("")
     }
 
-    // TODO NEEDS TO BE REFACTORED
     private fun formatFeatures(
         bedrooms: BigDecimal,
         bathrooms: BigDecimal,
@@ -110,7 +109,7 @@ class PropertyListViewModel @Inject constructor(
         surfaceUnit: SurfaceUnit,
         isTablet: Boolean
     ): NativeText {
-        val mappedSurface = formatSurface(surface, surfaceUnit)
+        val parsedSurfaceValue = formatSurfaceValue(surface, surfaceUnit)
 
         return if (isTablet) {
             NativeText.Arguments(
@@ -121,7 +120,7 @@ class PropertyListViewModel @Inject constructor(
                     NativeText.Arguments(
                         R.string.property_surface,
                         listOf(
-                            mappedSurface,
+                            parsedSurfaceValue,
                             NativeText.Resource(surfaceUnit.unitSymbol),
                         )
                     )
@@ -136,7 +135,7 @@ class PropertyListViewModel @Inject constructor(
                     NativeText.Arguments(
                         R.string.property_surface,
                         listOf(
-                            mappedSurface,
+                            parsedSurfaceValue,
                             NativeText.Resource(surfaceUnit.unitSymbol),
                         )
                     )

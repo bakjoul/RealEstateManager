@@ -50,8 +50,8 @@
     <string name="settings_currency_desc">Changes the currency used throughout the app</string>
     <string name="info_icon_desc">Information icon</string>
     <string name="info_icon" translatable="false">i</string>
-    <string name="property_sold_on">"Sold on "</string>
-    <string name="property_for_sale_since">"For sale since "</string>
+    <string name="property_sold_on">"Sold on %s"</string>
+    <string name="property_for_sale_since">For sale since %s</string>
     <string name="property_address_clipboard">Address copied to clipboard</string>
     <string name="close_button_desc">Close button</string>
     <string name="log_out">Log out</string>
@@ -161,4 +161,5 @@
     <string name="drafts_title">Available drafts</string>
     <string name="draft_overview_date">Last edited on %s</string>
     <string name="draft_overview_date_formatter">MM-dd-yyyy hh:mm a</string>
+    <string name="details_date_formatter">MM/dd/yy</string>
 </resources>

@@ -19,7 +19,7 @@ import com.bakjoul.realestatemanager.ui.utils.EquatableCallback
 import com.bakjoul.realestatemanager.ui.utils.Event
 import com.bakjoul.realestatemanager.ui.utils.NativeText
 import com.bakjoul.realestatemanager.ui.utils.ViewModelUtils.Companion.formatPrice
-import com.bakjoul.realestatemanager.ui.utils.ViewModelUtils.Companion.formatSurface
+import com.bakjoul.realestatemanager.ui.utils.ViewModelUtils.Companion.formatSurfaceValue
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
@@ -116,7 +116,7 @@ class DraftsViewModel @Inject constructor(
             NativeText.Arguments(
                 R.string.draft_overview_field,
                 listOf(
-                    formatSurface(propertyDraft.referenceSurface, surfaceUnit),
+                    formatSurfaceValue(propertyDraft.referenceSurface, surfaceUnit),
                     NativeText.Resource(surfaceUnit.unitSymbol),
                 )
             )

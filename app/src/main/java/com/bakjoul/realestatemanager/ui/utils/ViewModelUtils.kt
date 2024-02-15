@@ -12,7 +12,7 @@ class ViewModelUtils {
 
     companion object {
 
-        fun formatSurface(surface: BigDecimal, surfaceUnit: SurfaceUnit): Int = when (surfaceUnit) {
+        fun formatSurfaceValue(surface: BigDecimal, surfaceUnit: SurfaceUnit): Int = when (surfaceUnit) {
             SurfaceUnit.METERS -> surface.setScale(0, RoundingMode.CEILING).toInt()
             SurfaceUnit.FEET -> (surface * BigDecimal(3.28084)).setScale(0, RoundingMode.CEILING).toInt()
         }

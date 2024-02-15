@@ -24,7 +24,7 @@ class DetailsFieldView @JvmOverloads constructor(
         }
     }
 
-    fun setText(text: String) {
+    fun setText(text: CharSequence) {
         binding.detailsFieldText.text = text
     }
 }

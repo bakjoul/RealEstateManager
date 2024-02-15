@@ -1,16 +1,17 @@
 package com.bakjoul.realestatemanager.ui.details
 
 import com.bakjoul.realestatemanager.designsystem.molecule.photo_list.PhotoListItemViewState
+import com.bakjoul.realestatemanager.ui.utils.NativeText
 
 data class DetailsViewState(
     val mainPhotoUrl: String,
-    val type: String,
+    val type: NativeText,
     val price: String,
     val isSold: Boolean,
     val city: String,
-    val saleStatus: String,
+    val saleStatus: NativeText,
     val description: String,
-    val surface: String,
+    val surface: NativeText,
     val rooms: String,
     val bedrooms: String,
     val bathrooms: String,
