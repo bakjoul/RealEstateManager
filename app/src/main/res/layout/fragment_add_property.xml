@@ -135,7 +135,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
                     android:layout_marginEnd="8dp"
-                    android:hint="@string/property_for_sale_since"
+                    android:hint="@string/add_property_for_sale_since"
                     app:layout_constraintEnd_toStartOf="@id/add_property_sold_on_TextInputLayout"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/add_property_type_error_TextView">
@@ -154,7 +154,7 @@
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:layout_marginEnd="8dp"
-                    android:hint="@string/property_sold_on"
+                    android:hint="@string/add_property_sold_on"
                     android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="@id/add_property_for_sale_since_TextInputLayout"
                     app:layout_constraintEnd_toStartOf="@id/add_property_type_sale_status_Toggle"

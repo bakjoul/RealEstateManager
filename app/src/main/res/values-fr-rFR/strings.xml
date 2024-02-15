@@ -148,4 +148,6 @@
     <string name="draft_overview_date_formatter">dd-MM-yyyy HH:mm</string>
     <string name="details_date_formatter">dd/MM/yy</string>
     <string name="photo_preview_added_toast">Photo ajoutée avec succès</string>
+    <string name="add_property_for_sale_since">En vente depuis</string>
+    <string name="add_property_sold_on">Vendu le</string>
 </resources>

@@ -50,7 +50,7 @@
     <string name="settings_currency_desc">Changes the currency used throughout the app</string>
     <string name="info_icon_desc">Information icon</string>
     <string name="info_icon" translatable="false">i</string>
-    <string name="property_sold_on">"Sold on %s"</string>
+    <string name="property_sold_on">Sold on %s</string>
     <string name="property_for_sale_since">For sale since %s</string>
     <string name="property_address_clipboard">Address copied to clipboard</string>
     <string name="close_button_desc">Close button</string>
@@ -58,6 +58,8 @@
     <string name="property_price">Price</string>
     <string name="property_for_sale">For sale</string>
     <string name="zero" translatable="false">0</string>
+    <string name="add_property_sold_on">Sold on</string>
+    <string name="add_property_for_sale_since">For sale since</string>
     <string name="add_property_address_hint">Address</string>
     <string name="add_property_apartment_hint">Apartment, suite, etc (optional)</string>
     <string name="add_property_city_hint">City</string>
