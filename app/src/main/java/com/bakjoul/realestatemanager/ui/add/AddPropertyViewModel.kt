@@ -253,7 +253,15 @@ class AddPropertyViewModel @Inject constructor(
                 is To.SaveDraftDialog -> emit(Event(AddPropertyViewAction.SaveDraftDialog))
                 is To.CloseAddProperty -> emit(Event(AddPropertyViewAction.CloseDialog))
                 is To.Settings -> emit(Event(AddPropertyViewAction.OpenSettings))
-                is To.Toast -> emit(Event(AddPropertyViewAction.ShowToast(it.message)))
+                is To.Toast -> {
+                    if (it.message == NativeText.Resource(R.string.toast_selected_address_details_error)
+                        || it.message == NativeText.Resource(R.string.toast_selected_address_details_failure)
+                        || it.message == NativeText.Resource(R.string.toast_selected_address_no_results)
+                        || it.message == NativeText.Resource(R.string.toast_draft_discarded)
+                        || it.message == NativeText.Resource(R.string.toast_saving_draft)) {
+                        emit(Event(AddPropertyViewAction.ShowToast(it.message)))
+                    }
+                }
                 else -> Unit
             }
         }
