@@ -45,6 +45,23 @@ class PhotoListAdapter : ListAdapter<PhotoListItemViewState, PhotoListAdapter.Vi
 
             binding.photoItem.setOnClickListener { item.onPhotoClicked() }
 
+            if (item.isFeatured != null) {
+                binding.photoItemFeature.setImageResource(
+                    if (item.isFeatured) {
+                        R.drawable.star_filled_24
+                    } else {
+                        R.drawable.star_24
+                    }
+                )
+            }
+
+            if (item.onFeaturePhotoClicked != null) {
+                binding.photoItemFeature.visibility = View.VISIBLE
+                binding.photoItemFeature.setOnClickListener { item.onFeaturePhotoClicked.invoke() }
+            } else {
+                binding.photoItemFeature.visibility = View.GONE
+            }
+
             if (item.onDeletePhotoClicked != null) {
                 binding.photoItemDelete.visibility = View.VISIBLE
                 binding.photoItemDelete.setOnClickListener { item.onDeletePhotoClicked.invoke() }

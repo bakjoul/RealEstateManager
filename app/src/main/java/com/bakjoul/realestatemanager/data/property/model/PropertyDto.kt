@@ -37,5 +37,6 @@ data class PropertyDto(
     val latitude: Double,
     val longitude: Double,
     val description: String,
+    val featuredPhotoId: Long?,
     val agent: String,
 )

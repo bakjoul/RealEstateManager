@@ -4,7 +4,7 @@ import com.bakjoul.realestatemanager.designsystem.molecule.photo_list.PhotoListI
 import com.bakjoul.realestatemanager.ui.utils.NativeText
 
 data class DetailsViewState(
-    val mainPhotoUrl: String,
+    val featuredPhotoUrl: String,
     val type: NativeText,
     val price: String,
     val isSold: Boolean,

@@ -38,6 +38,16 @@
             tools:text="Façade" />
 
         <ImageButton
+            android:id="@+id/photo_item_feature"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|start"
+            android:layout_margin="2dp"
+            android:background="@null"
+            android:contentDescription="@string/add_property_feature_photo_desc"
+            android:src="@drawable/star_24" />
+
+        <ImageButton
             android:id="@+id/photo_item_delete"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

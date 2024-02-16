@@ -72,7 +72,7 @@
     <string name="add_property_camera_dialog_message">Camera permission is required to take pictures</string>
     <string name="dialog_dismiss">Dismiss</string>
     <string name="camera_error_starting">Error starting camera</string>
-    <string name="add_property_camera_btn_desc">Take a photo image button</string>
+    <string name="add_property_camera_btn_desc">Take a photo button</string>
     <string name="camera_capture_btn_desc">Capture button</string>
     <string name="camera_photo_mode">Photo</string>
     <string name="camera_flip_button_desc">Flip camera button</string>
@@ -167,4 +167,5 @@
     <string name="photo_preview_added_toast">Photo successfully added</string>
     <string name="add_property_take_photo">Take a photo</string>
     <string name="add_property_import_from_gallery">Import a photo</string>
+    <string name="add_property_feature_photo_desc">Feature this photo button</string>
 </resources>

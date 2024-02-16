@@ -7,7 +7,9 @@ data class PhotoListItemViewState(
     val url: String,
     val description: String,
     val selectType: SelectType,
+    val isFeatured: Boolean?,
     val onPhotoClicked: EquatableCallback,
+    val onFeaturePhotoClicked: EquatableCallback?,
     val onDeletePhotoClicked: EquatableCallback?
 )
 

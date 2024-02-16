@@ -48,7 +48,7 @@ class DraftsViewModel @Inject constructor(
                 .map { propertyDraft ->
                 DraftsItemViewState(
                     id = propertyDraft.id,
-                    photoUrl = propertyDraft.photos!!.firstOrNull()?.url ?: "",
+                    featuredPhotoUrl = propertyDraft.photos?.find { it.id == propertyDraft.featuredPhotoId }?.url ?: "",
                     isSold = propertyDraft.isSold ?: false,
                     lastUpdate = formatDate(propertyDraft.lastUpdate),
                     typeAndLocation = formatTypeAndLocation(propertyDraft),

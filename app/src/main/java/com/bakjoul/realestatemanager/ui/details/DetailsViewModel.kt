@@ -56,9 +56,8 @@ class DetailsViewModel @Inject constructor(
             getCurrentSurfaceUnitUseCase.invoke()
         ) { property, currency, euroRateWrapper, surfaceUnit ->
             val parsedSurfaceValue = formatSurfaceValue(property.surface, surfaceUnit)
-
             DetailsViewState(
-                mainPhotoUrl = property.photos.firstOrNull()?.url ?: "",
+                featuredPhotoUrl = property.photos.find { it.id == property.featuredPhotoId }?.url ?: "",
                 type = formatType(property.type),
                 price = formatPrice(property.price, currency, euroRateWrapper.currencyRateEntity.rate),
                 isSold = property.saleDate != null,
@@ -83,6 +82,7 @@ class DetailsViewModel @Inject constructor(
                 medias = PhotoListMapper().map(
                     property.photos,
                     { SelectType.NOT_SELECTABLE },
+                    property.featuredPhotoId,
                     {
                         setCurrentPhotoIdUseCase.invoke(it)
                         navigateUseCase.invoke(To.Photos)

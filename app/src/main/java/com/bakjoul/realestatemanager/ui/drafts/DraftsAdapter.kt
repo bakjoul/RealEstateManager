@@ -22,11 +22,11 @@ class DraftsAdapter : ListAdapter<DraftsItemViewState, DraftsAdapter.ViewHolder>
 
     class ViewHolder(private val binding: FragmentDraftsItemBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(item: DraftsItemViewState) {
-            if (item.photoUrl.isEmpty()) {
+            if (item.featuredPhotoUrl.isEmpty()) {
                 binding.draftItemPhoto.setImageResource(R.drawable.baseline_photo_24)
                 binding.draftItemPhoto.scaleX = 1.33f
             } else {
-                Glide.with(binding.draftItemPhoto.context).load(item.photoUrl).into(binding.draftItemPhoto)
+                Glide.with(binding.draftItemPhoto.context).load(item.featuredPhotoUrl).into(binding.draftItemPhoto)
             }
             binding.draftItemSold.visibility = if (item.isSold) View.VISIBLE else View.GONE
             binding.draftItemLastUpdate.text = item.lastUpdate.toCharSequence(binding.root.context)

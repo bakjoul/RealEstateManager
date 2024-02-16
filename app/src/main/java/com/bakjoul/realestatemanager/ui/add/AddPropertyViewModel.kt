@@ -22,6 +22,7 @@ import com.bakjoul.realestatemanager.domain.navigation.NavigateUseCase
 import com.bakjoul.realestatemanager.domain.navigation.model.To
 import com.bakjoul.realestatemanager.domain.photos.DeletePhotoUseCase
 import com.bakjoul.realestatemanager.domain.photos.GetPhotosForPropertyIdUseCase
+import com.bakjoul.realestatemanager.domain.photos.model.PhotoEntity
 import com.bakjoul.realestatemanager.domain.property.AddPropertyUseCase
 import com.bakjoul.realestatemanager.domain.property.drafts.DeletePropertyDraftUseCase
 import com.bakjoul.realestatemanager.domain.property.drafts.GetPropertyDraftByIdUseCase
@@ -116,6 +117,7 @@ class AddPropertyViewModel @Inject constructor(
         "No information about new draft passed as parameter !"
     }
 
+    private var photosList: List<PhotoEntity> = emptyList()
     private var saveJob: Job? = null
     private var isAddressTextCleared = false
 
@@ -165,6 +167,8 @@ class AddPropertyViewModel @Inject constructor(
             getPhotosForPropertyIdUseCase.invoke(draftId),
             errorsMutableStateFlow
         ) { (propertyForm, currency, euroRate, surfaceUnit), addressPredictions, photos, errors ->
+            updatePhotos(photos, propertyForm)
+
             AddPropertyViewState(
                 propertyTypeEntity = propertyForm.type,
                 forSaleSince = formatDate(propertyForm.forSaleSince),
@@ -194,7 +198,15 @@ class AddPropertyViewModel @Inject constructor(
                 photos = PhotoListMapper().map(
                     photos,
                     { SelectType.NOT_SELECTABLE },
+                    propertyForm.featuredPhotoId,
                     {},
+                    {
+                        if (propertyForm.featuredPhotoId != it) {
+                            propertyFormMutableSharedFlow.tryEmit(
+                                propertyForm.copy(featuredPhotoId = it)
+                            )
+                        }
+                    },
                     {
                         viewModelScope.launch {
                             deletePhotoUseCase.invoke(it)
@@ -215,6 +227,23 @@ class AddPropertyViewModel @Inject constructor(
             )
         }.collect {
             emit(it)
+        }
+    }
+
+    private fun updatePhotos(
+        photos: List<PhotoEntity>,
+        propertyForm: PropertyFormEntity
+    ) {
+        if (photosList != photos) {
+            if ((photosList.isEmpty() && photos.size == 1) ||
+                (photos.find { it.id == propertyForm.featuredPhotoId } == null && photos.isNotEmpty())
+            ) {
+                propertyFormMutableSharedFlow.tryEmit(
+                    propertyForm.copy(featuredPhotoId = photos.first().id)
+                )
+            }
+
+            photosList = photos
         }
     }
 
@@ -254,11 +283,12 @@ class AddPropertyViewModel @Inject constructor(
                 is To.CloseAddProperty -> emit(Event(AddPropertyViewAction.CloseDialog))
                 is To.Settings -> emit(Event(AddPropertyViewAction.OpenSettings))
                 is To.Toast -> {
-                    if (it.message == NativeText.Resource(R.string.toast_selected_address_details_error)
-                        || it.message == NativeText.Resource(R.string.toast_selected_address_details_failure)
-                        || it.message == NativeText.Resource(R.string.toast_selected_address_no_results)
-                        || it.message == NativeText.Resource(R.string.toast_draft_discarded)
-                        || it.message == NativeText.Resource(R.string.toast_saving_draft)) {
+                    if (it.message == NativeText.Resource(R.string.toast_selected_address_details_error) ||
+                        it.message == NativeText.Resource(R.string.toast_selected_address_details_failure) ||
+                        it.message == NativeText.Resource(R.string.toast_selected_address_no_results) ||
+                        it.message == NativeText.Resource(R.string.toast_draft_discarded) ||
+                        it.message == NativeText.Resource(R.string.toast_saving_draft)
+                    ) {
                         emit(Event(AddPropertyViewAction.ShowToast(it.message)))
                     }
                 }
@@ -285,6 +315,7 @@ class AddPropertyViewModel @Inject constructor(
         address = PropertyFormAddress(),
         description = null,
         photos = emptyList(),
+        featuredPhotoId = null,
         agent = null,
         lastUpdate = LocalDateTime.now(clock)
     )
@@ -658,7 +689,8 @@ class AddPropertyViewModel @Inject constructor(
             propertyFormReplaceCache.pointsOfInterest!!.isEmpty() &&
             propertyFormReplaceCache.address == PropertyFormAddress() &&
             propertyFormReplaceCache.autoCompleteAddress == PropertyFormAddress() &&
-            propertyFormReplaceCache.description == null
+            propertyFormReplaceCache.description == null &&
+            photosList.isEmpty()
         ) {
             dropDraft()
         } else {
@@ -715,6 +747,7 @@ class AddPropertyViewModel @Inject constructor(
                         ),
                         description = propertyFormReplaceCache.description!!,
                         photos = propertyFormReplaceCache.photos!!,
+                        featuredPhotoId = propertyFormReplaceCache.featuredPhotoId,
                         agent = propertyFormReplaceCache.agent ?: "John Doe", // TODO: get agent name from settings
                         entryDate = ZonedDateTime.now(clock).toLocalDate()
                     )

@@ -48,6 +48,7 @@ data class PropertyFormDto(
     val latitude: Double?,
     val longitude: Double?,
     val description: String?,
+    val featuredPhotoId: Long?,
     val agent: String?,
     val lastUpdate: LocalDateTime
 )

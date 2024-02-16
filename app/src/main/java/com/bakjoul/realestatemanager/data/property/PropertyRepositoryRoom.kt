@@ -126,6 +126,7 @@ class PropertyRepositoryRoom @Inject constructor(
             latitude = propertyEntity.address.latitude,
             longitude = propertyEntity.address.longitude,
             description = propertyEntity.description,
+            featuredPhotoId = propertyEntity.featuredPhotoId,
             agent = propertyEntity.agent,
         )
 
@@ -153,6 +154,7 @@ class PropertyRepositoryRoom @Inject constructor(
                 longitude = propertyWithPhotosDto.propertyDto.longitude),
             description = propertyWithPhotosDto.propertyDto.description,
             photos = mapPhotos(propertyWithPhotosDto.photos),
+            featuredPhotoId = propertyWithPhotosDto.propertyDto.featuredPhotoId,
             agent = propertyWithPhotosDto.propertyDto.agent,
             entryDate = propertyWithPhotosDto.propertyDto.forSaleSince
         )
@@ -222,6 +224,7 @@ class PropertyRepositoryRoom @Inject constructor(
             latitude = propertyForm.address?.latitude,
             longitude = propertyForm.address?.longitude,
             description = propertyForm.description,
+            featuredPhotoId = propertyForm.featuredPhotoId,
             agent = propertyForm.agent,
             lastUpdate = ZonedDateTime.now().toLocalDateTime()
         )
@@ -261,6 +264,7 @@ class PropertyRepositoryRoom @Inject constructor(
                 longitude = propertyFormWithPhotosDto.propertyFormDto.longitude),
             description = propertyFormWithPhotosDto.propertyFormDto.description,
             photos = mapPhotos(propertyFormWithPhotosDto.photos),
+            featuredPhotoId = propertyFormWithPhotosDto.propertyFormDto.featuredPhotoId,
             agent = propertyFormWithPhotosDto.propertyFormDto.agent,
             lastUpdate = propertyFormWithPhotosDto.propertyFormDto.lastUpdate
         )

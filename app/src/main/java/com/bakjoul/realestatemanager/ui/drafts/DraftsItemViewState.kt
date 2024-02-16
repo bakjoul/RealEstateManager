@@ -5,7 +5,7 @@ import com.bakjoul.realestatemanager.ui.utils.NativeText
 
 data class DraftsItemViewState(
     val id: Long,
-    val photoUrl: String,
+    val featuredPhotoUrl: String,
     val isSold: Boolean,
     val lastUpdate: NativeText,
     val typeAndLocation: NativeText,

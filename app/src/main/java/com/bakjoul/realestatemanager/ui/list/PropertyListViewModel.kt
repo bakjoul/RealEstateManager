@@ -67,22 +67,22 @@ class PropertyListViewModel @Inject constructor(
             getCurrentSurfaceUnitUseCase.invoke(),
             isTabletUseCase.invoke(),
         ) { properties, currency, euroRateWrapper, surfaceUnit, isTablet ->
-            properties.map {
+            properties.map { property ->
                 PropertyItemViewState(
-                    id = it.id,
-                    photoUrl = it.photos.firstOrNull()?.url ?: "",
-                    type = formatType(it.type),
-                    city = it.address.city,
-                    features = formatFeatures(it.bedrooms, it.bathrooms, it.surface, surfaceUnit, isTablet),
-                    price = formatPrice(it.price, currency, euroRateWrapper.currencyRateEntity.rate),
+                    id = property.id,
+                    photoUrl = property.photos.find { it.id == property.featuredPhotoId }?.url ?: "",
+                    type = formatType(property.type),
+                    city = property.address.city,
+                    features = formatFeatures(property.bedrooms, property.bathrooms, property.surface, surfaceUnit, isTablet),
+                    price = formatPrice(property.price, currency, euroRateWrapper.currencyRateEntity.rate),
                     currencyRate = formatRate(
                         currency,
                         euroRateWrapper.currencyRateEntity.rate,
                         euroRateWrapper.currencyRateEntity.updateDate.format(dateFormatter)
                     ),
-                    isSold = it.saleDate != null,
+                    isSold = property.saleDate != null,
                     onPropertyClicked = EquatableCallback {
-                        setCurrentPropertyIdUseCase.invoke(it.id)
+                        setCurrentPropertyIdUseCase.invoke(property.id)
                         navigateUseCase.invoke(To.Details)
                     }
                 )

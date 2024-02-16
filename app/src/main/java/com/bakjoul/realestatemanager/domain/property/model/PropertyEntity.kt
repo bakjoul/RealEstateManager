@@ -18,6 +18,7 @@ data class PropertyEntity(
     val address: PropertyAddressEntity,
     val description: String,
     val photos: List<PhotoEntity>,
+    val featuredPhotoId: Long?,
     val agent: String,
     val entryDate: LocalDate
 )
