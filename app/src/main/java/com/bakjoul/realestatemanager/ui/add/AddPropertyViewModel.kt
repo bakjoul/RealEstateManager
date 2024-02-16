@@ -144,6 +144,8 @@ class AddPropertyViewModel @Inject constructor(
     }
 
     val viewStateLiveData: LiveData<AddPropertyViewState> = liveData {
+        var photosUpdated = false
+
         if (latestValue == null) {
             if (isNewDraft) {
                 propertyFormMutableSharedFlow.tryEmit(initPropertyForm(draftId))
@@ -165,6 +167,19 @@ class AddPropertyViewModel @Inject constructor(
             getPhotosForPropertyIdUseCase.invoke(draftId),
             errorsMutableStateFlow
         ) { (propertyForm, currency, euroRate, surfaceUnit), addressPredictions, photos, errors ->
+
+            // Emits previous state if form photos list was updated previously
+            if (photosUpdated) {
+                photosUpdated = false
+                return@combine latestValue!!
+            }
+
+            // Updates form only if user added new photo
+            if (propertyFormMutableSharedFlow.replayCache.first().photos != photos) {
+                propertyFormMutableSharedFlow.tryEmit(propertyForm.copy(photos = photos))
+                photosUpdated = true
+            }
+
             AddPropertyViewState(
                 propertyTypeEntity = propertyForm.type,
                 forSaleSince = formatDate(propertyForm.forSaleSince),
@@ -658,7 +673,8 @@ class AddPropertyViewModel @Inject constructor(
             propertyFormReplaceCache.pointsOfInterest!!.isEmpty() &&
             propertyFormReplaceCache.address == PropertyFormAddress() &&
             propertyFormReplaceCache.autoCompleteAddress == PropertyFormAddress() &&
-            propertyFormReplaceCache.description == null
+            propertyFormReplaceCache.description == null &&
+            propertyFormReplaceCache.photos!!.isEmpty()
         ) {
             dropDraft()
         } else {
