@@ -44,11 +44,12 @@ class DraftsViewModel @Inject constructor(
             flow { emit(getEuroRateUseCase.invoke()) },
             getCurrentSurfaceUnitUseCase.invoke()
         ) { draft, currency, euroRateWrapper, surfaceUnit ->
-            draft.map { propertyDraft ->
+            draft.sortedByDescending { it.lastUpdate }
+                .map { propertyDraft ->
                 DraftsItemViewState(
                     id = propertyDraft.id,
                     photoUrl = propertyDraft.photos!!.firstOrNull()?.url ?: "",
-                    isSold = propertyDraft.isSold!!,
+                    isSold = propertyDraft.isSold ?: false,
                     lastUpdate = formatDate(propertyDraft.lastUpdate),
                     typeAndLocation = formatTypeAndLocation(propertyDraft),
                     overview = formatOverview(propertyDraft, currency, euroRateWrapper.currencyRateEntity.rate, surfaceUnit),

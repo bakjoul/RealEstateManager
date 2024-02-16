@@ -169,7 +169,7 @@ class AddPropertyViewModel @Inject constructor(
                 propertyTypeEntity = propertyForm.type,
                 forSaleSince = formatDate(propertyForm.forSaleSince),
                 dateOfSale = formatDate(propertyForm.dateOfSale),
-                isSold = propertyForm.isSold!!,
+                isSold = propertyForm.isSold ?: false,
                 price = formatSavedPrice(
                     propertyForm.referencePrice,
                     propertyForm.priceFromUser,
@@ -183,7 +183,7 @@ class AddPropertyViewModel @Inject constructor(
                 numberOfRooms = propertyForm.rooms ?: BigDecimal.ZERO,
                 numberOfBathrooms = propertyForm.bathrooms ?: BigDecimal.ZERO,
                 numberOfBedrooms = propertyForm.bedrooms ?: BigDecimal.ZERO,
-                amenities = propertyForm.pointsOfInterest!!,
+                amenities = propertyForm.pointsOfInterest ?: emptyList(),
                 addressPredictions = mapAddressPredictions(addressPredictions),
                 address = formatAddress(propertyForm.autoCompleteAddress),
                 complementaryAddress = propertyForm.address?.complementaryAddress,
