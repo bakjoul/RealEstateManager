@@ -150,4 +150,6 @@
     <string name="photo_preview_added_toast">Photo ajoutée avec succès</string>
     <string name="add_property_for_sale_since">En vente depuis</string>
     <string name="add_property_sold_on">Vendu le</string>
+    <string name="add_property_take_photo">Prendre une photo</string>
+    <string name="add_property_import_from_gallery">Importer une photo</string>
 </resources>

@@ -165,4 +165,6 @@
     <string name="draft_overview_date_formatter">MM-dd-yyyy hh:mm a</string>
     <string name="details_date_formatter">MM/dd/yy</string>
     <string name="photo_preview_added_toast">Photo successfully added</string>
+    <string name="add_property_take_photo">Take a photo</string>
+    <string name="add_property_import_from_gallery">Import a photo</string>
 </resources>

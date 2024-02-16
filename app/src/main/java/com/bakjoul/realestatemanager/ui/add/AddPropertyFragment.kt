@@ -1,6 +1,7 @@
 package com.bakjoul.realestatemanager.ui.add
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.DialogInterface
 import android.content.Intent
@@ -11,9 +12,13 @@ import android.provider.Settings
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.view.menu.MenuBuilder
+import androidx.appcompat.view.menu.MenuPopupHelper
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.widget.doAfterTextChanged
@@ -89,6 +94,7 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
         setToolbar()
     }
 
+    @SuppressLint("RestrictedApi")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -248,7 +254,13 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
         }
 
         // Camera
-        binding.addPropertyCameraImageButton.setOnClickListener { onCameraButtonClicked() }
+        val menuBuilder = MenuBuilder(requireContext())
+        val menuInflater = MenuInflater(requireContext())
+        menuInflater.inflate(R.menu.add_photo_menu, menuBuilder)
+        val optionsMenu = MenuPopupHelper(requireContext(), menuBuilder, binding.addPropertyAddPhotoImageButton)
+        optionsMenu.setForceShowIcon(true)
+        setOnMenuItemSelected(menuBuilder)
+        binding.addPropertyAddPhotoImageButton.setOnClickListener { optionsMenu.show() }
 
         // Done button
         binding.addPropertyDoneFab.setOnClickListener { viewModel.onDoneButtonClicked() }
@@ -472,6 +484,28 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
     }
 
     private fun onChangeSettingsClicked() = viewModel.onChangeSettingsClicked()
+
+    @SuppressLint("RestrictedApi")
+    private fun setOnMenuItemSelected(menuBuilder: MenuBuilder) {
+        menuBuilder.setCallback(object : MenuBuilder.Callback {
+            override fun onMenuItemSelected(menu: MenuBuilder, item: MenuItem): Boolean {
+                when (item.itemId) {
+                    R.id.add_photo_menu_take_photo -> {
+                        onCameraButtonClicked()
+                        return true
+                    }
+
+                    R.id.add_photo_menu_import_from_gallery -> {
+                        // TODO
+                        return true
+                    }
+                }
+                return false
+            }
+
+            override fun onMenuModeChange(menu: MenuBuilder) {}
+        })
+    }
 
     private fun onCameraButtonClicked() {
         when {
