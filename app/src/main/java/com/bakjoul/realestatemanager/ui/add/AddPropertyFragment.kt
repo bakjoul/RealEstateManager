@@ -1,7 +1,6 @@
 package com.bakjoul.realestatemanager.ui.add
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.DialogInterface
 import android.content.Intent
@@ -12,20 +11,15 @@ import android.provider.Settings
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.view.menu.MenuBuilder
-import androidx.appcompat.view.menu.MenuPopupHelper
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.LinearSnapHelper
 import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.databinding.FragmentAddPropertyBinding
 import com.bakjoul.realestatemanager.domain.property.model.PropertyPoiEntity
@@ -251,8 +245,8 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
         }
 
         // Import and camera buttons
-        binding.addPropertyImportPhotoImageButton.setOnClickListener { } // TODO
-        binding.addPropertyTakePhotoImageButton.setOnClickListener { onCameraButtonClicked() }
+        binding.addPropertyImportPhotoButton.setOnClickListener { } // TODO
+        binding.addPropertyTakePhotoButton.setOnClickListener { onCameraButtonClicked() }
 
         // Done button
         binding.addPropertyDoneFab.setOnClickListener { viewModel.onDoneButtonClicked() }

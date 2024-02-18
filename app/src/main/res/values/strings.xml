@@ -168,4 +168,5 @@
     <string name="add_property_take_photo">Take a photo</string>
     <string name="add_property_import_from_gallery">Import a photo</string>
     <string name="add_property_feature_photo_desc">Feature this photo button</string>
+    <string name="add_property_import_photo_desc">Import a photo button</string>
 </resources>
