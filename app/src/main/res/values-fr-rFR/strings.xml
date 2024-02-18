@@ -126,7 +126,7 @@
     <string name="duration_unit_months">mois</string>
     <string name="main_menu_loan_simulator_title">Simulateur de prêt</string>
     <string name="loan_simulator_amount_hint">Montant</string>
-    <string name="loan_simulator_down_payment_hint">Apport</string>
+    <string name="loan_simulator_down_payment_hint">Apport (facultatif)</string>
     <string name="loan_simulator_interest_hint">Taux d\'intérêt</string>
     <string name="loan_simulator_duration_hint">Durée</string>
     <string name="loan_simulator_reset_button_text">Réinit.</string>
@@ -154,4 +154,7 @@
     <string name="add_property_import_from_gallery">Importer une photo</string>
     <string name="add_property_feature_photo_desc">Bouton mettre en avant cette photo</string>
     <string name="add_property_import_photo_desc">Bouton importer une photo</string>
+    <string name="loan_simulator_error_insurance_rate_invalid">Taux d\'assurance invalide</string>
+    <string name="loan_simulator_total_insurance_label">Assurance total</string>
+    <string name="loan_simulator_insurance_hint">Taux d\'assurance (facultatif)</string>
 </resources>

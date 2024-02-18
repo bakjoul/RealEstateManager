@@ -6,5 +6,6 @@ data class LoanSimulatorResultsEntity(
     val monthlyPayment: BigDecimal? = null,
     val yearlyPayment: BigDecimal? = null,
     val totalInterest: BigDecimal? = null,
+    val totalInsurance: BigDecimal? = null,
     val totalPayment: BigDecimal? = null
 )

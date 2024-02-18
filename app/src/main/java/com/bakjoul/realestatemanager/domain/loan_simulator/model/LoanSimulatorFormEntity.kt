@@ -7,6 +7,7 @@ data class LoanSimulatorFormEntity(
     val amount: BigDecimal? = null,
     val downPayment: BigDecimal? = null,
     val interestRate: BigDecimal? = null,
+    val insuranceRate: BigDecimal? = null,
     val duration: BigDecimal? = null,
     val durationUnit: DurationUnit = DurationUnit.YEARS
 )

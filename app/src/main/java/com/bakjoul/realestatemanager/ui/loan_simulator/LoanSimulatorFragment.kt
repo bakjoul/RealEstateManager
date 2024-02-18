@@ -97,6 +97,12 @@ class LoanSimulatorFragment : DialogFragment(R.layout.fragment_loan_simulator) {
             viewModel.onInterestRateChanged(interestRate)
         }
 
+        binding.loanSimulatorInsuranceTextInputEditText.filters = arrayOf(PointBeforeNumberFilter())
+        binding.loanSimulatorInsuranceTextInputEditText.doAfterTextChanged {
+            val insuranceRate = it?.toString() ?: ""
+            viewModel.onInsuranceRateChanged(insuranceRate)
+        }
+
         binding.loanSimulatorDurationTextInputEditText.doAfterTextChanged {
             val duration = it?.toString() ?: ""
             viewModel.onDurationChanged(duration)
@@ -108,6 +114,7 @@ class LoanSimulatorFragment : DialogFragment(R.layout.fragment_loan_simulator) {
         selectAllTextOnFocus(binding.loanSimulatorAmountTextInputEditText)
         selectAllTextOnFocus(binding.loanSimulatorDownPaymentTextInputEditText)
         selectAllTextOnFocus(binding.loanSimulatorInterestTextInputEditText)
+        selectAllTextOnFocus(binding.loanSimulatorInsuranceTextInputEditText)
         selectAllTextOnFocus(binding.loanSimulatorDurationTextInputEditText)
 
         binding.loanSimulatorResetButton.setOnClickListener {
@@ -115,6 +122,7 @@ class LoanSimulatorFragment : DialogFragment(R.layout.fragment_loan_simulator) {
             binding.loanSimulatorAmountTextInputEditText.setText("")
             binding.loanSimulatorDownPaymentTextInputEditText.setText("")
             binding.loanSimulatorInterestTextInputEditText.setText("")
+            binding.loanSimulatorInsuranceTextInputEditText.setText("")
             binding.loanSimulatorDurationTextInputEditText.setText("")
         }
 
@@ -145,16 +153,19 @@ class LoanSimulatorFragment : DialogFragment(R.layout.fragment_loan_simulator) {
             binding.loanSimulatorAmountTextInputLayout.error = viewState.amountError?.toCharSequence(requireContext())
             binding.loanSimulatorDownPaymentTextInputLayout.error = viewState.downPaymentError?.toCharSequence(requireContext())
             binding.loanSimulatorInterestTextInputLayout.error = viewState.interestRateError?.toCharSequence(requireContext())
+            binding.loanSimulatorInsuranceTextInputLayout.error = viewState.insuranceRateError?.toCharSequence(requireContext())
             binding.loanSimulatorDurationTextInputLayout.error = viewState.durationError?.toCharSequence(requireContext())
 
             binding.loanSimulatorMonthlyPaymentResult.text = viewState.monthlyPayment
             binding.loanSimulatorYearlyPaymentResult.text = viewState.yearlyPayment
             binding.loanSimulatorTotalInterestResult.text = viewState.totalInterest
+            binding.loanSimulatorTotalInsuranceResult.text = viewState.totalInsurance
             binding.loanSimulatorTotalPaymentResult.text = viewState.totalPayment
 
             setOnClickListenerCopyToClipboard(binding.loanSimulatorMonthlyPaymentResult, "monthlyPayment", viewState.monthlyPayment)
             setOnClickListenerCopyToClipboard(binding.loanSimulatorYearlyPaymentResult, "yearlyPayment", viewState.yearlyPayment)
             setOnClickListenerCopyToClipboard(binding.loanSimulatorTotalInterestResult, "totalInterest", viewState.totalInterest)
+            setOnClickListenerCopyToClipboard(binding.loanSimulatorTotalInsuranceResult, "totalInsurance", viewState.totalInsurance)
             setOnClickListenerCopyToClipboard(binding.loanSimulatorTotalPaymentResult, "totalPayment", viewState.totalPayment)
         }
 
@@ -178,10 +189,9 @@ class LoanSimulatorFragment : DialogFragment(R.layout.fragment_loan_simulator) {
             override fun afterTextChanged(s: Editable?) {
                 s?.let { amount ->
                     val originalText = amount.toString()
+                    updateValue(originalText)
 
                     if (originalText.isNotEmpty()) {
-                        updateValue(originalText)
-
                         try {
                             val parsed = viewState.currencyFormat.parse(originalText)
                             val formatted = viewState.currencyFormat.format(parsed)

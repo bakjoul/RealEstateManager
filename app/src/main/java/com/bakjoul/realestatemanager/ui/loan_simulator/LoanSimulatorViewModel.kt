@@ -1,6 +1,5 @@
 package com.bakjoul.realestatemanager.ui.loan_simulator
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
@@ -55,10 +54,12 @@ class LoanSimulatorViewModel @Inject constructor(
                     monthlyPayment = formatPrice(results.monthlyPayment, currency),
                     yearlyPayment = formatPrice(results.yearlyPayment, currency),
                     totalInterest = formatPrice(results.totalInterest, currency),
+                    totalInsurance = formatPrice(results.totalInsurance, currency),
                     totalPayment = formatPrice(results.totalPayment, currency),
                     amountError = errors.amountError,
                     downPaymentError = errors.downPaymentError,
                     interestRateError = errors.interestRateError,
+                    insuranceRateError = errors.insuranceError,
                     durationError = errors.durationError
                 )
             )
@@ -105,6 +106,7 @@ class LoanSimulatorViewModel @Inject constructor(
                 amount = null,
                 downPayment = null,
                 interestRate = null,
+                insuranceRate = null,
                 duration = null
             )
         }
@@ -113,38 +115,48 @@ class LoanSimulatorViewModel @Inject constructor(
                 monthlyPayment = null,
                 yearlyPayment = null,
                 totalInterest = null,
+                totalInsurance = null,
                 totalPayment = null
             )
         }
     }
 
     fun onAmountChanged(amount: String) {
-        val bigDecimalAmount = BigDecimal(amount.replace(",", "").replace(" ", ""))
-        loanSimulatorFormMutableStateFlow.update {
-            it.copy(amount = bigDecimalAmount)
-        }
+        if (amount.isEmpty()) {
+            loanSimulatorFormMutableStateFlow.update {
+                it.copy(amount = null)
+            }
+        } else {
+            val bigDecimalAmount = BigDecimal(amount.replace(",", "").replace(" ", ""))
+            loanSimulatorFormMutableStateFlow.update {
+                it.copy(amount = bigDecimalAmount)
+            }
 
-        errorsMutableStateFlow.update {
-            it.copy(amountError = null)
+            errorsMutableStateFlow.update {
+                it.copy(amountError = null)
+            }
         }
     }
 
     fun onDownPaymentChanged(downPayment: String) {
-        val bigDecimalDownPayment = BigDecimal(downPayment.replace(",", "").replace(" ", ""))
-        loanSimulatorFormMutableStateFlow.update {
-            it.copy(downPayment = bigDecimalDownPayment)
+        if (downPayment.isEmpty()) {
+            loanSimulatorFormMutableStateFlow.update {
+                it.copy(downPayment = null)
+            }
+        } else {
+            val bigDecimalDownPayment = BigDecimal(downPayment.replace(",", "").replace(" ", ""))
+            loanSimulatorFormMutableStateFlow.update {
+                it.copy(downPayment = bigDecimalDownPayment)
+            }
         }
     }
 
     fun onInterestRateChanged(interestRate: String) {
-        Log.d("test", "onInterestRateChanged: called")
         if (interestRate.isEmpty()) {
-            Log.d("test", "onInterestRateChanged: updated to null")
             loanSimulatorFormMutableStateFlow.update {
                 it.copy(interestRate = null)
             }
         } else {
-            Log.d("test", "onInterestRateChanged: updated to $interestRate")
             loanSimulatorFormMutableStateFlow.update {
                 it.copy(interestRate = BigDecimal(interestRate))
             }
@@ -155,15 +167,28 @@ class LoanSimulatorViewModel @Inject constructor(
         }
     }
 
+    fun onInsuranceRateChanged(insuranceRate: String) {
+        if (insuranceRate.isEmpty()) {
+            loanSimulatorFormMutableStateFlow.update {
+                it.copy(insuranceRate = null)
+            }
+        } else {
+            loanSimulatorFormMutableStateFlow.update {
+                it.copy(insuranceRate = BigDecimal(insuranceRate))
+            }
+
+            errorsMutableStateFlow.update {
+                it.copy(insuranceError = null)
+            }
+        }
+    }
+
     fun onDurationChanged(duration: String) {
-        Log.d("test", "onDurationChanged: called")
         if (duration.isEmpty()) {
-            Log.d("test", "onDurationChanged: updated to null")
             loanSimulatorFormMutableStateFlow.update {
                 it.copy(duration = null)
             }
         } else {
-            Log.d("test", "onDurationChanged: updated to $duration")
             loanSimulatorFormMutableStateFlow.update {
                 it.copy(duration = BigDecimal(duration))
             }
@@ -227,6 +252,19 @@ class LoanSimulatorViewModel @Inject constructor(
             }
         }
 
+        if (loanSimulatorFormMutableStateFlow.value.insuranceRate != null &&
+            loanSimulatorFormMutableStateFlow.value.insuranceRate!! >= BigDecimal(100)
+        ) {
+            errorsMutableStateFlow.update {
+                it.copy(insuranceError = NativeText.Resource(R.string.loan_simulator_error_insurance_rate_invalid))
+            }
+            isFormValid = false
+        } else {
+            errorsMutableStateFlow.update {
+                it.copy(insuranceError = null)
+            }
+        }
+
         if (loanSimulatorFormMutableStateFlow.value.duration == null) {
             errorsMutableStateFlow.update {
                 it.copy(durationError = NativeText.Resource(R.string.loan_simulator_error_duration))
@@ -247,6 +285,7 @@ class LoanSimulatorViewModel @Inject constructor(
                 loanSimulatorFormMutableStateFlow.value.amount!!,
                 loanSimulatorFormMutableStateFlow.value.downPayment,
                 loanSimulatorFormMutableStateFlow.value.interestRate!!,
+                loanSimulatorFormMutableStateFlow.value.insuranceRate,
                 loanSimulatorFormMutableStateFlow.value.duration!!,
                 loanSimulatorFormMutableStateFlow.value.durationUnit
             )
@@ -256,6 +295,7 @@ class LoanSimulatorViewModel @Inject constructor(
                     monthlyPayment = results.monthlyPayment,
                     yearlyPayment = results.yearlyPayment,
                     totalInterest = results.totalInterest,
+                    totalInsurance = results.totalInsurance,
                     totalPayment = results.totalPayment
                 )
             }
@@ -274,6 +314,7 @@ class LoanSimulatorViewModel @Inject constructor(
         val amountError: NativeText? = null,
         val downPaymentError: NativeText? = null,
         val interestRateError: NativeText? = null,
+        val insuranceError: NativeText? = null,
         val durationError: NativeText? = null
     )
 }
