@@ -153,4 +153,5 @@
     <string name="add_property_take_photo">Prendre une photo</string>
     <string name="add_property_import_from_gallery">Importer une photo</string>
     <string name="add_property_feature_photo_desc">Bouton mettre en avant cette photo</string>
+    <string name="add_property_import_photo_desc">Bouton importer une photo</string>
 </resources>
