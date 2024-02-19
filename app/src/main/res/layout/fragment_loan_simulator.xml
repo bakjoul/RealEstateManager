@@ -185,170 +185,395 @@
             app:layout_constraintStart_toEndOf="@id/loan_simulator_reset_button"
             app:layout_constraintTop_toTopOf="@id/loan_simulator_reset_button" />
 
-        <LinearLayout
-            android:id="@+id/loan_simulator_monthly_payment_LinearLayout"
-            android:layout_width="0dp"
-            android:layout_height="48dp"
-            android:layout_marginTop="24dp"
-            android:orientation="horizontal"
+        <androidx.cardview.widget.CardView
+            android:id="@+id/loan_simulator_monthly_results_CardView"
+            style="@style/LoanSimResultsCardView"
+            android:layout_marginTop="16dp"
             app:layout_constraintEnd_toEndOf="@id/loan_simulator_calculate_button"
             app:layout_constraintStart_toStartOf="@id/loan_simulator_reset_button"
             app:layout_constraintTop_toBottomOf="@id/loan_simulator_reset_button">
 
-            <TextView
-                android:id="@+id/loan_simulator_monthly_payment_label"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="0.5"
-                android:background="@drawable/loan_simulator_label_background"
-                android:gravity="center_vertical"
-                android:paddingHorizontal="16dp"
-                android:text="@string/loan_simulator_monthly_payment_label"
-                android:textSize="16sp" />
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
-            <TextView
-                android:id="@+id/loan_simulator_monthly_payment_result"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="0.5"
-                android:background="@drawable/loan_simulator_result_background"
-                android:gravity="center_vertical"
-                android:paddingHorizontal="16dp"
-                android:textSize="16sp"
-                tools:text="500" />
-        </LinearLayout>
+                <TextView
+                    android:id="@+id/loan_simulator_monthly_payment_label"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:background="@drawable/loan_simulator_label_background"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="16dp"
+                    android:text="@string/loan_simulator_monthly_payment_label"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toStartOf="@id/loan_simulator_monthly_payment_result"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-        <LinearLayout
-            android:id="@+id/loan_simulator_yearly_payment_LinearLayout"
-            android:layout_width="0dp"
-            android:layout_height="48dp"
-            android:layout_marginTop="12dp"
-            android:orientation="horizontal"
-            app:layout_constraintEnd_toEndOf="@id/loan_simulator_monthly_payment_LinearLayout"
-            app:layout_constraintStart_toStartOf="@id/loan_simulator_monthly_payment_LinearLayout"
-            app:layout_constraintTop_toBottomOf="@id/loan_simulator_monthly_payment_LinearLayout">
+                <TextView
+                    android:id="@+id/loan_simulator_monthly_payment_result"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="16dp"
+                    android:textSize="16sp"
+                    app:layout_constraintBottom_toBottomOf="@id/loan_simulator_monthly_payment_label"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/loan_simulator_monthly_payment_label"
+                    app:layout_constraintTop_toTopOf="@id/loan_simulator_monthly_payment_label"
+                    tools:text="500" />
 
-            <TextView
-                android:id="@+id/loan_simulator_yearly_payment_label"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="0.5"
-                android:background="@drawable/loan_simulator_label_background"
-                android:gravity="center_vertical"
-                android:paddingHorizontal="16dp"
-                android:text="@string/loan_simulator_yearly_payment_label"
-                android:textSize="16sp" />
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/loan_simulator_monthly_payment_details_ConstraintLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/loan_simulator_monthly_payment_label"
+                    tools:visibility="visible">
 
-            <TextView
-                android:id="@+id/loan_simulator_yearly_payment_result"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="0.5"
-                android:background="@drawable/loan_simulator_result_background"
-                android:gravity="center_vertical"
-                android:paddingHorizontal="16dp"
-                android:textSize="16sp"
-                tools:text="6000" />
-        </LinearLayout>
+                    <View
+                        android:id="@+id/loan_simulator_monthly_payment_details_divider"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/grey_light"
+                        app:layout_constraintTop_toTopOf="parent" />
 
-        <LinearLayout
-            android:id="@+id/loan_simulator_interest_LinearLayout"
-            android:layout_width="0dp"
-            android:layout_height="48dp"
-            android:layout_marginTop="12dp"
-            android:orientation="horizontal"
-            app:layout_constraintEnd_toEndOf="@id/loan_simulator_yearly_payment_LinearLayout"
-            app:layout_constraintStart_toStartOf="@id/loan_simulator_yearly_payment_LinearLayout"
-            app:layout_constraintTop_toBottomOf="@id/loan_simulator_yearly_payment_LinearLayout">
+                    <TextView
+                        android:id="@+id/loan_simulator_monthly_interest_label"
+                        android:layout_width="0dp"
+                        android:layout_height="48dp"
+                        android:background="#70E7DEF1"
+                        android:gravity="center_vertical"
+                        android:paddingHorizontal="16dp"
+                        android:text="@string/loan_simulator_monthly_interest_label"
+                        android:textSize="16sp"
+                        app:layout_constraintEnd_toStartOf="@id/loan_simulator_monthly_interest_result"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/loan_simulator_monthly_payment_details_divider" />
 
-            <TextView
-                android:id="@+id/loan_simulator_interest_label"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="0.5"
-                android:background="@drawable/loan_simulator_label_background"
-                android:gravity="center_vertical"
-                android:paddingHorizontal="16dp"
-                android:text="@string/loan_simulator_total_interest_label"
-                android:textSize="16sp" />
+                    <TextView
+                        android:id="@+id/loan_simulator_monthly_interest_result"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:gravity="center_vertical"
+                        android:paddingHorizontal="16dp"
+                        android:textSize="16sp"
+                        app:layout_constraintBottom_toBottomOf="@id/loan_simulator_monthly_interest_label"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/loan_simulator_monthly_interest_label"
+                        app:layout_constraintTop_toTopOf="@id/loan_simulator_monthly_interest_label"
+                        tools:text="500" />
 
-            <TextView
-                android:id="@+id/loan_simulator_total_interest_result"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="0.5"
-                android:background="@drawable/loan_simulator_result_background"
-                android:gravity="center_vertical"
-                android:paddingHorizontal="16dp"
-                android:textSize="16sp"
-                tools:text="500" />
-        </LinearLayout>
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/grey_light"
+                        app:layout_constraintTop_toBottomOf="@id/loan_simulator_monthly_interest_label" />
 
-        <LinearLayout
-            android:id="@+id/loan_simulator_insurance_LinearLayout"
-            android:layout_width="0dp"
-            android:layout_height="48dp"
-            android:layout_marginTop="12dp"
-            android:orientation="horizontal"
-            app:layout_constraintEnd_toEndOf="@id/loan_simulator_interest_LinearLayout"
-            app:layout_constraintStart_toStartOf="@id/loan_simulator_interest_LinearLayout"
-            app:layout_constraintTop_toBottomOf="@id/loan_simulator_interest_LinearLayout">
+                    <TextView
+                        android:id="@+id/loan_simulator_monthly_insurance_label"
+                        android:layout_width="0dp"
+                        android:layout_height="48dp"
+                        android:background="#70E7DEF1"
+                        android:gravity="center_vertical"
+                        android:paddingHorizontal="16dp"
+                        android:text="@string/loan_simulator_monthly_insurance_label"
+                        android:textSize="16sp"
+                        app:layout_constraintEnd_toStartOf="@id/loan_simulator_monthly_insurance_result"
+                        app:layout_constraintStart_toStartOf="@id/loan_simulator_monthly_interest_label"
+                        app:layout_constraintTop_toBottomOf="@id/loan_simulator_monthly_interest_label" />
 
-            <TextView
-                android:id="@+id/loan_simulator_insurance_label"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="0.5"
-                android:background="@drawable/loan_simulator_label_background"
-                android:gravity="center_vertical"
-                android:paddingHorizontal="16dp"
-                android:text="@string/loan_simulator_total_insurance_label"
-                android:textSize="16sp" />
+                    <TextView
+                        android:id="@+id/loan_simulator_monthly_insurance_result"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:gravity="center_vertical"
+                        android:paddingHorizontal="16dp"
+                        android:textSize="16sp"
+                        app:layout_constraintBottom_toBottomOf="@id/loan_simulator_monthly_insurance_label"
+                        app:layout_constraintEnd_toEndOf="@id/loan_simulator_monthly_interest_result"
+                        app:layout_constraintStart_toEndOf="@id/loan_simulator_monthly_insurance_label"
+                        app:layout_constraintTop_toTopOf="@id/loan_simulator_monthly_insurance_label"
+                        tools:text="500" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <TextView
-                android:id="@+id/loan_simulator_total_insurance_result"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="0.5"
-                android:background="@drawable/loan_simulator_result_background"
-                android:gravity="center_vertical"
-                android:paddingHorizontal="16dp"
-                android:textSize="16sp"
-                tools:text="500" />
-        </LinearLayout>
+                <ImageButton
+                    android:id="@+id/loan_simulator_monthly_results_expand_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="12dp"
+                    android:background="?selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/loan_simulator_monthly_results_expand_button_desc"
+                    android:src="@drawable/baseline_expand_more_24"
+                    app:layout_constraintBottom_toBottomOf="@id/loan_simulator_monthly_payment_result"
+                    app:layout_constraintEnd_toEndOf="@id/loan_simulator_monthly_payment_result"
+                    app:layout_constraintTop_toTopOf="@id/loan_simulator_monthly_payment_result" />
 
-        <LinearLayout
-            android:id="@+id/loan_simulator_total_payment_LinearLayout"
-            android:layout_width="0dp"
-            android:layout_height="48dp"
-            android:layout_marginTop="12dp"
-            android:orientation="horizontal"
-            app:layout_constraintEnd_toEndOf="@id/loan_simulator_insurance_LinearLayout"
-            app:layout_constraintStart_toStartOf="@id/loan_simulator_insurance_LinearLayout"
-            app:layout_constraintTop_toBottomOf="@id/loan_simulator_insurance_LinearLayout">
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.cardview.widget.CardView>
 
-            <TextView
-                android:id="@+id/loan_simulator_total_payment_label"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="0.5"
-                android:background="@drawable/loan_simulator_label_background"
-                android:gravity="center_vertical"
-                android:paddingHorizontal="16dp"
-                android:text="@string/loan_simulator_total_payment_label"
-                android:textSize="16sp" />
+        <androidx.cardview.widget.CardView
+            android:id="@+id/loan_simulator_total_results_CardView"
+            style="@style/LoanSimResultsCardView"
+            android:layout_marginTop="8dp"
+            app:layout_constraintEnd_toEndOf="@id/loan_simulator_yearly_results_CardView"
+            app:layout_constraintStart_toStartOf="@id/loan_simulator_yearly_results_CardView"
+            app:layout_constraintTop_toBottomOf="@id/loan_simulator_yearly_results_CardView">
 
-            <TextView
-                android:id="@+id/loan_simulator_total_payment_result"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="0.5"
-                android:background="@drawable/loan_simulator_result_background"
-                android:gravity="center_vertical"
-                android:paddingHorizontal="16dp"
-                android:textSize="16sp"
-                tools:text="500" />
-        </LinearLayout>
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/loan_simulator_total_payment_label"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:background="@drawable/loan_simulator_label_background"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="16dp"
+                    android:text="@string/loan_simulator_total_payment_label"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toStartOf="@id/loan_simulator_total_payment_result"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/loan_simulator_total_payment_result"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="16dp"
+                    android:textSize="16sp"
+                    app:layout_constraintBottom_toBottomOf="@id/loan_simulator_total_payment_label"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/loan_simulator_total_payment_label"
+                    app:layout_constraintTop_toTopOf="@id/loan_simulator_total_payment_label"
+                    tools:text="500" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/loan_simulator_total_payment_details_ConstraintLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/loan_simulator_total_payment_label"
+                    tools:visibility="visible">
+
+                    <View
+                        android:id="@+id/loan_simulator_total_payment_details_divider"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/grey_light"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/loan_simulator_total_interest_label"
+                        android:layout_width="0dp"
+                        android:layout_height="48dp"
+                        android:background="#70E7DEF1"
+                        android:gravity="center_vertical"
+                        android:paddingHorizontal="16dp"
+                        android:text="@string/loan_simulator_monthly_interest_label"
+                        android:textSize="16sp"
+                        app:layout_constraintEnd_toStartOf="@id/loan_simulator_total_interest_result"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/loan_simulator_total_payment_details_divider" />
+
+                    <TextView
+                        android:id="@+id/loan_simulator_total_interest_result"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:gravity="center_vertical"
+                        android:paddingHorizontal="16dp"
+                        android:textSize="16sp"
+                        app:layout_constraintBottom_toBottomOf="@id/loan_simulator_total_interest_label"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/loan_simulator_total_interest_label"
+                        app:layout_constraintTop_toTopOf="@id/loan_simulator_total_interest_label"
+                        tools:text="500" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/grey_light"
+                        app:layout_constraintTop_toBottomOf="@id/loan_simulator_total_interest_label" />
+
+                    <TextView
+                        android:id="@+id/loan_simulator_total_insurance_label"
+                        android:layout_width="0dp"
+                        android:layout_height="48dp"
+                        android:background="#70E7DEF1"
+                        android:gravity="center_vertical"
+                        android:paddingHorizontal="16dp"
+                        android:text="@string/loan_simulator_monthly_insurance_label"
+                        android:textSize="16sp"
+                        app:layout_constraintEnd_toStartOf="@id/loan_simulator_total_insurance_result"
+                        app:layout_constraintStart_toStartOf="@id/loan_simulator_total_interest_label"
+                        app:layout_constraintTop_toBottomOf="@id/loan_simulator_total_interest_label" />
+
+                    <TextView
+                        android:id="@+id/loan_simulator_total_insurance_result"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:gravity="center_vertical"
+                        android:paddingHorizontal="16dp"
+                        android:textSize="16sp"
+                        app:layout_constraintBottom_toBottomOf="@id/loan_simulator_total_insurance_label"
+                        app:layout_constraintEnd_toEndOf="@id/loan_simulator_total_interest_result"
+                        app:layout_constraintStart_toEndOf="@id/loan_simulator_total_insurance_label"
+                        app:layout_constraintTop_toTopOf="@id/loan_simulator_total_insurance_label"
+                        tools:text="500" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <ImageButton
+                    android:id="@+id/loan_simulator_total_results_expand_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="12dp"
+                    android:background="?selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/loan_simulator_total_results_expand_button_desc"
+                    android:src="@drawable/baseline_expand_more_24"
+                    app:layout_constraintBottom_toBottomOf="@id/loan_simulator_total_payment_result"
+                    app:layout_constraintEnd_toEndOf="@id/loan_simulator_total_payment_result"
+                    app:layout_constraintTop_toTopOf="@id/loan_simulator_total_payment_result" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/loan_simulator_yearly_results_CardView"
+            style="@style/LoanSimResultsCardView"
+            android:layout_marginTop="8dp"
+            app:layout_constraintEnd_toEndOf="@id/loan_simulator_monthly_results_CardView"
+            app:layout_constraintStart_toStartOf="@id/loan_simulator_monthly_results_CardView"
+            app:layout_constraintTop_toBottomOf="@id/loan_simulator_monthly_results_CardView">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/loan_simulator_yearly_payment_label"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:background="@drawable/loan_simulator_label_background"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="16dp"
+                    android:text="@string/loan_simulator_yearly_payment_label"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toStartOf="@id/loan_simulator_yearly_payment_result"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/loan_simulator_yearly_payment_result"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="16dp"
+                    android:textSize="16sp"
+                    app:layout_constraintBottom_toBottomOf="@id/loan_simulator_yearly_payment_label"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/loan_simulator_yearly_payment_label"
+                    app:layout_constraintTop_toTopOf="@id/loan_simulator_yearly_payment_label"
+                    tools:text="500" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/loan_simulator_yearly_payment_details_ConstraintLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/loan_simulator_yearly_payment_result"
+                    tools:visibility="visible">
+
+                    <View
+                        android:id="@+id/loan_simulator_yearly_payment_details_divider"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/grey_light"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/loan_simulator_yearly_interest_label"
+                        android:layout_width="0dp"
+                        android:layout_height="48dp"
+                        android:background="#70E7DEF1"
+                        android:gravity="center_vertical"
+                        android:paddingHorizontal="16dp"
+                        android:text="@string/loan_simulator_monthly_interest_label"
+                        android:textSize="16sp"
+                        app:layout_constraintEnd_toStartOf="@id/loan_simulator_yearly_interest_result"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/loan_simulator_yearly_payment_details_divider" />
+
+                    <TextView
+                        android:id="@+id/loan_simulator_yearly_interest_result"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:gravity="center_vertical"
+                        android:paddingHorizontal="16dp"
+                        android:textSize="16sp"
+                        app:layout_constraintBottom_toBottomOf="@id/loan_simulator_yearly_interest_label"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/loan_simulator_yearly_interest_label"
+                        app:layout_constraintTop_toTopOf="@id/loan_simulator_yearly_interest_label"
+                        tools:text="500" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/grey_light"
+                        app:layout_constraintTop_toBottomOf="@id/loan_simulator_yearly_interest_label" />
+
+                    <TextView
+                        android:id="@+id/loan_simulator_yearly_insurance_label"
+                        android:layout_width="0dp"
+                        android:layout_height="48dp"
+                        android:background="#70E7DEF1"
+                        android:gravity="center_vertical"
+                        android:paddingHorizontal="16dp"
+                        android:text="@string/loan_simulator_monthly_insurance_label"
+                        android:textSize="16sp"
+                        app:layout_constraintEnd_toStartOf="@id/loan_simulator_yearly_insurance_result"
+                        app:layout_constraintStart_toStartOf="@id/loan_simulator_yearly_interest_label"
+                        app:layout_constraintTop_toBottomOf="@id/loan_simulator_yearly_interest_label" />
+
+                    <TextView
+                        android:id="@+id/loan_simulator_yearly_insurance_result"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:gravity="center_vertical"
+                        android:paddingHorizontal="16dp"
+                        android:textSize="16sp"
+                        app:layout_constraintBottom_toBottomOf="@id/loan_simulator_yearly_insurance_label"
+                        app:layout_constraintEnd_toEndOf="@id/loan_simulator_yearly_interest_result"
+                        app:layout_constraintStart_toEndOf="@id/loan_simulator_yearly_insurance_label"
+                        app:layout_constraintTop_toTopOf="@id/loan_simulator_yearly_insurance_label"
+                        tools:text="500" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <ImageButton
+                    android:id="@+id/loan_simulator_yearly_results_expand_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="12dp"
+                    android:background="?selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/loan_simulator_yearly_results_expand_button_desc"
+                    android:src="@drawable/baseline_expand_more_24"
+                    app:layout_constraintBottom_toBottomOf="@id/loan_simulator_yearly_payment_result"
+                    app:layout_constraintEnd_toEndOf="@id/loan_simulator_yearly_payment_result"
+                    app:layout_constraintTop_toTopOf="@id/loan_simulator_yearly_payment_result" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.cardview.widget.CardView>
 
         <TextView
             android:id="@+id/loan_simulator_note"
@@ -358,9 +583,9 @@
             android:text="@string/loan_simulator_note"
             android:textColor="@color/grey_text"
             android:textSize="11sp"
-            app:layout_constraintEnd_toEndOf="@id/loan_simulator_total_payment_LinearLayout"
-            app:layout_constraintStart_toStartOf="@id/loan_simulator_total_payment_LinearLayout"
-            app:layout_constraintTop_toBottomOf="@id/loan_simulator_total_payment_LinearLayout" />
+            app:layout_constraintEnd_toEndOf="@id/loan_simulator_total_results_CardView"
+            app:layout_constraintStart_toStartOf="@id/loan_simulator_total_results_CardView"
+            app:layout_constraintTop_toBottomOf="@id/loan_simulator_total_results_CardView" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

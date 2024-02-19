@@ -137,11 +137,13 @@
     <string name="loan_simulator_error_interest_rate_invalid">Taux d\'intérêt invalide</string>
     <string name="loan_simulator_error_duration">Durée requise</string>
     <string name="loan_simulator_monthly_payment_label">Paiement mensuel</string>
+    <string name="loan_simulator_monthly_interest_label">dont intérêts</string>
+    <string name="loan_simulator_monthly_insurance_label">dont assurance</string>
     <string name="loan_simulator_yearly_payment_label">Paiement annuel</string>
     <string name="loan_simulator_total_interest_label">Intérêt total</string>
     <string name="loan_simulator_total_payment_label">Paiement total</string>
     <string name="loan_simulator_error_down_payment">L\'apport ne peut être supérieur ou égal au montant du prêt</string>
-    <string name="loan_simulator_note">Note : Les résultats affichés sont sujets à des arrondis, ce qui peut entraîner des valeurs décimales potentiellement imprécises.</string>
+    <string name="loan_simulator_note">Note : Les résultats affichés sont sujets à des arrondis, ce qui peut entraîner des valeurs potentiellement imprécises.</string>
     <string name="loan_simulator_result_clipboard">Valeur copiée dans le presse-papier</string>
     <string name="drafts_title">Brouillons disponibles</string>
     <string name="draft_overview_date">Dernière modification le %s</string>
@@ -157,4 +159,7 @@
     <string name="loan_simulator_error_insurance_rate_invalid">Taux d\'assurance invalide</string>
     <string name="loan_simulator_total_insurance_label">Assurance total</string>
     <string name="loan_simulator_insurance_hint">Taux d\'assurance (facultatif)</string>
+    <string name="loan_simulator_monthly_results_expand_button_desc">Bouton montrer les détails de paiement mensuel</string>
+    <string name="loan_simulator_yearly_results_expand_button_desc">Bouton montrer les détails de paiement annuel</string>
+    <string name="loan_simulator_total_results_expand_button_desc">Bouton montrer les détails de paiement total</string>
 </resources>

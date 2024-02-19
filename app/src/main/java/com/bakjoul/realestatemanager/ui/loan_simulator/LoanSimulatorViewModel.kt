@@ -52,7 +52,11 @@ class LoanSimulatorViewModel @Inject constructor(
                     currencyFormat = getCurrencyFormat(currency),
                     durationUnit = form.durationUnit,
                     monthlyPayment = formatPrice(results.monthlyPayment, currency),
+                    monthlyInterest = formatPrice(results.monthlyInterest, currency),
+                    monthlyInsurance = formatPrice(results.monthlyInsurance, currency),
                     yearlyPayment = formatPrice(results.yearlyPayment, currency),
+                    yearlyInterest = formatPrice(results.yearlyInterest, currency),
+                    yearlyInsurance = formatPrice(results.yearlyInsurance, currency),
                     totalInterest = formatPrice(results.totalInterest, currency),
                     totalInsurance = formatPrice(results.totalInsurance, currency),
                     totalPayment = formatPrice(results.totalPayment, currency),
@@ -113,7 +117,11 @@ class LoanSimulatorViewModel @Inject constructor(
         resultsMutableStateFlow.update {
             it.copy(
                 monthlyPayment = null,
+                monthlyInterest = null,
+                monthlyInsurance = null,
                 yearlyPayment = null,
+                yearlyInterest = null,
+                yearlyInsurance = null,
                 totalInterest = null,
                 totalInsurance = null,
                 totalPayment = null
@@ -293,7 +301,11 @@ class LoanSimulatorViewModel @Inject constructor(
             resultsMutableStateFlow.update {
                 it.copy(
                     monthlyPayment = results.monthlyPayment,
+                    monthlyInterest = results.monthlyInterest,
+                    monthlyInsurance = results.monthlyInsurance,
                     yearlyPayment = results.yearlyPayment,
+                    yearlyInterest = results.yearlyInterest,
+                    yearlyInsurance = results.yearlyInsurance,
                     totalInterest = results.totalInterest,
                     totalInsurance = results.totalInsurance,
                     totalPayment = results.totalPayment

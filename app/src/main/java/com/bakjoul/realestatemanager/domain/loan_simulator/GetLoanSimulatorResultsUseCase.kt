@@ -47,9 +47,14 @@ class GetLoanSimulatorResultsUseCase @Inject constructor() {
 
             return LoanSimulatorResultsEntity(
                 monthlyPayment = monthlyPayment,
+                monthlyInterest = BigDecimal.ZERO,
+                monthlyInsurance = monthlyInsurance,
                 yearlyPayment = yearlyPayment,
+                yearlyInterest = BigDecimal.ZERO,
+                yearlyInsurance = yearlyInsurance,
+                totalPayment = amountAfterDownPayment,
                 totalInterest = BigDecimal.ZERO,
-                totalPayment = amountAfterDownPayment
+                totalInsurance = totalInsurance
             )
         }
 
@@ -61,13 +66,19 @@ class GetLoanSimulatorResultsUseCase @Inject constructor() {
         val denominator = (BigDecimal.ONE + monthlyInterestRate).pow(durationInMonths.toInt()) - BigDecimal.ONE
 
         val monthlyPayment = numerator.divide(denominator, 2, RoundingMode.HALF_EVEN).add(monthlyInsurance)
+        val monthlyInterest = amountAfterDownPayment.multiply(monthlyInterestRate)
         val yearlyPayment = monthlyPayment.multiply(BigDecimal(12)).add(yearlyInsurance)
+        val yearlyInterest = monthlyInterest.multiply(BigDecimal(12))
         val totalInterest = monthlyPayment.multiply(durationInMonths).subtract(amountAfterDownPayment)
-        val totalPayment = amountAfterDownPayment.add(totalInterest)
+        val totalPayment = amountAfterDownPayment.add(totalInterest).add(totalInsurance)
 
         return LoanSimulatorResultsEntity(
             monthlyPayment = monthlyPayment,
+            monthlyInterest = monthlyInterest,
+            monthlyInsurance = monthlyInsurance,
             yearlyPayment = yearlyPayment,
+            yearlyInterest = yearlyInterest,
+            yearlyInsurance = yearlyInsurance,
             totalInterest = totalInterest,
             totalInsurance = totalInsurance,
             totalPayment = totalPayment

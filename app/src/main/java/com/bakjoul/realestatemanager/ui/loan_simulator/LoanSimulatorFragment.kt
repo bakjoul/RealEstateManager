@@ -13,11 +13,16 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import android.widget.ArrayAdapter
+import android.widget.ImageButton
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
+import androidx.transition.AutoTransition
+import androidx.transition.Transition
+import androidx.transition.TransitionManager
 import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.data.loan_simulator.model.DurationUnit
 import com.bakjoul.realestatemanager.databinding.FragmentLoanSimulatorBinding
@@ -44,6 +49,9 @@ class LoanSimulatorFragment : DialogFragment(R.layout.fragment_loan_simulator) {
     private val clipboardManager by lazy { requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager }
 
     private var currentCurrency: DecimalFormat? = null
+    private var isMonthlyResultsCardExpanded = false
+    private var isYearlyResultsCardExpanded = false
+    private var isTotalResultsCardExpanded = false
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return object : CustomThemeDialog(requireContext(), R.style.FloatingDialog) {
@@ -131,6 +139,10 @@ class LoanSimulatorFragment : DialogFragment(R.layout.fragment_loan_simulator) {
             hideKeyboard()
         }
 
+        setExpandButtonOnClickListener(binding.loanSimulatorMonthlyResultsExpandButton)
+        setExpandButtonOnClickListener(binding.loanSimulatorYearlyResultsExpandButton)
+        setExpandButtonOnClickListener(binding.loanSimulatorTotalResultsExpandButton)
+
         viewModel.viewStateLiveData.observe(viewLifecycleOwner) { viewState ->
             binding.loanSimulatorAmountTextInputLayout.startIconDrawable = getDrawable(viewState)
 
@@ -157,16 +169,24 @@ class LoanSimulatorFragment : DialogFragment(R.layout.fragment_loan_simulator) {
             binding.loanSimulatorDurationTextInputLayout.error = viewState.durationError?.toCharSequence(requireContext())
 
             binding.loanSimulatorMonthlyPaymentResult.text = viewState.monthlyPayment
+            binding.loanSimulatorMonthlyInterestResult.text = viewState.monthlyInterest
+            binding.loanSimulatorMonthlyInsuranceResult.text = viewState.monthlyInsurance
             binding.loanSimulatorYearlyPaymentResult.text = viewState.yearlyPayment
+            binding.loanSimulatorYearlyInterestResult.text = viewState.yearlyInterest
+            binding.loanSimulatorYearlyInsuranceResult.text = viewState.yearlyInsurance
+            binding.loanSimulatorTotalPaymentResult.text = viewState.totalPayment
             binding.loanSimulatorTotalInterestResult.text = viewState.totalInterest
             binding.loanSimulatorTotalInsuranceResult.text = viewState.totalInsurance
-            binding.loanSimulatorTotalPaymentResult.text = viewState.totalPayment
 
             setOnClickListenerCopyToClipboard(binding.loanSimulatorMonthlyPaymentResult, "monthlyPayment", viewState.monthlyPayment)
+            setOnClickListenerCopyToClipboard(binding.loanSimulatorMonthlyInterestResult, "monthlyInterest", viewState.monthlyInterest)
+            setOnClickListenerCopyToClipboard(binding.loanSimulatorMonthlyInsuranceResult, "monthlyInsurance", viewState.monthlyInsurance)
             setOnClickListenerCopyToClipboard(binding.loanSimulatorYearlyPaymentResult, "yearlyPayment", viewState.yearlyPayment)
+            setOnClickListenerCopyToClipboard(binding.loanSimulatorYearlyInterestResult, "yearlyInterest", viewState.yearlyInterest)
+            setOnClickListenerCopyToClipboard(binding.loanSimulatorYearlyInsuranceResult, "yearlyInsurance", viewState.yearlyInsurance)
+            setOnClickListenerCopyToClipboard(binding.loanSimulatorTotalPaymentResult, "totalPayment", viewState.totalPayment)
             setOnClickListenerCopyToClipboard(binding.loanSimulatorTotalInterestResult, "totalInterest", viewState.totalInterest)
             setOnClickListenerCopyToClipboard(binding.loanSimulatorTotalInsuranceResult, "totalInsurance", viewState.totalInsurance)
-            setOnClickListenerCopyToClipboard(binding.loanSimulatorTotalPaymentResult, "totalPayment", viewState.totalPayment)
         }
 
         viewModel.viewActionLiveData.observeEvent(viewLifecycleOwner) {
@@ -175,6 +195,114 @@ class LoanSimulatorFragment : DialogFragment(R.layout.fragment_loan_simulator) {
                 is LoanSimulatorViewAction.ShowToast -> it.message.showAsToast(requireContext())
             }
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+
+        outState.putBoolean("isMonthlyResultsCardExpanded", isMonthlyResultsCardExpanded)
+        outState.putBoolean("isYearlyResultsCardExpanded", isYearlyResultsCardExpanded)
+        outState.putBoolean("isTotalResultsCardExpanded", isTotalResultsCardExpanded)
+    }
+
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+
+        isMonthlyResultsCardExpanded = savedInstanceState?.getBoolean("isMonthlyResultsCardExpanded") ?: false
+        isYearlyResultsCardExpanded = savedInstanceState?.getBoolean("isYearlyResultsCardExpanded") ?: false
+        isTotalResultsCardExpanded = savedInstanceState?.getBoolean("isTotalResultsCardExpanded") ?: false
+
+        setCardViewDetailsVisibility(binding.loanSimulatorMonthlyPaymentDetailsConstraintLayout)
+        setCardViewDetailsVisibility(binding.loanSimulatorYearlyPaymentDetailsConstraintLayout)
+        setCardViewDetailsVisibility(binding.loanSimulatorTotalPaymentDetailsConstraintLayout)
+    }
+
+    private fun setCardViewDetailsVisibility(details: ConstraintLayout) {
+        when (details) {
+            binding.loanSimulatorMonthlyPaymentDetailsConstraintLayout -> {
+                if (isMonthlyResultsCardExpanded) {
+                    binding.loanSimulatorMonthlyResultsExpandButton.setImageResource(R.drawable.baseline_expand_less_24)
+                    details.visibility = View.VISIBLE
+                } else {
+                    binding.loanSimulatorMonthlyResultsExpandButton.setImageResource(R.drawable.baseline_expand_more_24)
+                    details.visibility = View.GONE
+                }
+            }
+            binding.loanSimulatorYearlyPaymentDetailsConstraintLayout -> {
+                if (isYearlyResultsCardExpanded) {
+                    binding.loanSimulatorYearlyResultsExpandButton.setImageResource(R.drawable.baseline_expand_less_24)
+                    details.visibility = View.VISIBLE
+                } else {
+                    binding.loanSimulatorYearlyResultsExpandButton.setImageResource(R.drawable.baseline_expand_more_24)
+                    details.visibility = View.GONE
+                }
+            }
+            binding.loanSimulatorTotalPaymentDetailsConstraintLayout -> {
+                if (isTotalResultsCardExpanded) {
+                    binding.loanSimulatorTotalResultsExpandButton.setImageResource(R.drawable.baseline_expand_less_24)
+                    details.visibility = View.VISIBLE
+                } else {
+                    binding.loanSimulatorTotalResultsExpandButton.setImageResource(R.drawable.baseline_expand_more_24)
+                    details.visibility = View.GONE
+                }
+            }
+        }
+    }
+
+    private fun setExpandButtonOnClickListener(buttonView: ImageButton) {
+        val viewToAnimate = when (buttonView) {
+            binding.loanSimulatorMonthlyResultsExpandButton -> binding.loanSimulatorMonthlyResultsCardView
+            binding.loanSimulatorYearlyResultsExpandButton -> binding.loanSimulatorYearlyResultsCardView
+            binding.loanSimulatorTotalResultsExpandButton -> binding.loanSimulatorTotalResultsCardView
+            else -> throw IllegalArgumentException("Unknown buttonView")
+        }
+        val viewToShow = when (buttonView) {
+            binding.loanSimulatorMonthlyResultsExpandButton -> binding.loanSimulatorMonthlyPaymentDetailsConstraintLayout
+            binding.loanSimulatorYearlyResultsExpandButton -> binding.loanSimulatorYearlyPaymentDetailsConstraintLayout
+            binding.loanSimulatorTotalResultsExpandButton -> binding.loanSimulatorTotalPaymentDetailsConstraintLayout
+            else -> throw IllegalArgumentException("Unknown buttonView")
+        }
+
+        buttonView.setOnClickListener {
+            val isExpanding: Boolean
+            val visibility = if (viewToShow.visibility == View.GONE) {
+                    isExpanding = true
+                    when (buttonView) {
+                        binding.loanSimulatorMonthlyResultsExpandButton -> isMonthlyResultsCardExpanded = true
+                        binding.loanSimulatorYearlyResultsExpandButton -> isYearlyResultsCardExpanded = true
+                        binding.loanSimulatorTotalResultsExpandButton -> isTotalResultsCardExpanded = true
+                    }
+                    buttonView.setImageResource(R.drawable.baseline_expand_less_24)
+                    View.VISIBLE
+                } else {
+                    isExpanding = false
+                    when (buttonView) {
+                        binding.loanSimulatorMonthlyResultsExpandButton -> isMonthlyResultsCardExpanded = false
+                        binding.loanSimulatorYearlyResultsExpandButton -> isYearlyResultsCardExpanded = false
+                        binding.loanSimulatorTotalResultsExpandButton -> isTotalResultsCardExpanded = false
+                    }
+                    buttonView.setImageResource(R.drawable.baseline_expand_more_24)
+                    View.GONE
+                }
+            beginDelayedTransition(isExpanding, viewToAnimate)
+            viewToShow.visibility = visibility
+        }
+    }
+
+    private fun beginDelayedTransition(isExpanding: Boolean, view: View) {
+        val transition = AutoTransition().addListener(object : Transition.TransitionListener {
+            override fun onTransitionStart(transition: Transition) {}
+            override fun onTransitionEnd(transition: Transition) {
+                if (isExpanding) {
+                    binding.root.smoothScrollTo(0, view.bottom)
+                }
+            }
+
+            override fun onTransitionCancel(transition: Transition) {}
+            override fun onTransitionPause(transition: Transition) {}
+            override fun onTransitionResume(transition: Transition) {}
+        })
+        TransitionManager.beginDelayedTransition(binding.root, transition)
     }
 
     private fun addTextChangedListenerForAmount(

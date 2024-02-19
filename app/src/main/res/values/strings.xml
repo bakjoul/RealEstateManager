@@ -151,6 +151,8 @@
     <string name="loan_simulator_calculate_button_text">Calculate</string>
     <string name="loan_simulator_appbar_title">Loan simulator</string>
     <string name="loan_simulator_monthly_payment_label">Monthly payment</string>
+    <string name="loan_simulator_monthly_interest_label">incl. interest</string>
+    <string name="loan_simulator_monthly_insurance_label">incl. insurance</string>
     <string name="loan_simulator_yearly_payment_label">Yearly payment</string>
     <string name="loan_simulator_total_insurance_label">Total insurance</string>
     <string name="loan_simulator_total_interest_label">Total interest</string>
@@ -161,7 +163,7 @@
     <string name="loan_simulator_error_interest_rate_invalid">Invalid interest rate</string>
     <string name="loan_simulator_error_insurance_rate_invalid">Invalid insurance rate</string>
     <string name="loan_simulator_error_duration">Duration required</string>
-    <string name="loan_simulator_note">Note: the displayed results are subject to rounding, which may result in potentially imprecise decimal values.</string>
+    <string name="loan_simulator_note">Note: the displayed results are subject to rounding, which may result in potentially imprecise values.</string>
     <string name="loan_simulator_result_clipboard">Value copied to clipboard</string>
     <string name="drafts_title">Available drafts</string>
     <string name="draft_overview_date">Last edited on %s</string>
@@ -172,4 +174,7 @@
     <string name="add_property_import_from_gallery">Import a photo</string>
     <string name="add_property_feature_photo_desc">Feature this photo button</string>
     <string name="add_property_import_photo_desc">Import a photo button</string>
+    <string name="loan_simulator_monthly_results_expand_button_desc">Show monthly payment details button</string>
+    <string name="loan_simulator_yearly_results_expand_button_desc">Show yearly payment details button</string>
+    <string name="loan_simulator_total_results_expand_button_desc">Show total payment details button</string>
 </resources>
