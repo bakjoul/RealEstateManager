@@ -13,6 +13,7 @@ import android.text.TextWatcher
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -24,6 +25,7 @@ import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.databinding.FragmentAddPropertyBinding
 import com.bakjoul.realestatemanager.domain.property.model.PropertyPoiEntity
 import com.bakjoul.realestatemanager.ui.camera.activity.CameraActivity
+import com.bakjoul.realestatemanager.ui.photo_preview.activity.PhotoPreviewActivity
 import com.bakjoul.realestatemanager.ui.utils.CustomThemeDialog
 import com.bakjoul.realestatemanager.ui.utils.Event.Companion.observeEvent
 import com.bakjoul.realestatemanager.ui.utils.hideKeyboard
@@ -245,7 +247,18 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
         }
 
         // Import and camera buttons
-        binding.addPropertyImportPhotoButton.setOnClickListener { } // TODO
+        val galleryLauncher = registerForActivityResult(ActivityResultContracts.PickMultipleVisualMedia(10)) { uris ->
+            uris?.let {
+                val uriList = uris.map { it.toString() }
+                viewModel.onGalleryPhotosSelected(uriList)
+            }
+        }
+
+        binding.addPropertyImportPhotoButton.setOnClickListener {
+            galleryLauncher.launch(
+                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+            )
+        }
         binding.addPropertyTakePhotoButton.setOnClickListener { onCameraButtonClicked() }
 
         // Done button
@@ -407,7 +420,13 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
                     hideKeyboard()
                 }
 
-                is AddPropertyViewAction.OpenCamera -> startActivity(CameraActivity.navigate(requireContext(), it.propertyId))
+                is AddPropertyViewAction.OpenCamera -> {
+                    startActivity(CameraActivity.navigate(requireContext(), it.propertyId))
+                }
+
+                is AddPropertyViewAction.ShowImportedPhotoPreview -> {
+                    startActivity(PhotoPreviewActivity.navigate(requireContext(), it.propertyId))
+                }
 
                 AddPropertyViewAction.SaveDraftDialog -> {
                     MaterialAlertDialogBuilder(requireContext())

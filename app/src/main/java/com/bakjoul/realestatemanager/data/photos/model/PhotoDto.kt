@@ -8,6 +8,6 @@ import androidx.room.PrimaryKey
 data class PhotoDto (
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     @ColumnInfo(name = "property_id") val propertyId: Long,
-    val url: String,
+    val uri: String,
     val description: String
 )

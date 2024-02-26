@@ -1,6 +1,7 @@
 package com.bakjoul.realestatemanager.data
 
 import android.app.Application
+import android.content.ContentResolver
 import androidx.work.WorkManager
 import com.bakjoul.realestatemanager.BuildConfig
 import com.bakjoul.realestatemanager.data.api.CurrencyApi
@@ -135,6 +136,10 @@ class DataModule {
     @Singleton
     @Provides
     fun provideClock(): Clock = Clock.systemDefaultZone()
+
+    @Singleton
+    @Provides
+    fun provideContentResolver(application: Application): ContentResolver = application.contentResolver
 }
 
 @Qualifier

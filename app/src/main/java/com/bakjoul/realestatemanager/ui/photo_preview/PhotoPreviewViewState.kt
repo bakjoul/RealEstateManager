@@ -1,4 +1,4 @@
-package com.bakjoul.realestatemanager.ui.camera.photo_preview
+package com.bakjoul.realestatemanager.ui.photo_preview
 
 import com.bakjoul.realestatemanager.ui.utils.NativeText
 

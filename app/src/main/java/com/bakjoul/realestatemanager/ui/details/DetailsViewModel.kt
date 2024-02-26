@@ -57,7 +57,7 @@ class DetailsViewModel @Inject constructor(
         ) { property, currency, euroRateWrapper, surfaceUnit ->
             val parsedSurfaceValue = formatSurfaceValue(property.surface, surfaceUnit)
             DetailsViewState(
-                featuredPhotoUrl = property.photos.find { it.id == property.featuredPhotoId }?.url ?: "",
+                featuredPhotoUrl = property.photos.find { it.id == property.featuredPhotoId }?.uri ?: "",
                 type = formatType(property.type),
                 price = formatPrice(property.price, currency, euroRateWrapper.currencyRateEntity.rate),
                 isSold = property.saleDate != null,

@@ -1,16 +1,17 @@
 package com.bakjoul.realestatemanager.designsystem.molecule.photo_list
 
 import com.bakjoul.realestatemanager.ui.utils.EquatableCallback
+import com.bakjoul.realestatemanager.ui.utils.EquatableCallbackWithTwoParams
 
 data class PhotoListItemViewState(
     val id: Long,
-    val url: String,
+    val uri: String,
     val description: String,
     val selectType: SelectType,
     val isFeatured: Boolean?,
     val onPhotoClicked: EquatableCallback,
     val onFeaturePhotoClicked: EquatableCallback?,
-    val onDeletePhotoClicked: EquatableCallback?
+    val onDeletePhotoClicked: EquatableCallbackWithTwoParams<Long, String>?
 )
 
  enum class SelectType {

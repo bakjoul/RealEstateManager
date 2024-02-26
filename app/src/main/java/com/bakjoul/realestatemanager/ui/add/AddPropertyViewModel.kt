@@ -20,8 +20,11 @@ import com.bakjoul.realestatemanager.domain.geocoding.model.GeocodingWrapper
 import com.bakjoul.realestatemanager.domain.navigation.GetCurrentNavigationUseCase
 import com.bakjoul.realestatemanager.domain.navigation.NavigateUseCase
 import com.bakjoul.realestatemanager.domain.navigation.model.To
-import com.bakjoul.realestatemanager.domain.photos.DeletePhotoUseCase
+import com.bakjoul.realestatemanager.domain.photo_preview.SetLastPhotoUriUseCase
+import com.bakjoul.realestatemanager.domain.photos.AddPhotosUseCase
+import com.bakjoul.realestatemanager.domain.photos.DeletePhotosUseCase
 import com.bakjoul.realestatemanager.domain.photos.GetPhotosForPropertyIdUseCase
+import com.bakjoul.realestatemanager.domain.photos.SavePhotosToAppFilesUseCase
 import com.bakjoul.realestatemanager.domain.photos.model.PhotoEntity
 import com.bakjoul.realestatemanager.domain.property.AddPropertyUseCase
 import com.bakjoul.realestatemanager.domain.property.drafts.DeletePropertyDraftUseCase
@@ -74,11 +77,14 @@ class AddPropertyViewModel @Inject constructor(
     private val getAddressPredictionsUseCase: GetAddressPredictionsUseCase,
     private val getAddressDetailsUseCase: GetAddressDetailsUseCase,
     private val getPhotosForPropertyIdUseCase: GetPhotosForPropertyIdUseCase,
-    private val deletePhotoUseCase: DeletePhotoUseCase,
+    private val deletePhotosUseCase: DeletePhotosUseCase,
     private val navigateUseCase: NavigateUseCase,
     private val deletePropertyDraftUseCase: DeletePropertyDraftUseCase,
     private val clock: Clock,
     private val updatePropertyDraftUseCase: UpdatePropertyDraftUseCase,
+    private val savePhotosToAppFilesUseCase: SavePhotosToAppFilesUseCase,
+    private val setLastPhotoUriUseCase: SetLastPhotoUriUseCase,
+    private val addPhotosUseCase: AddPhotosUseCase,
     private val addPropertyUseCase: AddPropertyUseCase,
 ) : ViewModel() {
 
@@ -207,9 +213,9 @@ class AddPropertyViewModel @Inject constructor(
                             )
                         }
                     },
-                    {
+                    { id, uri ->
                         viewModelScope.launch {
-                            deletePhotoUseCase.invoke(it)
+                            deletePhotosUseCase.invoke(listOf(id), listOf(uri))
                         }
                     }
                 ),
@@ -279,6 +285,7 @@ class AddPropertyViewModel @Inject constructor(
             when (it) {
                 is To.HideAddressSuggestions -> emit(Event(AddPropertyViewAction.HideSuggestions))
                 is To.Camera -> emit(Event(AddPropertyViewAction.OpenCamera(it.propertyId)))
+                is To.ImportedPhotoPreview -> emit(Event(AddPropertyViewAction.ShowImportedPhotoPreview(it.propertyId)))
                 is To.SaveDraftDialog -> emit(Event(AddPropertyViewAction.SaveDraftDialog))
                 is To.CloseAddProperty -> emit(Event(AddPropertyViewAction.CloseDialog))
                 is To.Settings -> emit(Event(AddPropertyViewAction.OpenSettings))
@@ -715,6 +722,23 @@ class AddPropertyViewModel @Inject constructor(
             }
         } else {
             navigateUseCase.invoke(To.CloseAddProperty)
+        }
+    }
+
+    fun onGalleryPhotosSelected(photos: List<String>) {
+        viewModelScope.launch {
+            val savedPhotosList = savePhotosToAppFilesUseCase.invoke(photos)
+            // If only one photo, opens it in photo preview
+            if (savedPhotosList != null) {
+                if (savedPhotosList.size == 1) {
+                    setLastPhotoUriUseCase.invoke(savedPhotosList.first())
+                    navigateUseCase.invoke(To.ImportedPhotoPreview(draftId))
+                }
+                // If multiple, adds them and lets user manually edit their description
+                else {
+                    addPhotosUseCase.invoke(draftId, savedPhotosList, "Desc. required\u00A0")   // TODO extract string resource
+                }
+            }
         }
     }
 

@@ -6,9 +6,9 @@ import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.bakjoul.realestatemanager.data.photos.PhotoDao
+import com.bakjoul.realestatemanager.data.photos.model.PhotoDto
 import com.bakjoul.realestatemanager.data.property.PropertyDao
 import com.bakjoul.realestatemanager.data.property.model.PropertyDto
-import com.bakjoul.realestatemanager.data.photos.model.PhotoDto
 import com.bakjoul.realestatemanager.data.utils.fromJson
 import com.bakjoul.realestatemanager.domain.CoroutineDispatcherProvider
 import com.google.gson.Gson
@@ -46,9 +46,7 @@ class InitializeDatabaseWorker @AssistedInject constructor(
                     async { propertyDao.insert(propertyEntity) }
                 }
 
-                val photoJobs = photosEntities.map { photoEntity ->
-                    async { photoDao.insert(photoEntity) }
-                }
+                val photoJobs = async { photoDao.insert(photosEntities) }
 
                 val jobs = propertyJobs + photoJobs
                 jobs.awaitAll()

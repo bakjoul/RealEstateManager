@@ -177,4 +177,5 @@
     <string name="loan_simulator_monthly_results_expand_button_desc">Show monthly payment details button</string>
     <string name="loan_simulator_yearly_results_expand_button_desc">Show yearly payment details button</string>
     <string name="loan_simulator_total_results_expand_button_desc">Show total payment details button</string>
+    <string name="photo_filename_format" translatable="false">yyyyMMdd_HHmmssSSS</string>
 </resources>

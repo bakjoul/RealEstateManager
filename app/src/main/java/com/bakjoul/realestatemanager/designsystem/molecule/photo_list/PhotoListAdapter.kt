@@ -22,7 +22,7 @@ class PhotoListAdapter : ListAdapter<PhotoListItemViewState, PhotoListAdapter.Vi
 
     class ViewHolder(private val binding: ViewPhotoItemBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(item: PhotoListItemViewState) {
-            Glide.with(binding.photoItemImageView.context).load(item.url).into(binding.photoItemImageView)
+            Glide.with(binding.photoItemImageView.context).load(item.uri).into(binding.photoItemImageView)
             binding.photoItemDescription.text = item.description
 
             when (item.selectType) {
@@ -64,7 +64,7 @@ class PhotoListAdapter : ListAdapter<PhotoListItemViewState, PhotoListAdapter.Vi
 
             if (item.onDeletePhotoClicked != null) {
                 binding.photoItemDelete.visibility = View.VISIBLE
-                binding.photoItemDelete.setOnClickListener { item.onDeletePhotoClicked.invoke() }
+                binding.photoItemDelete.setOnClickListener { item.onDeletePhotoClicked.invoke(item.id, item.uri) }
             } else {
                 binding.photoItemDelete.visibility = View.GONE
             }

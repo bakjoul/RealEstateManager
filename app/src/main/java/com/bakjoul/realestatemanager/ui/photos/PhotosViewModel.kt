@@ -35,7 +35,7 @@ class PhotosViewModel @Inject constructor(
             getCurrentPhotoIdUseCase.invoke()
         ) { property, currentPhotoId ->
             PhotosViewState(
-                photosUrls = property.photos.map { it.url },
+                photosUrls = property.photos.map { it.uri },
                 thumbnails = PhotoListMapper().map(
                     property.photos,
                     { index -> if (index == currentPhotoId) SelectType.SELECTED else SelectType.NOT_SELECTED },

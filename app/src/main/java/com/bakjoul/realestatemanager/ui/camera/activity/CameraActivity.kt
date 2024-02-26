@@ -11,7 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.bakjoul.realestatemanager.databinding.ActivityCameraBinding
 import com.bakjoul.realestatemanager.ui.camera.CameraFragment
-import com.bakjoul.realestatemanager.ui.camera.photo_preview.PhotoPreviewFragment
+import com.bakjoul.realestatemanager.ui.photo_preview.PhotoPreviewFragment
 import com.bakjoul.realestatemanager.ui.utils.Event.Companion.observeEvent
 import com.bakjoul.realestatemanager.ui.utils.hideKeyboard
 import com.bakjoul.realestatemanager.ui.utils.viewBinding
@@ -50,8 +50,9 @@ class CameraActivity : AppCompatActivity() {
             when (it) {
                 is CameraActivityViewAction.ShowPhotoPreview -> {
                     val photoPreviewFragment = PhotoPreviewFragment()
-                    val args = Bundle()
-                    args.putLong("propertyId", it.propertyId)
+                    val args = Bundle().apply {
+                        putLong("propertyId", it.propertyId)
+                    }
                     photoPreviewFragment.arguments = args
 
                     supportFragmentManager.beginTransaction()

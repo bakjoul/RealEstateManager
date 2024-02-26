@@ -168,43 +168,43 @@ abstract class AppDatabase : RoomDatabase() {
                             PhotoDto(
                                 id = 1,
                                 propertyId = 1,
-                                url = "android.resource://com.bakjoul.realestatemanager/drawable/penthouse_upper_east_side",
+                                uri = "android.resource://com.bakjoul.realestatemanager/drawable/penthouse_upper_east_side",
                                 description = "Lounge"
                             ),
                             PhotoDto(
                                 id = 2,
                                 propertyId = 1,
-                                url = "android.resource://com.bakjoul.realestatemanager/drawable/penthouse_upper_east_side",
+                                uri = "android.resource://com.bakjoul.realestatemanager/drawable/penthouse_upper_east_side",
                                 description = "Lounge"
                             ),
                             PhotoDto(
                                 id = 3,
                                 propertyId = 1,
-                                url = "android.resource://com.bakjoul.realestatemanager/drawable/penthouse_upper_east_side",
+                                uri = "android.resource://com.bakjoul.realestatemanager/drawable/penthouse_upper_east_side",
                                 description = "Lounge"
                             ),
                             PhotoDto(
                                 id = 4,
                                 propertyId = 1,
-                                url = "android.resource://com.bakjoul.realestatemanager/drawable/penthouse_upper_east_side",
+                                uri = "android.resource://com.bakjoul.realestatemanager/drawable/penthouse_upper_east_side",
                                 description = "Lounge"
                             ),
                             PhotoDto(
                                 id = 5,
                                 propertyId = 1,
-                                url = "android.resource://com.bakjoul.realestatemanager/drawable/penthouse_upper_east_side",
+                                uri = "android.resource://com.bakjoul.realestatemanager/drawable/penthouse_upper_east_side",
                                 description = "Lounge"
                             ),
                             PhotoDto(
                                 id = 6,
                                 propertyId = 2,
-                                url = "android.resource://com.bakjoul.realestatemanager/drawable/penthouse_upper_east_side",
+                                uri = "android.resource://com.bakjoul.realestatemanager/drawable/penthouse_upper_east_side",
                                 description = "Lounge"
                             ),
                             PhotoDto(
                                 id = 7,
                                 propertyId = 3,
-                                url = "android.resource://com.bakjoul.realestatemanager/drawable/penthouse_upper_east_side",
+                                uri = "android.resource://com.bakjoul.realestatemanager/drawable/penthouse_upper_east_side",
                                 description = "Lounge"
                             ),
                         )

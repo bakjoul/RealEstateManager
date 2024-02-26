@@ -1,9 +1,6 @@
 package com.bakjoul.realestatemanager.ui.camera
 
-import android.content.ContentValues
-import android.os.Build
 import android.os.Bundle
-import android.provider.MediaStore
 import android.util.Log
 import android.view.View
 import android.widget.Toast
@@ -16,10 +13,12 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.databinding.FragmentCameraBinding
+import com.bakjoul.realestatemanager.ui.utils.IdGenerator
 import com.bakjoul.realestatemanager.ui.utils.viewBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.asExecutor
+import java.io.File
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -28,13 +27,14 @@ class CameraFragment : Fragment(R.layout.fragment_camera) {
 
     private companion object {
         private const val TAG = "CameraFragment"
-        private const val FILENAME_FORMAT = "yyyyMMdd_HHmmss"
     }
 
     private val binding by viewBinding { FragmentCameraBinding.bind(it) }
     private val viewModel by viewModels<CameraViewModel>()
 
-    private val filenameFormatter by lazy { DateTimeFormatter.ofPattern(FILENAME_FORMAT) }
+    private val filenameFormatter by lazy {
+        DateTimeFormatter.ofPattern(getString(R.string.photo_filename_format))
+    }
 
     private var imageCapture: ImageCapture? = null
 
@@ -74,17 +74,13 @@ class CameraFragment : Fragment(R.layout.fragment_camera) {
     private fun takePhoto() {
         val imageCapture = imageCapture ?: return
 
-        val name = filenameFormatter.format(LocalDateTime.now())
-        val contentValues = ContentValues().apply {
-            put(MediaStore.MediaColumns.DISPLAY_NAME, name)
-            put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
-            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
-                put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/${resources.getString(R.string.app_name)}")
-            }
-        }
+        val fileName = filenameFormatter.format(LocalDateTime.now())
+        val fileNameSuffix = "_${IdGenerator.generateShortUuid()}.jpg"
+        val formattedFileName = "IMG_${fileName}${fileNameSuffix}"
+        val cacheFile = File(requireContext().cacheDir, formattedFileName)
 
         val outputOptions = ImageCapture.OutputFileOptions
-            .Builder(requireContext().contentResolver, MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
+            .Builder(cacheFile)
             .build()
 
         imageCapture.takePicture(
@@ -98,7 +94,7 @@ class CameraFragment : Fragment(R.layout.fragment_camera) {
                 }
 
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
-                    viewModel.onImageSaved(output.savedUri?.toString(), requireActivity().intent.getLongExtra("propertyId", -1))
+                    viewModel.onImageSaved(output.savedUri?.path, requireActivity().intent.getLongExtra("propertyId", -1))
                 }
             })
     }

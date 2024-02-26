@@ -5,11 +5,11 @@ import kotlinx.coroutines.flow.Flow
 
 interface PhotoRepository {
 
-    suspend fun addPhoto(photoEntity: PhotoEntity): Long?
+    suspend fun addPhotos(photoEntities: List<PhotoEntity>): List<Long>?
 
     fun getPhotosForPropertyId(propertyId: Long): Flow<List<PhotoEntity>>
 
-    suspend fun deletePhoto(photoId: Long)
+    suspend fun deletePhotos(photoIds: List<Long>)
 
     suspend fun deleteAllPhotosForPropertyId(propertyId: Long)
 }

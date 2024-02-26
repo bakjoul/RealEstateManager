@@ -18,9 +18,10 @@ class PhotoRepositoryRoom @Inject constructor(
     private val coroutineDispatcherProvider: CoroutineDispatcherProvider
 ) : PhotoRepository {
 
-    override suspend fun addPhoto(photoEntity: PhotoEntity): Long? = withContext(coroutineDispatcherProvider.io) {
+    override suspend fun addPhotos(photoEntities: List<PhotoEntity>): List<Long>? = withContext(coroutineDispatcherProvider.io) {
         try {
-            photoDao.insert(mapToPhotoDto(photoEntity))
+            val photoDtos = photoEntities.map { mapToPhotoDto(it) }
+            photoDao.insert(photoDtos)
         } catch (e: SQLiteException) {
             e.printStackTrace()
             null
@@ -32,8 +33,8 @@ class PhotoRepositoryRoom @Inject constructor(
             mapPhotoDtoToDomainEntities(it)
         }.flowOn(coroutineDispatcherProvider.io)
 
-    override suspend fun deletePhoto(photoId: Long) = withContext(coroutineDispatcherProvider.io) {
-        photoDao.delete(photoId)
+    override suspend fun deletePhotos(photoIds: List<Long>) = withContext(coroutineDispatcherProvider.io) {
+        photoDao.delete(photoIds)
     }
 
     override suspend fun deleteAllPhotosForPropertyId(propertyId: Long) = withContext(coroutineDispatcherProvider.io) {
@@ -44,7 +45,7 @@ class PhotoRepositoryRoom @Inject constructor(
     private fun mapToPhotoDto(photoEntity: PhotoEntity): PhotoDto =
         PhotoDto(
             propertyId = photoEntity.propertyId,
-            url = photoEntity.url,
+            uri = photoEntity.uri,
             description = photoEntity.description
         )
 
@@ -53,7 +54,7 @@ class PhotoRepositoryRoom @Inject constructor(
             PhotoEntity(
                 id = it.id,
                 propertyId = it.propertyId,
-                url = it.url,
+                uri = it.uri,
                 description = it.description
             )
         }

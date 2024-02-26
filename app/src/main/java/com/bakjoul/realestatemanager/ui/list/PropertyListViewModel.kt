@@ -70,7 +70,7 @@ class PropertyListViewModel @Inject constructor(
             properties.map { property ->
                 PropertyItemViewState(
                     id = property.id,
-                    photoUrl = property.photos.find { it.id == property.featuredPhotoId }?.url ?: "",
+                    photoUrl = property.photos.find { it.id == property.featuredPhotoId }?.uri ?: "",
                     type = formatType(property.type),
                     city = property.address.city,
                     features = formatFeatures(property.bedrooms, property.bathrooms, property.surface, surfaceUnit, isTablet),

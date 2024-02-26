@@ -2,6 +2,7 @@ package com.bakjoul.realestatemanager.designsystem.molecule.photo_list
 
 import com.bakjoul.realestatemanager.domain.photos.model.PhotoEntity
 import com.bakjoul.realestatemanager.ui.utils.EquatableCallback
+import com.bakjoul.realestatemanager.ui.utils.EquatableCallbackWithTwoParams
 
 class PhotoListMapper {
     fun map(
@@ -10,10 +11,10 @@ class PhotoListMapper {
         featuredPhotoId: Long?,
         onPhotoClicked: ((Int) -> Unit),
         onFeatureClicked: ((Long) -> Unit)? = null,
-        onDeleteClicked: ((Long) -> Unit)? = null) : List<PhotoListItemViewState> = photos.mapIndexed { index, photo ->
+        onDeleteClicked: ((Long, String) -> Unit)? = null) : List<PhotoListItemViewState> = photos.mapIndexed { index, photo ->
         PhotoListItemViewState(
             id = photo.id,
-            url = photo.url,
+            uri = photo.uri,
             description = photo.description,
             selectType = selectType(index),
             isFeatured = featuredPhotoId == photo.id,
@@ -24,7 +25,9 @@ class PhotoListMapper {
                 null
             },
             onDeletePhotoClicked = if (onDeleteClicked != null) {
-                EquatableCallback { onDeleteClicked(photo.id) }
+                EquatableCallbackWithTwoParams { id, uri ->
+                    onDeleteClicked(id, uri)
+                }
             } else {
                 null
             }

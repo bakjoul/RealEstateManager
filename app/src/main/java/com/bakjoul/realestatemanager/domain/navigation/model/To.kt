@@ -17,6 +17,7 @@ sealed class To {
     object HideAddressSuggestions : To()
     data class Camera(val propertyId: Long) : To()
     object CloseCamera : To()
+    data class ImportedPhotoPreview(val propertyId: Long) : To()
     data class PhotoPreview(val propertyId: Long) : To()
     object ClosePhotoPreview : To()
     object Dispatcher : To()

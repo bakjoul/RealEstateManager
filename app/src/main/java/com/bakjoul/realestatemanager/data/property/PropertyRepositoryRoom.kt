@@ -178,7 +178,7 @@ class PropertyRepositoryRoom @Inject constructor(
             PhotoEntity(
                 id = it.id,
                 propertyId = it.propertyId,
-                url = it.url,
+                uri = it.uri,
                 description = it.description
             )
         }

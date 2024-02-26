@@ -19,7 +19,7 @@ import com.bakjoul.realestatemanager.domain.geocoding.GetAddressDetailsUseCase
 import com.bakjoul.realestatemanager.domain.navigation.GetCurrentNavigationUseCase
 import com.bakjoul.realestatemanager.domain.navigation.NavigateUseCase
 import com.bakjoul.realestatemanager.domain.navigation.model.To
-import com.bakjoul.realestatemanager.domain.photos.DeletePhotoUseCase
+import com.bakjoul.realestatemanager.domain.photos.DeletePhotosUseCase
 import com.bakjoul.realestatemanager.domain.photos.GetPhotosForPropertyIdUseCase
 import com.bakjoul.realestatemanager.domain.photos.model.PhotoEntity
 import com.bakjoul.realestatemanager.domain.property.AddPropertyUseCase
@@ -87,7 +87,7 @@ class AddPropertyViewModelTest {
     private val getAddressPredictionsUseCase: GetAddressPredictionsUseCase = mockk()
     private val getAddressDetailsUseCase: GetAddressDetailsUseCase = mockk()
     private val getPhotosForPropertyIdUseCase: GetPhotosForPropertyIdUseCase = mockk()
-    private val deletePhotoUseCase: DeletePhotoUseCase = mockk()
+    private val deletePhotosUseCase: DeletePhotosUseCase = mockk()
     private val navigateUseCase: NavigateUseCase = mockk()
     private val deletePropertyDraftUseCase: DeletePropertyDraftUseCase = mockk()
     private val clock: Clock = Clock.fixed(
@@ -134,7 +134,7 @@ class AddPropertyViewModelTest {
             getAddressPredictionsUseCase = getAddressPredictionsUseCase,
             getAddressDetailsUseCase = getAddressDetailsUseCase,
             getPhotosForPropertyIdUseCase = getPhotosForPropertyIdUseCase,
-            deletePhotoUseCase = deletePhotoUseCase,
+            deletePhotosUseCase = deletePhotosUseCase,
             navigateUseCase = navigateUseCase,
             deletePropertyDraftUseCase = deletePropertyDraftUseCase,
             clock = clock,
@@ -374,7 +374,7 @@ class AddPropertyViewModelTest {
                 PhotoEntity(
                     id = 0L,
                     propertyId = 1L,
-                    url = "test url",
+                    uri = "test url",
                     description = "test description"
                 )
             )
@@ -1064,7 +1064,7 @@ class AddPropertyViewModelTest {
             PhotoEntity(
                 id = 0L,
                 propertyId = 1L,
-                url = "test url",
+                uri = "test url",
                 description = "test description"
             )
         ),
@@ -1162,7 +1162,7 @@ class AddPropertyViewModelTest {
         photos = listOf(
             PhotoListItemViewState(
                 id = 0,
-                url = "test url",
+                uri = "test url",
                 description = "test description",
                 selectType = SelectType.NOT_SELECTABLE,
                 onPhotoClicked = EquatableCallback {},
