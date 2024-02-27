@@ -161,4 +161,8 @@ class MainViewModel @Inject constructor(
     fun onClipboardToastShown() {
         setClipboardToastStateUseCase.invoke(false)
     }
+
+    fun onDraftAlertDialogDismissed() {
+        navigateUseCase.invoke(To.DoNothing)
+    }
 }

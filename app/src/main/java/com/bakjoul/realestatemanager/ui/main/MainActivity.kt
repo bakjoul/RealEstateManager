@@ -48,6 +48,21 @@ class MainActivity : AppCompatActivity() {
     private val binding by viewBinding { ActivityMainBinding.inflate(it) }
     private val viewModel by viewModels<MainViewModel>()
 
+    private val draftAlertDialog by lazy {
+        MaterialAlertDialogBuilder(this)
+            .setTitle(getString(R.string.draft_alert_dialog_title))
+            .setMessage(getString(R.string.draft_alert_dialog_message))
+            .setNeutralButton(getString(R.string.cancel)) { _, _ -> }
+            .setNegativeButton(getString(R.string.draft_alert_dialog_negative)) { _, _ ->
+                viewModel.onAddNewPropertyClicked()
+            }
+            .setPositiveButton(getString(R.string.draft_alert_dialog_positive)) { _, _ ->
+                viewModel.onContinueEditingDraftClicked()
+            }
+    }
+
+    private var isDraftAlertDialogShown = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
@@ -151,17 +166,16 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 MainViewAction.ShowPropertyDraftAlertDialog -> {
-                    MaterialAlertDialogBuilder(this)
-                        .setTitle(getString(R.string.draft_alert_dialog_title))
-                        .setMessage(getString(R.string.draft_alert_dialog_message))
-                        .setNeutralButton(getString(R.string.cancel)) { _, _ -> }
-                        .setNegativeButton(getString(R.string.draft_alert_dialog_negative)) { _, _ ->
-                            viewModel.onAddNewPropertyClicked()
-                        }
-                        .setPositiveButton(getString(R.string.draft_alert_dialog_positive)) { _, _ ->
-                            viewModel.onContinueEditingDraftClicked()
-                        }
-                        .show()
+                    val addPropertyFragment = supportFragmentManager.findFragmentByTag(ADD_PROPERTY_DIALOG_TAG)
+                    if (!isDraftAlertDialogShown && addPropertyFragment == null) {
+                        isDraftAlertDialogShown = true
+                        draftAlertDialog
+                            .show()
+                            .setOnDismissListener {
+                                viewModel.onDraftAlertDialogDismissed()
+                                isDraftAlertDialogShown = false
+                            }
+                    }
                 }
 
                 MainViewAction.ShowDraftListAndDetailsPortraitIfNeeded -> {
