@@ -84,9 +84,9 @@
     <string name="draft_alert_dialog_negative">Ajouter un nouveau bien</string>
     <string name="draft_alert_dialog_positive">Continuer un brouillon</string>
     <string name="save_draft_dialog_title">Brouillon en cours</string>
-    <string name="save_draft">Voulez-vous enregistrer ce brouillon ?</string>
-    <string name="discard_draft">Supprimer le brouillon</string>
-    <string name="save_draft_dialog_positive">Enregistrer le brouillon</string>
+    <string name="save_draft_dialog_message">Voulez-vous enregistrer ce brouillon ?</string>
+    <string name="save_draft_dialog_negative">Supprimer</string>
+    <string name="save_draft_dialog_positive">Enregistrer</string>
     <string name="add_property_type_error">Type requis</string>
     <string name="plus_minus_surface_error">Surface invalide</string>
     <string name="plus_minus_rooms_error">Nombre invalide</string>

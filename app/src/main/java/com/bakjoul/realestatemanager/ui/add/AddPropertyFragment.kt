@@ -431,8 +431,8 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
                 AddPropertyViewAction.SaveDraftDialog -> {
                     MaterialAlertDialogBuilder(requireContext())
                         .setTitle(getString(R.string.save_draft_dialog_title))
-                        .setMessage(getString(R.string.save_draft))
-                        .setNegativeButton(getString(R.string.discard_draft)) { _, _ ->
+                        .setMessage(getString(R.string.save_draft_dialog_message))
+                        .setNegativeButton(getString(R.string.save_draft_dialog_negative)) { _, _ ->
                             viewModel.dropDraft()
                         }
                         .setPositiveButton(getString(R.string.save_draft_dialog_positive)) { _, _ ->
