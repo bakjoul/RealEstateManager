@@ -57,16 +57,26 @@ class PhotoListAdapter : ListAdapter<PhotoListItemViewState, PhotoListAdapter.Vi
 
             if (item.onFeaturePhotoClicked != null) {
                 binding.photoItemFeature.visibility = View.VISIBLE
-                binding.photoItemFeature.setOnClickListener { item.onFeaturePhotoClicked.invoke() }
+                binding.photoItemFeature.setOnClickListener {
+                    item.onFeaturePhotoClicked.invoke()
+                }
             } else {
                 binding.photoItemFeature.visibility = View.GONE
             }
 
             if (item.onDeletePhotoClicked != null) {
                 binding.photoItemDelete.visibility = View.VISIBLE
-                binding.photoItemDelete.setOnClickListener { item.onDeletePhotoClicked.invoke(item.id, item.uri) }
+                binding.photoItemDelete.setOnClickListener {
+                    item.onDeletePhotoClicked.invoke(item.id, item.uri)
+                }
             } else {
                 binding.photoItemDelete.visibility = View.GONE
+            }
+
+            if (item.onDescriptionClicked != null) {
+                binding.photoItemDescription.setOnClickListener {
+                    item.onDescriptionClicked.invoke(item.id, item.description)
+                }
             }
         }
     }

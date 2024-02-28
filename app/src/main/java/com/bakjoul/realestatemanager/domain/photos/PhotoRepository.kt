@@ -12,4 +12,6 @@ interface PhotoRepository {
     suspend fun deletePhotos(photoIds: List<Long>)
 
     suspend fun deleteAllPhotosForPropertyId(propertyId: Long)
+
+    suspend fun updatePhotoDescription(photoId: Long, description: String): Int
 }

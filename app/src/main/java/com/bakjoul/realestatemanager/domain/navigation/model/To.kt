@@ -20,6 +20,8 @@ sealed class To {
     data class ImportedPhotoPreview(val propertyId: Long) : To()
     data class PhotoPreview(val propertyId: Long) : To()
     object ClosePhotoPreview : To()
+    data class EditPhotoDescription(val photoId: Long, val description: String) : To()
+    object CloseEditPhotoDescription : To()
     object Dispatcher : To()
     object Settings : To()
     object CloseSettings : To()

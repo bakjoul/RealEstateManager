@@ -86,7 +86,7 @@
     <string name="save_draft_dialog_title">Brouillon en cours</string>
     <string name="save_draft_dialog_message">Voulez-vous enregistrer ce brouillon ?</string>
     <string name="save_draft_dialog_negative">Supprimer</string>
-    <string name="save_draft_dialog_positive">Enregistrer</string>
+    <string name="save">Enregistrer</string>
     <string name="add_property_type_error">Type requis</string>
     <string name="plus_minus_surface_error">Surface invalide</string>
     <string name="plus_minus_rooms_error">Nombre invalide</string>
@@ -162,4 +162,6 @@
     <string name="loan_simulator_monthly_results_expand_button_desc">Bouton montrer les détails de paiement mensuel</string>
     <string name="loan_simulator_yearly_results_expand_button_desc">Bouton montrer les détails de paiement annuel</string>
     <string name="loan_simulator_total_results_expand_button_desc">Bouton montrer les détails de paiement total</string>
+    <string name="edit_photo_description_error">Veuillez entrer une description</string>
+    <string name="add_property_photos_error">Descriptions requises pour les photos importées</string>
 </resources>

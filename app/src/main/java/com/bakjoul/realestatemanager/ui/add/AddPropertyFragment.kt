@@ -25,6 +25,7 @@ import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.databinding.FragmentAddPropertyBinding
 import com.bakjoul.realestatemanager.domain.property.model.PropertyPoiEntity
 import com.bakjoul.realestatemanager.ui.camera.activity.CameraActivity
+import com.bakjoul.realestatemanager.ui.edit_description.EditPhotoDescriptionFragment
 import com.bakjoul.realestatemanager.ui.photo_preview.activity.PhotoPreviewActivity
 import com.bakjoul.realestatemanager.ui.utils.CustomThemeDialog
 import com.bakjoul.realestatemanager.ui.utils.Event.Companion.observeEvent
@@ -44,11 +45,13 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
     companion object {
         private const val DIALOG_WINDOW_WIDTH = 0.5
         private const val DIALOG_WINDOW_HEIGHT = 0.9
+        private const val EDIT_PHOTO_DESC_DIALOG_TAG = "EDIT_PHOTO_DESC_DIALOG_TAG"
 
         fun newInstance(draftId: Long, isNewDraft: Boolean): AddPropertyFragment {
-            val args = Bundle()
-            args.putLong("draftId", draftId)
-            args.putBoolean("isNewDraft", isNewDraft)
+            val args = Bundle().apply {
+                putLong("draftId", draftId)
+                putBoolean("isNewDraft", isNewDraft)
+            }
             val fragment = AddPropertyFragment()
             fragment.arguments = args
             return fragment
@@ -409,6 +412,13 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
             binding.addPropertyStateRegionTextInputLayout.error = viewState.stateError?.toCharSequence(requireContext())
             binding.addPropertyZipcodeTextInputLayout.error = viewState.zipcodeError?.toCharSequence(requireContext())
             binding.addPropertyDescriptionTextInputLayout.error = viewState.descriptionError?.toCharSequence(requireContext())
+            if (viewState.isPhotosDescriptionsErrorVisible) {
+                binding.addPropertyPhotosErrorTextView.visibility = View.VISIBLE
+                binding.addPropertyPhotosErrorImageView.visibility = View.VISIBLE
+            } else {
+                binding.addPropertyPhotosErrorTextView.visibility = View.GONE
+                binding.addPropertyPhotosErrorImageView.visibility = View.GONE
+            }
         }
 
         viewModel.viewActionLiveData.observeEvent(viewLifecycleOwner) {
@@ -428,6 +438,14 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
                     startActivity(PhotoPreviewActivity.navigate(requireContext(), it.propertyId))
                 }
 
+                is AddPropertyViewAction.EditPhotoDescription -> {
+                    val existingFragment = childFragmentManager.findFragmentByTag(EDIT_PHOTO_DESC_DIALOG_TAG)
+                    if (existingFragment == null) {
+                        val newFragment = EditPhotoDescriptionFragment.newInstance(it.photoId, it.description)
+                        newFragment.show(childFragmentManager, EDIT_PHOTO_DESC_DIALOG_TAG)
+                    }
+                }
+
                 AddPropertyViewAction.SaveDraftDialog -> {
                     MaterialAlertDialogBuilder(requireContext())
                         .setTitle(getString(R.string.save_draft_dialog_title))
@@ -435,13 +453,16 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
                         .setNegativeButton(getString(R.string.save_draft_dialog_negative)) { _, _ ->
                             viewModel.dropDraft()
                         }
-                        .setPositiveButton(getString(R.string.save_draft_dialog_positive)) { _, _ ->
+                        .setPositiveButton(getString(R.string.save)) { _, _ ->
                             viewModel.onSaveDraftButtonClicked()
                         }
                         .show()
                 }
 
-                AddPropertyViewAction.CloseDialog -> dismiss()
+                AddPropertyViewAction.CloseDialog -> {
+                    hideKeyboard()
+                    dismiss()
+                }
 
                 AddPropertyViewAction.OpenSettings -> {
                     val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)

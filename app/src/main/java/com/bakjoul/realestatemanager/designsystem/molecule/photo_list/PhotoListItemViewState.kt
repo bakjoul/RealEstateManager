@@ -11,7 +11,8 @@ data class PhotoListItemViewState(
     val isFeatured: Boolean?,
     val onPhotoClicked: EquatableCallback,
     val onFeaturePhotoClicked: EquatableCallback?,
-    val onDeletePhotoClicked: EquatableCallbackWithTwoParams<Long, String>?
+    val onDeletePhotoClicked: EquatableCallbackWithTwoParams<Long, String>?,
+    val onDescriptionClicked: EquatableCallbackWithTwoParams<Long, String>?
 )
 
  enum class SelectType {

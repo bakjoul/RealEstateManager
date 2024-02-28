@@ -217,6 +217,11 @@ class AddPropertyViewModel @Inject constructor(
                         viewModelScope.launch {
                             deletePhotosUseCase.invoke(listOf(id), listOf(uri))
                         }
+                    },
+                    { id, description ->
+                        viewModelScope.launch {
+                            navigateUseCase.invoke(To.EditPhotoDescription(id, description))
+                        }
                     }
                 ),
                 isTypeErrorVisible = errors.isTypeErrorVisible,
@@ -230,26 +235,35 @@ class AddPropertyViewModel @Inject constructor(
                 stateError = errors.stateError,
                 zipcodeError = errors.zipcodeError,
                 descriptionError = errors.descriptionError,
+                isPhotosDescriptionsErrorVisible = errors.isPhotosDescriptionsErrorVisible
             )
         }.collect {
             emit(it)
         }
     }
 
-    private fun updatePhotos(
-        photos: List<PhotoEntity>,
-        propertyForm: PropertyFormEntity
-    ) {
-        if (photosList != photos) {
-            if ((photosList.isEmpty() && photos.size == 1) ||
-                (photos.find { it.id == propertyForm.featuredPhotoId } == null && photos.isNotEmpty())
-            ) {
-                propertyFormMutableSharedFlow.tryEmit(
-                    propertyForm.copy(featuredPhotoId = photos.first().id)
-                )
+    val viewActionLiveData: LiveData<Event<AddPropertyViewAction>> = liveData {
+        getCurrentNavigationUseCase.invoke().collect {
+            when (it) {
+                is To.HideAddressSuggestions -> emit(Event(AddPropertyViewAction.HideSuggestions))
+                is To.Camera -> emit(Event(AddPropertyViewAction.OpenCamera(it.propertyId)))
+                is To.ImportedPhotoPreview -> emit(Event(AddPropertyViewAction.ShowImportedPhotoPreview(it.propertyId)))
+                is To.EditPhotoDescription -> emit(Event(AddPropertyViewAction.EditPhotoDescription(it.photoId, it.description)))
+                is To.SaveDraftDialog -> emit(Event(AddPropertyViewAction.SaveDraftDialog))
+                is To.CloseAddProperty -> emit(Event(AddPropertyViewAction.CloseDialog))
+                is To.Settings -> emit(Event(AddPropertyViewAction.OpenSettings))
+                is To.Toast -> {
+                    if (it.message == NativeText.Resource(R.string.toast_selected_address_details_error) ||
+                        it.message == NativeText.Resource(R.string.toast_selected_address_details_failure) ||
+                        it.message == NativeText.Resource(R.string.toast_selected_address_no_results) ||
+                        it.message == NativeText.Resource(R.string.toast_draft_discarded) ||
+                        it.message == NativeText.Resource(R.string.toast_saving_draft)
+                    ) {
+                        emit(Event(AddPropertyViewAction.ShowToast(it.message)))
+                    }
+                }
+                else -> Unit
             }
-
-            photosList = photos
         }
     }
 
@@ -280,30 +294,6 @@ class AddPropertyViewModel @Inject constructor(
         }
     }
 
-    val viewActionLiveData: LiveData<Event<AddPropertyViewAction>> = liveData {
-        getCurrentNavigationUseCase.invoke().collect {
-            when (it) {
-                is To.HideAddressSuggestions -> emit(Event(AddPropertyViewAction.HideSuggestions))
-                is To.Camera -> emit(Event(AddPropertyViewAction.OpenCamera(it.propertyId)))
-                is To.ImportedPhotoPreview -> emit(Event(AddPropertyViewAction.ShowImportedPhotoPreview(it.propertyId)))
-                is To.SaveDraftDialog -> emit(Event(AddPropertyViewAction.SaveDraftDialog))
-                is To.CloseAddProperty -> emit(Event(AddPropertyViewAction.CloseDialog))
-                is To.Settings -> emit(Event(AddPropertyViewAction.OpenSettings))
-                is To.Toast -> {
-                    if (it.message == NativeText.Resource(R.string.toast_selected_address_details_error) ||
-                        it.message == NativeText.Resource(R.string.toast_selected_address_details_failure) ||
-                        it.message == NativeText.Resource(R.string.toast_selected_address_no_results) ||
-                        it.message == NativeText.Resource(R.string.toast_draft_discarded) ||
-                        it.message == NativeText.Resource(R.string.toast_saving_draft)
-                    ) {
-                        emit(Event(AddPropertyViewAction.ShowToast(it.message)))
-                    }
-                }
-                else -> Unit
-            }
-        }
-    }
-
     private fun initPropertyForm(propertyDraftId: Long) = PropertyFormEntity(
         id = propertyDraftId,
         type = null,
@@ -326,6 +316,23 @@ class AddPropertyViewModel @Inject constructor(
         agent = null,
         lastUpdate = LocalDateTime.now(clock)
     )
+
+    private fun updatePhotos(
+        photos: List<PhotoEntity>,
+        propertyForm: PropertyFormEntity
+    ) {
+        if (photosList != photos) {
+            if ((photosList.isEmpty() && photos.size == 1) ||
+                (photos.find { it.id == propertyForm.featuredPhotoId } == null && photos.isNotEmpty())
+            ) {
+                propertyFormMutableSharedFlow.tryEmit(
+                    propertyForm.copy(featuredPhotoId = photos.first().id)
+                )
+            }
+
+            photosList = photos
+        }
+    }
 
     private fun formatDate(localDate: LocalDate?): NativeText? = localDate?.let {
         NativeText.Date(R.string.date_format, it)
@@ -736,7 +743,10 @@ class AddPropertyViewModel @Inject constructor(
                 }
                 // If multiple, adds them and lets user manually edit their description
                 else {
-                    addPhotosUseCase.invoke(draftId, savedPhotosList, "Desc. required\u00A0")   // TODO extract string resource
+                    addPhotosUseCase.invoke(draftId, savedPhotosList, "")
+                    errorsMutableStateFlow.update {
+                        it.copy(isPhotosDescriptionsErrorVisible = true)
+                    }
                 }
             }
         }
@@ -920,6 +930,18 @@ class AddPropertyViewModel @Inject constructor(
             }
         }
 
+        var arePhotosDescriptionsValid = true
+        photosList.forEach { photo ->
+            if (photo.description.isEmpty() && arePhotosDescriptionsValid) {
+                isFormValid = false
+                arePhotosDescriptionsValid = false
+                return@forEach
+            }
+        }
+        errorsMutableStateFlow.update {
+            it.copy(isPhotosDescriptionsErrorVisible = !arePhotosDescriptionsValid)
+        }
+
         return isFormValid
     }
 
@@ -934,7 +956,8 @@ class AddPropertyViewModel @Inject constructor(
         val cityError: NativeText? = null,
         val stateError: NativeText? = null,
         val zipcodeError: NativeText? = null,
-        val descriptionError: NativeText? = null
+        val descriptionError: NativeText? = null,
+        val isPhotosDescriptionsErrorVisible: Boolean = false
     )
 
     fun closeDraftDialog() {

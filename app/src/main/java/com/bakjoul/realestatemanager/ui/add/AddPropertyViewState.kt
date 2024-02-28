@@ -40,4 +40,5 @@ data class AddPropertyViewState(
     val stateError: NativeText?,
     val zipcodeError: NativeText?,
     val descriptionError: NativeText?,
+    val isPhotosDescriptionsErrorVisible: Boolean
 )

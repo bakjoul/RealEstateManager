@@ -32,8 +32,8 @@ class PhotoPreviewViewModel @Inject constructor(
     private val getCurrentNavigationUseCase: GetCurrentNavigationUseCase
 ) : ViewModel() {
 
-    private val descriptionMutableStateFlow = MutableStateFlow<String?>(null)
-    private val isDoneButtonClickedMutableStateFlow = MutableStateFlow(false)
+    private val descriptionMutableStateFlow: MutableStateFlow<String?> = MutableStateFlow(null)
+    private val isDoneButtonClickedMutableStateFlow: MutableStateFlow<Boolean> = MutableStateFlow(false)
     private var photoUri: String? = null
 
     val viewStateLiveData: LiveData<PhotoPreviewViewState> = liveData {

@@ -96,14 +96,12 @@
     <style name="NegativeButton" parent="Widget.Material3.Button.OutlinedButton">
         <item name="cornerRadius">7dp</item>
         <item name="backgroundTint">?android:colorBackground</item>
-        <item name="textAllCaps">true</item>
     </style>
 
     <style name="PositiveButton" parent="Widget.Material3.Button.OutlinedButton">
         <item name="cornerRadius">7dp</item>
         <item name="backgroundTint">@color/blue_toolbar</item>
         <item name="android:textColor">@color/white</item>
-        <item name="textAllCaps">true</item>
     </style>
 
     <style name="AutoCompleteTextViewLayout" parent="Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu">

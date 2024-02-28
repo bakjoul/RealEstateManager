@@ -11,7 +11,9 @@ class PhotoListMapper {
         featuredPhotoId: Long?,
         onPhotoClicked: ((Int) -> Unit),
         onFeatureClicked: ((Long) -> Unit)? = null,
-        onDeleteClicked: ((Long, String) -> Unit)? = null) : List<PhotoListItemViewState> = photos.mapIndexed { index, photo ->
+        onDeleteClicked: ((Long, String) -> Unit)? = null,
+        onDescriptionClicked: ((Long, String) -> Unit)? = null
+    ) : List<PhotoListItemViewState> = photos.mapIndexed { index, photo ->
         PhotoListItemViewState(
             id = photo.id,
             uri = photo.uri,
@@ -27,6 +29,13 @@ class PhotoListMapper {
             onDeletePhotoClicked = if (onDeleteClicked != null) {
                 EquatableCallbackWithTwoParams { id, uri ->
                     onDeleteClicked(id, uri)
+                }
+            } else {
+                null
+            },
+            onDescriptionClicked = if (onDescriptionClicked != null) {
+                EquatableCallbackWithTwoParams { id, description ->
+                    onDescriptionClicked(id, description)
                 }
             } else {
                 null

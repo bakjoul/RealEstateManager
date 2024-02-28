@@ -21,4 +21,7 @@ interface PhotoDao {
 
     @Query("DELETE FROM photos WHERE property_id = :propertyId")
     suspend fun deleteAllPhotosForPropertyId(propertyId: Long)
+
+    @Query("UPDATE photos SET description = :description WHERE id = :photoId")
+    suspend fun updatePhotoDescription(photoId: Long, description: String): Int
 }

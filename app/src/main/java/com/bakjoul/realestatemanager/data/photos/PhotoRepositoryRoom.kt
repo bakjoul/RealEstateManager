@@ -41,6 +41,10 @@ class PhotoRepositoryRoom @Inject constructor(
         photoDao.deleteAllPhotosForPropertyId(propertyId)
     }
 
+    override suspend fun updatePhotoDescription(photoId: Long, description: String): Int = withContext(coroutineDispatcherProvider.io) {
+        photoDao.updatePhotoDescription(photoId, description)
+    }
+
     // region Mapping
     private fun mapToPhotoDto(photoEntity: PhotoEntity): PhotoDto =
         PhotoDto(

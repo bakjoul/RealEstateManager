@@ -95,7 +95,7 @@
     <string name="save_draft_dialog_title">Draft in progress</string>
     <string name="save_draft_dialog_message">Do you want to save this draft ?</string>
     <string name="save_draft_dialog_negative">Discard</string>
-    <string name="save_draft_dialog_positive">Save</string>
+    <string name="save">Save</string>
     <string name="add_property_type_error">Type required</string>
     <string name="plus_minus_surface_error">Invalid surface</string>
     <string name="plus_minus_rooms_error">Invalid number</string>
@@ -178,4 +178,6 @@
     <string name="loan_simulator_yearly_results_expand_button_desc">Show yearly payment details button</string>
     <string name="loan_simulator_total_results_expand_button_desc">Show total payment details button</string>
     <string name="photo_filename_format" translatable="false">yyyyMMdd_HHmmssSSS</string>
+    <string name="edit_photo_description_error">Please enter a description</string>
+    <string name="add_property_photos_error">Descriptions required for imported photos</string>
 </resources>
