@@ -11,6 +11,7 @@ import android.provider.Settings
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
 import androidx.activity.result.PickVisualMediaRequest
@@ -67,7 +68,7 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
     private var isExistingDraftLoaded = false
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        return object : CustomThemeDialog(requireContext(), R.style.FullScreenDialog) {
+        val dialog = object : CustomThemeDialog(requireContext(), R.style.FullScreenDialog) {
             override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
                 if (currentFocus != null && !currentFocus!!.hasFocus()) {
                     hideKeyboard()
@@ -76,6 +77,17 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
                 return super.dispatchTouchEvent(ev)
             }
         }
+
+        dialog.setOnKeyListener { _, keyCode, event ->
+            if (keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_DOWN) {
+                viewModel.closeDialog()
+                true
+            } else {
+                false
+            }
+        }
+
+        return dialog
     }
 
     override fun onStart() {
