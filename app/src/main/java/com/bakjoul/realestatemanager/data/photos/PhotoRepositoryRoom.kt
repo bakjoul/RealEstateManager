@@ -33,12 +33,22 @@ class PhotoRepositoryRoom @Inject constructor(
             mapPhotoDtoToDomainEntities(it)
         }.flowOn(coroutineDispatcherProvider.io)
 
-    override suspend fun deletePhotos(photoIds: List<Long>) = withContext(coroutineDispatcherProvider.io) {
-        photoDao.delete(photoIds)
+    override suspend fun deletePhotos(photoIds: List<Long>): Int? = withContext(coroutineDispatcherProvider.io) {
+        try {
+            photoDao.delete(photoIds)
+        } catch (e: SQLiteException) {
+            e.printStackTrace()
+            null
+        }
     }
 
-    override suspend fun deleteAllPhotosForPropertyId(propertyId: Long) = withContext(coroutineDispatcherProvider.io) {
-        photoDao.deleteAllPhotosForPropertyId(propertyId)
+    override suspend fun deleteAllPhotosForPropertyId(propertyId: Long): Int? = withContext(coroutineDispatcherProvider.io) {
+        try {
+            photoDao.deleteAllPhotosForPropertyId(propertyId)
+        } catch (e: SQLiteException) {
+            e.printStackTrace()
+            null
+        }
     }
 
     override suspend fun updatePhotoDescription(photoId: Long, description: String): Int = withContext(coroutineDispatcherProvider.io) {

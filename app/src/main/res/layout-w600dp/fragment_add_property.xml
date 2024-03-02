@@ -563,12 +563,28 @@
                     app:layout_constraintTop_toBottomOf="@id/add_property_PhotoListView"
                     tools:visibility="visible" />
 
+                <TextView
+                    android:id="@+id/add_property_surface_note"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="72dp"
+                    android:layout_marginBottom="8dp"
+                    android:text="@string/add_property_surface_note"
+                    android:textColor="@color/grey_text"
+                    android:textSize="11sp"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="@id/add_property_bottom_margin"
+                    app:layout_constraintEnd_toEndOf="@id/add_property_bottom_margin"
+                    app:layout_constraintStart_toStartOf="@id/add_property_bottom_margin"
+                    tools:visibility="visible" />
+
                 <View
+                    android:id="@+id/add_property_bottom_margin"
                     android:layout_width="0dp"
                     android:layout_height="80dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/add_property_PhotoListView" />
+                    app:layout_constraintTop_toBottomOf="@id/add_property_photos_error_TextView" />
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/add_property_address_suggestions_container"

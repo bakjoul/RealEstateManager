@@ -23,7 +23,7 @@ import com.bakjoul.realestatemanager.domain.photos.DeletePhotosUseCase
 import com.bakjoul.realestatemanager.domain.photos.GetPhotosForPropertyIdUseCase
 import com.bakjoul.realestatemanager.domain.photos.model.PhotoEntity
 import com.bakjoul.realestatemanager.domain.property.AddPropertyUseCase
-import com.bakjoul.realestatemanager.domain.property.drafts.DeletePropertyDraftUseCase
+import com.bakjoul.realestatemanager.domain.property.drafts.DeletePropertyDraftWithPhotosUseCase
 import com.bakjoul.realestatemanager.domain.property.drafts.GetPropertyDraftByIdUseCase
 import com.bakjoul.realestatemanager.domain.property.drafts.UpdatePropertyDraftUseCase
 import com.bakjoul.realestatemanager.domain.property.model.PropertyPoiEntity
@@ -89,7 +89,7 @@ class AddPropertyViewModelTest {
     private val getPhotosForPropertyIdUseCase: GetPhotosForPropertyIdUseCase = mockk()
     private val deletePhotosUseCase: DeletePhotosUseCase = mockk()
     private val navigateUseCase: NavigateUseCase = mockk()
-    private val deletePropertyDraftUseCase: DeletePropertyDraftUseCase = mockk()
+    private val deletePropertyDraftWithPhotosUseCase: DeletePropertyDraftWithPhotosUseCase = mockk()
     private val clock: Clock = Clock.fixed(
         ZonedDateTime.of(2024, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC).toInstant(),
         ZoneOffset.UTC
@@ -136,7 +136,7 @@ class AddPropertyViewModelTest {
             getPhotosForPropertyIdUseCase = getPhotosForPropertyIdUseCase,
             deletePhotosUseCase = deletePhotosUseCase,
             navigateUseCase = navigateUseCase,
-            deletePropertyDraftUseCase = deletePropertyDraftUseCase,
+            deletePropertyDraftWithPhotosUseCase = deletePropertyDraftWithPhotosUseCase,
             clock = clock,
             updatePropertyDraftUseCase = updatePropertyDraftUseCase,
             addPropertyUseCase = addPropertyUseCase
@@ -601,7 +601,7 @@ class AddPropertyViewModelTest {
     fun `on close dialog clicked, if new draft and form is empty, draft should be deleted and view action live data should expose toast`() = testCoroutineRule.runTest {
         // Given
         initViewModel()
-        coJustRun { deletePropertyDraftUseCase.invoke(any()) }
+        coJustRun { deletePropertyDraftWithPhotosUseCase.invoke(any()) }
         coJustRun { navigateUseCase.invoke(To.Toast(NativeText.Resource(R.string.toast_draft_discarded))) }
         coJustRun { navigateUseCase.invoke(To.CloseAddProperty) }
         every { getCurrentNavigationUseCase.invoke() } returns flowOf(
@@ -627,7 +627,7 @@ class AddPropertyViewModelTest {
         verify(exactly = 1) { getCurrentSurfaceUnitUseCase.invoke() }
         verify(exactly = 1) { getCurrentNavigationUseCase.invoke() }
         coVerify(exactly = 1) { getPhotosForPropertyIdUseCase.invoke(DEFAULT_DRAFT_ID) }
-        coVerify(exactly = 1) { deletePropertyDraftUseCase.invoke(DEFAULT_DRAFT_ID) }
+        coVerify(exactly = 1) { deletePropertyDraftWithPhotosUseCase.invoke(DEFAULT_DRAFT_ID) }
         verify(exactly = 1) { navigateUseCase.invoke(To.Toast(NativeText.Resource(R.string.toast_draft_discarded))) }
         verify(exactly = 1) { navigateUseCase.invoke(To.CloseAddProperty) }
         confirmVerified(
@@ -636,7 +636,7 @@ class AddPropertyViewModelTest {
             getCurrentSurfaceUnitUseCase,
             getCurrentNavigationUseCase,
             getPhotosForPropertyIdUseCase,
-            deletePropertyDraftUseCase,
+            deletePropertyDraftWithPhotosUseCase,
             navigateUseCase
         )
     }

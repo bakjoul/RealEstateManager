@@ -27,7 +27,7 @@ class PhotoFileRepositoryContentResolver @Inject constructor(
 ) : PhotoFileRepository {
 
     private companion object {
-        private const val TAG = "PhotoFileRepositoryContentResolver"
+        private const val TAG = "PhotoFileRepositoryImpl"
     }
 
     override suspend fun savePhotosToAppFiles(photoUris: List<String>): List<String>? =

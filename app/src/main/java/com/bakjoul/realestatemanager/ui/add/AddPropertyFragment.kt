@@ -23,6 +23,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import com.bakjoul.realestatemanager.R
+import com.bakjoul.realestatemanager.data.settings.model.SurfaceUnit
 import com.bakjoul.realestatemanager.databinding.FragmentAddPropertyBinding
 import com.bakjoul.realestatemanager.domain.property.model.PropertyPoiEntity
 import com.bakjoul.realestatemanager.ui.camera.activity.CameraActivity
@@ -430,6 +431,12 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
             } else {
                 binding.addPropertyPhotosErrorTextView.visibility = View.GONE
                 binding.addPropertyPhotosErrorImageView.visibility = View.GONE
+            }
+
+            if (viewState.surfaceUnit == SurfaceUnit.FEET) {
+                binding.addPropertySurfaceNote.visibility = View.VISIBLE
+            } else {
+                binding.addPropertySurfaceNote.visibility = View.GONE
             }
         }
 

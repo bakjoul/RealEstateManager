@@ -9,9 +9,9 @@ interface PhotoRepository {
 
     fun getPhotosForPropertyId(propertyId: Long): Flow<List<PhotoEntity>>
 
-    suspend fun deletePhotos(photoIds: List<Long>)
+    suspend fun deletePhotos(photoIds: List<Long>): Int?
 
-    suspend fun deleteAllPhotosForPropertyId(propertyId: Long)
+    suspend fun deleteAllPhotosForPropertyId(propertyId: Long): Int?
 
     suspend fun updatePhotoDescription(photoId: Long, description: String): Int
 }

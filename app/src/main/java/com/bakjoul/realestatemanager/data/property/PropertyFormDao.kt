@@ -33,5 +33,5 @@ interface PropertyFormDao {
     suspend fun getPropertyFormById(propertyFormId: Long): PropertyFormWithPhotosDto?
 
     @Query("DELETE FROM property_drafts WHERE id = :id")
-    suspend fun delete(id: Long)
+    suspend fun delete(id: Long): Int
 }
