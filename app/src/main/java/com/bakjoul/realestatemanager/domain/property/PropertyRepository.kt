@@ -24,5 +24,5 @@ interface PropertyRepository {
 
     suspend fun getPropertyDraftById(id: Long): PropertyFormEntity?
 
-    suspend fun deletePropertyDraft(id: Long)
+    suspend fun deletePropertyDraft(id: Long): Int?
 }

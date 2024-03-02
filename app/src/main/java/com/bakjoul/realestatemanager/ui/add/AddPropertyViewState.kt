@@ -1,5 +1,6 @@
 package com.bakjoul.realestatemanager.ui.add
 
+import com.bakjoul.realestatemanager.data.settings.model.SurfaceUnit
 import com.bakjoul.realestatemanager.designsystem.molecule.photo_list.PhotoListItemViewState
 import com.bakjoul.realestatemanager.domain.property.model.PropertyPoiEntity
 import com.bakjoul.realestatemanager.domain.property.model.PropertyTypeEntity
@@ -15,6 +16,7 @@ data class AddPropertyViewState(
     val priceHint: NativeText,
     val price: String?,
     val currencyFormat: DecimalFormat,
+    val surfaceUnit: SurfaceUnit,
     val surfaceLabel: NativeText,
     val surface: BigDecimal,
     val numberOfRooms: BigDecimal,

@@ -82,8 +82,13 @@ class PropertyRepositoryRoom @Inject constructor(
         }
     }
 
-    override suspend fun deletePropertyDraft(id: Long) = withContext(coroutineDispatcherProvider.io) {
-        propertyFormDao.delete(id)
+    override suspend fun deletePropertyDraft(id: Long): Int? = withContext(coroutineDispatcherProvider.io) {
+        try {
+            propertyFormDao.delete(id)
+        } catch (e: SQLiteException) {
+            e.printStackTrace()
+            null
+        }
     }
     
     private suspend fun isPropertyIdExisting(propertyId: Long): Boolean {

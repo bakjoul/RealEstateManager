@@ -28,6 +28,7 @@ import com.bakjoul.realestatemanager.domain.photos.SavePhotosToAppFilesUseCase
 import com.bakjoul.realestatemanager.domain.photos.model.PhotoEntity
 import com.bakjoul.realestatemanager.domain.property.AddPropertyUseCase
 import com.bakjoul.realestatemanager.domain.property.drafts.DeletePropertyDraftUseCase
+import com.bakjoul.realestatemanager.domain.property.drafts.DeletePropertyDraftWithPhotosUseCase
 import com.bakjoul.realestatemanager.domain.property.drafts.GetPropertyDraftByIdUseCase
 import com.bakjoul.realestatemanager.domain.property.drafts.UpdatePropertyDraftUseCase
 import com.bakjoul.realestatemanager.domain.property.model.PropertyAddressEntity
@@ -79,13 +80,14 @@ class AddPropertyViewModel @Inject constructor(
     private val getPhotosForPropertyIdUseCase: GetPhotosForPropertyIdUseCase,
     private val deletePhotosUseCase: DeletePhotosUseCase,
     private val navigateUseCase: NavigateUseCase,
-    private val deletePropertyDraftUseCase: DeletePropertyDraftUseCase,
+    private val deletePropertyDraftWithPhotosUseCase: DeletePropertyDraftWithPhotosUseCase,
     private val clock: Clock,
     private val updatePropertyDraftUseCase: UpdatePropertyDraftUseCase,
     private val savePhotosToAppFilesUseCase: SavePhotosToAppFilesUseCase,
     private val setLastPhotoUriUseCase: SetLastPhotoUriUseCase,
     private val addPhotosUseCase: AddPhotosUseCase,
     private val addPropertyUseCase: AddPropertyUseCase,
+    private val deletePropertyDraftUseCase: DeletePropertyDraftUseCase
 ) : ViewModel() {
 
     private companion object {
@@ -188,6 +190,7 @@ class AddPropertyViewModel @Inject constructor(
                 ),
                 priceHint = formatPriceHint(currency),
                 currencyFormat = getCurrencyFormat(currency),
+                surfaceUnit = surfaceUnit,
                 surfaceLabel = formatSurfaceLabel(surfaceUnit),
                 surface = formatSurfaceValue(propertyForm.referenceSurface, propertyForm.surfaceFromUser, surfaceUnit),
                 numberOfRooms = propertyForm.rooms ?: BigDecimal.ZERO,
@@ -360,10 +363,26 @@ class AddPropertyViewModel @Inject constructor(
     }
 
     private fun formatSurfaceLabel(surfaceUnit: SurfaceUnit): NativeText {
-        return NativeText.Argument(
-            R.string.add_property_label_surface,
-            NativeText.Resource(surfaceUnit.unitSymbol)
-        )
+        return when (surfaceUnit) {
+            SurfaceUnit.FEET -> {
+                NativeText.Multi(
+                    listOf(
+                        NativeText.Argument(
+                            R.string.add_property_label_surface,
+                            NativeText.Resource(surfaceUnit.unitSymbol)
+                        ),
+                        NativeText.Simple("*")
+                    )
+                )
+            }
+
+            else -> {
+                NativeText.Argument(
+                    R.string.add_property_label_surface,
+                    NativeText.Resource(surfaceUnit.unitSymbol)
+                )
+            }
+        }
     }
 
     private fun formatSurfaceValue(referenceSurface: BigDecimal?, surfaceFromUser: BigDecimal?, surfaceUnit: SurfaceUnit): BigDecimal =
@@ -714,7 +733,7 @@ class AddPropertyViewModel @Inject constructor(
 
     fun dropDraft() {
         viewModelScope.launch {
-            deletePropertyDraftUseCase.invoke(draftId)
+            deletePropertyDraftWithPhotosUseCase.invoke(draftId, photosList)
             navigateUseCase.invoke(To.Toast(NativeText.Resource(R.string.toast_draft_discarded)))
             navigateUseCase.invoke(To.CloseAddProperty)
         }
@@ -762,11 +781,11 @@ class AddPropertyViewModel @Inject constructor(
                         type = propertyFormReplaceCache.type!!.name,
                         forSaleSince = propertyFormReplaceCache.forSaleSince!!,
                         saleDate = propertyFormReplaceCache.dateOfSale,
-                        price = propertyFormReplaceCache.priceFromUser!!,
-                        surface = propertyFormReplaceCache.surfaceFromUser!!,
+                        price = propertyFormReplaceCache.priceFromUser ?: propertyFormReplaceCache.referencePrice!!,
+                        surface = propertyFormReplaceCache.surfaceFromUser ?: propertyFormReplaceCache.referenceSurface!!,
                         rooms = propertyFormReplaceCache.rooms!!,
-                        bathrooms = propertyFormReplaceCache.bathrooms!!,
-                        bedrooms = propertyFormReplaceCache.bedrooms!!,
+                        bathrooms = propertyFormReplaceCache.bathrooms ?: BigDecimal.ZERO,
+                        bedrooms = propertyFormReplaceCache.bedrooms ?: BigDecimal.ZERO,
                         amenities = propertyFormReplaceCache.pointsOfInterest!!,
                         address = PropertyAddressEntity(
                             streetNumber = propertyFormReplaceCache.autoCompleteAddress!!.streetNumber!!,
@@ -856,12 +875,19 @@ class AddPropertyViewModel @Inject constructor(
             }
         }
 
-        if (propertyFormReplayCache.priceFromUser == null) {
+        if (propertyFormReplayCache.priceFromUser == null &&
+            propertyFormReplayCache.referencePrice == null
+        ) {
             errorsMutableStateFlow.update {
                 it.copy(priceError = NativeText.Resource(R.string.add_property_error_price_required))
             }
             isFormValid = false
-        } else if (propertyFormReplayCache.priceFromUser <= BigDecimal.ZERO) {
+        } else if (
+            propertyFormReplayCache.priceFromUser != null &&
+            propertyFormReplayCache.priceFromUser == BigDecimal.ZERO ||
+            propertyFormReplayCache.referencePrice != null &&
+            propertyFormReplayCache.referencePrice == BigDecimal.ZERO
+        ) {
             errorsMutableStateFlow.update {
                 it.copy(priceError = NativeText.Resource(R.string.add_property_error_invalid_price))
             }
@@ -872,7 +898,10 @@ class AddPropertyViewModel @Inject constructor(
             }
         }
 
-        if (propertyFormReplayCache.surfaceFromUser == null ||
+        if ((propertyFormReplayCache.referenceSurface == null &&
+                    propertyFormReplayCache.surfaceFromUser == null) ||
+            (propertyFormReplayCache.referenceSurface == BigDecimal.ZERO &&
+                    propertyFormReplayCache.surfaceFromUser == null) ||
             propertyFormReplayCache.surfaceFromUser == BigDecimal.ZERO
         ) {
             errorsMutableStateFlow.update {
@@ -886,7 +915,7 @@ class AddPropertyViewModel @Inject constructor(
         }
 
         if (propertyFormReplayCache.rooms == null ||
-            propertyFormReplayCache.rooms < BigDecimal(1)
+            propertyFormReplayCache.rooms == BigDecimal.ZERO
         ) {
             errorsMutableStateFlow.update {
                 it.copy(isRoomsErrorVisible = true)

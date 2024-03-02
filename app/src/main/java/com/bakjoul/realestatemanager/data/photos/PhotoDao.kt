@@ -17,10 +17,10 @@ interface PhotoDao {
     fun getPhotosForPropertyId(propertyId: Long): Flow<List<PhotoDto>>
 
     @Query("DELETE FROM photos WHERE id IN (:idList)")
-    suspend fun delete(idList: List<Long>)
+    suspend fun delete(idList: List<Long>): Int
 
     @Query("DELETE FROM photos WHERE property_id = :propertyId")
-    suspend fun deleteAllPhotosForPropertyId(propertyId: Long)
+    suspend fun deleteAllPhotosForPropertyId(propertyId: Long): Int
 
     @Query("UPDATE photos SET description = :description WHERE id = :photoId")
     suspend fun updatePhotoDescription(photoId: Long, description: String): Int
