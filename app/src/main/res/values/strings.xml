@@ -180,5 +180,5 @@
     <string name="photo_filename_format" translatable="false">yyyyMMdd_HHmmssSSS</string>
     <string name="edit_photo_description_error">Please enter a description</string>
     <string name="add_property_photos_error">Descriptions required for imported photos</string>
-    <string name="add_property_surface_note">* Surface area is stored in square meters. Entered values will be converted and rounded upon storage, which may result in slight differences in the values when retrieved.</string>
+    <string name="add_property_surface_note">* Surface area is stored in square meters. Entered values will be converted and rounded upon storage. This may result in slight differences in the values when retrieved.</string>
 </resources>
