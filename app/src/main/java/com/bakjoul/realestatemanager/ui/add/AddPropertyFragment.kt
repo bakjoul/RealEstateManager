@@ -29,6 +29,7 @@ import com.bakjoul.realestatemanager.domain.property.model.PropertyPoiEntity
 import com.bakjoul.realestatemanager.ui.camera.activity.CameraActivity
 import com.bakjoul.realestatemanager.ui.edit_description.EditPhotoDescriptionFragment
 import com.bakjoul.realestatemanager.ui.photo_preview.activity.PhotoPreviewActivity
+import com.bakjoul.realestatemanager.ui.photos.PhotosFragment
 import com.bakjoul.realestatemanager.ui.utils.CustomThemeDialog
 import com.bakjoul.realestatemanager.ui.utils.Event.Companion.observeEvent
 import com.bakjoul.realestatemanager.ui.utils.hideKeyboard
@@ -48,6 +49,7 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
         private const val DIALOG_WINDOW_WIDTH = 0.5
         private const val DIALOG_WINDOW_HEIGHT = 0.9
         private const val EDIT_PHOTO_DESC_DIALOG_TAG = "EDIT_PHOTO_DESC_DIALOG_TAG"
+        private const val DRAFT_PHOTOS_DIALOG_TAG = "DRAFT_PHOTOS_DIALOG_TAG"
 
         fun newInstance(draftId: Long, isNewDraft: Boolean): AddPropertyFragment {
             val args = Bundle().apply {
@@ -116,7 +118,7 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
         binding.addPropertyAddressSuggestionsRecyclerView.addItemDecoration(suggestionsDivider)
 
         val photosDivider = DividerItemDecoration(requireContext(), DividerItemDecoration.HORIZONTAL)
-        photosDivider.setDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.photos_divider)!!)
+        photosDivider.setDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.photos_divider_details)!!)
         binding.addPropertyPhotoListView.addItemDecoration(photosDivider)
 
         // Save button
@@ -462,6 +464,14 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
                     if (existingFragment == null) {
                         val newFragment = EditPhotoDescriptionFragment.newInstance(it.photoId, it.description)
                         newFragment.show(childFragmentManager, EDIT_PHOTO_DESC_DIALOG_TAG)
+                    }
+                }
+
+                is AddPropertyViewAction.ShowPhotosViewer -> {
+                    val existingFragment = childFragmentManager.findFragmentByTag(DRAFT_PHOTOS_DIALOG_TAG)
+                    if (existingFragment == null) {
+                        PhotosFragment.newInstance(it.propertyId, it.clickedPhotoIndex, isDraft = true)
+                            .show(childFragmentManager,DRAFT_PHOTOS_DIALOG_TAG)
                     }
                 }
 

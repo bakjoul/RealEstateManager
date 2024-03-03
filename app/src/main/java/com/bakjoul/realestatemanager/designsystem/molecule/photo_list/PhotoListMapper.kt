@@ -9,13 +9,14 @@ class PhotoListMapper {
         photos: List<PhotoEntity>,
         selectType: (Int) -> SelectType,
         featuredPhotoId: Long?,
-        onPhotoClicked: ((Int) -> Unit),
+        onPhotoClicked: (Int) -> Unit,
         onFeatureClicked: ((Long) -> Unit)? = null,
         onDeleteClicked: ((Long, String) -> Unit)? = null,
         onDescriptionClicked: ((Long, String) -> Unit)? = null
     ) : List<PhotoListItemViewState> = photos.mapIndexed { index, photo ->
         PhotoListItemViewState(
-            id = photo.id,
+            id = index,
+            photoId = photo.id,
             uri = photo.uri,
             description = photo.description,
             selectType = selectType(index),

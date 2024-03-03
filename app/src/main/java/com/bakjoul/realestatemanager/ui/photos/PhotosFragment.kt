@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.viewpager2.widget.ViewPager2
 import com.bakjoul.realestatemanager.R
@@ -22,6 +23,18 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class PhotosFragment @Inject constructor() : DialogFragment(R.layout.fragment_photos) {
+
+    companion object {
+        fun newInstance(propertyId: Long, clickedPhotoIndex: Int, isDraft: Boolean = false): PhotosFragment {
+            return PhotosFragment().apply {
+                arguments = Bundle().apply {
+                    putLong("propertyId", propertyId)
+                    putInt("clickedPhotoIndex", clickedPhotoIndex)
+                    putBoolean("isDraft", isDraft)
+                }
+            }
+        }
+    }
 
     private val binding by viewBinding { FragmentPhotosBinding.bind(it) }
     private val viewModel: PhotosViewModel by viewModels()
@@ -43,27 +56,30 @@ class PhotosFragment @Inject constructor() : DialogFragment(R.layout.fragment_ph
             override fun onPageSelected(position: Int) {
                 if (!isViewPagerFirstOpening) {
                     viewModel.updateCurrentPhotoId(position)
+                    binding.photosThumbnailsPhotoListView.smoothScrollToPosition(position)
                 }
             }
         })
 
         // ViewPager thumbnails RecyclerView
+        val divider = DividerItemDecoration(requireContext(), DividerItemDecoration.HORIZONTAL)
+        divider.setDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.photos_divider_viewer)!!)
+        binding.photosThumbnailsPhotoListView.addItemDecoration(divider)
         val snapHelper = LinearSnapHelper()
         snapHelper.attachToRecyclerView(binding.photosThumbnailsPhotoListView)
 
         viewModel.viewStateLiveData.observe(viewLifecycleOwner) { viewState ->
-
             viewPagerAdapter.updateData(viewState.photosUrls)
-            if (viewState.currentPhotoId != -1 && isViewPagerFirstOpening) {
-                binding.photosViewPager.setCurrentItem(viewState.currentPhotoId, false)
-                isViewPagerFirstOpening = false
-            } else if (viewState.currentPhotoId != -1 && binding.photosViewPager.currentItem != viewState.currentPhotoId) {
-                binding.photosViewPager.setCurrentItem(viewState.currentPhotoId, true)
-            }
-
             binding.photosThumbnailsPhotoListView.bind(viewState.thumbnails)
-            if (viewState.currentPhotoId != -1) {
-                binding.photosThumbnailsPhotoListView.scrollToPosition(viewState.currentPhotoId)
+
+            if (isViewPagerFirstOpening) {
+                if (viewState.currentPhotoId != 0) {
+                    binding.photosViewPager.setCurrentItem(viewState.currentPhotoId, false)
+                    binding.photosThumbnailsPhotoListView.scrollToPosition(viewState.currentPhotoId)
+                }
+                isViewPagerFirstOpening = false
+            } else if (binding.photosViewPager.currentItem != viewState.currentPhotoId) {
+                binding.photosViewPager.setCurrentItem(viewState.currentPhotoId, true)
             }
         }
 

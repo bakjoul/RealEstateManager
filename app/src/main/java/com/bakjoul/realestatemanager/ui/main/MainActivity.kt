@@ -154,15 +154,25 @@ class MainActivity : AppCompatActivity() {
                     showDetailsPortraitIfNeeded(containerMainId)
                 }
 
-                MainViewAction.ShowPhotosDialogAndDetailsPortraitIfNeeded -> {
+                is MainViewAction.ShowPhotosDialogAndDetailsPortraitIfNeeded -> {
                     showDetailsPortraitIfNeeded(containerMainId)
-                    showPhotosDialog()
+
+                    val existingFragment = supportFragmentManager.findFragmentByTag(PHOTOS_DIALOG_TAG)
+                    if (existingFragment == null) {
+                        PhotosFragment.newInstance(it.propertyId, it.clickedPhotoIndex)
+                            .show(supportFragmentManager, PHOTOS_DIALOG_TAG)
+                    }
                 }
 
-                MainViewAction.ShowPhotosAndHideDetailsPortrait -> {
+                is MainViewAction.ShowPhotosAndHideDetailsPortrait -> {
                     val detailsPortraitFragment = hideDetailsPortrait()
                     showDetailsTabletIfNeeded(containerDetailsId, detailsPortraitFragment)
-                    showPhotosDialog()
+
+                    val existingFragment = supportFragmentManager.findFragmentByTag(PHOTOS_DIALOG_TAG)
+                    if (existingFragment == null) {
+                        PhotosFragment.newInstance(it.propertyId, it.clickedPhotoIndex)
+                            .show(supportFragmentManager, PHOTOS_DIALOG_TAG)
+                    }
                 }
 
                 MainViewAction.ShowPropertyDraftAlertDialog -> {
@@ -288,13 +298,6 @@ class MainActivity : AppCompatActivity() {
                 setCustomAnimations(R.anim.fade_in, 0)
                 show(detailsPortraitFragment)
             }
-        }
-    }
-
-    private fun showPhotosDialog() {
-        val existingFragment = supportFragmentManager.findFragmentByTag(PHOTOS_DIALOG_TAG)
-        if (existingFragment == null) {
-            PhotosFragment().show(supportFragmentManager, PHOTOS_DIALOG_TAG)
         }
     }
 

@@ -214,11 +214,11 @@ class AddPropertyViewModel @Inject constructor(
                     photos,
                     { SelectType.NOT_SELECTABLE },
                     propertyForm.featuredPhotoId,
-                    {},
-                    {
-                        if (propertyForm.featuredPhotoId != it) {
+                    { clickedPhotoIndex -> navigateUseCase.invoke(To.DraftPhotos(clickedPhotoIndex)) },
+                    { photoId ->
+                        if (propertyForm.featuredPhotoId != photoId) {
                             propertyFormMutableSharedFlow.tryEmit(
-                                propertyForm.copy(featuredPhotoId = it)
+                                propertyForm.copy(featuredPhotoId = photoId)
                             )
                         }
                     },
@@ -258,6 +258,7 @@ class AddPropertyViewModel @Inject constructor(
                 is To.Camera -> emit(Event(AddPropertyViewAction.OpenCamera(it.propertyId)))
                 is To.ImportedPhotoPreview -> emit(Event(AddPropertyViewAction.ShowImportedPhotoPreview(it.propertyId)))
                 is To.EditPhotoDescription -> emit(Event(AddPropertyViewAction.EditPhotoDescription(it.photoId, it.description)))
+                is To.DraftPhotos -> emit(Event(AddPropertyViewAction.ShowPhotosViewer(draftId, it.clickedPhotoIndex)))
                 is To.SaveDraftDialog -> emit(Event(AddPropertyViewAction.SaveDraftDialog))
                 is To.CloseAddProperty -> emit(Event(AddPropertyViewAction.CloseDialog))
                 is To.Settings -> emit(Event(AddPropertyViewAction.OpenSettings))

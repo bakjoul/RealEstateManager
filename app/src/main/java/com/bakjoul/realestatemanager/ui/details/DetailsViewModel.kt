@@ -10,7 +10,6 @@ import com.bakjoul.realestatemanager.designsystem.molecule.photo_list.PhotoListM
 import com.bakjoul.realestatemanager.designsystem.molecule.photo_list.SelectType
 import com.bakjoul.realestatemanager.domain.CoroutineDispatcherProvider
 import com.bakjoul.realestatemanager.domain.currency_rate.GetEuroRateUseCase
-import com.bakjoul.realestatemanager.domain.current_photo.SetCurrentPhotoIdUseCase
 import com.bakjoul.realestatemanager.domain.current_property.ResetCurrentPropertyIdUseCase
 import com.bakjoul.realestatemanager.domain.main.SetClipboardToastStateUseCase
 import com.bakjoul.realestatemanager.domain.navigation.NavigateUseCase
@@ -37,7 +36,6 @@ class DetailsViewModel @Inject constructor(
     private val getCurrentCurrencyUseCase: GetCurrentCurrencyUseCase,
     private val getEuroRateUseCase: GetEuroRateUseCase,
     private val resetCurrentPropertyIdUseCase: ResetCurrentPropertyIdUseCase,
-    private val setCurrentPhotoIdUseCase: SetCurrentPhotoIdUseCase,
     private val getCurrentSurfaceUnitUseCase: GetCurrentSurfaceUnitUseCase,
     private val navigateUseCase: NavigateUseCase,
     private val setClipboardToastStateUseCase: SetClipboardToastStateUseCase
@@ -83,10 +81,7 @@ class DetailsViewModel @Inject constructor(
                     property.photos,
                     { SelectType.NOT_SELECTABLE },
                     property.featuredPhotoId,
-                    {
-                        setCurrentPhotoIdUseCase.invoke(it)
-                        navigateUseCase.invoke(To.Photos)
-                    }
+                    { clickedPhotoIndex -> navigateUseCase.invoke(To.Photos(property.id, clickedPhotoIndex)) }
                 ),
                 clipboardAddress = getClipboardAddress(property.address.streetNumber, property.address.route, property.address.city, property.address.country),
                 staticMapUrl = getMapUrl(property.address.streetNumber, property.address.route, property.address.city, property.address.country),

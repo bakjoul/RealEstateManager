@@ -5,7 +5,7 @@ import com.bakjoul.realestatemanager.ui.utils.NativeText
 sealed class To {
     object Details : To()
     object CloseDetails : To()
-    object Photos : To()
+    data class Photos(val propertyId: Long, val clickedPhotoIndex: Int) : To()
     object ClosePhotos : To()
     object DraftAlertDialog : To()
     object DraftList : To()
@@ -23,6 +23,8 @@ sealed class To {
     object ClosePhotoPreview : To()
     data class EditPhotoDescription(val photoId: Long, val description: String) : To()
     object CloseEditPhotoDescription : To()
+    data class DraftPhotos(val clickedPhotoIndex: Int) : To()
+    object CloseDraftPhotos : To()
     object Dispatcher : To()
     object Settings : To()
     object CloseSettings : To()

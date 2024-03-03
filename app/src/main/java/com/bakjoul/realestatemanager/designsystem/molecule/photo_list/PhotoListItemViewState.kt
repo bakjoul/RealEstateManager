@@ -4,7 +4,8 @@ import com.bakjoul.realestatemanager.ui.utils.EquatableCallback
 import com.bakjoul.realestatemanager.ui.utils.EquatableCallbackWithTwoParams
 
 data class PhotoListItemViewState(
-    val id: Long,
+    val id: Int,
+    val photoId: Long,
     val uri: String,
     val description: String,
     val selectType: SelectType,

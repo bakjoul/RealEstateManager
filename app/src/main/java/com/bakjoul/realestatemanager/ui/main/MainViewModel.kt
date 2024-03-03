@@ -86,9 +86,9 @@ class MainViewModel @Inject constructor(
                     }
                 }
                 is To.Photos -> if (isTablet) {
-                    MainViewAction.ShowPhotosAndHideDetailsPortrait
+                    MainViewAction.ShowPhotosAndHideDetailsPortrait(navigation.propertyId, navigation.clickedPhotoIndex)
                 } else {
-                    MainViewAction.ShowPhotosDialogAndDetailsPortraitIfNeeded
+                    MainViewAction.ShowPhotosDialogAndDetailsPortraitIfNeeded(navigation.propertyId, navigation.clickedPhotoIndex)
                 }
                 is To.DraftAlertDialog -> MainViewAction.ShowPropertyDraftAlertDialog
                 is To.DraftList -> if (isTablet) {

@@ -7,6 +7,7 @@ sealed class AddPropertyViewAction {
     data class OpenCamera(val propertyId: Long) : AddPropertyViewAction()
     data class ShowImportedPhotoPreview(val propertyId: Long) : AddPropertyViewAction()
     data class EditPhotoDescription(val photoId: Long, val description: String) : AddPropertyViewAction()
+    data class ShowPhotosViewer(val propertyId: Long, val clickedPhotoIndex: Int) : AddPropertyViewAction()
     object SaveDraftDialog : AddPropertyViewAction()
     object CloseDialog : AddPropertyViewAction()
     object OpenSettings : AddPropertyViewAction()

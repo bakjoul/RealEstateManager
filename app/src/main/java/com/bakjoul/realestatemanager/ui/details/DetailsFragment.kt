@@ -47,7 +47,7 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
 
         // Medias RecyclerView
         val divider = DividerItemDecoration(requireContext(), DividerItemDecoration.HORIZONTAL)
-        divider.setDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.photos_divider)!!)
+        divider.setDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.photos_divider_details)!!)
         binding.detailsPhotoListView.addItemDecoration(divider)
 
         binding.detailsFabBack?.setOnClickListener { viewModel.onBackButtonPressed() }
