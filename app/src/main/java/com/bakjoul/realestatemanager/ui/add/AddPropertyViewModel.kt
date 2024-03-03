@@ -153,6 +153,12 @@ class AddPropertyViewModel @Inject constructor(
         }
     }
 
+    init {
+        if (!isNewDraft) {
+            navigateUseCase.invoke(To.CloseDraftListInBackground)
+        }
+    }
+
     val viewStateLiveData: LiveData<AddPropertyViewState> = liveData {
         if (latestValue == null) {
             if (isNewDraft) {
@@ -988,12 +994,6 @@ class AddPropertyViewModel @Inject constructor(
         val descriptionError: NativeText? = null,
         val isPhotosDescriptionsErrorVisible: Boolean = false
     )
-
-    fun closeDraftDialog() {
-        if (!isNewDraft) {
-            navigateUseCase.invoke(To.CloseDraftList)
-        }
-    }
 
     private data class PropertyInformation(
         val propertyForm: PropertyFormEntity,

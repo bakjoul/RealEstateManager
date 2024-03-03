@@ -69,7 +69,7 @@ class DraftsViewModel @Inject constructor(
         getCurrentNavigationUseCase.invoke().collect {
             when (it) {
                 is To.ShowDraftLoadingProgressBar -> emit(Event(DraftsViewAction.ShowProgressBar))
-                is To.CloseDraftList -> emit(Event(DraftsViewAction.CloseDialog))
+                is To.CloseDraftList, To.CloseDraftListInBackground -> emit(Event(DraftsViewAction.CloseDialog))
                 else -> Unit
             }
         }

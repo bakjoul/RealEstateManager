@@ -11,6 +11,7 @@ sealed class To {
     object DraftList : To()
     object ShowDraftLoadingProgressBar : To()
     object CloseDraftList : To()
+    object CloseDraftListInBackground : To()
     object SaveDraftDialog : To()
     data class AddProperty(val draftId: Long, val isNewDraft: Boolean) : To()
     object CloseAddProperty : To()

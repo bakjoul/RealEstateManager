@@ -495,12 +495,6 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-
-        viewModel.closeDraftDialog()
-    }
-
     override fun onCancel(dialog: DialogInterface) {
         super.onCancel(dialog)
 
