@@ -56,7 +56,7 @@ class CameraActivity : AppCompatActivity() {
                     photoPreviewFragment.arguments = args
 
                     supportFragmentManager.beginTransaction()
-                        .replace(binding.cameraFrameLayoutContainer.id, photoPreviewFragment)
+                        .add(binding.cameraFrameLayoutContainer.id, photoPreviewFragment)
                         .addToBackStack(null)
                         .commit()
                 }

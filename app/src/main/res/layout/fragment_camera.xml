@@ -19,12 +19,37 @@
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.50" />
 
+    <ImageButton
+        android:id="@+id/camera_flash_toggle_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:background="@null"
+        android:contentDescription="@string/camera_flash_toggle_button_desc"
+        android:padding="8dp"
+        android:src="@drawable/baseline_flash_off_24"
+        app:layout_constraintBottom_toTopOf="@id/camera_view_finder"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <androidx.camera.view.PreviewView
         android:id="@+id/camera_view_finder"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="@dimen/camera_margin_top"
         app:layout_constraintBottom_toTopOf="@id/camera_separator_Guideline"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/camera_focus_ring"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:importantForAccessibility="no"
+        android:src="@drawable/focus_ring"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
@@ -39,43 +64,51 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/camera_separator_Guideline" />
 
-    <ImageButton
-        android:id="@+id/camera_shutter_button"
+    <ImageView
+        android:id="@+id/camera_shutter_button_background"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/camera_shutter_margin_bottom"
-        android:background="@null"
-        android:contentDescription="@string/camera_capture_btn_desc"
-        android:padding="0dp"
-        android:src="@drawable/shutter_68"
+        android:importantForAccessibility="no"
+        android:src="@drawable/shutter_background"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <ImageButton
+        android:id="@+id/camera_shutter_button"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:background="@null"
+        android:contentDescription="@string/camera_capture_btn_desc"
+        android:src="@drawable/shutter_button"
+        app:layout_constraintBottom_toBottomOf="@id/camera_shutter_button_background"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/camera_shutter_button_background" />
+
+    <ImageButton
         android:id="@+id/camera_close_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/round_button_background"
+        android:background="?selectableItemBackgroundBorderless"
         android:contentDescription="@string/camera_cancel_button_desc"
-        android:padding="8dp"
-        android:src="@drawable/close_32"
-        app:layout_constraintBottom_toBottomOf="@id/camera_shutter_button"
-        app:layout_constraintEnd_toStartOf="@id/camera_shutter_button"
+        android:src="@drawable/camera_close_button"
+        app:layout_constraintBottom_toBottomOf="@id/camera_shutter_button_background"
+        app:layout_constraintEnd_toStartOf="@id/camera_shutter_button_background"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/camera_shutter_button" />
+        app:layout_constraintTop_toTopOf="@id/camera_shutter_button_background" />
 
     <ImageButton
-        android:id="@+id/camera_flip_button"
+        android:id="@+id/camera_switch_lens_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/round_button_background"
-        android:contentDescription="@string/camera_flip_button_desc"
-        android:padding="8dp"
-        android:src="@drawable/flip_camera_32"
-        app:layout_constraintBottom_toBottomOf="@id/camera_shutter_button"
+        android:background="?selectableItemBackgroundBorderless"
+        android:contentDescription="@string/camera_switch_lens_button_desc"
+        android:src="@drawable/camera_switch_lens_button"
+        app:layout_constraintBottom_toBottomOf="@id/camera_shutter_button_background"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/camera_shutter_button"
-        app:layout_constraintTop_toTopOf="@id/camera_shutter_button" />
+        app:layout_constraintStart_toEndOf="@id/camera_shutter_button_background"
+        app:layout_constraintTop_toTopOf="@id/camera_shutter_button_background" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -64,11 +64,12 @@
     <string name="dialog_permission_required">Permission requise</string>
     <string name="add_property_camera_dialog_message">Permission d\'accès à la caméra nécessaire pour prendre des photos</string>
     <string name="dialog_dismiss">Ignorer</string>
-    <string name="camera_error_starting">Erreur au démarrage de la caméra</string>
+    <string name="camera_init_error">Erreur lors de l\'initialisation de la caméra</string>
     <string name="add_property_camera_btn_desc">Bouton prendre une photo</string>
     <string name="camera_capture_btn_desc">Bouton capture</string>
     <string name="camera_photo_mode">Photo</string>
-    <string name="camera_flip_button_desc">Bouton de rotation de la caméra</string>
+    <string name="camera_flash_toggle_button_desc">Bouton commutateur de flash</string>
+    <string name="camera_switch_lens_button_desc">Bouton de rotation de la caméra</string>
     <string name="camera_captured_photo_preview_desc">Aperçu de la photo prise</string>
     <string name="camera_cancel_button_desc">Bouton annuler</string>
     <string name="camera_done_button_desc">Bouton valider</string>
