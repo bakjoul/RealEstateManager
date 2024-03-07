@@ -261,7 +261,7 @@ class AddPropertyViewModel @Inject constructor(
                 is To.DraftPhotos -> emit(Event(AddPropertyViewAction.ShowPhotosViewer(draftId, it.clickedPhotoIndex)))
                 is To.SaveDraftDialog -> emit(Event(AddPropertyViewAction.SaveDraftDialog))
                 is To.CloseAddProperty -> emit(Event(AddPropertyViewAction.CloseDialog))
-                is To.Settings -> emit(Event(AddPropertyViewAction.OpenSettings))
+                is To.AppSettings -> emit(Event(AddPropertyViewAction.OpenAppSettings))
                 is To.Toast -> {
                     if (it.message == NativeText.Resource(R.string.toast_selected_address_details_error) ||
                         it.message == NativeText.Resource(R.string.toast_selected_address_details_failure) ||
@@ -711,8 +711,8 @@ class AddPropertyViewModel @Inject constructor(
         navigateUseCase.invoke(To.Camera(draftId))
     }
 
-    fun onChangeSettingsClicked() {
-        navigateUseCase.invoke(To.Settings)
+    fun onOpenAppSettingsClicked() {
+        navigateUseCase.invoke(To.AppSettings)
     }
 
     fun closeDialog() {

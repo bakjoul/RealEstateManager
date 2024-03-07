@@ -60,7 +60,7 @@
     <string name="add_property_zip_code_hint">Code postal</string>
     <string name="add_property_close_button_desc">Fermer les suggestions</string>
     <string name="add_property_camera_permission_denied">Permission d\'accès à la caméra refusée</string>
-    <string name="snackbar_settings">Modifier paramètres</string>
+    <string name="open_app_settings">Ouvrir paramètres</string>
     <string name="dialog_permission_required">Permission requise</string>
     <string name="add_property_camera_dialog_message">Permission d\'accès à la caméra nécessaire pour prendre des photos</string>
     <string name="dialog_dismiss">Ignorer</string>

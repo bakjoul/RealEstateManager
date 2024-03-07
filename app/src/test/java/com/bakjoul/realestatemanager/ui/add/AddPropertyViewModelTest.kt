@@ -573,11 +573,11 @@ class AddPropertyViewModelTest {
         viewModel.viewStateLiveData.observeForTesting(this) {}
 
         // When
-        viewModel.onChangeSettingsClicked()
+        viewModel.onOpenAppSettingsClicked()
 
         // Then
         viewModel.viewActionLiveData.observeForTesting(this) {
-            assertThat(it.value).isEqualTo(Event(AddPropertyViewAction.OpenSettings))
+            assertThat(it.value).isEqualTo(Event(AddPropertyViewAction.OpenAppSettings))
         }
 
         verify(exactly = 1) { savedStateHandle.get<Long>("draftId") }

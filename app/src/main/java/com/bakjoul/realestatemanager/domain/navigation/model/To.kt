@@ -28,6 +28,7 @@ sealed class To {
     object Dispatcher : To()
     object Settings : To()
     object CloseSettings : To()
+    object AppSettings : To()
     data class Toast(val message: NativeText) : To()
     object LoanSimulator : To()
     object CloseLoanSimulator : To()

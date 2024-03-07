@@ -493,7 +493,7 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
                     dismiss()
                 }
 
-                AddPropertyViewAction.OpenSettings -> {
+                AddPropertyViewAction.OpenAppSettings -> {
                     val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
                     val uri = Uri.fromParts("package", requireContext().packageName, null)
                     intent.data = uri
@@ -518,8 +518,8 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
             } else {
                 Snackbar
                     .make(binding.root, getString(R.string.add_property_camera_permission_denied), Snackbar.LENGTH_LONG)
-                    .setAction(getString(R.string.snackbar_settings)) {
-                        onChangeSettingsClicked()
+                    .setAction(getString(R.string.open_app_settings)) {
+                        viewModel.onOpenAppSettingsClicked()
                     }.show()
             }
         }
@@ -531,8 +531,6 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
         toolbar?.setNavigationOnClickListener { viewModel.closeDialog() }
         binding.addPropertyAppbarCloseButton?.setOnClickListener { viewModel.closeDialog() }
     }
-
-    private fun onChangeSettingsClicked() = viewModel.onChangeSettingsClicked()
 
     private fun onCameraButtonClicked() {
         when {
@@ -546,9 +544,7 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
                 MaterialAlertDialogBuilder(requireContext())
                     .setTitle(getString(R.string.dialog_permission_required))
                     .setMessage(getString(R.string.add_property_camera_dialog_message))
-                    .setPositiveButton(getString(R.string.snackbar_settings)) { _, _ ->
-                        onChangeSettingsClicked()
-                    }
+                    .setPositiveButton(getString(R.string.open_app_settings)) { _, _ -> viewModel.onOpenAppSettingsClicked() }
                     .setNegativeButton(getString(R.string.dialog_dismiss), null)
                     .show()
             }

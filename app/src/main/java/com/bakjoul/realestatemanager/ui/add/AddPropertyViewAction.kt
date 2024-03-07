@@ -10,6 +10,6 @@ sealed class AddPropertyViewAction {
     data class ShowPhotosViewer(val propertyId: Long, val clickedPhotoIndex: Int) : AddPropertyViewAction()
     object SaveDraftDialog : AddPropertyViewAction()
     object CloseDialog : AddPropertyViewAction()
-    object OpenSettings : AddPropertyViewAction()
+    object OpenAppSettings : AddPropertyViewAction()
     data class ShowToast(val message: NativeText) : AddPropertyViewAction()
 }

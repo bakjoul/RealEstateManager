@@ -67,9 +67,9 @@
     <string name="add_property_zip_code_hint">Zip code</string>
     <string name="add_property_close_button_desc">Close suggestions</string>
     <string name="add_property_camera_permission_denied">Camera permission is denied</string>
-    <string name="snackbar_settings">Change Settings</string>
+    <string name="open_app_settings">Open settings</string>
     <string name="dialog_permission_required">Permission required</string>
-    <string name="add_property_camera_dialog_message">Camera permission is required to take pictures</string>
+    <string name="add_property_camera_dialog_message">Camera permission is required to take photos</string>
     <string name="dialog_dismiss">Dismiss</string>
     <string name="camera_error_starting">Error starting camera</string>
     <string name="add_property_camera_btn_desc">Take a photo button</string>
