@@ -21,6 +21,8 @@ import dagger.hilt.android.AndroidEntryPoint
 class CameraActivity : AppCompatActivity() {
 
     companion object {
+        const val PHOTO_PREVIEW_DIALOG_TAG = "PhotoPreviewFragment"
+
         fun navigate(context: Context, propertyId: Long) : Intent {
             return Intent(context, CameraActivity::class.java).apply {
                 putExtra("propertyId", propertyId)
@@ -46,21 +48,28 @@ class CameraActivity : AppCompatActivity() {
                 .commitNow()
         }
 
-        viewModel.viewActionLiveData.observeEvent(this) {
-            when (it) {
+        viewModel.viewActionLiveData.observeEvent(this) { viewAction ->
+            when (viewAction) {
                 is CameraActivityViewAction.ShowPhotoPreview -> {
-                    val photoPreviewFragment = PhotoPreviewFragment()
-                    val args = Bundle().apply {
-                        putLong("propertyId", it.propertyId)
+                    val photoPreviewFragment = PhotoPreviewFragment().apply {
+                        arguments = Bundle().apply {
+                            putLong("propertyId", viewAction.propertyId)
+                        }
                     }
-                    photoPreviewFragment.arguments = args
 
                     supportFragmentManager.beginTransaction()
-                        .add(binding.cameraFrameLayoutContainer.id, photoPreviewFragment)
+                        .add(binding.cameraFrameLayoutContainer.id, photoPreviewFragment, PHOTO_PREVIEW_DIALOG_TAG)
                         .addToBackStack(null)
                         .commit()
                 }
-                CameraActivityViewAction.ClosePhotoPreview -> supportFragmentManager.popBackStack()
+                CameraActivityViewAction.ClosePhotoPreview -> {
+                    supportFragmentManager.findFragmentByTag(PHOTO_PREVIEW_DIALOG_TAG)?.let {
+                        supportFragmentManager
+                            .beginTransaction()
+                            .remove(it)
+                            .commit()
+                    }
+                }
                 CameraActivityViewAction.CloseCamera -> finish()
             }
         }

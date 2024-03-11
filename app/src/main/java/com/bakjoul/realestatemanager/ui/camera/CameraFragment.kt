@@ -10,6 +10,8 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.hardware.display.DisplayManager
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.MotionEvent
 import android.view.OrientationEventListener
@@ -60,6 +62,7 @@ class CameraFragment : Fragment(R.layout.fragment_camera) {
     private var displayId: Int = -1
     private var lensFacing: Int = CameraSelector.LENS_FACING_BACK
     private var imageCapture: ImageCapture? = null
+    private val handler by lazy { Handler(Looper.getMainLooper()) }
 
     // Handles captured image orientation
     private val displayManager by lazy {
@@ -173,6 +176,7 @@ class CameraFragment : Fragment(R.layout.fragment_camera) {
     }
     private var focusRingAnimatorSet: AnimatorSet? = null
 
+    // Pinch to zoom
     private val scaleGestureListener by lazy {
         object : ScaleGestureDetector.SimpleOnScaleGestureListener() {
             override fun onScale(detector: ScaleGestureDetector): Boolean {
@@ -180,12 +184,10 @@ class CameraFragment : Fragment(R.layout.fragment_camera) {
                 val zoomSpeed = 0.02f
                 val zoomRatioDelta = if ( detector.scaleFactor > 1.0f) {    // Zoom
                     currentZoomRatio * zoomSpeed
-                } else {    // Dézoom
+                } else {    // Unzoom
                     abs(currentZoomRatio) * zoomSpeed * -1
                 }
                 val newZoomRatio = (currentZoomRatio + zoomRatioDelta).coerceIn(1f, 10f)
-
-                Log.d("test", "onScale: $newZoomRatio")
 
                 camera?.cameraControl?.setZoomRatio(newZoomRatio)
 
@@ -196,11 +198,10 @@ class CameraFragment : Fragment(R.layout.fragment_camera) {
     private val scaleGestureDetector by lazy {
         ScaleGestureDetector(requireContext(), scaleGestureListener)
     }
-
     private var touchCount = 0
     private val touchSequence = mutableListOf<Int>()
     private var lastUpTime = 0L
-    private val tapThreshold = 250
+    private val tapToFocusThreshold = 250
 
     private val filenameFormatter by lazy {
         DateTimeFormatter.ofPattern(getString(R.string.photo_filename_format))
@@ -210,6 +211,7 @@ class CameraFragment : Fragment(R.layout.fragment_camera) {
         super.onViewCreated(view, savedInstanceState)
 
         binding.cameraShutterButton.setOnClickListener {
+            binding.cameraShutterButton.isClickable = false
             shutterAnimator.cancel()
             shutterAnimator.start()
             takePhoto()
@@ -337,6 +339,7 @@ class CameraFragment : Fragment(R.layout.fragment_camera) {
             Dispatchers.Main.asExecutor(),
             object : ImageCapture.OnImageSavedCallback {
                 override fun onError(exception: ImageCaptureException) {
+                    binding.cameraShutterButton.isClickable = true
                     val message = "Error taking photo: ${exception.message}"
                     Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
                     Log.e(TAG, message, exception)
@@ -347,6 +350,11 @@ class CameraFragment : Fragment(R.layout.fragment_camera) {
                         output.savedUri?.path,
                         requireActivity().intent.getLongExtra("propertyId", -1)
                     )
+
+                    // Re-enable shutter button after a short delay
+                    handler.postDelayed({
+                    binding.cameraShutterButton.isClickable = true
+                    }, 200)
                 }
             })
     }
@@ -466,7 +474,7 @@ class CameraFragment : Fragment(R.layout.fragment_camera) {
 
                     val currentTime = System.currentTimeMillis()
                     if ((touchSequence.size > 1 && !touchSequence.contains(2)) ||
-                        (touchSequence.size == 1 && currentTime - lastUpTime >= tapThreshold)
+                        (touchSequence.size == 1 && currentTime - lastUpTime >= tapToFocusThreshold)
                     ) {
                         val location = IntArray(2)
                         binding.cameraPreviewView.getLocationInWindow(location)
