@@ -28,12 +28,12 @@
         android:contentDescription="@string/camera_flash_toggle_button_desc"
         android:padding="8dp"
         android:src="@drawable/baseline_flash_off_24"
-        app:layout_constraintBottom_toTopOf="@id/camera_view_finder"
+        app:layout_constraintBottom_toTopOf="@id/camera_PreviewView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.camera.view.PreviewView
-        android:id="@+id/camera_view_finder"
+        android:id="@+id/camera_PreviewView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="@dimen/camera_margin_top"

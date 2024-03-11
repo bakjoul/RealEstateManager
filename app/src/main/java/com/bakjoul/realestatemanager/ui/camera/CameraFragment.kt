@@ -13,6 +13,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.MotionEvent
 import android.view.OrientationEventListener
+import android.view.ScaleGestureDetector
 import android.view.Surface
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
@@ -40,6 +41,7 @@ import kotlinx.coroutines.asExecutor
 import java.io.File
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import kotlin.math.abs
 
 @AndroidEntryPoint
 class CameraFragment : Fragment(R.layout.fragment_camera) {
@@ -52,6 +54,14 @@ class CameraFragment : Fragment(R.layout.fragment_camera) {
     private val binding by viewBinding { FragmentCameraBinding.bind(it) }
     private val viewModel by viewModels<CameraViewModel>()
 
+    private var cameraProvider: ProcessCameraProvider? = null
+    private var camera: Camera? = null
+    private var preview: Preview? = null
+    private var displayId: Int = -1
+    private var lensFacing: Int = CameraSelector.LENS_FACING_BACK
+    private var imageCapture: ImageCapture? = null
+
+    // Handles captured image orientation
     private val displayManager by lazy {
         requireContext().getSystemService(Context.DISPLAY_SERVICE) as DisplayManager
     }
@@ -61,38 +71,13 @@ class CameraFragment : Fragment(R.layout.fragment_camera) {
             override fun onDisplayRemoved(id: Int) = Unit
             override fun onDisplayChanged(id: Int) {
                 if (id == displayId) {
-                    imageCapture?.targetRotation = binding.cameraViewFinder.display.rotation
+                    imageCapture?.targetRotation = binding.cameraPreviewView.display.rotation
                 }
             }
         }
     }
 
-    private var cameraProvider: ProcessCameraProvider? = null
-    private var camera: Camera? = null
-    private var preview: Preview? = null
-    private var displayId: Int = -1
-    private var lensFacing: Int = CameraSelector.LENS_FACING_BACK
-    private var imageCapture: ImageCapture? = null
-
-    private var flashMode: Int = ImageCapture.FLASH_MODE_OFF
-    private val fadeOut by lazy {
-        ObjectAnimator.ofFloat(binding.cameraFlashToggleButton, "alpha", 1f, 0f).apply { duration = 200 }
-    }
-    private val fadeIn by lazy {
-        ObjectAnimator.ofFloat(binding.cameraFlashToggleButton, "alpha", 0f, 1f).apply { duration = 200 }
-    }
-    private val onFlashModeChangeListener by lazy {
-        object : AnimatorListenerAdapter() {
-            override fun onAnimationEnd(animation: Animator) {
-                when (flashMode) {
-                    ImageCapture.FLASH_MODE_OFF -> binding.cameraFlashToggleButton.setImageResource(R.drawable.baseline_flash_off_24)
-                    ImageCapture.FLASH_MODE_ON -> binding.cameraFlashToggleButton.setImageResource(R.drawable.baseline_flash_on_24)
-                    ImageCapture.FLASH_MODE_AUTO -> binding.cameraFlashToggleButton.setImageResource(R.drawable.baseline_flash_auto_24)
-                }
-            }
-        }
-    }
-
+    // Handles buttons orientation on device rotation
     private var previousOrientation: Int = 0
     private val orientationEventListener by lazy {
         object : OrientationEventListener(requireContext()) {
@@ -125,6 +110,45 @@ class CameraFragment : Fragment(R.layout.fragment_camera) {
     }
     private var buttonsAnimatorSet: AnimatorSet? = null
 
+    // Flash mode
+    private var flashMode: Int = ImageCapture.FLASH_MODE_OFF
+    private val fadeOut by lazy {
+        ObjectAnimator.ofFloat(binding.cameraFlashToggleButton, "alpha", 1f, 0f).apply { duration = 200 }
+    }
+    private val fadeIn by lazy {
+        ObjectAnimator.ofFloat(binding.cameraFlashToggleButton, "alpha", 0f, 1f).apply { duration = 200 }
+    }
+    private val onFlashModeChangeListener by lazy {
+        object : AnimatorListenerAdapter() {
+            override fun onAnimationEnd(animation: Animator) {
+                when (flashMode) {
+                    ImageCapture.FLASH_MODE_OFF -> binding.cameraFlashToggleButton.setImageResource(R.drawable.baseline_flash_off_24)
+                    ImageCapture.FLASH_MODE_ON -> binding.cameraFlashToggleButton.setImageResource(R.drawable.baseline_flash_on_24)
+                    ImageCapture.FLASH_MODE_AUTO -> binding.cameraFlashToggleButton.setImageResource(R.drawable.baseline_flash_auto_24)
+                }
+            }
+        }
+    }
+
+    // Shutter animation
+    private val shutterAnimator: ValueAnimator by lazy {
+        ValueAnimator.ofInt(
+            DensityUtil.dip2px(requireContext(), 60f),
+            DensityUtil.dip2px(requireContext(), 54f),
+            DensityUtil.dip2px(requireContext(), 60f)
+        ).apply {
+            addUpdateListener {
+                val animatedValue = it.animatedValue as Int
+                binding.cameraShutterButton.layoutParams.width = animatedValue
+                binding.cameraShutterButton.layoutParams.height = animatedValue
+                binding.cameraShutterButton.requestLayout()
+            }
+            duration = 700
+            interpolator = OvershootInterpolator()
+        }
+    }
+
+    // Focus ring
     private val focusRingSizeAnimator: ValueAnimator by lazy {
         ValueAnimator.ofInt(
             DensityUtil.dip2px(requireContext(), 112f),
@@ -149,22 +173,34 @@ class CameraFragment : Fragment(R.layout.fragment_camera) {
     }
     private var focusRingAnimatorSet: AnimatorSet? = null
 
-    private val shutterAnimator: ValueAnimator by lazy {
-        ValueAnimator.ofInt(
-            DensityUtil.dip2px(requireContext(), 60f),
-            DensityUtil.dip2px(requireContext(), 54f),
-            DensityUtil.dip2px(requireContext(), 60f)
-        ).apply {
-            addUpdateListener {
-                val animatedValue = it.animatedValue as Int
-                binding.cameraShutterButton.layoutParams.width = animatedValue
-                binding.cameraShutterButton.layoutParams.height = animatedValue
-                binding.cameraShutterButton.requestLayout()
+    private val scaleGestureListener by lazy {
+        object : ScaleGestureDetector.SimpleOnScaleGestureListener() {
+            override fun onScale(detector: ScaleGestureDetector): Boolean {
+                val currentZoomRatio = camera?.cameraInfo?.zoomState?.value?.zoomRatio ?: 0f
+                val zoomSpeed = 0.02f
+                val zoomRatioDelta = if ( detector.scaleFactor > 1.0f) {    // Zoom
+                    currentZoomRatio * zoomSpeed
+                } else {    // Dézoom
+                    abs(currentZoomRatio) * zoomSpeed * -1
+                }
+                val newZoomRatio = (currentZoomRatio + zoomRatioDelta).coerceIn(1f, 10f)
+
+                Log.d("test", "onScale: $newZoomRatio")
+
+                camera?.cameraControl?.setZoomRatio(newZoomRatio)
+
+                return true
             }
-            duration = 700
-            interpolator = OvershootInterpolator()
         }
     }
+    private val scaleGestureDetector by lazy {
+        ScaleGestureDetector(requireContext(), scaleGestureListener)
+    }
+
+    private var touchCount = 0
+    private val touchSequence = mutableListOf<Int>()
+    private var lastUpTime = 0L
+    private val tapThreshold = 250
 
     private val filenameFormatter by lazy {
         DateTimeFormatter.ofPattern(getString(R.string.photo_filename_format))
@@ -183,10 +219,10 @@ class CameraFragment : Fragment(R.layout.fragment_camera) {
         binding.cameraSwitchLensButton.setOnClickListener { switchLens() }
 
         displayManager.registerDisplayListener(displayListener, null)
-        binding.cameraViewFinder.post {
-            displayId = binding.cameraViewFinder.display.displayId
+        binding.cameraPreviewView.post {
+            displayId = binding.cameraPreviewView.display.displayId
             setCamera()
-            setTapToFocus()
+            setTapToFocusAndPinchToZoom()
         }
     }
 
@@ -241,7 +277,7 @@ class CameraFragment : Fragment(R.layout.fragment_camera) {
 
     @SuppressLint("RestrictedApi")
     private fun bindCameraUseCases() {
-        val rotation = binding.cameraViewFinder.display.rotation
+        val rotation = binding.cameraPreviewView.display.rotation
 
         // CameraProvider
         val camProvider = cameraProvider ?: throw IllegalStateException("Camera initialization failed")
@@ -269,7 +305,7 @@ class CameraFragment : Fragment(R.layout.fragment_camera) {
         try {
             camProvider.unbindAll()
             camera = camProvider.bindToLifecycle(this, cameraSelector, preview, imageCapture)
-            preview?.setSurfaceProvider(binding.cameraViewFinder.surfaceProvider)
+            preview?.setSurfaceProvider(binding.cameraPreviewView.surfaceProvider)
         } catch (e: Exception) {
             Log.e(TAG, "Use cases binding failed", e)
             Toast.makeText(requireContext(), getString(R.string.camera_init_error), Toast.LENGTH_LONG).show()
@@ -405,36 +441,59 @@ class CameraFragment : Fragment(R.layout.fragment_camera) {
 
         focusRingAnimatorSet = AnimatorSet().apply {
             playSequentially(focusRingSizeAnimator, focusRingAlphaAnimation)
-            doOnEnd { binding.cameraFocusRing.visibility = View.GONE }
+            doOnEnd { binding.cameraFocusRing.alpha = 0f }
             start()
         }
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    private fun setTapToFocus() {
-        binding.cameraViewFinder.setOnTouchListener(View.OnTouchListener { v, event ->
-            when (event.action) {
-                MotionEvent.ACTION_DOWN -> return@OnTouchListener true
-                MotionEvent.ACTION_UP -> {
-                    val location = IntArray(2)
-                    binding.cameraViewFinder.getLocationInWindow(location)
-                    val offsetX = location[0]
-                    val offsetY = location[1]
-                    val adjustedX = event.rawX - offsetX
-                    val adjustedY = event.rawY - offsetY + binding.cameraViewFinder.marginTop
+    private fun setTapToFocusAndPinchToZoom() {
+        binding.cameraPreviewView.setOnTouchListener { _, event ->
+            scaleGestureDetector.onTouchEvent(event)
 
-                    animateFocusRing(adjustedX, adjustedY)
-
-                    val factory = binding.cameraViewFinder.meteringPointFactory
-                    val point = factory.createPoint(adjustedX, adjustedY)
-                    val action = FocusMeteringAction.Builder(point).build()
-                    camera?.cameraControl?.startFocusAndMetering(action)
-
-                    return@OnTouchListener true
+            when (event.actionMasked ) {
+                MotionEvent.ACTION_DOWN, MotionEvent.ACTION_POINTER_DOWN -> {
+                    touchCount++
+                    touchSequence.add(touchCount)
+                    true
                 }
+                MotionEvent.ACTION_POINTER_UP -> {
+                    touchCount--
+                    true
+                }
+                MotionEvent.ACTION_UP -> {
+                    touchCount--
 
-                else -> return@OnTouchListener false
+                    val currentTime = System.currentTimeMillis()
+                    if ((touchSequence.size > 1 && !touchSequence.contains(2)) ||
+                        (touchSequence.size == 1 && currentTime - lastUpTime >= tapThreshold)
+                    ) {
+                        val location = IntArray(2)
+                        binding.cameraPreviewView.getLocationInWindow(location)
+                        val offsetX = location[0]
+                        val offsetY = location[1]
+                        val adjustedX = event.rawX - offsetX
+                        val adjustedY = event.rawY - offsetY + binding.cameraPreviewView.marginTop
+
+                        animateFocusRing(adjustedX, adjustedY)
+
+                        val factory = binding.cameraPreviewView.meteringPointFactory
+                        val point = factory.createPoint(adjustedX, adjustedY)
+                        val action = FocusMeteringAction.Builder(point).build()
+                        camera?.cameraControl?.startFocusAndMetering(action)
+
+                        lastUpTime = currentTime
+                        touchSequence.clear()
+                        true
+                    } else {
+                        lastUpTime = 0
+                        touchSequence.clear()
+                        false
+                    }
+
+                }
+                else -> false
             }
-        })
+        }
     }
 }
