@@ -39,7 +39,9 @@
             android:theme="@style/Theme.RealEstateManager" />
         <activity
             android:name=".ui.camera.activity.CameraActivity"
-            android:exported="false" />
+            android:screenOrientation="portrait"
+            android:exported="false"
+            tools:ignore="DiscouragedApi,LockedOrientationActivity" />
         <activity
             android:name=".ui.photo_preview.activity.PhotoPreviewActivity"
             android:exported="false" />
