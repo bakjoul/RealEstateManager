@@ -97,6 +97,7 @@ class AddPropertyViewModel @Inject constructor(
     }
 
     private val propertyFormMutableSharedFlow: MutableSharedFlow<PropertyFormEntity> = MutableSharedFlow(replay = 1)
+    private var existingDraftInitialState: PropertyFormEntity? = null
 
     private val currentAddressInputMutableStateFlow: MutableStateFlow<Pair<String, Boolean>?> = MutableStateFlow(null)
     private val addressPredictionsFlow: Flow<AutocompleteWrapper?> = currentAddressInputMutableStateFlow
@@ -126,6 +127,7 @@ class AddPropertyViewModel @Inject constructor(
     }
 
     private var photosList: List<PhotoEntity> = emptyList()
+    private var isFormLoaded = false
     private var saveJob: Job? = null
     private var isAddressTextCleared = false
 
@@ -146,10 +148,14 @@ class AddPropertyViewModel @Inject constructor(
             saveJob?.cancel()
         }
 
-        saveJob = viewModelScope.launch {
-            delay(SAVE_DELAY)
+        if (isFormLoaded) {
+            setSaveJob(propertyForm, currency, euroRate, surfaceUnit)
+        } else {
+            isFormLoaded = true
 
-            saveDraft(propertyForm, currency, euroRate.currencyRateEntity.rate, surfaceUnit)
+            if (isNewDraft) {
+                setSaveJob(propertyForm, currency, euroRate, surfaceUnit)
+            }
         }
     }
 
@@ -163,13 +169,13 @@ class AddPropertyViewModel @Inject constructor(
         if (latestValue == null) {
             if (isNewDraft) {
                 propertyFormMutableSharedFlow.tryEmit(initPropertyForm(draftId))
-                Log.d("test", "new draft case")
             } else {
                 viewModelScope.launch {
                     val draft = getPropertyDraftByIdUseCase.invoke(draftId)
                     if (draft != null) {
                         propertyFormMutableSharedFlow.tryEmit(draft)
-                        Log.d("test", "draft loaded : $draft")
+
+                        existingDraftInitialState = draft
                     }
                 }
             }
@@ -267,7 +273,9 @@ class AddPropertyViewModel @Inject constructor(
                         it.message == NativeText.Resource(R.string.toast_selected_address_details_failure) ||
                         it.message == NativeText.Resource(R.string.toast_selected_address_no_results) ||
                         it.message == NativeText.Resource(R.string.toast_draft_discarded) ||
-                        it.message == NativeText.Resource(R.string.toast_saving_draft)
+                        it.message == NativeText.Resource(R.string.toast_saving_draft) ||
+                        it.message == NativeText.Resource(R.string.toast_draft_saved) ||
+                        it.message == NativeText.Resource(R.string.toast_draft_automatically_saved)
                     ) {
                         emit(Event(AddPropertyViewAction.ShowToast(it.message)))
                     }
@@ -277,30 +285,42 @@ class AddPropertyViewModel @Inject constructor(
         }
     }
 
-    private fun saveDraft(propertyForm: PropertyFormEntity, currency: AppCurrency, euroRate: Double, surfaceUnit: SurfaceUnit) {
-        val priceInDollars = propertyForm.priceFromUser?.let {
-            if (currency == AppCurrency.EUR) {
-                it.fromEurosToDollars(euroRate)
-            } else {
-                it
-            }
-        } ?: propertyForm.referencePrice
+    private fun setSaveJob(
+        propertyForm: PropertyFormEntity,
+        currency: AppCurrency,
+        euroRate: CurrencyRateWrapper,
+        surfaceUnit: SurfaceUnit
+    ) {
+        saveJob = viewModelScope.launch {
+            delay(SAVE_DELAY)
 
-        val surfaceInMeters = propertyForm.surfaceFromUser?.let {
-            if (surfaceUnit == SurfaceUnit.FEET) {
-                it.fromFeetSquaredToMeterSquared()
-            } else {
-                it
-            }
-        } ?: propertyForm.referenceSurface
-
-        Log.d("test", "saveDraft: $propertyForm\npriceInDollars: $priceInDollars\nsurfaceInMeters: $surfaceInMeters")
-
-        viewModelScope.launch {
-            updatePropertyDraftUseCase.invoke(
-                draftId,
-                propertyForm.copy(referencePrice = priceInDollars, referenceSurface = surfaceInMeters)
+            val priceInDollars = propertyForm.priceFromUser?.let {
+                if (currency == AppCurrency.EUR) {
+                    it.fromEurosToDollars(euroRate.currencyRateEntity.rate)
+                } else {
+                    it
+                }
+            } ?: propertyForm.referencePrice
+            val surfaceInMeters = propertyForm.surfaceFromUser?.let {
+                if (surfaceUnit == SurfaceUnit.FEET) {
+                    it.fromFeetSquaredToMeterSquared()
+                } else {
+                    it
+                }
+            } ?: propertyForm.referenceSurface
+            Log.d(
+                "test",
+                "saveDraft: $propertyForm\npriceInDollars: $priceInDollars\nsurfaceInMeters: $surfaceInMeters"
             )
+            viewModelScope.launch {
+                updatePropertyDraftUseCase.invoke(
+                    draftId,
+                    propertyForm.copy(
+                        referencePrice = priceInDollars,
+                        referenceSurface = surfaceInMeters
+                    )
+                )
+            }
         }
     }
 
@@ -717,25 +737,30 @@ class AddPropertyViewModel @Inject constructor(
 
     fun closeDialog() {
         val propertyFormReplaceCache = propertyFormMutableSharedFlow.replayCache.first()
-        if (isNewDraft &&
-            propertyFormReplaceCache.type == null &&
-            propertyFormReplaceCache.forSaleSince == null &&
-            propertyFormReplaceCache.dateOfSale == null &&
-            propertyFormReplaceCache.priceFromUser == null &&
-            propertyFormReplaceCache.surfaceFromUser == null &&
-            propertyFormReplaceCache.rooms == null &&
-            propertyFormReplaceCache.bathrooms == null &&
-            propertyFormReplaceCache.bedrooms == null &&
-            propertyFormReplaceCache.pointsOfInterest!!.isEmpty() &&
-            propertyFormReplaceCache.address == PropertyFormAddress() &&
-            propertyFormReplaceCache.autoCompleteAddress == PropertyFormAddress() &&
-            propertyFormReplaceCache.description == null &&
-            photosList.isEmpty()
-        ) {
+        if (isNewDraft && isFormEmpty(propertyFormReplaceCache)) {
             dropDraft()
+        } else if (!isNewDraft && existingDraftInitialState == propertyFormReplaceCache) {
+            navigateUseCase.invoke(To.Toast(NativeText.Resource(R.string.toast_draft_automatically_saved)))
+            navigateUseCase.invoke(To.CloseAddProperty)
         } else {
             navigateUseCase.invoke(To.SaveDraftDialog)
         }
+    }
+
+    private fun isFormEmpty(propertyFormReplaceCache: PropertyFormEntity): Boolean {
+        return propertyFormReplaceCache.type == null &&
+                propertyFormReplaceCache.forSaleSince == null &&
+                propertyFormReplaceCache.dateOfSale == null &&
+                propertyFormReplaceCache.priceFromUser == null &&
+                propertyFormReplaceCache.surfaceFromUser == null &&
+                propertyFormReplaceCache.rooms == null &&
+                propertyFormReplaceCache.bathrooms == null &&
+                propertyFormReplaceCache.bedrooms == null &&
+                propertyFormReplaceCache.pointsOfInterest!!.isEmpty() &&
+                propertyFormReplaceCache.address == PropertyFormAddress() &&
+                propertyFormReplaceCache.autoCompleteAddress == PropertyFormAddress() &&
+                propertyFormReplaceCache.description == null &&
+                photosList.isEmpty()
     }
 
     fun dropDraft() {
@@ -754,6 +779,7 @@ class AddPropertyViewModel @Inject constructor(
                 navigateUseCase.invoke(To.CloseAddProperty)
             }
         } else {
+            navigateUseCase.invoke(To.Toast(NativeText.Resource(R.string.toast_draft_saved)))
             navigateUseCase.invoke(To.CloseAddProperty)
         }
     }

@@ -98,6 +98,8 @@
     <string name="toast_selected_address_no_results">Aucun résultat trouvé pour l\'adresse sélectionnée</string>
     <string name="toast_draft_discarded">Le brouillon a été supprimé</string>
     <string name="toast_saving_draft">Enregistrement du brouillon…</string>
+    <string name="toast_draft_saved">Le brouillon a été enregistré</string>
+    <string name="toast_draft_automatically_saved">Brouillon enregistré automatiquement</string>
     <string name="add_property_error_date_required">Date requise</string>
     <string name="add_property_error_invalid_date">Date invalide</string>
     <string name="add_property_error_price_required">Prix requis</string>

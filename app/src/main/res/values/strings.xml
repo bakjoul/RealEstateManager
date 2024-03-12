@@ -108,6 +108,8 @@
     <string name="toast_selected_address_no_results">No results found for selected address</string>
     <string name="toast_draft_discarded">Draft has been discarded</string>
     <string name="toast_saving_draft">Saving draft…</string>
+    <string name="toast_draft_saved">Draft has been saved</string>
+    <string name="toast_draft_automatically_saved">Draft automatically saved</string>
     <string name="add_property_error_date_required">Date required</string>
     <string name="add_property_error_invalid_date">Invalid date</string>
     <string name="add_property_error_price_required">Price required</string>
