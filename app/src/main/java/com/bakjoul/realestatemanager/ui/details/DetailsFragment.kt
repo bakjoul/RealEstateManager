@@ -81,7 +81,12 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
             setTooltip(details.poiAirport, binding.detailsPoiAirport, getString(R.string.property_poi_airport))
             binding.detailsItemLocation.setText(details.location)
 
-            binding.detailsPhotoListView.bind(details.medias)
+            if (details.medias.isNotEmpty()) {
+                binding.detailsPhotoListView.bind(details.medias)
+            } else {
+                binding.detailsPhotoListView.visibility = View.GONE
+                binding.detailsNoPhotosTextView.visibility = View.VISIBLE
+            }
 
             binding.detailsItemLocation.setOnClickListener {
                 val clipboardManager = requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager

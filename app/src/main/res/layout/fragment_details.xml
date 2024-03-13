@@ -83,9 +83,13 @@
                         android:layout_marginStart="-2dp"
                         android:layout_marginTop="2dp"
                         android:drawablePadding="2dp"
+                        android:ellipsize="end"
+                        android:lines="1"
+                        android:maxWidth="120dp"
                         android:textColor="@color/white"
                         android:textSize="14sp"
                         app:drawableStartCompat="@drawable/baseline_location_on_16"
+                        app:layout_constraintEnd_toStartOf="@id/details_toolbar_surface"
                         app:layout_constraintStart_toStartOf="@id/details_toolbar_type_price_status_container"
                         app:layout_constraintTop_toBottomOf="@id/details_toolbar_type_price_status_container"
                         tools:text="New York City" />
@@ -94,29 +98,36 @@
                         android:id="@+id/details_toolbar_surface"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="24dp"
+                        android:layout_marginStart="16dp"
                         android:drawablePadding="5dp"
+                        android:ellipsize="end"
+                        android:lines="1"
+                        android:maxWidth="90dp"
                         android:textColor="@color/white"
                         android:textSize="14sp"
                         app:drawableStartCompat="@drawable/baseline_settings_overscan_16_white"
                         app:layout_constraintBottom_toBottomOf="@id/details_toolbar_city"
+                        app:layout_constraintEnd_toStartOf="@id/details_toolbar_sale_status"
                         app:layout_constraintStart_toEndOf="@id/details_toolbar_city"
                         app:layout_constraintTop_toTopOf="@id/details_toolbar_city"
-                        tools:text="750 m²" />
+                        tools:text="750 000 m²" />
 
                     <TextView
                         android:id="@+id/details_toolbar_sale_status"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="24dp"
+                        android:layout_marginStart="16dp"
                         android:drawablePadding="4dp"
+                        android:ellipsize="end"
+                        android:lines="1"
                         android:textColor="@color/white"
                         android:textSize="14sp"
                         app:drawableStartCompat="@drawable/real_estate_16"
                         app:layout_constraintBottom_toBottomOf="@id/details_toolbar_surface"
+                        app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toEndOf="@id/details_toolbar_surface"
                         app:layout_constraintTop_toTopOf="@id/details_toolbar_surface"
-                        tools:text="For sale since 1/1/23" />
+                        tools:text="For sale since 01/01/23" />
 
                     <TextView
                         android:id="@+id/details_toolbar_sold"
@@ -378,10 +389,25 @@
                     android:clipChildren="false"
                     android:clipToPadding="false"
                     android:orientation="horizontal"
-                    android:padding="8dp"
+                    android:paddingHorizontal="8dp"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="4dp"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     tools:itemCount="5"
                     tools:listitem="@layout/view_photo_item" />
+
+                <TextView
+                    android:id="@+id/details_no_photos_TextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:padding="8dp"
+                    android:text="@string/details_no_photos_text"
+                    android:textColor="@color/grey_text"
+                    android:textSize="14sp"
+                    android:textStyle="italic"
+                    android:visibility="gone"
+                    tools:visibility="visible" />
             </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView

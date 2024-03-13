@@ -83,9 +83,13 @@
                         android:layout_marginStart="-2dp"
                         android:layout_marginTop="2dp"
                         android:drawablePadding="2dp"
+                        android:ellipsize="end"
+                        android:lines="1"
+                        android:maxWidth="240dp"
                         android:textColor="@color/white"
                         android:textSize="14sp"
                         app:drawableStartCompat="@drawable/baseline_location_on_16"
+                        app:layout_constraintEnd_toStartOf="@id/details_toolbar_surface"
                         app:layout_constraintStart_toStartOf="@id/details_toolbar_type_price_status_container"
                         app:layout_constraintTop_toBottomOf="@id/details_toolbar_type_price_status_container"
                         tools:text="New York City" />
@@ -96,10 +100,14 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="24dp"
                         android:drawablePadding="4dp"
+                        android:ellipsize="end"
+                        android:lines="1"
+                        android:maxWidth="180dp"
                         android:textColor="@color/white"
                         android:textSize="14sp"
                         app:drawableStartCompat="@drawable/baseline_settings_overscan_16_white"
                         app:layout_constraintBottom_toBottomOf="@id/details_toolbar_city"
+                        app:layout_constraintEnd_toStartOf="@id/details_toolbar_sale_status"
                         app:layout_constraintStart_toEndOf="@id/details_toolbar_city"
                         app:layout_constraintTop_toTopOf="@id/details_toolbar_city"
                         tools:text="750 m²" />
@@ -110,13 +118,14 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="24dp"
                         android:drawablePadding="4dp"
+                        android:lines="1"
                         android:textColor="@color/white"
                         android:textSize="14sp"
                         app:drawableStartCompat="@drawable/real_estate_16"
                         app:layout_constraintBottom_toBottomOf="@id/details_toolbar_surface"
                         app:layout_constraintStart_toEndOf="@id/details_toolbar_surface"
                         app:layout_constraintTop_toTopOf="@id/details_toolbar_surface"
-                        tools:text="For sale since 1/1/23" />
+                        tools:text="For sale since 01/01/23" />
 
                     <TextView
                         android:id="@+id/details_toolbar_sold"
@@ -183,19 +192,36 @@
                         app:layout_constraintTop_toBottomOf="@id/details_description_label"
                         tools:text="Anchored by a vast marble gallery with sweeping staircase, the entertaining floor includes a baronial living room facing Park Avenue, handsome library with original paneling, and tremendous dining room; all of which enjoy fireplaces. The state-of-the-art St. Charles designed kitchen includes a sunny breakfast room and staff quarters. Upstairs, the expansive master suite overlooks Park Avenue and includes two marble baths, two dressing rooms, and two offices. Additionally there are three large bedrooms with en-suite baths and a media room." />
 
-                    <com.bakjoul.realestatemanager.designsystem.molecule.photo_list.PhotoListView
-                        android:id="@+id/details_PhotoListView"
-                        android:layout_width="match_parent"
+                    <FrameLayout
+                        android:id="@+id/details_photo_list_container"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
-                        android:clipChildren="false"
-                        android:orientation="horizontal"
-                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                         app:layout_constraintEnd_toEndOf="@id/details_description_text"
                         app:layout_constraintStart_toStartOf="@id/details_description_text"
-                        app:layout_constraintTop_toBottomOf="@id/details_description_text"
-                        tools:itemCount="5"
-                        tools:listitem="@layout/view_photo_item" />
+                        app:layout_constraintTop_toBottomOf="@id/details_description_text">
+
+                        <com.bakjoul.realestatemanager.designsystem.molecule.photo_list.PhotoListView
+                            android:id="@+id/details_PhotoListView"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:clipChildren="false"
+                            android:orientation="horizontal"
+                            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                            tools:itemCount="5"
+                            tools:listitem="@layout/view_photo_item" />
+
+                        <TextView
+                            android:id="@+id/details_no_photos_TextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/details_no_photos_text"
+                            android:textColor="@color/grey_text"
+                            android:textSize="14sp"
+                            android:textStyle="italic"
+                            android:visibility="gone"
+                            tools:visibility="visible" />
+                    </FrameLayout>
 
                     <com.bakjoul.realestatemanager.designsystem.atome.DetailsFieldView
                         android:id="@+id/details_item_surface"
@@ -209,7 +235,7 @@
                         app:layout_constraintEnd_toStartOf="@id/details_item_location"
                         app:layout_constraintHorizontal_weight="0.33"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/details_PhotoListView" />
+                        app:layout_constraintTop_toBottomOf="@id/details_photo_list_container" />
 
                     <com.bakjoul.realestatemanager.designsystem.atome.DetailsFieldView
                         android:id="@+id/details_item_rooms"
