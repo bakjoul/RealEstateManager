@@ -53,7 +53,10 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
         binding.detailsFabBack?.setOnClickListener { viewModel.onBackButtonPressed() }
 
         viewModel.viewStateLiveData.observe(viewLifecycleOwner) { details ->
-            Glide.with(binding.detailsToolbarPhoto).load(details.featuredPhotoUrl).into(binding.detailsToolbarPhoto)
+            Glide.with(binding.detailsToolbarPhoto)
+                .load(details.featuredPhotoUrl)
+                .placeholder(R.drawable.photo_placeholder)
+                .into(binding.detailsToolbarPhoto)
             binding.detailsToolbarType.text = details.type.toCharSequence(requireContext())
             binding.detailsToolbarPrice.text = details.price
             binding.detailsToolbarPrice.paintFlags = if (details.isSold) binding.detailsToolbarPrice.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG else 0

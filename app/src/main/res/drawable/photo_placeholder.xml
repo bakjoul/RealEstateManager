@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@color/blue_toolbar" />
+    <item
+        android:bottom="8dp"
+        android:left="8dp"
+        android:right="8dp"
+        android:top="8dp">
+        <vector
+            android:width="24dp"
+            android:height="24dp"
+            android:tint="@color/grey_background_dialog"
+            android:viewportWidth="960"
+            android:viewportHeight="960">
+            <path
+                android:fillColor="#FF000000"
+                android:pathData="m40,720 l240,-320 180,240h300L560,374 460,506l-50,-66 150,-200 360,480L40,720ZM561,640ZM200,640h160l-80,-107 -80,107ZM200,640h160,-160Z" />
+        </vector>
+    </item>
+</layer-list>
