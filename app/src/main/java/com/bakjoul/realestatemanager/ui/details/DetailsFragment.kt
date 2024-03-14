@@ -8,6 +8,7 @@ import android.content.Intent
 import android.graphics.Paint
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -51,6 +52,7 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
         binding.detailsPhotoListView.addItemDecoration(divider)
 
         binding.detailsFabBack?.setOnClickListener { viewModel.onBackButtonPressed() }
+        binding.detailsFabEdit.setOnClickListener { Log.d("test", "onViewCreated: edit button clicked") }
 
         viewModel.viewStateLiveData.observe(viewLifecycleOwner) { details ->
             Glide.with(binding.detailsToolbarPhoto)

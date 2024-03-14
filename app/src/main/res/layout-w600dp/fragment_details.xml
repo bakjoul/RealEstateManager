@@ -149,6 +149,19 @@
         </com.google.android.material.appbar.CollapsingToolbarLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/details_fab_edit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/blue_darker_transparent"
+        android:contentDescription="@string/property_edit_button_desc"
+        android:outlineProvider="none"
+        android:src="@drawable/baseline_edit_24"
+        app:fabCustomSize="32dp"
+        app:layout_anchor="@id/details_toolbar_photo"
+        app:layout_anchorGravity="top|right"
+        app:tint="@color/white" />
+
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"

@@ -169,4 +169,5 @@
     <string name="add_property_photos_error">Descriptions requises pour les photos importées</string>
     <string name="add_property_surface_note">* La surface est enregistrée en mètres carrés. Les valeurs saisies seront converties et arrondies lors de l\'enregistrement. Cela peut entraîner de légères différences dans les valeurs lorsqu\'elles seront récupérées.</string>
     <string name="details_no_photos_text">Aucune photo à afficher</string>
+    <string name="property_edit_button_desc">Bouton éditer la propriété</string>
 </resources>
