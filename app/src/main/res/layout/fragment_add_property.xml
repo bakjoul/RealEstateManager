@@ -30,7 +30,7 @@
                 <TextView
                     android:id="@+id/add_property_save_draft_button"
                     android:layout_width="wrap_content"
-                    android:layout_height="56dp"
+                    android:layout_height="48dp"
                     android:layout_gravity="center_vertical|end"
                     android:background="?selectableItemBackground"
                     android:clickable="true"
@@ -38,12 +38,22 @@
                     android:focusable="true"
                     android:fontFamily="monospace"
                     android:gravity="center_vertical"
-                    android:paddingHorizontal="12dp"
+                    android:paddingHorizontal="8dp"
                     android:text="@string/add_property_save_button"
                     android:textColor="@color/white"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     app:drawableEndCompat="@drawable/baseline_save_24" />
+
+                <ImageButton
+                    android:id="@+id/add_property_delete_draft_button"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_gravity="center_vertical|end"
+                    android:background="?selectableItemBackground"
+                    android:contentDescription="@string/add_property_delete_draft_button_desc"
+                    android:src="@drawable/baseline_delete_24"
+                    app:tint="@color/white" />
             </com.google.android.material.appbar.MaterialToolbar>
         </com.google.android.material.appbar.AppBarLayout>
 

@@ -5,6 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import java.math.BigDecimal
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 @Entity(tableName = "properties")
 data class PropertyDto(
@@ -39,4 +40,5 @@ data class PropertyDto(
     val description: String,
     val featuredPhotoId: Long?,
     val agent: String,
+    @ColumnInfo(name = "entry_date") val entryDate: LocalDateTime
 )

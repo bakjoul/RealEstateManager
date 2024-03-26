@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import java.io.IOException
+import java.time.Clock
 import java.time.LocalDate
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -29,7 +30,8 @@ import javax.inject.Singleton
 @Singleton
 class CurrencyRateRepositoryImplementation @Inject constructor(
     private val currencyApi: CurrencyApi,
-    private val application: Application
+    private val application: Application,
+    private val clock: Clock
 ) : CurrencyRateRepository {
 
     companion object {
@@ -46,7 +48,7 @@ class CurrencyRateRepositoryImplementation @Inject constructor(
     override suspend fun getEuroRate(): CurrencyRateWrapper = withContext(Dispatchers.IO) {
         val cachedRate = getCachedEuroRateFlow().firstOrNull()
 
-        if (cachedRate == null || cachedRate.updateDate != LocalDate.now()) {
+        if (cachedRate == null || cachedRate.updateDate != LocalDate.now(clock)) {
             try {
                 val response = currencyApi.getCurrencyRate(
                     "EUR",
@@ -59,7 +61,7 @@ class CurrencyRateRepositoryImplementation @Inject constructor(
                         val rate = CurrencyRateEntity(
                             currency = AppCurrency.EUR,
                             rate = response.rates.usdResponse.rate.toDouble(),
-                            updateDate = LocalDate.now(),
+                            updateDate = LocalDate.now(clock),
                         )
 
                         updateCachedEuroRate(rate)

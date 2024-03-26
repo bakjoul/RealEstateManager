@@ -24,10 +24,14 @@ import com.bakjoul.realestatemanager.domain.photo_preview.SetLastPhotoUriUseCase
 import com.bakjoul.realestatemanager.domain.photos.AddPhotosUseCase
 import com.bakjoul.realestatemanager.domain.photos.DeletePhotosUseCase
 import com.bakjoul.realestatemanager.domain.photos.GetPhotosForPropertyIdUseCase
-import com.bakjoul.realestatemanager.domain.photos.SavePhotosToAppFilesUseCase
+import com.bakjoul.realestatemanager.domain.photos.UpdatePhotosForPropertyIdUseCase
+import com.bakjoul.realestatemanager.domain.photos.content_resolver.SavePhotosToAppFilesUseCase
+import com.bakjoul.realestatemanager.domain.photos.edit.AddPhotoToExistingPropertyDraftUseCase
+import com.bakjoul.realestatemanager.domain.photos.edit.DeletePhotosForExistingPropertyDraftUseCase
+import com.bakjoul.realestatemanager.domain.photos.edit.GetPhotosForExistingPropertyDraftIdUseCase
 import com.bakjoul.realestatemanager.domain.photos.model.PhotoEntity
 import com.bakjoul.realestatemanager.domain.property.AddPropertyUseCase
-import com.bakjoul.realestatemanager.domain.property.drafts.DeletePropertyDraftUseCase
+import com.bakjoul.realestatemanager.domain.property.UpdatePropertyUseCase
 import com.bakjoul.realestatemanager.domain.property.drafts.DeletePropertyDraftWithPhotosUseCase
 import com.bakjoul.realestatemanager.domain.property.drafts.GetPropertyDraftByIdUseCase
 import com.bakjoul.realestatemanager.domain.property.drafts.UpdatePropertyDraftUseCase
@@ -60,7 +64,6 @@ import java.math.RoundingMode
 import java.time.Clock
 import java.time.Instant
 import java.time.LocalDate
-import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import javax.inject.Inject
@@ -72,22 +75,26 @@ class AddPropertyViewModel @Inject constructor(
     getCurrentCurrencyUseCase: GetCurrentCurrencyUseCase,
     getCurrentSurfaceUnitUseCase: GetCurrentSurfaceUnitUseCase,
     savedStateHandle: SavedStateHandle,
+    getPhotosForPropertyIdUseCase: GetPhotosForPropertyIdUseCase,
+    getPhotosForExistingPropertyDraftIdUseCase: GetPhotosForExistingPropertyDraftIdUseCase,
     private val getEuroRateUseCase: GetEuroRateUseCase,
     private val getPropertyDraftByIdUseCase: GetPropertyDraftByIdUseCase,
     private val getCurrentNavigationUseCase: GetCurrentNavigationUseCase,
     private val getAddressPredictionsUseCase: GetAddressPredictionsUseCase,
     private val getAddressDetailsUseCase: GetAddressDetailsUseCase,
-    private val getPhotosForPropertyIdUseCase: GetPhotosForPropertyIdUseCase,
     private val deletePhotosUseCase: DeletePhotosUseCase,
+    private val deletePhotosForExistingPropertyDraftUseCase: DeletePhotosForExistingPropertyDraftUseCase,
     private val navigateUseCase: NavigateUseCase,
     private val deletePropertyDraftWithPhotosUseCase: DeletePropertyDraftWithPhotosUseCase,
     private val clock: Clock,
     private val updatePropertyDraftUseCase: UpdatePropertyDraftUseCase,
     private val savePhotosToAppFilesUseCase: SavePhotosToAppFilesUseCase,
     private val setLastPhotoUriUseCase: SetLastPhotoUriUseCase,
+    private val addPhotoToExistingPropertyDraftUseCase: AddPhotoToExistingPropertyDraftUseCase,
     private val addPhotosUseCase: AddPhotosUseCase,
     private val addPropertyUseCase: AddPropertyUseCase,
-    private val deletePropertyDraftUseCase: DeletePropertyDraftUseCase
+    private val updatePropertyUseCase: UpdatePropertyUseCase,
+    private val updatePhotosForPropertyIdUseCase: UpdatePhotosForPropertyIdUseCase
 ) : ViewModel() {
 
     private companion object {
@@ -119,13 +126,20 @@ class AddPropertyViewModel @Inject constructor(
     private val errorsMutableStateFlow: MutableStateFlow<PropertyFormErrors> = MutableStateFlow(PropertyFormErrors())
 
     private val draftId: Long = requireNotNull(savedStateHandle.get<Long>("draftId")) {
-        "No ID passed as parameter !"
+        "No property id passed as parameter !"
     }
 
     private val isNewDraft = requireNotNull(savedStateHandle.get<Boolean>("isNewDraft")) {
         "No information about new draft passed as parameter !"
     }
 
+    private val isExistingProperty = savedStateHandle.get<Boolean>("isExistingProperty") ?: false
+
+    private val photosFlow: Flow<List<PhotoEntity>> = if (isExistingProperty) {
+        getPhotosForExistingPropertyDraftIdUseCase.invoke(draftId)
+    } else {
+        getPhotosForPropertyIdUseCase.invoke(draftId)
+    }
     private var photosList: List<PhotoEntity> = emptyList()
     private var isFormLoaded = false
     private var saveJob: Job? = null
@@ -160,7 +174,7 @@ class AddPropertyViewModel @Inject constructor(
     }
 
     init {
-        if (!isNewDraft) {
+        if (!isNewDraft && !isExistingProperty) {
             navigateUseCase.invoke(To.CloseDraftListInBackground)
         }
     }
@@ -184,7 +198,7 @@ class AddPropertyViewModel @Inject constructor(
         combine(
             propertyInformationFlow,
             addressPredictionsFlow,
-            getPhotosForPropertyIdUseCase.invoke(draftId),
+            photosFlow,
             errorsMutableStateFlow
         ) { (propertyForm, currency, euroRate, surfaceUnit), addressPredictions, photos, errors ->
             updatePhotos(photos, propertyForm)
@@ -220,7 +234,7 @@ class AddPropertyViewModel @Inject constructor(
                     photos,
                     { SelectType.NOT_SELECTABLE },
                     propertyForm.featuredPhotoId,
-                    { clickedPhotoIndex -> navigateUseCase.invoke(To.DraftPhotos(clickedPhotoIndex)) },
+                    { clickedPhotoIndex -> navigateUseCase.invoke(To.DraftPhotos(clickedPhotoIndex, isExistingProperty)) },
                     { photoId ->
                         if (propertyForm.featuredPhotoId != photoId) {
                             propertyFormMutableSharedFlow.tryEmit(
@@ -230,12 +244,16 @@ class AddPropertyViewModel @Inject constructor(
                     },
                     { id, uri ->
                         viewModelScope.launch {
-                            deletePhotosUseCase.invoke(listOf(id), listOf(uri))
+                            if (isExistingProperty) {
+                                deletePhotosForExistingPropertyDraftUseCase.invoke(listOf(id), listOf(uri))
+                            } else {
+                                deletePhotosUseCase.invoke(listOf(id), listOf(uri))
+                            }
                         }
                     },
                     { id, description ->
                         viewModelScope.launch {
-                            navigateUseCase.invoke(To.EditPhotoDescription(id, description))
+                            navigateUseCase.invoke(To.EditPhotoDescription(id, description, isExistingProperty))
                         }
                     }
                 ),
@@ -261,10 +279,10 @@ class AddPropertyViewModel @Inject constructor(
         getCurrentNavigationUseCase.invoke().collect {
             when (it) {
                 is To.HideAddressSuggestions -> emit(Event(AddPropertyViewAction.HideSuggestions))
-                is To.Camera -> emit(Event(AddPropertyViewAction.OpenCamera(it.propertyId)))
-                is To.ImportedPhotoPreview -> emit(Event(AddPropertyViewAction.ShowImportedPhotoPreview(it.propertyId)))
-                is To.EditPhotoDescription -> emit(Event(AddPropertyViewAction.EditPhotoDescription(it.photoId, it.description)))
-                is To.DraftPhotos -> emit(Event(AddPropertyViewAction.ShowPhotosViewer(draftId, it.clickedPhotoIndex)))
+                is To.Camera -> emit(Event(AddPropertyViewAction.OpenCamera(it.propertyId, it.isExistingProperty)))
+                is To.ImportedPhotoPreview -> emit(Event(AddPropertyViewAction.ShowImportedPhotoPreview(it.propertyId, it.isExistingProperty)))
+                is To.EditPhotoDescription -> emit(Event(AddPropertyViewAction.EditPhotoDescription(it.photoId, it.description, it.isExistingProperty)))
+                is To.DraftPhotos -> emit(Event(AddPropertyViewAction.ShowPhotosViewer(draftId, it.clickedPhotoIndex, it.isExistingProperty)))
                 is To.SaveDraftDialog -> emit(Event(AddPropertyViewAction.SaveDraftDialog))
                 is To.CloseAddProperty -> emit(Event(AddPropertyViewAction.CloseDialog))
                 is To.AppSettings -> emit(Event(AddPropertyViewAction.OpenAppSettings))
@@ -344,7 +362,7 @@ class AddPropertyViewModel @Inject constructor(
         photos = emptyList(),
         featuredPhotoId = null,
         agent = null,
-        lastUpdate = LocalDateTime.now(clock)
+        lastUpdate = ZonedDateTime.now(clock).toLocalDateTime()
     )
 
     private fun updatePhotos(
@@ -673,9 +691,9 @@ class AddPropertyViewModel @Inject constructor(
         }
 
         // Reset address fields if current address input different from address selected from suggestions
-        val propertyFormReplaceCache = propertyFormMutableSharedFlow.replayCache.first()
-        if (propertyFormReplaceCache.autoCompleteAddress != PropertyFormAddress()
-            && formatAddress(propertyFormReplaceCache.address) != address
+        val propertyFormReplayCache = propertyFormMutableSharedFlow.replayCache.first()
+        if (propertyFormReplayCache.autoCompleteAddress != PropertyFormAddress()
+            && formatAddress(propertyFormReplayCache.address) != address
         ) {
             resetAddressFields()
         }
@@ -690,19 +708,19 @@ class AddPropertyViewModel @Inject constructor(
     fun onComplementaryAddressChanged(complementaryAddress: String) {
         Log.d("test", "onComplementaryAddressChanged: $complementaryAddress")
         val parsedComplementaryAddress = complementaryAddress.ifBlank { null }
-        val propertyFormReplaceCache = propertyFormMutableSharedFlow.replayCache.first()
+        val propertyFormReplayCache = propertyFormMutableSharedFlow.replayCache.first()
         propertyFormMutableSharedFlow.tryEmit(
-            propertyFormReplaceCache.copy(
-                address = propertyFormReplaceCache.address?.copy(complementaryAddress = parsedComplementaryAddress)
+            propertyFormReplayCache.copy(
+                address = propertyFormReplayCache.address?.copy(complementaryAddress = parsedComplementaryAddress)
             )
         )
     }
 
     fun onComplementaryAddressTextCleared() {
-        val propertyFormReplaceCache = propertyFormMutableSharedFlow.replayCache.first()
+        val propertyFormReplayCache = propertyFormMutableSharedFlow.replayCache.first()
         propertyFormMutableSharedFlow.tryEmit(
-            propertyFormReplaceCache.copy(
-                address = propertyFormReplaceCache.address?.copy(complementaryAddress = null)
+            propertyFormReplayCache.copy(
+                address = propertyFormReplayCache.address?.copy(complementaryAddress = null)
             )
         )
     }
@@ -728,7 +746,7 @@ class AddPropertyViewModel @Inject constructor(
     }
 
     fun onCameraPermissionGranted() {
-        navigateUseCase.invoke(To.Camera(draftId))
+        navigateUseCase.invoke(To.Camera(draftId, isExistingProperty))
     }
 
     fun onOpenAppSettingsClicked() {
@@ -736,10 +754,12 @@ class AddPropertyViewModel @Inject constructor(
     }
 
     fun closeDialog() {
-        val propertyFormReplaceCache = propertyFormMutableSharedFlow.replayCache.first()
-        if (isNewDraft && isFormEmpty(propertyFormReplaceCache)) {
+        val propertyFormReplayCache = propertyFormMutableSharedFlow.replayCache.first()
+        if ((isNewDraft && isFormEmpty(propertyFormReplayCache)) ||
+            (isExistingProperty && existingDraftInitialState == propertyFormReplayCache)
+        ) {
             dropDraft()
-        } else if (!isNewDraft && existingDraftInitialState == propertyFormReplaceCache) {
+        } else if (!isNewDraft && existingDraftInitialState == propertyFormReplayCache) {
             navigateUseCase.invoke(To.Toast(NativeText.Resource(R.string.toast_draft_automatically_saved)))
             navigateUseCase.invoke(To.CloseAddProperty)
         } else {
@@ -747,25 +767,25 @@ class AddPropertyViewModel @Inject constructor(
         }
     }
 
-    private fun isFormEmpty(propertyFormReplaceCache: PropertyFormEntity): Boolean {
-        return propertyFormReplaceCache.type == null &&
-                propertyFormReplaceCache.forSaleSince == null &&
-                propertyFormReplaceCache.dateOfSale == null &&
-                propertyFormReplaceCache.priceFromUser == null &&
-                propertyFormReplaceCache.surfaceFromUser == null &&
-                propertyFormReplaceCache.rooms == null &&
-                propertyFormReplaceCache.bathrooms == null &&
-                propertyFormReplaceCache.bedrooms == null &&
-                propertyFormReplaceCache.pointsOfInterest!!.isEmpty() &&
-                propertyFormReplaceCache.address == PropertyFormAddress() &&
-                propertyFormReplaceCache.autoCompleteAddress == PropertyFormAddress() &&
-                propertyFormReplaceCache.description == null &&
+    private fun isFormEmpty(propertyFormReplayCache: PropertyFormEntity): Boolean {
+        return propertyFormReplayCache.type == null &&
+                propertyFormReplayCache.forSaleSince == null &&
+                propertyFormReplayCache.dateOfSale == null &&
+                propertyFormReplayCache.priceFromUser == null &&
+                propertyFormReplayCache.surfaceFromUser == null &&
+                propertyFormReplayCache.rooms == null &&
+                propertyFormReplayCache.bathrooms == null &&
+                propertyFormReplayCache.bedrooms == null &&
+                propertyFormReplayCache.pointsOfInterest!!.isEmpty() &&
+                propertyFormReplayCache.address == PropertyFormAddress() &&
+                propertyFormReplayCache.autoCompleteAddress == PropertyFormAddress() &&
+                propertyFormReplayCache.description == null &&
                 photosList.isEmpty()
     }
 
     fun dropDraft() {
         viewModelScope.launch {
-            deletePropertyDraftWithPhotosUseCase.invoke(draftId, photosList)
+            deletePropertyDraftWithPhotosUseCase.invoke(draftId, photosList, isExistingProperty)
             navigateUseCase.invoke(To.Toast(NativeText.Resource(R.string.toast_draft_discarded)))
             navigateUseCase.invoke(To.CloseAddProperty)
         }
@@ -786,16 +806,24 @@ class AddPropertyViewModel @Inject constructor(
 
     fun onGalleryPhotosSelected(photos: List<String>) {
         viewModelScope.launch {
-            val savedPhotosList = savePhotosToAppFilesUseCase.invoke(photos)
+            val savedPhotosList = if (isExistingProperty) {
+                savePhotosToAppFilesUseCase.invoke(photos, true)
+            } else {
+                savePhotosToAppFilesUseCase.invoke(photos, false)
+            }
             // If only one photo, opens it in photo preview
             if (savedPhotosList != null) {
                 if (savedPhotosList.size == 1) {
                     setLastPhotoUriUseCase.invoke(savedPhotosList.first())
-                    navigateUseCase.invoke(To.ImportedPhotoPreview(draftId))
+                    navigateUseCase.invoke(To.ImportedPhotoPreview(draftId, isExistingProperty))
                 }
                 // If multiple, adds them and lets user manually edit their description
                 else {
-                    addPhotosUseCase.invoke(draftId, savedPhotosList, "")
+                    if (isExistingProperty) {
+                        addPhotoToExistingPropertyDraftUseCase.invoke(draftId, savedPhotosList, "")
+                    } else {
+                        addPhotosUseCase.invoke(draftId, savedPhotosList, "")
+                    }
                     errorsMutableStateFlow.update {
                         it.copy(isPhotosDescriptionsErrorVisible = true)
                     }
@@ -805,50 +833,81 @@ class AddPropertyViewModel @Inject constructor(
     }
 
     fun onDoneButtonClicked() {
-        if (isFormValid()) {
-            viewModelScope.launch {
-                val propertyFormReplaceCache = propertyFormMutableSharedFlow.replayCache.first()
-                val newPropertyId = addPropertyUseCase.invoke(
-                    PropertyEntity(
-                        id = propertyFormReplaceCache.id,
-                        type = propertyFormReplaceCache.type!!.name,
-                        forSaleSince = propertyFormReplaceCache.forSaleSince!!,
-                        saleDate = propertyFormReplaceCache.dateOfSale,
-                        price = propertyFormReplaceCache.priceFromUser ?: propertyFormReplaceCache.referencePrice!!,
-                        surface = propertyFormReplaceCache.surfaceFromUser ?: propertyFormReplaceCache.referenceSurface!!,
-                        rooms = propertyFormReplaceCache.rooms!!,
-                        bathrooms = propertyFormReplaceCache.bathrooms ?: BigDecimal.ZERO,
-                        bedrooms = propertyFormReplaceCache.bedrooms ?: BigDecimal.ZERO,
-                        amenities = propertyFormReplaceCache.pointsOfInterest!!,
-                        address = PropertyAddressEntity(
-                            streetNumber = propertyFormReplaceCache.autoCompleteAddress!!.streetNumber!!,
-                            route = propertyFormReplaceCache.autoCompleteAddress.route!!,
-                            complementaryAddress = propertyFormReplaceCache.autoCompleteAddress.complementaryAddress,
-                            zipcode = propertyFormReplaceCache.autoCompleteAddress.zipcode!!,
-                            city = propertyFormReplaceCache.autoCompleteAddress.city!!,
-                            state = propertyFormReplaceCache.autoCompleteAddress.state!!,
-                            country = propertyFormReplaceCache.autoCompleteAddress.country!!,
-                            latitude = propertyFormReplaceCache.autoCompleteAddress.latitude!!,
-                            longitude = propertyFormReplaceCache.autoCompleteAddress.longitude!!
-                        ),
-                        description = propertyFormReplaceCache.description!!,
-                        photos = propertyFormReplaceCache.photos!!,
-                        featuredPhotoId = propertyFormReplaceCache.featuredPhotoId,
-                        agent = propertyFormReplaceCache.agent ?: "John Doe", // TODO: get agent name from settings
-                        entryDate = ZonedDateTime.now(clock).toLocalDate()
-                    )
-                )
-
-                if (newPropertyId != null) {
-                    deletePropertyDraftUseCase.invoke(newPropertyId)
-                    navigateUseCase.invoke(To.CloseAddProperty)
-                    Log.d("test", "onDoneButtonClicked: property added, draft deleted")
+        val propertyFormReplayCache = propertyFormMutableSharedFlow.replayCache.first()
+        if (isExistingProperty) {
+            if (isFormValid()) {
+                if (existingDraftInitialState == propertyFormReplayCache) {
+                    viewModelScope.launch {
+                        deletePropertyDraftWithPhotosUseCase.invoke(draftId, photosList, true)
+                        navigateUseCase.invoke(To.CloseAddProperty)
+                    }
+                    return
                 } else {
-                    Log.d("test", "onDoneButtonClicked: there was a problem adding the new property")
+                    val featuredPhotoIndex = photosList.indexOfFirst { it.id == propertyFormReplayCache.featuredPhotoId }
+                    viewModelScope.launch {
+                        val updatedPhotos = updatePhotosForPropertyIdUseCase.invoke(draftId, photosList)
+                        if (updatedPhotos != null) {
+                            val updatedProperty = updatePropertyUseCase.invoke(
+                                mapFormToPropertyEntity(
+                                    propertyFormReplayCache.copy(featuredPhotoId = updatedPhotos[featuredPhotoIndex])
+                                )
+                            )
+                            if (updatedProperty > 0) {
+                                navigateUseCase.invoke(To.Toast(NativeText.Resource(R.string.toast_property_updated)))
+                                deletePropertyDraftWithPhotosUseCase.invoke(draftId, photosList, true)
+                                navigateUseCase.invoke(To.CloseAddProperty)
+                            }
+                        } else {
+                            navigateUseCase.invoke(To.Toast(NativeText.Resource(R.string.toast_error_updating_property)))
+                        }
+                    }
+                }
+            }
+
+        } else {
+            if (isFormValid()) {
+                viewModelScope.launch {
+                    val newPropertyId = addPropertyUseCase.invoke(mapFormToPropertyEntity(propertyFormReplayCache))
+                    if (newPropertyId != null) {
+                        navigateUseCase.invoke(To.Toast(NativeText.Resource(R.string.toast_property_added)))
+                        deletePropertyDraftWithPhotosUseCase.invoke(draftId, photosList, true)
+                        navigateUseCase.invoke(To.CloseAddProperty)
+                    } else {
+                        navigateUseCase.invoke(To.Toast(NativeText.Resource(R.string.toast_error_add_property)))
+                    }
                 }
             }
         }
     }
+
+    private fun mapFormToPropertyEntity(propertyForm: PropertyFormEntity) = PropertyEntity(
+        id = propertyForm.id,
+        type = propertyForm.type!!.name,
+        forSaleSince = propertyForm.forSaleSince!!,
+        saleDate = propertyForm.dateOfSale,
+        price = propertyForm.priceFromUser ?: propertyForm.referencePrice!!,
+        surface = propertyForm.surfaceFromUser ?: propertyForm.referenceSurface!!,
+        rooms = propertyForm.rooms!!,
+        bathrooms = propertyForm.bathrooms ?: BigDecimal.ZERO,
+        bedrooms = propertyForm.bedrooms ?: BigDecimal.ZERO,
+        amenities = propertyForm.pointsOfInterest!!,
+        address = PropertyAddressEntity(
+            streetNumber = propertyForm.autoCompleteAddress!!.streetNumber!!,
+            route = propertyForm.autoCompleteAddress.route!!,
+            complementaryAddress = propertyForm.autoCompleteAddress.complementaryAddress,
+            zipcode = propertyForm.autoCompleteAddress.zipcode!!,
+            city = propertyForm.autoCompleteAddress.city!!,
+            state = propertyForm.autoCompleteAddress.state!!,
+            country = propertyForm.autoCompleteAddress.country!!,
+            latitude = propertyForm.autoCompleteAddress.latitude!!,
+            longitude = propertyForm.autoCompleteAddress.longitude!!
+        ),
+        description = propertyForm.description!!,
+        photos = propertyForm.photos!!,
+        featuredPhotoId = propertyForm.featuredPhotoId,
+        agent = propertyForm.agent ?: "John Doe", // TODO: get agent name from settings
+        entryDate = ZonedDateTime.now(clock).toLocalDateTime()
+    )
 
     private fun isFormValid(): Boolean {
         val propertyFormReplayCache = propertyFormMutableSharedFlow.replayCache.first()

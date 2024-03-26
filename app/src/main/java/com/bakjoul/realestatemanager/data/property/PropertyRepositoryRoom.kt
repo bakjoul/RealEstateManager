@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
+import java.time.Clock
 import java.time.ZonedDateTime
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -28,6 +29,7 @@ import javax.inject.Singleton
 class PropertyRepositoryRoom @Inject constructor(
     private val propertyDao: PropertyDao,
     private val propertyFormDao: PropertyFormDao,
+    private val clock: Clock,
     private val coroutineDispatcherProvider: CoroutineDispatcherProvider
 ) : PropertyRepository {
 
@@ -50,6 +52,10 @@ class PropertyRepositoryRoom @Inject constructor(
         }
     }
 
+    override suspend fun updateProperty(propertyEntity: PropertyEntity): Int = withContext(coroutineDispatcherProvider.io) {
+        propertyDao.update(mapPropertyEntityToDto(propertyEntity))
+    }
+
     override fun getPropertiesFlow(): Flow<List<PropertyEntity>> = propertyDao.getProperties().map { propertyWithPhotosList ->
         propertyWithPhotosList.map {
             mapToDomainEntity(it)
@@ -60,6 +66,15 @@ class PropertyRepositoryRoom @Inject constructor(
         it?.let { mapToDomainEntity(it) }
     }.flowOn(coroutineDispatcherProvider.io)
 
+    override suspend fun deleteProperty(id: Long): Int = withContext(coroutineDispatcherProvider.io) {
+        try {
+            propertyDao.delete(id)
+        } catch (e: SQLiteException) {
+            e.printStackTrace()
+            0
+        }
+    }
+
     override suspend fun addPropertyDraft(propertyForm: PropertyFormEntity): Long? = withContext(coroutineDispatcherProvider.io) {
         propertyFormDao.insert(mapPropertyDraftToDto(propertyForm.id, propertyForm))
     }
@@ -68,7 +83,13 @@ class PropertyRepositoryRoom @Inject constructor(
         propertyFormDao.update(mapPropertyDraftToDto(propertyId, propertyForm))
     }
 
-    override suspend fun hasPropertyDrafts(): Boolean = propertyFormDao.hasPropertyForms()
+    override suspend fun hasPropertyDrafts(): Boolean = withContext(coroutineDispatcherProvider.io) {
+        propertyFormDao.hasPropertyForms()
+    }
+
+    override suspend fun doesDraftExistForPropertyId(propertyId: Long): Boolean = withContext(coroutineDispatcherProvider.io) {
+        propertyFormDao.doesDraftExistForPropertyId(propertyId)
+    }
 
     override fun getPropertyDraftsFlow(): Flow<List<PropertyFormEntity>> = propertyFormDao.getPropertyForms().map { propertyFormWithPhotosList ->
         propertyFormWithPhotosList.map {
@@ -104,7 +125,7 @@ class PropertyRepositoryRoom @Inject constructor(
         PropertyDto(
             id = propertyEntity.id,
             type = propertyEntity.type,
-            forSaleSince = propertyEntity.entryDate,
+            forSaleSince = propertyEntity.forSaleSince,
             dateOfSale = propertyEntity.saleDate,
             price = propertyEntity.price,
             surface = propertyEntity.surface,
@@ -133,6 +154,7 @@ class PropertyRepositoryRoom @Inject constructor(
             description = propertyEntity.description,
             featuredPhotoId = propertyEntity.featuredPhotoId,
             agent = propertyEntity.agent,
+            entryDate = propertyEntity.entryDate
         )
 
     private fun mapToDomainEntity(propertyWithPhotosDto: PropertyWithPhotosDto) : PropertyEntity {
@@ -161,7 +183,7 @@ class PropertyRepositoryRoom @Inject constructor(
             photos = mapPhotos(propertyWithPhotosDto.photos),
             featuredPhotoId = propertyWithPhotosDto.propertyDto.featuredPhotoId,
             agent = propertyWithPhotosDto.propertyDto.agent,
-            entryDate = propertyWithPhotosDto.propertyDto.forSaleSince
+            entryDate = propertyWithPhotosDto.propertyDto.entryDate
         )
     }
 
@@ -231,7 +253,7 @@ class PropertyRepositoryRoom @Inject constructor(
             description = propertyForm.description,
             featuredPhotoId = propertyForm.featuredPhotoId,
             agent = propertyForm.agent,
-            lastUpdate = ZonedDateTime.now().toLocalDateTime()
+            lastUpdate = ZonedDateTime.now(clock).toLocalDateTime()
         )
 
     private fun mapPropertyFormDtoToDomainEntity(propertyFormWithPhotosDto: PropertyFormWithPhotosDto) : PropertyFormEntity =

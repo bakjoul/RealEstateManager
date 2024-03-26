@@ -25,12 +25,18 @@ import javax.inject.Inject
 class PhotosFragment @Inject constructor() : DialogFragment(R.layout.fragment_photos) {
 
     companion object {
-        fun newInstance(propertyId: Long, clickedPhotoIndex: Int, isDraft: Boolean = false): PhotosFragment {
+        fun newInstance(
+            propertyId: Long,
+            clickedPhotoIndex: Int,
+            isDraft: Boolean = false,
+            isExistingProperty: Boolean = false
+        ): PhotosFragment {
             return PhotosFragment().apply {
                 arguments = Bundle().apply {
                     putLong("propertyId", propertyId)
                     putInt("clickedPhotoIndex", clickedPhotoIndex)
                     putBoolean("isDraft", isDraft)
+                    putBoolean("isExistingProperty", isExistingProperty)
                 }
             }
         }

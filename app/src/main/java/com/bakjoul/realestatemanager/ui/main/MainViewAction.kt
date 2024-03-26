@@ -1,5 +1,6 @@
 package com.bakjoul.realestatemanager.ui.main
 
+import com.bakjoul.realestatemanager.domain.property.model.PropertyEntity
 import com.bakjoul.realestatemanager.ui.utils.NativeText
 
 sealed class MainViewAction {
@@ -18,9 +19,14 @@ sealed class MainViewAction {
     object ShowDraftListAndHideDetailsPortraitIfNeeded : MainViewAction()
     data class ShowAddPropertyAndDetailsPortraitIfNeeded(val draftId: Long, val isNewDraft: Boolean) : MainViewAction()
     data class ShowAddPropertyAndHideDetailsPortraitIfNeeded(val draftId: Long, val isNewDraft: Boolean) : MainViewAction()
+    data class ShowEditPropertyDraftAlertDialog(val property: PropertyEntity) : MainViewAction()
+    data class ShowEditPropertyAndDetailsPortraitIfNeeded(val propertyId: Long): MainViewAction()
+    data class ShowEditPropertyAndHideDetailsPortraitIfNeeded(val propertyId: Long): MainViewAction()
     object ReturnToDispatcher : MainViewAction()
     object ShowSettingsAndDetailsPortraitIfNeeded : MainViewAction()
     object ShowSettingsAndHideDetailsPortraitIfNeeded : MainViewAction()
     object ShowLoanSimulatorAndDetailsPortraitIfNeeded : MainViewAction()
     object ShowLoanSimulatorAndHideDetailsPortraitIfNeeded : MainViewAction()
+    data class ShowEditPropertyErrorToastAndDetailsTabletIfNeeded(val message: NativeText, val showToast: Boolean): MainViewAction()
+    data class ShowEditPropertyErrorToastAndDetailsPortraitIfNeeded(val message: NativeText, val showToast: Boolean): MainViewAction()
 }

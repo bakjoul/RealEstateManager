@@ -14,14 +14,18 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class EditPhotoDescriptionFragment @Inject constructor() :
-    DialogFragment(R.layout.fragment_edit_photo_description) {
+class EditPhotoDescriptionFragment @Inject constructor() : DialogFragment(R.layout.fragment_edit_photo_description) {
 
     companion object {
-        fun newInstance(photoId: Long, description: String): EditPhotoDescriptionFragment {
+        fun newInstance(
+            photoId: Long,
+            description: String,
+            isExistingProperty: Boolean
+        ): EditPhotoDescriptionFragment {
             val args = Bundle().apply {
                 putLong("photoId", photoId)
                 putString("description", description)
+                putBoolean("isExistingProperty", isExistingProperty)
             }
             val fragment = EditPhotoDescriptionFragment()
             fragment.arguments = args

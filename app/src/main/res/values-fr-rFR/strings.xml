@@ -83,7 +83,7 @@
     <string name="draft_alert_dialog_message">Vous avez des brouillons en cours</string>
     <string name="cancel">Annuler</string>
     <string name="draft_alert_dialog_negative">Ajouter un nouveau bien</string>
-    <string name="draft_alert_dialog_positive">Continuer un brouillon</string>
+    <string name="continue_draft">Continuer un brouillon</string>
     <string name="save_draft_dialog_title">Brouillon en cours</string>
     <string name="save_draft_dialog_message">Voulez-vous enregistrer ce brouillon ?</string>
     <string name="save_draft_dialog_negative">Supprimer</string>
@@ -170,4 +170,13 @@
     <string name="add_property_surface_note">* La surface est enregistrée en mètres carrés. Les valeurs saisies seront converties et arrondies lors de l\'enregistrement. Cela peut entraîner de légères différences dans les valeurs lorsqu\'elles seront récupérées.</string>
     <string name="details_no_photos_text">Aucune photo à afficher</string>
     <string name="property_edit_button_desc">Bouton éditer la propriété</string>
+    <string name="edit_draft_dialog_title">Brouillon existant</string>
+    <string name="edit_draft_dialog_message">Un brouillon existe déjà pour cette propriété. Créer un nouveau brouillon écrasera l\'existant.</string>
+    <string name="edit_draft_dialog_negative">Créer un nouveau brouillon</string>
+    <string name="add_property_delete_draft_button_desc">Bouton supprimer le brouillon</string>
+    <string name="toast_property_edit_error">Error lors de la duplication des photos pour modifier la propriété</string>
+    <string name="toast_property_updated">La propriété a été mise à jour</string>
+    <string name="toast_error_updating_property">Erreur lors de la mise à jour de la propriété</string>
+    <string name="toast_property_added">Propriété ajoutée avec succès</string>
+    <string name="toast_error_add_property">Error lors de l\'ajout de la propriété</string>
 </resources>

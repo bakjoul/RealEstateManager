@@ -56,6 +56,9 @@ class CameraFragment : Fragment(R.layout.fragment_camera) {
     private val binding by viewBinding { FragmentCameraBinding.bind(it) }
     private val viewModel by viewModels<CameraViewModel>()
 
+    private var propertyId = -1L
+    private var isExistingProperty = false
+
     private var cameraProvider: ProcessCameraProvider? = null
     private var camera: Camera? = null
     private var preview: Preview? = null
@@ -206,9 +209,13 @@ class CameraFragment : Fragment(R.layout.fragment_camera) {
     private val filenameFormatter by lazy {
         DateTimeFormatter.ofPattern(getString(R.string.photo_filename_format))
     }
+    private lateinit var cacheFile: File
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        propertyId = requireActivity().intent.getLongExtra("propertyId", -1)
+        isExistingProperty = requireActivity().intent.getBooleanExtra("isExistingProperty", false)
 
         binding.cameraShutterButton.setOnClickListener {
             binding.cameraShutterButton.isClickable = false
@@ -321,7 +328,16 @@ class CameraFragment : Fragment(R.layout.fragment_camera) {
         val fileName = filenameFormatter.format(LocalDateTime.now())
         val fileNameSuffix = "_${IdGenerator.generateShortUuid()}.jpg"
         val formattedFileName = "IMG_${fileName}${fileNameSuffix}"
-        val cacheFile = File(requireContext().cacheDir, formattedFileName)
+
+        cacheFile = if (requireActivity().intent.getBooleanExtra("isExistingProperty", false)) {
+            val subDir = File(requireContext().cacheDir, "temp")
+            if (subDir.exists()) {
+                subDir.mkdirs()
+            }
+            File(subDir, formattedFileName)
+        } else {
+            File(requireContext().cacheDir, formattedFileName)
+        }
 
         // Image capture metadata
         val metadata = ImageCapture.Metadata().apply {
@@ -348,7 +364,8 @@ class CameraFragment : Fragment(R.layout.fragment_camera) {
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
                     viewModel.onImageSaved(
                         output.savedUri?.path,
-                        requireActivity().intent.getLongExtra("propertyId", -1)
+                        propertyId,
+                        isExistingProperty
                     )
 
                     // Re-enable shutter button after a short delay

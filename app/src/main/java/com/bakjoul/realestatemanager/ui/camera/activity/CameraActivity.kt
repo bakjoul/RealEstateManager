@@ -23,9 +23,14 @@ class CameraActivity : AppCompatActivity() {
     companion object {
         const val PHOTO_PREVIEW_DIALOG_TAG = "PhotoPreviewFragment"
 
-        fun navigate(context: Context, propertyId: Long) : Intent {
+        fun navigate(
+            context: Context,
+            propertyId: Long,
+            isExistingProperty: Boolean
+        ) : Intent {
             return Intent(context, CameraActivity::class.java).apply {
                 putExtra("propertyId", propertyId)
+                putExtra("isExistingProperty", isExistingProperty)
             }
         }
     }
@@ -54,6 +59,7 @@ class CameraActivity : AppCompatActivity() {
                     val photoPreviewFragment = PhotoPreviewFragment().apply {
                         arguments = Bundle().apply {
                             putLong("propertyId", viewAction.propertyId)
+                            putBoolean("isExistingProperty", viewAction.isExistingProperty)
                         }
                     }
 

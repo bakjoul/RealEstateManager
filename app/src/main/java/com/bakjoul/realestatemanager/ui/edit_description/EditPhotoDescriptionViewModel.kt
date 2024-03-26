@@ -27,6 +27,7 @@ class EditPhotoDescriptionViewModel @Inject constructor(
     private val updatePhotoDescriptionUseCase: UpdatePhotoDescriptionUseCase
 ) : ViewModel() {
 
+    private val isExistingProperty = savedStateHandle.get<Boolean>("isExistingProperty") ?: false
     private val descriptionMutableStateFlow: MutableStateFlow<String> =
         MutableStateFlow(savedStateHandle.get<String>("description") ?: "")
     private val isSaveButtonClickedMutableStateFlow: MutableStateFlow<Boolean> = MutableStateFlow(false)
@@ -69,7 +70,11 @@ class EditPhotoDescriptionViewModel @Inject constructor(
         isSaveButtonClickedMutableStateFlow.value = true
         if (descriptionMutableStateFlow.value.isNotEmpty()) {
             viewModelScope.launch {
-                updatePhotoDescriptionUseCase.invoke(savedStateHandle.get<Long>("photoId")!!, descriptionMutableStateFlow.value)
+                updatePhotoDescriptionUseCase.invoke(
+                    savedStateHandle.get<Long>("photoId")!!,
+                    descriptionMutableStateFlow.value,
+                    isExistingProperty
+                )
             }
             navigateUseCase.invoke(To.CloseEditPhotoDescription)
         }

@@ -3,6 +3,7 @@ package com.bakjoul.realestatemanager.domain.property.model
 import com.bakjoul.realestatemanager.domain.photos.model.PhotoEntity
 import java.math.BigDecimal
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 data class PropertyEntity(
     val id: Long,
@@ -20,5 +21,5 @@ data class PropertyEntity(
     val photos: List<PhotoEntity>,
     val featuredPhotoId: Long?,
     val agent: String,
-    val entryDate: LocalDate
+    val entryDate: LocalDateTime
 )

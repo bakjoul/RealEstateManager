@@ -12,7 +12,8 @@ import com.bakjoul.realestatemanager.domain.navigation.NavigateUseCase
 import com.bakjoul.realestatemanager.domain.navigation.model.To
 import com.bakjoul.realestatemanager.domain.photo_preview.GetLastPhotoUriUseCase
 import com.bakjoul.realestatemanager.domain.photos.AddPhotosUseCase
-import com.bakjoul.realestatemanager.domain.photos.DeletePhotosFromAppFilesUseCase
+import com.bakjoul.realestatemanager.domain.photos.content_resolver.DeletePhotosFromAppFilesUseCase
+import com.bakjoul.realestatemanager.domain.photos.edit.AddPhotoToExistingPropertyDraftUseCase
 import com.bakjoul.realestatemanager.ui.utils.Event
 import com.bakjoul.realestatemanager.ui.utils.NativeText
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,13 +25,19 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PhotoPreviewViewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle,
     private val getLastPhotoUriUseCase: GetLastPhotoUriUseCase,
     private val deletePhotosFromAppFilesUseCase: DeletePhotosFromAppFilesUseCase,
-    private val savedStateHandle: SavedStateHandle,
+    private val addPhotoToExistingPropertyDraftUseCase: AddPhotoToExistingPropertyDraftUseCase,
     private val addPhotosUseCase: AddPhotosUseCase,
     private val navigateUseCase: NavigateUseCase,
     private val getCurrentNavigationUseCase: GetCurrentNavigationUseCase
 ) : ViewModel() {
+
+    private val propertyId = requireNotNull(savedStateHandle.get<Long>("propertyId")) {
+        "No property id passed as parameter !"
+    }
+    private val isExistingProperty = savedStateHandle.get<Boolean>("isExistingProperty") ?: false
 
     private val descriptionMutableStateFlow: MutableStateFlow<String?> = MutableStateFlow(null)
     private val isDoneButtonClickedMutableStateFlow: MutableStateFlow<Boolean> = MutableStateFlow(false)
@@ -77,7 +84,11 @@ class PhotoPreviewViewModel @Inject constructor(
         if (!descriptionMutableStateFlow.value.isNullOrEmpty()) {
             photoUri?.let {
                 viewModelScope.launch {
-                    val photoId = addPhotosUseCase.invoke(savedStateHandle.get<Long>("propertyId")!!, listOf(it), descriptionMutableStateFlow.value!!)
+                    val photoId = if (isExistingProperty) {
+                        addPhotoToExistingPropertyDraftUseCase.invoke(propertyId, listOf(it), descriptionMutableStateFlow.value!!)
+                    } else {
+                        addPhotosUseCase.invoke(propertyId, listOf(it), descriptionMutableStateFlow.value!!)
+                    }
                     if (photoId != null) {
                         navigateUseCase.invoke(To.Toast(NativeText.Resource(R.string.photo_preview_added_toast)))
                     }

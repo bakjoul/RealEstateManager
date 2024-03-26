@@ -48,7 +48,7 @@ class MainActivity : AppCompatActivity() {
     private val binding by viewBinding { ActivityMainBinding.inflate(it) }
     private val viewModel by viewModels<MainViewModel>()
 
-    private val draftAlertDialog by lazy {
+    private val addPropertyDraftAlertDialog by lazy {
         MaterialAlertDialogBuilder(this)
             .setTitle(getString(R.string.draft_alert_dialog_title))
             .setMessage(getString(R.string.draft_alert_dialog_message))
@@ -56,12 +56,13 @@ class MainActivity : AppCompatActivity() {
             .setNegativeButton(getString(R.string.draft_alert_dialog_negative)) { _, _ ->
                 viewModel.onAddNewPropertyClicked()
             }
-            .setPositiveButton(getString(R.string.draft_alert_dialog_positive)) { _, _ ->
+            .setPositiveButton(getString(R.string.continue_draft)) { _, _ ->
                 viewModel.onContinueEditingDraftClicked()
             }
     }
 
-    private var isDraftAlertDialogShown = false
+    private var isAddPropertyDraftAlertDialogShown = false
+    private var isEditPropertyDraftAlertDialogShown = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -177,13 +178,13 @@ class MainActivity : AppCompatActivity() {
 
                 MainViewAction.ShowPropertyDraftAlertDialog -> {
                     val addPropertyFragment = supportFragmentManager.findFragmentByTag(ADD_PROPERTY_DIALOG_TAG)
-                    if (!isDraftAlertDialogShown && addPropertyFragment == null) {
-                        isDraftAlertDialogShown = true
-                        draftAlertDialog
+                    if (!isAddPropertyDraftAlertDialogShown && addPropertyFragment == null) {
+                        isAddPropertyDraftAlertDialogShown = true
+                        addPropertyDraftAlertDialog
                             .show()
                             .setOnDismissListener {
-                                viewModel.onDraftAlertDialogDismissed()
-                                isDraftAlertDialogShown = false
+                                viewModel.onAddPropertyDraftAlertDialogDismissed()
+                                isAddPropertyDraftAlertDialogShown = false
                             }
                     }
                 }
@@ -220,6 +221,52 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
 
+                is MainViewAction.ShowEditPropertyDraftAlertDialog -> {
+                    val addPropertyFragment = supportFragmentManager.findFragmentByTag(ADD_PROPERTY_DIALOG_TAG)
+                    if (!isEditPropertyDraftAlertDialogShown && addPropertyFragment == null) {
+                        var isDialogOpened = false
+                        isEditPropertyDraftAlertDialogShown = true
+                        MaterialAlertDialogBuilder(this)
+                            .setTitle(getString(R.string.edit_draft_dialog_title))
+                            .setMessage(getString(R.string.edit_draft_dialog_message))
+                            .setNeutralButton(getString(R.string.cancel)) { _, _ -> }
+                            .setNegativeButton(getString(R.string.edit_draft_dialog_negative)) { _, _ ->
+                                viewModel.onEditPropertyClicked(it.property)
+                                isDialogOpened = true
+                            }
+                            .setPositiveButton(getString(R.string.continue_draft)) { _, _ ->
+                                viewModel.onContinueEditingPropertyDraftClicked(it.property)
+                                isDialogOpened = true
+                            }
+                            .show()
+                            .setOnDismissListener {
+                                viewModel.onEditPropertyExistingDraftAlertDialogDismissed(isDialogOpened)
+                                isEditPropertyDraftAlertDialogShown = false
+                            }
+                    }
+                }
+
+                is MainViewAction.ShowEditPropertyAndDetailsPortraitIfNeeded -> {
+                    showDetailsPortraitIfNeeded(containerMainId)
+
+                    val existingFragment = supportFragmentManager.findFragmentByTag(ADD_PROPERTY_DIALOG_TAG)
+                    if (existingFragment == null) {
+                        AddPropertyFragment.newInstance(it.propertyId, isNewDraft = false, isExistingProperty = true)
+                            .show(supportFragmentManager, ADD_PROPERTY_DIALOG_TAG)
+                    }
+                }
+
+                is MainViewAction.ShowEditPropertyAndHideDetailsPortraitIfNeeded -> {
+                    val detailsPortraitFragment = hideDetailsPortrait()
+                    showDetailsTabletIfNeeded(containerDetailsId, detailsPortraitFragment)
+
+                    val existingFragment = supportFragmentManager.findFragmentByTag(ADD_PROPERTY_DIALOG_TAG)
+                    if (existingFragment == null) {
+                        AddPropertyFragment.newInstance(it.propertyId, isNewDraft = false, isExistingProperty = true)
+                            .show(supportFragmentManager, ADD_PROPERTY_DIALOG_TAG)
+                    }
+                }
+
                 MainViewAction.ReturnToDispatcher -> {
                     startActivity(Intent(this, DispatcherActivity::class.java))
                     finish()
@@ -249,6 +296,23 @@ class MainActivity : AppCompatActivity() {
                     val detailsPortraitFragment = hideDetailsPortrait()
                     showDetailsTabletIfNeeded(containerDetailsId, detailsPortraitFragment)
                     showLoanSimulatorDialog()
+                }
+
+                is MainViewAction.ShowEditPropertyErrorToastAndDetailsTabletIfNeeded -> {
+                    if (it.showToast) {
+                        it.message.showAsToast(this)
+                        viewModel.onEditErrorToastShown()
+                    }
+                    hideDetailsPortrait()
+                    showDetailsTablet(containerDetailsId)
+                }
+
+                is MainViewAction.ShowEditPropertyErrorToastAndDetailsPortraitIfNeeded -> {
+                    if (it.showToast) {
+                        it.message.showAsToast(this)
+                        viewModel.onEditErrorToastShown()
+                    }
+                    showDetailsPortraitIfNeeded(containerMainId)
                 }
             }
         }

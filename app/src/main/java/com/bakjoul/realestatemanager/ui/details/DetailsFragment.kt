@@ -1,5 +1,8 @@
 package com.bakjoul.realestatemanager.ui.details
 
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
+import android.animation.PropertyValuesHolder
 import android.annotation.SuppressLint
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -7,11 +10,14 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Paint
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AccelerateDecelerateInterpolator
+import android.view.animation.OvershootInterpolator
 import android.widget.PopupWindow
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
@@ -32,27 +38,123 @@ import kotlin.math.abs
 @AndroidEntryPoint
 class DetailsFragment : Fragment(R.layout.fragment_details) {
 
+    private companion object {
+        private const val FAB_MENU_ANIMATION_DURATION = 400L
+    }
+
     private val binding by viewBinding { FragmentDetailsBinding.bind(it) }
     private val viewModel by viewModels<DetailsViewModel>()
+
+    // region fab menu animations
+    private val fabMenuTranslationX by lazy { DensityUtil.dip2px(requireContext(), 64f).toFloat() }
+    private val fabMenuInterpolator by lazy { OvershootInterpolator() }
+    private val fabMenuMainAnimator by lazy {
+        var isClosing = false
+        ObjectAnimator.ofPropertyValuesHolder(
+            binding.detailsFabMenu,
+            PropertyValuesHolder.ofFloat("rotation", 0f, -180f),
+            PropertyValuesHolder.ofFloat("alpha", 1f, 0f, 1f)
+        ).apply {
+            duration = FAB_MENU_ANIMATION_DURATION
+            interpolator = AccelerateDecelerateInterpolator()
+            addUpdateListener { animation ->
+                val rotation = animation.animatedValue as Float
+                val shouldClose = rotation <= -90
+                if (shouldClose != isClosing) {
+                    isClosing = shouldClose
+                    if (isClosing) {
+                        binding.detailsFabMenu.setImageResource(R.drawable.baseline_close_24_white)
+                    } else {
+                        binding.detailsFabMenu.setImageResource(R.drawable.baseline_more_vert_24)
+                    }
+                }
+            }
+        }
+    }
+    private val fabEditAnimator by lazy {
+        ObjectAnimator.ofPropertyValuesHolder(
+            binding.detailsFabEdit,
+            PropertyValuesHolder.ofFloat("translationX", 0f),
+            PropertyValuesHolder.ofFloat("alpha", 1f)
+        ).apply {
+            duration = FAB_MENU_ANIMATION_DURATION
+            interpolator = fabMenuInterpolator
+        }
+    }
+    private val fabDeleteAnimator by lazy {
+        ObjectAnimator.ofPropertyValuesHolder(
+            binding.detailsFabDelete,
+            PropertyValuesHolder.ofFloat("translationX", 0f),
+            PropertyValuesHolder.ofFloat("alpha", 1f)
+        ).apply {
+            duration = FAB_MENU_ANIMATION_DURATION
+            interpolator = fabMenuInterpolator
+        }
+    }
+    // For devices with API < 26
+    private val fabMenuMainAnimatorReverse by lazy {
+        ObjectAnimator.ofPropertyValuesHolder(
+            binding.detailsFabMenu,
+            PropertyValuesHolder.ofFloat("rotation", -180f, 0f),
+            PropertyValuesHolder.ofFloat("alpha", 1f, 0f, 1f)
+        ).apply {
+            duration = FAB_MENU_ANIMATION_DURATION
+            interpolator = AccelerateDecelerateInterpolator()
+            addUpdateListener { animation ->
+                val rotation = animation.animatedValue as Float
+                if (rotation == -90f) {
+                    binding.detailsFabMenu.setImageResource(R.drawable.baseline_more_vert_24)
+                }
+            }
+        }
+    }
+    private val fabEditAnimatorReverse by lazy {
+        ObjectAnimator.ofPropertyValuesHolder(
+            binding.detailsFabEdit,
+            PropertyValuesHolder.ofFloat("translationX", fabMenuTranslationX),
+            PropertyValuesHolder.ofFloat("alpha", 0f)
+        ).apply {
+            duration = FAB_MENU_ANIMATION_DURATION
+            interpolator = fabMenuInterpolator
+        }
+    }
+    private val fabDeleteAnimatorReverse by lazy {
+        ObjectAnimator.ofPropertyValuesHolder(
+            binding.detailsFabDelete,
+            PropertyValuesHolder.ofFloat("translationX", fabMenuTranslationX),
+            PropertyValuesHolder.ofFloat("alpha", 0f)
+        ).apply {
+            duration = FAB_MENU_ANIMATION_DURATION
+            interpolator = fabMenuInterpolator
+        }
+    }
+    private var isFabMenuOpen = false
+    // endregion
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         binding.detailsToolbar.setPadding(0, 0, 0, 0)  // Removes toolbar padding on tablets
-
         if (!resources.getBoolean(R.bool.isTablet)) {
             setToolbarInfoAnimation()
         }
-
         handleOnBackPressed()
+        setFabMenu()
+
+        binding.detailsFabBack?.setOnClickListener { viewModel.onBackButtonClicked() }
+        binding.detailsFabEdit.setOnClickListener {
+            viewModel.onEditButtonClicked()
+            closeFabMenu()
+        }
+        binding.detailsFabDelete.setOnClickListener {
+            viewModel.onDeleteButtonClicked()
+            closeFabMenu()
+        }
 
         // Medias RecyclerView
         val divider = DividerItemDecoration(requireContext(), DividerItemDecoration.HORIZONTAL)
         divider.setDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.photos_divider_details)!!)
         binding.detailsPhotoListView.addItemDecoration(divider)
-
-        binding.detailsFabBack?.setOnClickListener { viewModel.onBackButtonPressed() }
-        binding.detailsFabEdit.setOnClickListener { Log.d("test", "onViewCreated: edit button clicked") }
 
         viewModel.viewStateLiveData.observe(viewLifecycleOwner) { details ->
             Glide.with(binding.detailsToolbarPhoto)
@@ -136,6 +238,85 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
         }
     }
 
+    private fun handleOnBackPressed() {
+        requireActivity().onBackPressedDispatcher.addCallback(requireActivity(), object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                val drawer: DrawerLayout = requireActivity().findViewById(R.id.main_DrawerLayout)
+                if (drawer.isDrawerOpen(GravityCompat.END)) {
+                    drawer.closeDrawer(GravityCompat.END)
+                } else {
+                    viewModel.onBackButtonClicked()
+                }
+            }
+        })
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    private fun setFabMenu() {
+        binding.detailsFabEdit.translationX = fabMenuTranslationX
+        binding.detailsFabDelete.translationX = fabMenuTranslationX
+        binding.detailsFabEdit.setAlpha(0f)
+        binding.detailsFabDelete.setAlpha(0f)
+
+        binding.detailsFabMenu.setOnClickListener {
+            if (isFabMenuOpen) {
+                closeFabMenu()
+            } else {
+                openFabMenu()
+            }
+        }
+
+        binding.detailsTouchInterceptorView.setOnTouchListener { _, event ->
+            if (isFabMenuOpen && event.action == MotionEvent.ACTION_DOWN) {
+                if (!isTouchInsideView(binding.detailsFabMenuLinearLayout, event)) {
+                    closeFabMenu()
+                }
+            }
+            false
+        }
+
+    }
+
+    private fun openFabMenu() {
+        isFabMenuOpen = !isFabMenuOpen
+
+        AnimatorSet().apply {
+            playTogether(fabMenuMainAnimator, fabEditAnimator, fabDeleteAnimator)
+            start()
+        }
+    }
+
+
+    @SuppressLint("Recycle")
+    private fun closeFabMenu() {
+        isFabMenuOpen = !isFabMenuOpen
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            AnimatorSet().apply {
+                playTogether(fabMenuMainAnimator, fabEditAnimator, fabDeleteAnimator)
+                reverse()
+            }
+        } else {
+            AnimatorSet().apply {
+                playTogether(fabMenuMainAnimatorReverse, fabEditAnimatorReverse, fabDeleteAnimatorReverse)
+                start()
+            }
+        }
+    }
+
+    private fun isTouchInsideView(view: View, event: MotionEvent): Boolean {
+        val touchX = event.rawX.toInt()
+        val touchY = event.rawY.toInt()
+
+        val viewLocation = IntArray(2)
+        view.getLocationOnScreen(viewLocation)
+        val viewX = viewLocation[0]
+        val viewYY = viewLocation[1]
+
+        return touchX >= viewX && touchX <= viewX + view.width &&
+                touchY >= viewYY && touchY <= viewYY + view.height
+    }
+
     private fun setTooltip(isNearby: Boolean, poi: View, text: String) {
         if (isNearby) {
             poi.visibility = View.VISIBLE
@@ -160,18 +341,5 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
             height = ViewGroup.LayoutParams.WRAP_CONTENT
             isOutsideTouchable = true
         }
-    }
-
-    private fun handleOnBackPressed() {
-        requireActivity().onBackPressedDispatcher.addCallback(requireActivity(), object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                val drawer: DrawerLayout = requireActivity().findViewById(R.id.main_DrawerLayout)
-                if (drawer.isDrawerOpen(GravityCompat.END)) {
-                    drawer.closeDrawer(GravityCompat.END)
-                } else {
-                    viewModel.onBackButtonPressed()
-                }
-            }
-        })
     }
 }

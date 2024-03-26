@@ -1,4 +1,4 @@
-package com.bakjoul.realestatemanager.domain.photos
+package com.bakjoul.realestatemanager.domain.photos.content_resolver
 
 import javax.inject.Inject
 

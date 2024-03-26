@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <bool name="isTablet">true</bool>
     <dimen name="photo_frame_width">164dp</dimen>
     <dimen name="photo_frame_height">124dp</dimen>
     <dimen name="photo_width">162dp</dimen>
     <dimen name="photo_height">122dp</dimen>
+    <dimen name="mtrl_fab_min_touch_target" tools:override="true">32dp</dimen>
 </resources>

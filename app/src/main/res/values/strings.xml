@@ -92,7 +92,7 @@
     <string name="draft_alert_dialog_message">You have drafts in progress</string>
     <string name="cancel">Cancel</string>
     <string name="draft_alert_dialog_negative">Add new property</string>
-    <string name="draft_alert_dialog_positive">Continue draft</string>
+    <string name="continue_draft">Continue draft</string>
     <string name="save_draft_dialog_title">Draft in progress</string>
     <string name="save_draft_dialog_message">Do you want to save this draft ?</string>
     <string name="save_draft_dialog_negative">Discard</string>
@@ -186,4 +186,13 @@
     <string name="add_property_surface_note">* Surface area is stored in square meters. Entered values will be converted and rounded upon storage. This may result in slight differences in the values when retrieved.</string>
     <string name="details_no_photos_text">No photos to display</string>
     <string name="property_edit_button_desc">Edit property button</string>
+    <string name="edit_draft_dialog_title">Existing draft</string>
+    <string name="edit_draft_dialog_message">A draft already exists for this property. Creating a new draft will overwrite the existing one.</string>
+    <string name="edit_draft_dialog_negative">Create new draft</string>
+    <string name="add_property_delete_draft_button_desc">Delete draft button</string>
+    <string name="toast_property_edit_error">Error while trying to duplicate photos for editing property</string>
+    <string name="toast_property_updated">Property has been updated</string>
+    <string name="toast_error_updating_property">Error while trying to update property</string>
+    <string name="toast_property_added">Property successfully added</string>
+    <string name="toast_error_add_property">Error while trying to add property</string>
 </resources>

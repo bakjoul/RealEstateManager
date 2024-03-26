@@ -51,10 +51,11 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
         private const val EDIT_PHOTO_DESC_DIALOG_TAG = "EDIT_PHOTO_DESC_DIALOG_TAG"
         private const val DRAFT_PHOTOS_DIALOG_TAG = "DRAFT_PHOTOS_DIALOG_TAG"
 
-        fun newInstance(draftId: Long, isNewDraft: Boolean): AddPropertyFragment {
+        fun newInstance(draftId: Long, isNewDraft: Boolean, isExistingProperty: Boolean = false): AddPropertyFragment {
             val args = Bundle().apply {
                 putLong("draftId", draftId)
                 putBoolean("isNewDraft", isNewDraft)
+                putBoolean("isExistingProperty", isExistingProperty)
             }
             val fragment = AddPropertyFragment()
             fragment.arguments = args
@@ -452,17 +453,17 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
                 }
 
                 is AddPropertyViewAction.OpenCamera -> {
-                    startActivity(CameraActivity.navigate(requireContext(), it.propertyId))
+                    startActivity(CameraActivity.navigate(requireContext(), it.propertyId, it.isExistingProperty))
                 }
 
                 is AddPropertyViewAction.ShowImportedPhotoPreview -> {
-                    startActivity(PhotoPreviewActivity.navigate(requireContext(), it.propertyId))
+                    startActivity(PhotoPreviewActivity.navigate(requireContext(), it.propertyId, it.isExistingProperty))
                 }
 
                 is AddPropertyViewAction.EditPhotoDescription -> {
                     val existingFragment = childFragmentManager.findFragmentByTag(EDIT_PHOTO_DESC_DIALOG_TAG)
                     if (existingFragment == null) {
-                        val newFragment = EditPhotoDescriptionFragment.newInstance(it.photoId, it.description)
+                        val newFragment = EditPhotoDescriptionFragment.newInstance(it.photoId, it.description, it.isExistingProperty)
                         newFragment.show(childFragmentManager, EDIT_PHOTO_DESC_DIALOG_TAG)
                     }
                 }
@@ -470,7 +471,7 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
                 is AddPropertyViewAction.ShowPhotosViewer -> {
                     val existingFragment = childFragmentManager.findFragmentByTag(DRAFT_PHOTOS_DIALOG_TAG)
                     if (existingFragment == null) {
-                        PhotosFragment.newInstance(it.propertyId, it.clickedPhotoIndex, isDraft = true)
+                        PhotosFragment.newInstance(it.propertyId, it.clickedPhotoIndex, isDraft = true, it.isExistingProperty)
                             .show(childFragmentManager,DRAFT_PHOTOS_DIALOG_TAG)
                     }
                 }

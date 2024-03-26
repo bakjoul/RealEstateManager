@@ -15,9 +15,14 @@ import dagger.hilt.android.AndroidEntryPoint
 class PhotoPreviewActivity : AppCompatActivity() {
 
     companion object {
-        fun navigate(context: Context, propertyId: Long): Intent {
+        fun navigate(
+            context: Context,
+            propertyId: Long,
+            isExistingProperty: Boolean
+        ): Intent {
             return Intent(context, PhotoPreviewActivity::class.java).apply {
                 putExtra("propertyId", propertyId)
+                putExtra("isExistingProperty", isExistingProperty)
             }
         }
     }
@@ -35,6 +40,7 @@ class PhotoPreviewActivity : AppCompatActivity() {
                 val photoPreviewFragment = PhotoPreviewFragment()
                 val args = Bundle().apply {
                     putLong("propertyId", propertyId)
+                    putBoolean("isExistingProperty", intent.getBooleanExtra("isExistingProperty", false))
                 }
                 photoPreviewFragment.arguments = args
 

@@ -36,7 +36,8 @@ import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import java.text.ParseException
 import java.text.SimpleDateFormat
-import java.time.LocalDateTime
+import java.time.Clock
+import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
@@ -54,7 +55,8 @@ class PropertyListViewModel @Inject constructor(
     private val navigateUseCase: NavigateUseCase,
     private val hasPropertyDraftsUseCase: HasPropertyDraftsUseCase,
     private val generateNewDraftIdUseCase: GenerateNewDraftIdUseCase,
-    private val addPropertyDraftUseCase: AddPropertyDraftUseCase
+    private val addPropertyDraftUseCase: AddPropertyDraftUseCase,
+    private val clock: Clock
 ) : ViewModel() {
 
     private val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
@@ -179,10 +181,15 @@ class PropertyListViewModel @Inject constructor(
     fun onAddPropertyClicked() {
         viewModelScope.launch {
             if (hasPropertyDraftsUseCase.invoke()) {
-                navigateUseCase.invoke(To.DraftAlertDialog)
+                navigateUseCase.invoke(To.AddPropertyDraftAlertDialog)
             } else {
                 val propertyDraftId = generateNewDraftIdUseCase.invoke()
-                addPropertyDraftUseCase.invoke(PropertyFormEntity(propertyDraftId, lastUpdate = LocalDateTime.now()))
+                addPropertyDraftUseCase.invoke(
+                    PropertyFormEntity(
+                        propertyDraftId,
+                        lastUpdate = ZonedDateTime.now(clock).toLocalDateTime()
+                    )
+                )
                 navigateUseCase.invoke(To.AddProperty(propertyDraftId, true))
             }
         }

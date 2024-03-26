@@ -7,6 +7,7 @@ import com.bakjoul.realestatemanager.BuildConfig
 import com.bakjoul.realestatemanager.data.api.CurrencyApi
 import com.bakjoul.realestatemanager.data.api.GoogleApi
 import com.bakjoul.realestatemanager.data.photos.PhotoDao
+import com.bakjoul.realestatemanager.data.photos.edit.TemporaryPhotoDao
 import com.bakjoul.realestatemanager.data.property.PropertyDao
 import com.bakjoul.realestatemanager.data.property.PropertyFormDao
 import com.google.firebase.auth.FirebaseAuth
@@ -132,6 +133,10 @@ class DataModule {
     @Singleton
     @Provides
     fun providePropertyFormDao(appDatabase: AppDatabase): PropertyFormDao = appDatabase.getPropertyFormDao()
+
+    @Singleton
+    @Provides
+    fun provideTemporaryPhotoDao(appDatabase: AppDatabase): TemporaryPhotoDao = appDatabase.getTemporaryPhotoDao()
 
     @Singleton
     @Provides

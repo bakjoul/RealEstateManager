@@ -10,12 +10,18 @@ import com.bakjoul.realestatemanager.domain.auth.GetCurrentUserUseCase
 import com.bakjoul.realestatemanager.domain.auth.IsUserAuthenticatedUseCase
 import com.bakjoul.realestatemanager.domain.auth.LogOutUseCase
 import com.bakjoul.realestatemanager.domain.main.GetClipboardToastStateUseCase
+import com.bakjoul.realestatemanager.domain.main.GetEditErrorToastStateUseCase
 import com.bakjoul.realestatemanager.domain.main.SetClipboardToastStateUseCase
+import com.bakjoul.realestatemanager.domain.main.SetEditErrorToastStateUseCase
 import com.bakjoul.realestatemanager.domain.navigation.GetCurrentNavigationUseCase
 import com.bakjoul.realestatemanager.domain.navigation.NavigateUseCase
 import com.bakjoul.realestatemanager.domain.navigation.model.To
+import com.bakjoul.realestatemanager.domain.photos.CopyPhotosToPhotoDraftsUseCase
+import com.bakjoul.realestatemanager.domain.photos.edit.DeleteAllPhotosForExistingPropertyDraftIdUseCase
 import com.bakjoul.realestatemanager.domain.property.drafts.AddPropertyDraftUseCase
 import com.bakjoul.realestatemanager.domain.property.drafts.GenerateNewDraftIdUseCase
+import com.bakjoul.realestatemanager.domain.property.drafts.MapPropertyToPropertyFormUseCase
+import com.bakjoul.realestatemanager.domain.property.model.PropertyEntity
 import com.bakjoul.realestatemanager.domain.property_form.model.PropertyFormEntity
 import com.bakjoul.realestatemanager.domain.resources.IsTabletUseCase
 import com.bakjoul.realestatemanager.domain.resources.RefreshOrientationUseCase
@@ -26,7 +32,8 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import java.time.LocalDateTime
+import java.time.Clock
+import java.time.ZonedDateTime
 import javax.inject.Inject
 
 @HiltViewModel
@@ -39,10 +46,16 @@ class MainViewModel @Inject constructor(
     private val logOutUseCase: LogOutUseCase,
     private val getCurrentNavigationUseCase: GetCurrentNavigationUseCase,
     private val navigateUseCase: NavigateUseCase,
-    private val generateNewDraftIdUseCase: GenerateNewDraftIdUseCase,
+    private val generateNewPropertyIdUseCase: GenerateNewDraftIdUseCase,
+    private val deleteAllPhotosForExistingPropertyDraftIdUseCase: DeleteAllPhotosForExistingPropertyDraftIdUseCase,
+    private val copyPhotosToPhotoDraftsUseCase: CopyPhotosToPhotoDraftsUseCase,
     private val addPropertyDraftUseCase: AddPropertyDraftUseCase,
+    private val mapPropertyToPropertyFormUseCase: MapPropertyToPropertyFormUseCase,
+    private val clock: Clock,
     private val getClipboardToastStateUseCase: GetClipboardToastStateUseCase,
-    private val setClipboardToastStateUseCase: SetClipboardToastStateUseCase
+    private val setClipboardToastStateUseCase: SetClipboardToastStateUseCase,
+    private val getEditErrorToastStateUseCase: GetEditErrorToastStateUseCase,
+    private val setEditErrorToastStateUseCase: SetEditErrorToastStateUseCase
 ) : ViewModel() {
 
     init {
@@ -81,6 +94,13 @@ class MainViewModel @Inject constructor(
                         } else {
                             MainViewAction.ShowClipboardToastAndDetailsPortraitIfNeeded(navigation.message, shouldShowClipboardToast)
                         }
+                    } else if (navigation.message == NativeText.Resource(R.string.toast_property_edit_error)) {
+                        val shouldShowEditErrorToast = getEditErrorToastStateUseCase.invoke().first()
+                        if (isTablet) {
+                            MainViewAction.ShowEditPropertyErrorToastAndDetailsTabletIfNeeded(navigation.message, shouldShowEditErrorToast)
+                        } else {
+                            MainViewAction.ShowEditPropertyErrorToastAndDetailsPortraitIfNeeded(navigation.message, shouldShowEditErrorToast)
+                        }
                     } else {
                         null
                     }
@@ -90,7 +110,7 @@ class MainViewModel @Inject constructor(
                 } else {
                     MainViewAction.ShowPhotosDialogAndDetailsPortraitIfNeeded(navigation.propertyId, navigation.clickedPhotoIndex)
                 }
-                is To.DraftAlertDialog -> MainViewAction.ShowPropertyDraftAlertDialog
+                is To.AddPropertyDraftAlertDialog -> MainViewAction.ShowPropertyDraftAlertDialog
                 is To.DraftList -> if (isTablet) {
                     MainViewAction.ShowDraftListAndHideDetailsPortraitIfNeeded
                 } else {
@@ -106,10 +126,16 @@ class MainViewModel @Inject constructor(
                 } else {
                     MainViewAction.ShowDetailsPortraitIfNeeded
                 }
-                is To.CloseDraftList, To.CloseAddProperty, To.CloseSettings, To.CloseLoanSimulator -> if (isTablet) {
+                is To.CloseDraftList, To.CloseAddProperty, To.CloseSettings, To.CloseLoanSimulator, To.DoNothing -> if (isTablet) {
                     MainViewAction.HideDetailsPortrait
                 } else {
                     MainViewAction.ShowDetailsPortraitIfNeeded
+                }
+                is To.EditPropertyDraftAlertDialog -> MainViewAction.ShowEditPropertyDraftAlertDialog(navigation.property)
+                is To.EditProperty -> if (isTablet) {
+                    MainViewAction.ShowEditPropertyAndHideDetailsPortraitIfNeeded(navigation.propertyId)
+                } else {
+                    MainViewAction.ShowEditPropertyAndDetailsPortraitIfNeeded(navigation.propertyId)
                 }
                 is To.Dispatcher -> MainViewAction.ReturnToDispatcher
                 is To.Settings -> if (isTablet) {
@@ -144,9 +170,14 @@ class MainViewModel @Inject constructor(
 
     fun onAddNewPropertyClicked() {
         viewModelScope.launch {
-            val propertyDraftId = generateNewDraftIdUseCase.invoke()
-            addPropertyDraftUseCase.invoke(PropertyFormEntity(propertyDraftId, lastUpdate = LocalDateTime.now()))
-            navigateUseCase.invoke(To.AddProperty(propertyDraftId, true))
+            val propertyId = generateNewPropertyIdUseCase.invoke()
+            addPropertyDraftUseCase.invoke(
+                PropertyFormEntity(
+                    propertyId,
+                    lastUpdate = ZonedDateTime.now(clock).toLocalDateTime()
+                )
+            )
+            navigateUseCase.invoke(To.AddProperty(propertyId, true))
         }
     }
 
@@ -162,7 +193,41 @@ class MainViewModel @Inject constructor(
         setClipboardToastStateUseCase.invoke(false)
     }
 
-    fun onDraftAlertDialogDismissed() {
+    fun onAddPropertyDraftAlertDialogDismissed() {
         navigateUseCase.invoke(To.DoNothing)
+    }
+
+    fun onEditPropertyExistingDraftAlertDialogDismissed(isDialogOpened: Boolean) {
+        if (!isDialogOpened) {
+            navigateUseCase.invoke(To.Details)
+        }
+    }
+
+    fun onEditPropertyClicked(property: PropertyEntity) {
+        viewModelScope.launch {
+            deleteAllPhotosForExistingPropertyDraftIdUseCase.invoke(property.id)
+            val draftPhotos = copyPhotosToPhotoDraftsUseCase.invoke(property.id)
+            if (draftPhotos == null) {
+                setEditErrorToastStateUseCase.invoke(true)
+                navigateUseCase.invoke(To.Toast(NativeText.Resource(R.string.toast_property_edit_error)))
+                return@launch
+            }
+            addPropertyDraftUseCase.invoke(
+                mapPropertyToPropertyFormUseCase.invoke(
+                    property.copy(
+                        photos = draftPhotos
+                    )
+                )
+            )
+            navigateUseCase.invoke(To.EditProperty(property.id))
+        }
+    }
+
+    fun onContinueEditingPropertyDraftClicked(property: PropertyEntity) {
+        navigateUseCase.invoke(To.EditProperty(property.id))
+    }
+
+    fun onEditErrorToastShown() {
+        setEditErrorToastStateUseCase.invoke(false)
     }
 }

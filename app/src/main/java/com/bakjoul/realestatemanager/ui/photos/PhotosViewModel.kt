@@ -11,6 +11,7 @@ import com.bakjoul.realestatemanager.domain.navigation.GetCurrentNavigationUseCa
 import com.bakjoul.realestatemanager.domain.navigation.NavigateUseCase
 import com.bakjoul.realestatemanager.domain.navigation.model.To
 import com.bakjoul.realestatemanager.domain.photos.GetPhotosForPropertyIdUseCase
+import com.bakjoul.realestatemanager.domain.photos.edit.GetPhotosForExistingPropertyDraftIdUseCase
 import com.bakjoul.realestatemanager.ui.utils.Event
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,16 +22,27 @@ import javax.inject.Inject
 @HiltViewModel
 class PhotosViewModel @Inject constructor(
     getCurrentNavigationUseCase: GetCurrentNavigationUseCase,
+    getPhotosForPropertyIdUseCase: GetPhotosForPropertyIdUseCase,
+    getPhotosForExistingPropertyDraftUseCase: GetPhotosForExistingPropertyDraftIdUseCase,
     private val savedStateHandle: SavedStateHandle,
-    private val getPhotosForPropertyIdUseCase: GetPhotosForPropertyIdUseCase,
     private val navigateUseCase: NavigateUseCase
 ) : ViewModel() {
 
+    private val propertyId = requireNotNull(savedStateHandle.get<Long>("propertyId")) {
+        "No property id passed as parameter !"
+    }
+    private val isExistingProperty = savedStateHandle.get<Boolean>("isExistingProperty") ?: false
+
     private val currentPhotoIdMutableStateFlow: MutableStateFlow<Int> = MutableStateFlow(savedStateHandle["clickedPhotoIndex"] ?: 0)
+    private val photosFlow = if (isExistingProperty) {
+        getPhotosForExistingPropertyDraftUseCase.invoke(propertyId)
+    } else {
+        getPhotosForPropertyIdUseCase.invoke(propertyId)
+    }
 
     val viewStateLiveData: LiveData<PhotosViewState> = liveData {
         combine(
-            getPhotosForPropertyIdUseCase.invoke(savedStateHandle["propertyId"]),
+            photosFlow,
             currentPhotoIdMutableStateFlow
         ) { photos, currentPhotoId ->
             PhotosViewState(

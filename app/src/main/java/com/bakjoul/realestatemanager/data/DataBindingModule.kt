@@ -11,6 +11,7 @@ import com.bakjoul.realestatemanager.data.navigation.NavigationRepositoryInMemor
 import com.bakjoul.realestatemanager.data.photo_preview.PhotoPreviewRepositoryImplementation
 import com.bakjoul.realestatemanager.data.photos.PhotoFileRepositoryContentResolver
 import com.bakjoul.realestatemanager.data.photos.PhotoRepositoryRoom
+import com.bakjoul.realestatemanager.data.photos.edit.TemporaryTemporaryPhotoRepositoryRoom
 import com.bakjoul.realestatemanager.data.property.PropertyRepositoryRoom
 import com.bakjoul.realestatemanager.data.resources.ResourcesRepositoryImplementation
 import com.bakjoul.realestatemanager.data.settings.SettingsRepositoryImplementation
@@ -23,8 +24,9 @@ import com.bakjoul.realestatemanager.domain.geocoding.GeocodingRepository
 import com.bakjoul.realestatemanager.domain.main.MainToastStateRepository
 import com.bakjoul.realestatemanager.domain.navigation.NavigationRepository
 import com.bakjoul.realestatemanager.domain.photo_preview.PhotoPreviewRepository
-import com.bakjoul.realestatemanager.domain.photos.PhotoFileRepository
 import com.bakjoul.realestatemanager.domain.photos.PhotoRepository
+import com.bakjoul.realestatemanager.domain.photos.content_resolver.PhotoFileRepository
+import com.bakjoul.realestatemanager.domain.photos.edit.TemporaryPhotoRepository
 import com.bakjoul.realestatemanager.domain.property.PropertyRepository
 import com.bakjoul.realestatemanager.domain.resources.ResourcesRepository
 import com.bakjoul.realestatemanager.domain.settings.SettingsRepository
@@ -93,4 +95,8 @@ abstract class DataBindingModule {
     @Singleton
     @Binds
     abstract fun bindPhotoFileRepository(photoFileRepositoryContentResolver: PhotoFileRepositoryContentResolver): PhotoFileRepository
+
+    @Singleton
+    @Binds
+    abstract fun bindTemporaryPhotoRepository(temporaryPhotoRepositoryRoom: TemporaryTemporaryPhotoRepositoryRoom): TemporaryPhotoRepository
 }

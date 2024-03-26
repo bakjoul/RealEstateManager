@@ -12,11 +12,11 @@ class UpdatePropertyDraftUseCase @Inject constructor(private val propertyReposit
     }
 
     suspend fun invoke(propertyId: Long, propertyForm: PropertyFormEntity): Int {
-        val updatedPropertyId = propertyRepository.updatePropertyDraft(propertyId, propertyForm)
-        return if (updatedPropertyId > 0) {
+        val updatedProperty = propertyRepository.updatePropertyDraft(propertyId, propertyForm)
+        return if (updatedProperty > 0) {
             Log.d(TAG, "Property draft $propertyId updated successfully")
-            updatedPropertyId
-        } else if (updatedPropertyId == 0) {
+            updatedProperty
+        } else if (updatedProperty == 0) {
             Log.d(TAG, "Property draft $propertyId unchanged")
             0
         } else {

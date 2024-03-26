@@ -23,5 +23,5 @@
     <color name="grey_background_dialog">#88000000</color>
     <color name="red">#FFB3271C</color>
     <color name="red_transparent">#50B3271C</color>
-
+    <color name="red_darker_transparent">#95B3271C</color>
 </resources>

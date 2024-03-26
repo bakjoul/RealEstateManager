@@ -3,6 +3,7 @@ package com.bakjoul.realestatemanager.ui.details
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
+import androidx.lifecycle.viewModelScope
 import com.bakjoul.realestatemanager.BuildConfig
 import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.data.settings.model.SurfaceUnit
@@ -12,9 +13,15 @@ import com.bakjoul.realestatemanager.domain.CoroutineDispatcherProvider
 import com.bakjoul.realestatemanager.domain.currency_rate.GetEuroRateUseCase
 import com.bakjoul.realestatemanager.domain.current_property.ResetCurrentPropertyIdUseCase
 import com.bakjoul.realestatemanager.domain.main.SetClipboardToastStateUseCase
+import com.bakjoul.realestatemanager.domain.main.SetEditErrorToastStateUseCase
 import com.bakjoul.realestatemanager.domain.navigation.NavigateUseCase
 import com.bakjoul.realestatemanager.domain.navigation.model.To
+import com.bakjoul.realestatemanager.domain.photos.CopyPhotosToPhotoDraftsUseCase
 import com.bakjoul.realestatemanager.domain.property.GetCurrentPropertyUseCase
+import com.bakjoul.realestatemanager.domain.property.drafts.AddPropertyDraftUseCase
+import com.bakjoul.realestatemanager.domain.property.drafts.DoesDraftExistForPropertyIdUseCase
+import com.bakjoul.realestatemanager.domain.property.drafts.MapPropertyToPropertyFormUseCase
+import com.bakjoul.realestatemanager.domain.property.model.PropertyEntity
 import com.bakjoul.realestatemanager.domain.property.model.PropertyPoiEntity
 import com.bakjoul.realestatemanager.domain.property.model.PropertyTypeEntity
 import com.bakjoul.realestatemanager.domain.settings.currency.GetCurrentCurrencyUseCase
@@ -25,7 +32,9 @@ import com.bakjoul.realestatemanager.ui.utils.ViewModelUtils.Companion.formatSur
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.util.Locale
 import javax.inject.Inject
 
@@ -38,13 +47,20 @@ class DetailsViewModel @Inject constructor(
     private val resetCurrentPropertyIdUseCase: ResetCurrentPropertyIdUseCase,
     private val getCurrentSurfaceUnitUseCase: GetCurrentSurfaceUnitUseCase,
     private val navigateUseCase: NavigateUseCase,
-    private val setClipboardToastStateUseCase: SetClipboardToastStateUseCase
+    private val setClipboardToastStateUseCase: SetClipboardToastStateUseCase,
+    private val doesDraftExistForPropertyIdUseCase: DoesDraftExistForPropertyIdUseCase,
+    private val copyPhotosToPhotoDraftsUseCase: CopyPhotosToPhotoDraftsUseCase,
+    private val setEditErrorToastStateUseCase: SetEditErrorToastStateUseCase,
+    private val addPropertyDraftUseCase: AddPropertyDraftUseCase,
+    private val mapPropertyToPropertyFormUseCase: MapPropertyToPropertyFormUseCase
 ) : ViewModel() {
 
     private companion object {
         private const val STATIC_MAP_SIZE = "250x250"
         private const val STATIC_MAP_ZOOM = "17"
     }
+
+    private var propertyEntity: PropertyEntity? = null
 
     val viewStateLiveData: LiveData<DetailsViewState> = liveData(coroutineDispatcherProvider.io) {
         combine(
@@ -53,6 +69,10 @@ class DetailsViewModel @Inject constructor(
             flow { emit(getEuroRateUseCase.invoke()) },
             getCurrentSurfaceUnitUseCase.invoke()
         ) { property, currency, euroRateWrapper, surfaceUnit ->
+            if (propertyEntity == null) {
+                propertyEntity = property
+            }
+
             val parsedSurfaceValue = formatSurfaceValue(property.surface, surfaceUnit)
             DetailsViewState(
                 featuredPhotoUrl = property.photos.find { it.id == property.featuredPhotoId }?.uri ?: "",
@@ -102,7 +122,7 @@ class DetailsViewModel @Inject constructor(
         else -> NativeText.Simple("")
     }
 
-    private fun getSaleStatus(soldDate: LocalDate?, entryDate: LocalDate): NativeText {
+    private fun getSaleStatus(soldDate: LocalDate?, entryDate: LocalDateTime): NativeText {
         return if (soldDate != null) {
             NativeText.Argument(
                 R.string.property_sold_on,
@@ -176,7 +196,7 @@ class DetailsViewModel @Inject constructor(
 
     private fun formatAddress(address: String) = address.replace(" ", "%20")
 
-    fun onBackButtonPressed() {
+    fun onBackButtonClicked() {
         resetCurrentPropertyIdUseCase.invoke()
         navigateUseCase.invoke(To.CloseDetails)
     }
@@ -184,5 +204,36 @@ class DetailsViewModel @Inject constructor(
     fun onLocationClicked() {
         setClipboardToastStateUseCase.invoke(true)
         navigateUseCase.invoke(To.Toast(NativeText.Resource(R.string.property_address_clipboard)))
+    }
+
+    fun onEditButtonClicked() {
+        val property = propertyEntity ?: return
+
+        viewModelScope.launch {
+            if (doesDraftExistForPropertyIdUseCase.invoke(property.id)) {
+                navigateUseCase.invoke(To.EditPropertyDraftAlertDialog(property))
+            } else {
+                val draftPhotos = copyPhotosToPhotoDraftsUseCase.invoke(property.id)
+                if (draftPhotos == null) {
+                    setEditErrorToastStateUseCase.invoke(true)
+                    navigateUseCase.invoke(To.Toast(NativeText.Resource(R.string.toast_property_edit_error)))
+                    return@launch
+                }
+                val featuredPhotoIndex = property.photos.indexOfFirst { it.id == property.featuredPhotoId }
+                addPropertyDraftUseCase.invoke(
+                    mapPropertyToPropertyFormUseCase.invoke(
+                        property.copy(
+                            photos = draftPhotos,
+                            featuredPhotoId = draftPhotos[featuredPhotoIndex].id
+                        )
+                    )
+                )
+                navigateUseCase.invoke(To.EditProperty(property.id))
+            }
+        }
+    }
+
+    fun onDeleteButtonClicked() {
+        // TODO
     }
 }

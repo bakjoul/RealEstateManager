@@ -10,7 +10,9 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.workDataOf
 import com.bakjoul.realestatemanager.data.photos.PhotoDao
+import com.bakjoul.realestatemanager.data.photos.edit.TemporaryPhotoDao
 import com.bakjoul.realestatemanager.data.photos.model.PhotoDto
+import com.bakjoul.realestatemanager.data.photos.model.TemporaryPhotoDto
 import com.bakjoul.realestatemanager.data.property.PropertyDao
 import com.bakjoul.realestatemanager.data.property.PropertyFormDao
 import com.bakjoul.realestatemanager.data.property.model.PropertyDto
@@ -22,12 +24,14 @@ import com.bakjoul.realestatemanager.domain.property.model.PropertyTypeEntity
 import com.google.gson.Gson
 import java.math.BigDecimal
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 @Database(
     entities = [
         PropertyDto::class,
         PhotoDto::class,
-        PropertyFormDto::class
+        PropertyFormDto::class,
+        TemporaryPhotoDto::class
     ],
     version = 1,
     exportSchema = false
@@ -42,6 +46,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun getPropertyDao(): PropertyDao
     abstract fun getPropertyFormDao(): PropertyFormDao
     abstract fun getPhotoDao(): PhotoDao
+    abstract fun getTemporaryPhotoDao(): TemporaryPhotoDao
 
     companion object {
         private const val DATABASE_NAME = "RealEstateManager_database"
@@ -92,7 +97,8 @@ abstract class AppDatabase : RoomDatabase() {
                                 longitude = 2.3522219,
                                 description = "Anchored by a vast marble gallery with sweeping staircase, the entertaining floor includes a baronial living room facing Park Avenue, handsome library with original paneling, and tremendous dining room; all of which enjoy fireplaces. The state-of-the-art St. Charles designed kitchen includes a sunny breakfast room and staff quarters. Upstairs, the expansive master suite overlooks Park Avenue and includes two marble baths, two dressing rooms, and two offices. Additionally there are three large bedrooms with en-suite baths and a media room.",
                                 featuredPhotoId = 1,
-                                agent = "John Doe"
+                                agent = "John Doe",
+                                entryDate = LocalDateTime.parse("2023-01-01T00:00:00")
                             ),
                             PropertyDto(
                                 id = 2,
@@ -125,7 +131,8 @@ abstract class AppDatabase : RoomDatabase() {
                                 longitude = 2.3522219,
                                 description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec euismod, nisl eget ultricies ultrices, nisl nisl aliquam",
                                 featuredPhotoId = 6,
-                                agent = "Jane Doe"
+                                agent = "Jane Doe",
+                                entryDate = LocalDateTime.parse("2023-02-01T00:00:00")
                             ),
                             PropertyDto(
                                 id = 3,
@@ -158,7 +165,8 @@ abstract class AppDatabase : RoomDatabase() {
                                 longitude = 2.3522219,
                                 description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec euismod, nisl eget ultricies ultrices, nisl nisl aliquam",
                                 featuredPhotoId = 7,
-                                agent = "Jane Doe"
+                                agent = "Jane Doe",
+                                entryDate = LocalDateTime.parse("2023-04-01T00:00:00")
                             ),
                         )
                     )
@@ -169,31 +177,31 @@ abstract class AppDatabase : RoomDatabase() {
                                 id = 1,
                                 propertyId = 1,
                                 uri = "android.resource://com.bakjoul.realestatemanager/drawable/penthouse_upper_east_side",
-                                description = "Lounge"
+                                description = "Lounge 1"
                             ),
                             PhotoDto(
                                 id = 2,
                                 propertyId = 1,
                                 uri = "android.resource://com.bakjoul.realestatemanager/drawable/penthouse_upper_east_side",
-                                description = "Lounge"
+                                description = "Lounge 2"
                             ),
                             PhotoDto(
                                 id = 3,
                                 propertyId = 1,
                                 uri = "android.resource://com.bakjoul.realestatemanager/drawable/penthouse_upper_east_side",
-                                description = "Lounge"
+                                description = "Lounge 3"
                             ),
                             PhotoDto(
                                 id = 4,
                                 propertyId = 1,
                                 uri = "android.resource://com.bakjoul.realestatemanager/drawable/penthouse_upper_east_side",
-                                description = "Lounge"
+                                description = "Lounge 4"
                             ),
                             PhotoDto(
                                 id = 5,
                                 propertyId = 1,
                                 uri = "android.resource://com.bakjoul.realestatemanager/drawable/penthouse_upper_east_side",
-                                description = "Lounge"
+                                description = "Lounge 5"
                             ),
                             PhotoDto(
                                 id = 6,

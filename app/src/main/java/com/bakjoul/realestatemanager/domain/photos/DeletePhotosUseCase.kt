@@ -1,6 +1,7 @@
 package com.bakjoul.realestatemanager.domain.photos
 
 import com.bakjoul.realestatemanager.domain.CoroutineDispatcherProvider
+import com.bakjoul.realestatemanager.domain.photos.content_resolver.PhotoFileRepository
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.withContext
