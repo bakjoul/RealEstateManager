@@ -11,6 +11,7 @@ import com.bakjoul.realestatemanager.domain.currency_rate.GetEuroRateUseCase
 import com.bakjoul.realestatemanager.domain.navigation.GetCurrentNavigationUseCase
 import com.bakjoul.realestatemanager.domain.navigation.NavigateUseCase
 import com.bakjoul.realestatemanager.domain.navigation.model.To
+import com.bakjoul.realestatemanager.domain.property.GetPropertiesFlowUseCase
 import com.bakjoul.realestatemanager.domain.property.drafts.GetPropertyDraftsFlowUseCase
 import com.bakjoul.realestatemanager.domain.property_form.model.PropertyFormEntity
 import com.bakjoul.realestatemanager.domain.settings.currency.GetCurrentCurrencyUseCase
@@ -21,6 +22,7 @@ import com.bakjoul.realestatemanager.ui.utils.NativeText
 import com.bakjoul.realestatemanager.ui.utils.ViewModelUtils.Companion.formatPrice
 import com.bakjoul.realestatemanager.ui.utils.ViewModelUtils.Companion.formatSurfaceValue
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
 import java.time.LocalDateTime
@@ -29,17 +31,32 @@ import javax.inject.Inject
 @HiltViewModel
 class DraftsViewModel @Inject constructor(
     coroutineDispatcherProvider: CoroutineDispatcherProvider,
+    getPropertyDraftsFlowUseCase: GetPropertyDraftsFlowUseCase,
+    getPropertiesFlowUseCase: GetPropertiesFlowUseCase,
     private val getCurrentCurrencyUseCase: GetCurrentCurrencyUseCase,
     private val getEuroRateUseCase: GetEuroRateUseCase,
     private val getCurrentSurfaceUnitUseCase: GetCurrentSurfaceUnitUseCase,
     private val getCurrentNavigationUseCase: GetCurrentNavigationUseCase,
-    private val getPropertyDraftsFlowUseCase: GetPropertyDraftsFlowUseCase,
     private val navigateUseCase: NavigateUseCase
 ) : ViewModel() {
 
-    val draftsLiveData: LiveData<List<DraftsItemViewState>> = liveData(coroutineDispatcherProvider.io) {
+    private val propertyDraftsFlow: Flow<List<PropertyFormEntity>> = combine(
+        getPropertyDraftsFlowUseCase.invoke(),
+        getPropertiesFlowUseCase.invoke()
+    ) { propertyDrafts, existingProperties ->
+        val draftList = mutableListOf<PropertyFormEntity>()
+        propertyDrafts.forEach { draft ->
+            val draftToDisplay = existingProperties.find { it.id == draft.id }
+            if (draftToDisplay == null) {
+                draftList.add(draft)
+            }
+        }
+        draftList
+    }
+
+    val viewStateLiveData: LiveData<List<DraftsItemViewState>> = liveData(coroutineDispatcherProvider.io) {
         combine(
-            getPropertyDraftsFlowUseCase.invoke(),
+            propertyDraftsFlow,
             getCurrentCurrencyUseCase.invoke(),
             flow { emit(getEuroRateUseCase.invoke()) },
             getCurrentSurfaceUnitUseCase.invoke()

@@ -60,7 +60,7 @@ class DraftsFragment : DialogFragment(R.layout.fragment_drafts) {
         val adapter = DraftsAdapter()
         binding.draftsRecyclerView.adapter = adapter
 
-        viewModel.draftsLiveData.observe(viewLifecycleOwner) {
+        viewModel.viewStateLiveData.observe(viewLifecycleOwner) {
             adapter.submitList(it)
         }
 
