@@ -38,10 +38,10 @@ class PhotoFileRepositoryContentResolver @Inject constructor(
 
             photoUris.forEach {
                 val uri = Uri.parse(it)
-                val isResourceUri = isResourceUri(uri)
+                val isContentResolverNeeded = isResourceUri(uri) || isMediaUri(uri)
 
                 try {
-                    val inputStream = if (isResourceUri) {
+                    val inputStream = if (isContentResolverNeeded) {
                         contentResolver.openInputStream(Uri.parse(it))
                     } else {
                         FileInputStream(File(uri.path!!))
@@ -58,7 +58,7 @@ class PhotoFileRepositoryContentResolver @Inject constructor(
                         File(context.cacheDir, fileName)
                     }
 
-                    val outputStream = if (isResourceUri) {
+                    val outputStream = if (isContentResolverNeeded) {
                         cacheFile.outputStream()
                     } else {
                         FileOutputStream(cacheFile)
@@ -116,6 +116,10 @@ class PhotoFileRepositoryContentResolver @Inject constructor(
 
     private fun isResourceUri(uri: Uri): Boolean {
         return uri.scheme == "android.resource" && uri.authority == "com.bakjoul.realestatemanager"
+    }
+
+    private fun isMediaUri(uri: Uri): Boolean {
+        return uri.scheme == "content" && uri.authority == "media"
     }
 
     private fun generateFileName(): String {
