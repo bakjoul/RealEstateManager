@@ -1,9 +1,7 @@
 # Real Estate Manager
 
 ## About the app
-Real Estate Manager is an Android app designed to assist real estate agents in managing the properties they list for sale.\
-Its features enable agents to add, edit, and list properties, display them on a map, and filter them based on various criteria. Additionally, the app offers a loan simulator feature. The app is currently under development.
-
+Real Estate Manager is an Android app designed to assist real estate agents in managing the properties they list for sale. It enables agents to add, edit, and list properties, display them on a map, and filter them based on various criteria. Additionally, the app offers a loan simulator feature. The app is currently under development.
 
 What's taking me so long?\
 Besides life's little surprises, i pride myself on pushing this project (way) further than what is asked, striving to adopt today's **good pratices** and become a **good developer**. Take a look at my code and feel free to give me your feedback!
