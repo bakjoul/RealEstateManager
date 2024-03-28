@@ -195,4 +195,7 @@
     <string name="toast_error_updating_property">Error while trying to update property</string>
     <string name="toast_property_added">Property successfully added</string>
     <string name="toast_error_add_property">Error while trying to add property</string>
+    <string name="delete_property_dialog_title">Deleting property</string>
+    <string name="delete_property_dialog_message">Are you sure you want to delete this property? This action is irreversible.</string>
+    <string name="confirm">Confirm</string>
 </resources>

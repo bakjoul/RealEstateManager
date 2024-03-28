@@ -213,27 +213,34 @@ class DetailsViewModel @Inject constructor(
             if (doesDraftExistForPropertyIdUseCase.invoke(property.id)) {
                 navigateUseCase.invoke(To.EditPropertyDraftAlertDialog(property))
             } else {
-                val draftPhotos = copyPhotosToPhotoDraftsUseCase.invoke(property.id)
-                if (draftPhotos == null) {
-                    setEditErrorToastStateUseCase.invoke(true)
-                    navigateUseCase.invoke(To.Toast(NativeText.Resource(R.string.toast_property_edit_error)))
-                    return@launch
-                }
-                val featuredPhotoIndex = property.photos.indexOfFirst { it.id == property.featuredPhotoId }
-                addPropertyDraftUseCase.invoke(
-                    mapPropertyToPropertyFormUseCase.invoke(
-                        property.copy(
-                            photos = draftPhotos,
-                            featuredPhotoId = draftPhotos[featuredPhotoIndex].id
+                if (property.photos.isNotEmpty()) {
+                    val draftPhotos = copyPhotosToPhotoDraftsUseCase.invoke(property.id)
+                    if (draftPhotos == null) {
+                        setEditErrorToastStateUseCase.invoke(true)
+                        navigateUseCase.invoke(To.Toast(NativeText.Resource(R.string.toast_property_edit_error)))
+                        return@launch
+                    }
+                    val featuredPhotoIndex = property.photos.indexOfFirst { it.id == property.featuredPhotoId }
+                    addPropertyDraftUseCase.invoke(
+                        mapPropertyToPropertyFormUseCase.invoke(
+                            property.copy(
+                                photos = draftPhotos,
+                                featuredPhotoId = draftPhotos[featuredPhotoIndex].id
+                            )
                         )
                     )
-                )
+                } else {
+                    addPropertyDraftUseCase.invoke(mapPropertyToPropertyFormUseCase.invoke(property))
+                }
+
                 navigateUseCase.invoke(To.EditProperty(property.id))
             }
         }
     }
 
     fun onDeleteButtonClicked() {
-        // TODO
+        val property = propertyEntity ?: return
+
+        navigateUseCase.invoke(To.DeletePropertyAlertDialog(property))
     }
 }

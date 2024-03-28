@@ -22,6 +22,7 @@ sealed class MainViewAction {
     data class ShowEditPropertyDraftAlertDialog(val property: PropertyEntity) : MainViewAction()
     data class ShowEditPropertyAndDetailsPortraitIfNeeded(val propertyId: Long): MainViewAction()
     data class ShowEditPropertyAndHideDetailsPortraitIfNeeded(val propertyId: Long): MainViewAction()
+    data class ShowDeletePropertyAlertDialog(val property: PropertyEntity) : MainViewAction()
     object ReturnToDispatcher : MainViewAction()
     object ShowSettingsAndDetailsPortraitIfNeeded : MainViewAction()
     object ShowSettingsAndHideDetailsPortraitIfNeeded : MainViewAction()

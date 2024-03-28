@@ -63,6 +63,7 @@ class MainActivity : AppCompatActivity() {
 
     private var isAddPropertyDraftAlertDialogShown = false
     private var isEditPropertyDraftAlertDialogShown = false
+    private var isDeletePropertyAlertDialogShown = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -224,7 +225,7 @@ class MainActivity : AppCompatActivity() {
                 is MainViewAction.ShowEditPropertyDraftAlertDialog -> {
                     val addPropertyFragment = supportFragmentManager.findFragmentByTag(ADD_PROPERTY_DIALOG_TAG)
                     if (!isEditPropertyDraftAlertDialogShown && addPropertyFragment == null) {
-                        var isDialogOpened = false
+                        var shouldShowDetails = true
                         isEditPropertyDraftAlertDialogShown = true
                         MaterialAlertDialogBuilder(this)
                             .setTitle(getString(R.string.edit_draft_dialog_title))
@@ -232,15 +233,15 @@ class MainActivity : AppCompatActivity() {
                             .setNeutralButton(getString(R.string.cancel)) { _, _ -> }
                             .setNegativeButton(getString(R.string.edit_draft_dialog_negative)) { _, _ ->
                                 viewModel.onEditPropertyClicked(it.property)
-                                isDialogOpened = true
+                                shouldShowDetails = false
                             }
                             .setPositiveButton(getString(R.string.continue_draft)) { _, _ ->
                                 viewModel.onContinueEditingPropertyDraftClicked(it.property)
-                                isDialogOpened = true
+                                shouldShowDetails = false
                             }
                             .show()
                             .setOnDismissListener {
-                                viewModel.onEditPropertyExistingDraftAlertDialogDismissed(isDialogOpened)
+                                viewModel.onAlertDialogDismissed(shouldShowDetails)
                                 isEditPropertyDraftAlertDialogShown = false
                             }
                     }
@@ -264,6 +265,28 @@ class MainActivity : AppCompatActivity() {
                     if (existingFragment == null) {
                         AddPropertyFragment.newInstance(it.propertyId, isNewDraft = false, isExistingProperty = true)
                             .show(supportFragmentManager, ADD_PROPERTY_DIALOG_TAG)
+                    }
+                }
+
+                is MainViewAction.ShowDeletePropertyAlertDialog -> {
+                    if (!isDeletePropertyAlertDialogShown) {
+                        var shouldShouldDetails = true
+                        isDeletePropertyAlertDialogShown = true
+                        MaterialAlertDialogBuilder(this)
+                            .setTitle(getString(R.string.delete_property_dialog_title))
+                            .setMessage(getString(R.string.delete_property_dialog_message))
+                            .setNegativeButton(getString(R.string.cancel)) { _, _ ->
+                                shouldShouldDetails = true
+                            }
+                            .setPositiveButton(getString(R.string.confirm)) { _, _ ->
+                                viewModel.onDeletePropertyClicked(it.property)
+                                shouldShouldDetails = false
+                            }
+                            .show()
+                            .setOnDismissListener {
+                                viewModel.onAlertDialogDismissed(shouldShouldDetails)
+                                isDeletePropertyAlertDialogShown = false
+                            }
                     }
                 }
 

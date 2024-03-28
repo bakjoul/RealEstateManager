@@ -28,6 +28,7 @@ sealed class To {
     object CloseDraftPhotos : To()
     data class EditPropertyDraftAlertDialog(val property: PropertyEntity) : To()
     data class EditProperty(val propertyId: Long): To()
+    data class DeletePropertyAlertDialog(val property: PropertyEntity) : To()
     object Dispatcher : To()
     object Settings : To()
     object CloseSettings : To()

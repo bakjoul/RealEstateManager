@@ -179,4 +179,7 @@
     <string name="toast_error_updating_property">Erreur lors de la mise à jour de la propriété</string>
     <string name="toast_property_added">Propriété ajoutée avec succès</string>
     <string name="toast_error_add_property">Error lors de l\'ajout de la propriété</string>
+    <string name="delete_property_dialog_title">Suppression de la propriété</string>
+    <string name="delete_property_dialog_message">Êtes-vous sûr de vouloir supprimer cette propriété ? Cette action est irréversible.</string>
+    <string name="confirm">Confirmer</string>
 </resources>

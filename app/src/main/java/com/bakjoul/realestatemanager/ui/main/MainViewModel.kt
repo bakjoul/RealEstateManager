@@ -18,6 +18,7 @@ import com.bakjoul.realestatemanager.domain.navigation.NavigateUseCase
 import com.bakjoul.realestatemanager.domain.navigation.model.To
 import com.bakjoul.realestatemanager.domain.photos.CopyPhotosToPhotoDraftsUseCase
 import com.bakjoul.realestatemanager.domain.photos.edit.DeleteAllPhotosForExistingPropertyDraftIdUseCase
+import com.bakjoul.realestatemanager.domain.property.DeletePropertyUseCase
 import com.bakjoul.realestatemanager.domain.property.drafts.AddPropertyDraftUseCase
 import com.bakjoul.realestatemanager.domain.property.drafts.GenerateNewDraftIdUseCase
 import com.bakjoul.realestatemanager.domain.property.drafts.MapPropertyToPropertyFormUseCase
@@ -55,7 +56,8 @@ class MainViewModel @Inject constructor(
     private val getClipboardToastStateUseCase: GetClipboardToastStateUseCase,
     private val setClipboardToastStateUseCase: SetClipboardToastStateUseCase,
     private val getEditErrorToastStateUseCase: GetEditErrorToastStateUseCase,
-    private val setEditErrorToastStateUseCase: SetEditErrorToastStateUseCase
+    private val setEditErrorToastStateUseCase: SetEditErrorToastStateUseCase,
+    private val deletePropertyUseCase: DeletePropertyUseCase
 ) : ViewModel() {
 
     init {
@@ -137,6 +139,7 @@ class MainViewModel @Inject constructor(
                 } else {
                     MainViewAction.ShowEditPropertyAndDetailsPortraitIfNeeded(navigation.propertyId)
                 }
+                is To.DeletePropertyAlertDialog -> MainViewAction.ShowDeletePropertyAlertDialog(navigation.property)
                 is To.Dispatcher -> MainViewAction.ReturnToDispatcher
                 is To.Settings -> if (isTablet) {
                     MainViewAction.ShowSettingsAndHideDetailsPortraitIfNeeded
@@ -197,8 +200,8 @@ class MainViewModel @Inject constructor(
         navigateUseCase.invoke(To.DoNothing)
     }
 
-    fun onEditPropertyExistingDraftAlertDialogDismissed(isDialogOpened: Boolean) {
-        if (!isDialogOpened) {
+    fun onAlertDialogDismissed(shouldShowDetails: Boolean) {
+        if (shouldShowDetails) {
             navigateUseCase.invoke(To.Details)
         }
     }
@@ -206,19 +209,26 @@ class MainViewModel @Inject constructor(
     fun onEditPropertyClicked(property: PropertyEntity) {
         viewModelScope.launch {
             deleteAllPhotosForExistingPropertyDraftIdUseCase.invoke(property.id)
-            val draftPhotos = copyPhotosToPhotoDraftsUseCase.invoke(property.id)
-            if (draftPhotos == null) {
-                setEditErrorToastStateUseCase.invoke(true)
-                navigateUseCase.invoke(To.Toast(NativeText.Resource(R.string.toast_property_edit_error)))
-                return@launch
-            }
-            addPropertyDraftUseCase.invoke(
-                mapPropertyToPropertyFormUseCase.invoke(
-                    property.copy(
-                        photos = draftPhotos
+            if (property.photos.isNotEmpty()) {
+                val draftPhotos = copyPhotosToPhotoDraftsUseCase.invoke(property.id)
+                if (draftPhotos == null) {
+                    setEditErrorToastStateUseCase.invoke(true)
+                    navigateUseCase.invoke(To.Toast(NativeText.Resource(R.string.toast_property_edit_error)))
+                    return@launch
+                }
+                val featuredPhotoIndex = property.photos.indexOfFirst { it.id == property.featuredPhotoId }
+                addPropertyDraftUseCase.invoke(
+                    mapPropertyToPropertyFormUseCase.invoke(
+                        property.copy(
+                            photos = draftPhotos,
+                            featuredPhotoId = draftPhotos[featuredPhotoIndex].id
+                        )
                     )
                 )
-            )
+            } else {
+                addPropertyDraftUseCase.invoke(mapPropertyToPropertyFormUseCase.invoke(property))
+            }
+
             navigateUseCase.invoke(To.EditProperty(property.id))
         }
     }
@@ -229,5 +239,12 @@ class MainViewModel @Inject constructor(
 
     fun onEditErrorToastShown() {
         setEditErrorToastStateUseCase.invoke(false)
+    }
+
+    fun onDeletePropertyClicked(property: PropertyEntity) {
+        viewModelScope.launch {
+            navigateUseCase.invoke(To.CloseDetails)
+            deletePropertyUseCase.invoke(property)
+        }
     }
 }
