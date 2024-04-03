@@ -2,6 +2,7 @@ package com.bakjoul.realestatemanager.data.property
 
 import android.database.sqlite.SQLiteException
 import com.bakjoul.realestatemanager.data.photos.model.PhotoDto
+import com.bakjoul.realestatemanager.data.photos.model.TemporaryPhotoDto
 import com.bakjoul.realestatemanager.data.property.model.PropertyDto
 import com.bakjoul.realestatemanager.data.property.model.PropertyFormDto
 import com.bakjoul.realestatemanager.data.property.model.PropertyFormWithPhotosDto
@@ -180,7 +181,7 @@ class PropertyRepositoryRoom @Inject constructor(
                 latitude = propertyWithPhotosDto.propertyDto.latitude,
                 longitude = propertyWithPhotosDto.propertyDto.longitude),
             description = propertyWithPhotosDto.propertyDto.description,
-            photos = mapPhotos(propertyWithPhotosDto.photos),
+            photos = mapToPhotoEntitiesFromPhotoDtos(propertyWithPhotosDto.photos),
             featuredPhotoId = propertyWithPhotosDto.propertyDto.featuredPhotoId,
             agent = propertyWithPhotosDto.propertyDto.agent,
             entryDate = propertyWithPhotosDto.propertyDto.entryDate
@@ -200,7 +201,17 @@ class PropertyRepositoryRoom @Inject constructor(
         if (propertyDto.poiTramway) add(PropertyPoiEntity.TRAMWAY)
     }
 
-    private fun mapPhotos(photos: List<PhotoDto>): List<PhotoEntity> =
+    private fun mapToPhotoEntitiesFromPhotoDtos(photos: List<PhotoDto>): List<PhotoEntity> =
+        photos.map {
+            PhotoEntity(
+                id = it.id,
+                propertyId = it.propertyId,
+                uri = it.uri,
+                description = it.description
+            )
+        }
+
+    private fun mapToPhotoEntitiesFromTemporaryPhotoDtos(photos: List<TemporaryPhotoDto>): List<PhotoEntity> =
         photos.map {
             PhotoEntity(
                 id = it.id,
@@ -290,7 +301,7 @@ class PropertyRepositoryRoom @Inject constructor(
                 latitude = propertyFormWithPhotosDto.propertyFormDto.latitude,
                 longitude = propertyFormWithPhotosDto.propertyFormDto.longitude),
             description = propertyFormWithPhotosDto.propertyFormDto.description,
-            photos = mapPhotos(propertyFormWithPhotosDto.photos),
+            photos = mapToPhotoEntitiesFromTemporaryPhotoDtos(propertyFormWithPhotosDto.photos),
             featuredPhotoId = propertyFormWithPhotosDto.propertyFormDto.featuredPhotoId,
             agent = propertyFormWithPhotosDto.propertyFormDto.agent,
             lastUpdate = propertyFormWithPhotosDto.propertyFormDto.lastUpdate
