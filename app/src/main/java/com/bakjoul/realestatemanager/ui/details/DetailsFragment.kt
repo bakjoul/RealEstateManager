@@ -187,6 +187,8 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
 
             if (details.medias.isNotEmpty()) {
                 binding.detailsPhotoListView.bind(details.medias)
+                binding.detailsPhotoListView.visibility = View.VISIBLE
+                binding.detailsNoPhotosTextView.visibility = View.GONE
             } else {
                 binding.detailsPhotoListView.visibility = View.GONE
                 binding.detailsNoPhotosTextView.visibility = View.VISIBLE

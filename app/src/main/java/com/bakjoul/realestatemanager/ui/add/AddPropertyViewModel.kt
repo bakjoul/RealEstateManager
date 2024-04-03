@@ -836,7 +836,7 @@ class AddPropertyViewModel @Inject constructor(
         val propertyFormReplayCache = propertyFormMutableSharedFlow.replayCache.first()
         if (isExistingProperty) {
             if (isFormValid()) {
-                if (existingDraftInitialState == propertyFormReplayCache) {
+                if (existingDraftInitialState == propertyFormReplayCache && photosList == propertyFormReplayCache.photos) {
                     viewModelScope.launch {
                         deletePropertyDraftWithPhotosUseCase.invoke(draftId, photosList, true)
                         navigateUseCase.invoke(To.CloseAddProperty)
