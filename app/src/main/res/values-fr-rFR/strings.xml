@@ -182,4 +182,6 @@
     <string name="delete_property_dialog_title">Suppression de la propriété</string>
     <string name="delete_property_dialog_message">Êtes-vous sûr de vouloir supprimer cette propriété ? Cette action est irréversible.</string>
     <string name="confirm">Confirmer</string>
+    <string name="delete_draft_dialog_title">Suppression du brouillon</string>
+    <string name="delete_draft_dialog_message">Êtes-vous sûr de vouloir supprimer ce brouillon ?</string>
 </resources>

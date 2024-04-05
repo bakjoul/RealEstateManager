@@ -71,6 +71,32 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
     private var currentCurrency: DecimalFormat? = null
     private var isExistingDraftLoaded = false
 
+    // region Alert dialogs
+    private val saveDraftAlertDialog by lazy {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(getString(R.string.save_draft_dialog_title))
+            .setMessage(getString(R.string.save_draft_dialog_message))
+            .setNegativeButton(getString(R.string.save_draft_dialog_negative)) { _, _ ->
+                viewModel.dropDraft()
+            }
+            .setPositiveButton(getString(R.string.save)) { _, _ ->
+                viewModel.onSaveDraftButtonClicked()
+            }
+    }
+    private var isSaveDraftAlertDialogShown = false
+
+    private val deleteDraftAlertDialog by lazy {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(getString(R.string.delete_draft_dialog_title))
+            .setMessage(getString(R.string.delete_draft_dialog_message))
+            .setNegativeButton(getString(R.string.cancel)) { _, _ -> }
+            .setPositiveButton(getString(R.string.confirm)) { _, _ ->
+                viewModel.dropDraft()
+            }
+    }
+    private var isDeleteDraftAlertDialogShown = false
+    // endregion Alert dialogs
+
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = object : CustomThemeDialog(requireContext(), R.style.FullScreenDialog) {
             override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
@@ -122,6 +148,8 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
         photosDivider.setDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.photos_divider_details)!!)
         binding.addPropertyPhotoListView.addItemDecoration(photosDivider)
 
+        // Delete button
+        binding.addPropertyDeleteDraftButton.setOnClickListener { viewModel.onDeleteDraftButtonClicked() }
         // Save button
         binding.addPropertySaveDraftButton.setOnClickListener { viewModel.onSaveDraftButtonClicked() }
 
@@ -476,17 +504,26 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
                     }
                 }
 
-                AddPropertyViewAction.SaveDraftDialog -> {
-                    MaterialAlertDialogBuilder(requireContext())
-                        .setTitle(getString(R.string.save_draft_dialog_title))
-                        .setMessage(getString(R.string.save_draft_dialog_message))
-                        .setNegativeButton(getString(R.string.save_draft_dialog_negative)) { _, _ ->
-                            viewModel.dropDraft()
-                        }
-                        .setPositiveButton(getString(R.string.save)) { _, _ ->
-                            viewModel.onSaveDraftButtonClicked()
-                        }
-                        .show()
+                AddPropertyViewAction.ShowDeleteDraftDialog -> {
+                    if (!isDeleteDraftAlertDialogShown) {
+                        isDeleteDraftAlertDialogShown = true
+                        deleteDraftAlertDialog
+                            .show()
+                            .setOnDismissListener {
+                                isDeleteDraftAlertDialogShown = false
+                            }
+                    }
+                }
+
+                AddPropertyViewAction.ShowSaveDraftDialog -> {
+                    if (!isSaveDraftAlertDialogShown) {
+                        isSaveDraftAlertDialogShown = true
+                        saveDraftAlertDialog
+                            .show()
+                            .setOnDismissListener {
+                                isSaveDraftAlertDialogShown = false
+                            }
+                    }
                 }
 
                 AddPropertyViewAction.CloseDialog -> {

@@ -198,4 +198,6 @@
     <string name="delete_property_dialog_title">Deleting property</string>
     <string name="delete_property_dialog_message">Are you sure you want to delete this property? This action is irreversible.</string>
     <string name="confirm">Confirm</string>
+    <string name="delete_draft_dialog_title">Deleting draft</string>
+    <string name="delete_draft_dialog_message">Are you sure want to delete this draft?</string>
 </resources>

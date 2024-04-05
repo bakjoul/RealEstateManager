@@ -35,6 +35,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     private companion object {
+        // region Tags
         private const val PROPERTY_LIST_TAG = "PropertyListFragment"
         private const val DETAILS_TABLET_TAG = "DetailsFragmentTablet"
         private const val DETAILS_PORTRAIT_TAG = "DetailsFragmentPortrait"
@@ -43,6 +44,7 @@ class MainActivity : AppCompatActivity() {
         private const val ADD_PROPERTY_DIALOG_TAG = "AddPropertyDialogFragment"
         private const val SETTINGS_DIALOG_TAG = "SettingsDialogFragment"
         private const val LOAN_SIMULATOR_DIALOG_TAG = "LoanSimulatorDialogFragment"
+        // endregion Tags
     }
 
     private val binding by viewBinding { ActivityMainBinding.inflate(it) }

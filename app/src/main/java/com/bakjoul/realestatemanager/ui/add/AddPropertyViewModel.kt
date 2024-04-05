@@ -298,7 +298,8 @@ class AddPropertyViewModel @Inject constructor(
                 is To.ImportedPhotoPreview -> emit(Event(AddPropertyViewAction.ShowImportedPhotoPreview(it.propertyId, it.isExistingProperty)))
                 is To.EditPhotoDescription -> emit(Event(AddPropertyViewAction.EditPhotoDescription(it.photoId, it.description, it.isExistingProperty)))
                 is To.DraftPhotos -> emit(Event(AddPropertyViewAction.ShowPhotosViewer(draftId, it.clickedPhotoIndex, it.isExistingProperty)))
-                is To.SaveDraftDialog -> emit(Event(AddPropertyViewAction.SaveDraftDialog))
+                is To.DeleteDraftDialog -> emit(Event(AddPropertyViewAction.ShowDeleteDraftDialog))
+                is To.SaveDraftDialog -> emit(Event(AddPropertyViewAction.ShowSaveDraftDialog))
                 is To.CloseAddProperty -> emit(Event(AddPropertyViewAction.CloseDialog))
                 is To.AppSettings -> emit(Event(AddPropertyViewAction.OpenAppSettings))
                 is To.Toast -> {
@@ -804,6 +805,10 @@ class AddPropertyViewModel @Inject constructor(
             navigateUseCase.invoke(To.Toast(NativeText.Resource(R.string.toast_draft_discarded)))
             navigateUseCase.invoke(To.CloseAddProperty)
         }
+    }
+
+    fun onDeleteDraftButtonClicked() {
+        navigateUseCase.invoke(To.DeleteDraftDialog)
     }
 
     fun onSaveDraftButtonClicked() {

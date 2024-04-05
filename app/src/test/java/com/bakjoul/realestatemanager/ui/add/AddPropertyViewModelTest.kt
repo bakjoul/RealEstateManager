@@ -655,7 +655,7 @@ class AddPropertyViewModelTest {
 
         // Then
         viewModel.viewActionLiveData.observeForTesting(this) {
-            assertThat(it.value).isEqualTo(Event(AddPropertyViewAction.SaveDraftDialog))
+            assertThat(it.value).isEqualTo(Event(AddPropertyViewAction.ShowSaveDraftDialog))
         }
 
         verify(exactly = 1) { savedStateHandle.get<Long>("draftId") }
@@ -690,7 +690,7 @@ class AddPropertyViewModelTest {
 
         // Then
         viewModel.viewActionLiveData.observeForTesting(this) {
-            assertThat(it.value).isEqualTo(Event(AddPropertyViewAction.SaveDraftDialog))
+            assertThat(it.value).isEqualTo(Event(AddPropertyViewAction.ShowSaveDraftDialog))
         }
 
         verify(exactly = 1) { savedStateHandle.get<Long>("draftId") }
@@ -724,7 +724,7 @@ class AddPropertyViewModelTest {
 
         // Then
         viewModel.viewActionLiveData.observeForTesting(this) {
-            assertThat(it.value).isEqualTo(Event(AddPropertyViewAction.SaveDraftDialog))
+            assertThat(it.value).isEqualTo(Event(AddPropertyViewAction.ShowSaveDraftDialog))
         }
 
         verify(exactly = 1) { savedStateHandle.get<Long>("draftId") }
@@ -761,7 +761,7 @@ class AddPropertyViewModelTest {
 
         // Then
         viewModel.viewActionLiveData.observeForTesting(this) {
-            assertThat(it.value).isEqualTo(Event(AddPropertyViewAction.SaveDraftDialog))
+            assertThat(it.value).isEqualTo(Event(AddPropertyViewAction.ShowSaveDraftDialog))
         }
 
         verify(exactly = 1) { savedStateHandle.get<Long>("draftId") }
@@ -795,7 +795,7 @@ class AddPropertyViewModelTest {
 
         // Then
         viewModel.viewActionLiveData.observeForTesting(this) {
-            assertThat(it.value).isEqualTo(Event(AddPropertyViewAction.SaveDraftDialog))
+            assertThat(it.value).isEqualTo(Event(AddPropertyViewAction.ShowSaveDraftDialog))
         }
 
         verify(exactly = 1) { savedStateHandle.get<Long>("draftId") }
@@ -829,7 +829,7 @@ class AddPropertyViewModelTest {
 
         // Then
         viewModel.viewActionLiveData.observeForTesting(this) {
-            assertThat(it.value).isEqualTo(Event(AddPropertyViewAction.SaveDraftDialog))
+            assertThat(it.value).isEqualTo(Event(AddPropertyViewAction.ShowSaveDraftDialog))
         }
 
         verify(exactly = 1) { savedStateHandle.get<Long>("draftId") }
@@ -863,7 +863,7 @@ class AddPropertyViewModelTest {
 
         // Then
         viewModel.viewActionLiveData.observeForTesting(this) {
-            assertThat(it.value).isEqualTo(Event(AddPropertyViewAction.SaveDraftDialog))
+            assertThat(it.value).isEqualTo(Event(AddPropertyViewAction.ShowSaveDraftDialog))
         }
 
         verify(exactly = 1) { savedStateHandle.get<Long>("draftId") }
@@ -897,7 +897,7 @@ class AddPropertyViewModelTest {
 
         // Then
         viewModel.viewActionLiveData.observeForTesting(this) {
-            assertThat(it.value).isEqualTo(Event(AddPropertyViewAction.SaveDraftDialog))
+            assertThat(it.value).isEqualTo(Event(AddPropertyViewAction.ShowSaveDraftDialog))
         }
 
         verify(exactly = 1) { savedStateHandle.get<Long>("draftId") }
@@ -931,7 +931,7 @@ class AddPropertyViewModelTest {
 
         // Then
         viewModel.viewActionLiveData.observeForTesting(this) {
-            assertThat(it.value).isEqualTo(Event(AddPropertyViewAction.SaveDraftDialog))
+            assertThat(it.value).isEqualTo(Event(AddPropertyViewAction.ShowSaveDraftDialog))
         }
 
         verify(exactly = 1) { savedStateHandle.get<Long>("draftId") }
@@ -965,7 +965,7 @@ class AddPropertyViewModelTest {
 
         // Then
         viewModel.viewActionLiveData.observeForTesting(this) {
-            assertThat(it.value).isEqualTo(Event(AddPropertyViewAction.SaveDraftDialog))
+            assertThat(it.value).isEqualTo(Event(AddPropertyViewAction.ShowSaveDraftDialog))
         }
 
         verify(exactly = 1) { savedStateHandle.get<Long>("draftId") }
@@ -999,7 +999,7 @@ class AddPropertyViewModelTest {
 
         // Then
         viewModel.viewActionLiveData.observeForTesting(this) {
-            assertThat(it.value).isEqualTo(Event(AddPropertyViewAction.SaveDraftDialog))
+            assertThat(it.value).isEqualTo(Event(AddPropertyViewAction.ShowSaveDraftDialog))
         }
 
         verify(exactly = 1) { savedStateHandle.get<Long>("draftId") }
