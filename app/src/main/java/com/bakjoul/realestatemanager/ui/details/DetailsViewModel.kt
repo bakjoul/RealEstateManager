@@ -69,7 +69,10 @@ class DetailsViewModel @Inject constructor(
             flow { emit(getEuroRateUseCase.invoke()) },
             getCurrentSurfaceUnitUseCase.invoke()
         ) { property, currency, euroRateWrapper, surfaceUnit ->
-            if (propertyEntity == null) {
+            if (propertyEntity == null ||
+                propertyEntity?.id != property.id ||
+                propertyEntity?.featuredPhotoId != property.featuredPhotoId
+            ) {
                 propertyEntity = property
             }
 

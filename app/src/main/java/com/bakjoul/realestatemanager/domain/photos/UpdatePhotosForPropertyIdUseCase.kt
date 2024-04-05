@@ -15,7 +15,13 @@ class UpdatePhotosForPropertyIdUseCase @Inject constructor(
 
     suspend fun invoke(propertyId: Long, photosList: List<PhotoEntity>): List<Long>? {
         if (photosList.isEmpty()) {
-            return emptyList()
+            val areOriginalPhotosDeleted = photoRepository.deleteAllPhotosForPropertyId(propertyId)
+            return if (areOriginalPhotosDeleted != null && areOriginalPhotosDeleted >= 0) {
+                emptyList()
+            } else {
+                Log.e(TAG, "Couldn't delete original photos for property id $propertyId")
+                null
+            }
         }
 
         val newPhotoUris = photoFileRepository.moveTemporaryPhotosToMainDirectory(photosList.map { it.uri })

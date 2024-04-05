@@ -31,6 +31,7 @@ import com.bakjoul.realestatemanager.domain.photos.edit.DeletePhotosForExistingP
 import com.bakjoul.realestatemanager.domain.photos.edit.GetPhotosForExistingPropertyDraftIdUseCase
 import com.bakjoul.realestatemanager.domain.photos.model.PhotoEntity
 import com.bakjoul.realestatemanager.domain.property.AddPropertyUseCase
+import com.bakjoul.realestatemanager.domain.property.GetPropertyByIdUseCase
 import com.bakjoul.realestatemanager.domain.property.UpdatePropertyUseCase
 import com.bakjoul.realestatemanager.domain.property.drafts.DeletePropertyDraftWithPhotosUseCase
 import com.bakjoul.realestatemanager.domain.property.drafts.GetPropertyDraftByIdUseCase
@@ -54,6 +55,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.transformLatest
@@ -75,8 +77,9 @@ class AddPropertyViewModel @Inject constructor(
     getCurrentCurrencyUseCase: GetCurrentCurrencyUseCase,
     getCurrentSurfaceUnitUseCase: GetCurrentSurfaceUnitUseCase,
     savedStateHandle: SavedStateHandle,
-    getPhotosForPropertyIdUseCase: GetPhotosForPropertyIdUseCase,
     getPhotosForExistingPropertyDraftIdUseCase: GetPhotosForExistingPropertyDraftIdUseCase,
+    private val getPropertyByIdUseCase: GetPropertyByIdUseCase,
+    private val getPhotosForPropertyIdUseCase: GetPhotosForPropertyIdUseCase,
     private val getEuroRateUseCase: GetEuroRateUseCase,
     private val getPropertyDraftByIdUseCase: GetPropertyDraftByIdUseCase,
     private val getCurrentNavigationUseCase: GetCurrentNavigationUseCase,
@@ -187,7 +190,19 @@ class AddPropertyViewModel @Inject constructor(
                 viewModelScope.launch {
                     val draft = getPropertyDraftByIdUseCase.invoke(draftId)
                     if (draft != null) {
-                        propertyFormMutableSharedFlow.tryEmit(draft)
+                        if (isExistingProperty) {
+                            if (draft.photos?.isNotEmpty() == true && draft.photos.size > 1) {
+                                val originalProperty = getPropertyByIdUseCase.invoke(draftId).first()
+                                val featuredPhotoIndex = originalProperty?.photos?.indexOfFirst { it.id == originalProperty.featuredPhotoId }
+                                propertyFormMutableSharedFlow.tryEmit(
+                                    draft.copy(featuredPhotoId = draft.photos[featuredPhotoIndex ?: 0].id)
+                                )
+                            } else {
+                                propertyFormMutableSharedFlow.tryEmit(draft)
+                            }
+                        } else {
+                            propertyFormMutableSharedFlow.tryEmit(draft)
+                        }
 
                         existingDraftInitialState = draft
                     }
@@ -836,34 +851,63 @@ class AddPropertyViewModel @Inject constructor(
         val propertyFormReplayCache = propertyFormMutableSharedFlow.replayCache.first()
         if (isExistingProperty) {
             if (isFormValid()) {
-                if (existingDraftInitialState == propertyFormReplayCache && photosList == propertyFormReplayCache.photos) {
+                val isPropertyUnchanged = existingDraftInitialState == propertyFormReplayCache
+                val arePhotosUnchanged = existingDraftInitialState?.photos == photosList
+
+                if (isPropertyUnchanged && arePhotosUnchanged) {
                     viewModelScope.launch {
                         deletePropertyDraftWithPhotosUseCase.invoke(draftId, photosList, true)
                         navigateUseCase.invoke(To.CloseAddProperty)
                     }
                     return
+                } else if (arePhotosUnchanged) {
+                    if (photosList.isNotEmpty()) {
+                        val featuredPhotoIndex = photosList.indexOfFirst { it.id == propertyFormReplayCache.featuredPhotoId }
+                        viewModelScope.launch {
+                            val originalPhotoIds = getPhotosForPropertyIdUseCase.invoke(draftId).first().map { it.id }
+                            val updatedProperty = updatePropertyUseCase.invoke(
+                                mapFormToPropertyEntity(
+                                    propertyFormReplayCache.copy(featuredPhotoId = originalPhotoIds[featuredPhotoIndex])
+                                )
+                            )
+                            onPropertyUpdated(updatedProperty)
+                        }
+                    } else {
+                        viewModelScope.launch {
+                            val updatedProperty = updatePropertyUseCase.invoke(mapFormToPropertyEntity(propertyFormReplayCache))
+                            onPropertyUpdated(updatedProperty)
+                        }
+                    }
+
                 } else {
-                    val featuredPhotoIndex = photosList.indexOfFirst { it.id == propertyFormReplayCache.featuredPhotoId }
+                    val featuredPhotoIndex = if (photosList.isNotEmpty()) {
+                        photosList
+                            .indexOfFirst { it.id == propertyFormReplayCache.featuredPhotoId }
+                            .let { if (it == -1) 0 else it }
+                    } else {
+                        null
+                    }
+
                     viewModelScope.launch {
                         val updatedPhotos = updatePhotosForPropertyIdUseCase.invoke(draftId, photosList)
                         if (updatedPhotos != null) {
+                            val featuredPhotoId = if (featuredPhotoIndex != null) {
+                                updatedPhotos[featuredPhotoIndex]
+                            } else {
+                                null
+                            }
                             val updatedProperty = updatePropertyUseCase.invoke(
                                 mapFormToPropertyEntity(
-                                    propertyFormReplayCache.copy(featuredPhotoId = updatedPhotos[featuredPhotoIndex])
+                                    propertyFormReplayCache.copy(featuredPhotoId = featuredPhotoId)
                                 )
                             )
-                            if (updatedProperty > 0) {
-                                navigateUseCase.invoke(To.Toast(NativeText.Resource(R.string.toast_property_updated)))
-                                deletePropertyDraftWithPhotosUseCase.invoke(draftId, photosList, true)
-                                navigateUseCase.invoke(To.CloseAddProperty)
-                            }
+                            onPropertyUpdated(updatedProperty)
                         } else {
                             navigateUseCase.invoke(To.Toast(NativeText.Resource(R.string.toast_error_updating_property)))
                         }
                     }
                 }
             }
-
         } else {
             if (isFormValid()) {
                 viewModelScope.launch {
@@ -877,6 +921,16 @@ class AddPropertyViewModel @Inject constructor(
                     }
                 }
             }
+        }
+    }
+
+    private suspend fun onPropertyUpdated(updatedProperty: Int) {
+        if (updatedProperty > 0) {
+            navigateUseCase.invoke(To.Toast(NativeText.Resource(R.string.toast_property_updated)))
+            deletePropertyDraftWithPhotosUseCase.invoke(draftId, photosList, true)
+            navigateUseCase.invoke(To.CloseAddProperty)
+        } else {
+            navigateUseCase.invoke(To.Toast(NativeText.Resource(R.string.toast_error_updating_property)))
         }
     }
 
