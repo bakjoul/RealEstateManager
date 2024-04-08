@@ -22,8 +22,8 @@ interface PropertyFormDao {
     @Update
     suspend fun update(propertyForm: PropertyFormDto): Int
 
-    @Query("SELECT EXISTS(SELECT id FROM property_drafts)")
-    suspend fun hasPropertyForms(): Boolean
+    @Query("SELECT id FROM property_drafts")
+    suspend fun getPropertyFormIds(): List<Long>
 
     @Query("SELECT EXISTS (SELECT 1 FROM property_drafts WHERE id = :id)")
     suspend fun doesDraftExistForPropertyId(id: Long): Boolean

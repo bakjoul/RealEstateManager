@@ -19,7 +19,8 @@ import com.bakjoul.realestatemanager.domain.navigation.model.To
 import com.bakjoul.realestatemanager.domain.property.GetPropertiesFlowUseCase
 import com.bakjoul.realestatemanager.domain.property.drafts.AddPropertyDraftUseCase
 import com.bakjoul.realestatemanager.domain.property.drafts.GenerateNewDraftIdUseCase
-import com.bakjoul.realestatemanager.domain.property.drafts.HasPropertyDraftsUseCase
+import com.bakjoul.realestatemanager.domain.property.drafts.GetPropertyDraftIdsUseCase
+import com.bakjoul.realestatemanager.domain.property.model.PropertyEntity
 import com.bakjoul.realestatemanager.domain.property.model.PropertyTypeEntity
 import com.bakjoul.realestatemanager.domain.property_form.model.PropertyFormEntity
 import com.bakjoul.realestatemanager.domain.resources.IsTabletUseCase
@@ -53,13 +54,14 @@ class PropertyListViewModel @Inject constructor(
     private val getCurrentSurfaceUnitUseCase: GetCurrentSurfaceUnitUseCase,
     private val isTabletUseCase: IsTabletUseCase,
     private val navigateUseCase: NavigateUseCase,
-    private val hasPropertyDraftsUseCase: HasPropertyDraftsUseCase,
+    private val getPropertyDraftIdsUseCase: GetPropertyDraftIdsUseCase,
     private val generateNewDraftIdUseCase: GenerateNewDraftIdUseCase,
     private val addPropertyDraftUseCase: AddPropertyDraftUseCase,
     private val clock: Clock
 ) : ViewModel() {
 
     private val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+    private var existingProperties = emptyList<PropertyEntity>()
 
     val propertiesLiveData: LiveData<List<PropertyItemViewState>> = liveData(coroutineDispatcherProvider.io) {
         combine(
@@ -69,6 +71,10 @@ class PropertyListViewModel @Inject constructor(
             getCurrentSurfaceUnitUseCase.invoke(),
             isTabletUseCase.invoke(),
         ) { properties, currency, euroRateWrapper, surfaceUnit, isTablet ->
+            if (properties != existingProperties) {
+                existingProperties = properties
+            }
+
             properties.map { property ->
                 PropertyItemViewState(
                     id = property.id,
@@ -180,18 +186,23 @@ class PropertyListViewModel @Inject constructor(
 
     fun onAddPropertyClicked() {
         viewModelScope.launch {
-            if (hasPropertyDraftsUseCase.invoke()) {
-                navigateUseCase.invoke(To.AddPropertyDraftAlertDialog)
-            } else {
-                val propertyDraftId = generateNewDraftIdUseCase.invoke()
-                addPropertyDraftUseCase.invoke(
-                    PropertyFormEntity(
-                        propertyDraftId,
-                        lastUpdate = ZonedDateTime.now(clock).toLocalDateTime()
-                    )
-                )
-                navigateUseCase.invoke(To.AddProperty(propertyDraftId, true))
+            val propertyDraftIds = getPropertyDraftIdsUseCase.invoke()
+            if (propertyDraftIds.isNotEmpty()) {
+                val existingPropertyIds = existingProperties.map { it.id }
+                val newPropertyDraftIds = propertyDraftIds.filter { !existingPropertyIds.contains(it) }
+                if (newPropertyDraftIds.isNotEmpty()) {
+                    navigateUseCase.invoke(To.AddPropertyDraftAlertDialog)
+                    return@launch
+                }
             }
+            val propertyDraftId = generateNewDraftIdUseCase.invoke()
+            addPropertyDraftUseCase.invoke(
+                PropertyFormEntity(
+                    propertyDraftId,
+                    lastUpdate = ZonedDateTime.now(clock).toLocalDateTime()
+                )
+            )
+            navigateUseCase.invoke(To.AddProperty(propertyDraftId, true))
         }
     }
 }

@@ -22,7 +22,7 @@ interface PropertyRepository {
 
     suspend fun updatePropertyDraft(propertyId: Long, propertyForm: PropertyFormEntity): Int
 
-    suspend fun hasPropertyDrafts(): Boolean
+    suspend fun getPropertyDraftIds(): List<Long>
 
     suspend fun doesDraftExistForPropertyId(propertyId: Long): Boolean
 

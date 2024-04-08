@@ -84,9 +84,7 @@ class PropertyRepositoryRoom @Inject constructor(
         propertyFormDao.update(mapPropertyDraftToDto(propertyId, propertyForm))
     }
 
-    override suspend fun hasPropertyDrafts(): Boolean = withContext(coroutineDispatcherProvider.io) {
-        propertyFormDao.hasPropertyForms()
-    }
+    override suspend fun getPropertyDraftIds(): List<Long> = propertyFormDao.getPropertyFormIds()
 
     override suspend fun doesDraftExistForPropertyId(propertyId: Long): Boolean = withContext(coroutineDispatcherProvider.io) {
         propertyFormDao.doesDraftExistForPropertyId(propertyId)
