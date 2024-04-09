@@ -226,7 +226,7 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/add_property_price_TextInputLayout">
 
-                    <com.bakjoul.realestatemanager.designsystem.molecule.plus_minus.PlusMinusView
+                    <com.bakjoul.realestatemanager.designsystem.atome.PlusMinusView
                         android:id="@+id/add_property_surface_PlusMinusView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -238,7 +238,7 @@
                         app:plusMinusImageSrc="@drawable/baseline_settings_overscan_16"
                         app:plusMinusLabel="@string/property_label_surface" />
 
-                    <com.bakjoul.realestatemanager.designsystem.molecule.plus_minus.PlusMinusView
+                    <com.bakjoul.realestatemanager.designsystem.atome.PlusMinusView
                         android:id="@+id/add_property_rooms_PlusMinusView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -249,7 +249,7 @@
                         app:plusMinusImageSrc="@drawable/baseline_home_16"
                         app:plusMinusLabel="@string/add_property_label_rooms" />
 
-                    <com.bakjoul.realestatemanager.designsystem.molecule.plus_minus.PlusMinusView
+                    <com.bakjoul.realestatemanager.designsystem.atome.PlusMinusView
                         android:id="@+id/add_property_bathrooms_PlusMinusView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -259,7 +259,7 @@
                         app:plusMinusImageSrc="@drawable/hot_tub_black_16dp"
                         app:plusMinusLabel="@string/add_property_label_bathrooms" />
 
-                    <com.bakjoul.realestatemanager.designsystem.molecule.plus_minus.PlusMinusView
+                    <com.bakjoul.realestatemanager.designsystem.atome.PlusMinusView
                         android:id="@+id/add_property_bedrooms_PlusMinusView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"

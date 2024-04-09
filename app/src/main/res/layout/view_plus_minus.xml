@@ -6,7 +6,7 @@
     android:layout_height="match_parent">
 
     <TextView
-        android:id="@+id/view_plus_minus_label_text"
+        android:id="@+id/plus_minus_label_text"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:ellipsize="end"
@@ -14,31 +14,31 @@
         android:maxLines="1"
         android:paddingHorizontal="4dp"
         android:textSize="11sp"
-        app:layout_constraintEnd_toEndOf="@id/view_plus_minus_increment_button"
+        app:layout_constraintEnd_toEndOf="@id/plus_minus_increment_button"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:drawableStartCompat="@drawable/baseline_home_16"
         tools:text="Rooms" />
 
     <ImageButton
-        android:id="@+id/view_plus_minus_decrement_button"
+        android:id="@+id/plus_minus_decrement_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:contentDescription="@null"
         android:padding="8dp"
         android:src="@drawable/baseline_remove_24"
         app:backgroundTint="@color/blue_toolbar"
-        app:layout_constraintStart_toStartOf="@id/view_plus_minus_label_text"
-        app:layout_constraintTop_toBottomOf="@id/view_plus_minus_label_text"
+        app:layout_constraintStart_toStartOf="@id/plus_minus_label_text"
+        app:layout_constraintTop_toBottomOf="@id/plus_minus_label_text"
         app:tint="@color/white" />
 
     <EditText
-        android:id="@+id/view_plus_minus_value_EditText"
+        android:id="@+id/plus_minus_value_EditText"
         android:layout_width="32.75dp"
         android:layout_height="0dp"
         android:layout_marginTop="5.5dp"
         android:layout_marginBottom="5.5dp"
-        android:background="@drawable/plus_minus_value_border"
+        android:background="@drawable/edit_text_background"
         android:gravity="center"
         android:hint="@null"
         android:imeOptions=""
@@ -48,27 +48,27 @@
         android:text="@string/zero"
         android:textSize="14sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@id/view_plus_minus_decrement_button"
-        app:layout_constraintEnd_toStartOf="@id/view_plus_minus_increment_button"
-        app:layout_constraintStart_toEndOf="@id/view_plus_minus_decrement_button"
-        app:layout_constraintTop_toTopOf="@id/view_plus_minus_decrement_button"
+        app:layout_constraintBottom_toBottomOf="@id/plus_minus_decrement_button"
+        app:layout_constraintEnd_toStartOf="@id/plus_minus_increment_button"
+        app:layout_constraintStart_toEndOf="@id/plus_minus_decrement_button"
+        app:layout_constraintTop_toTopOf="@id/plus_minus_decrement_button"
         tools:text="100" />
 
     <ImageButton
-        android:id="@+id/view_plus_minus_increment_button"
+        android:id="@+id/plus_minus_increment_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:contentDescription="@null"
         android:padding="8dp"
         android:src="@drawable/baseline_add_24"
         app:backgroundTint="@color/blue_toolbar"
-        app:layout_constraintBottom_toBottomOf="@id/view_plus_minus_decrement_button"
-        app:layout_constraintStart_toEndOf="@id/view_plus_minus_value_EditText"
-        app:layout_constraintTop_toTopOf="@id/view_plus_minus_decrement_button"
+        app:layout_constraintBottom_toBottomOf="@id/plus_minus_decrement_button"
+        app:layout_constraintStart_toEndOf="@id/plus_minus_value_EditText"
+        app:layout_constraintTop_toTopOf="@id/plus_minus_decrement_button"
         app:tint="@color/white" />
 
     <TextView
-        android:id="@+id/view_plus_minus_error_TextView"
+        android:id="@+id/plus_minus_error_TextView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:drawablePadding="2dp"
@@ -79,9 +79,9 @@
         android:textSize="11sp"
         android:visibility="gone"
         app:drawableStartCompat="@drawable/baseline_error_16"
-        app:layout_constraintEnd_toEndOf="@id/view_plus_minus_increment_button"
-        app:layout_constraintStart_toStartOf="@id/view_plus_minus_decrement_button"
-        app:layout_constraintTop_toBottomOf="@id/view_plus_minus_decrement_button"
+        app:layout_constraintEnd_toEndOf="@id/plus_minus_increment_button"
+        app:layout_constraintStart_toStartOf="@id/plus_minus_decrement_button"
+        app:layout_constraintTop_toBottomOf="@id/plus_minus_decrement_button"
         tools:text="Invalid field"
         tools:visibility="visible" />
 

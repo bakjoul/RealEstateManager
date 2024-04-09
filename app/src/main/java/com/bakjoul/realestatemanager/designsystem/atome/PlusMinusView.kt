@@ -1,4 +1,4 @@
-package com.bakjoul.realestatemanager.designsystem.molecule.plus_minus
+package com.bakjoul.realestatemanager.designsystem.atome
 
 import android.app.Activity
 import android.content.Context
@@ -50,31 +50,31 @@ class PlusMinusView @JvmOverloads constructor(
             }
             // Label text
             getString(R.styleable.PlusMinusView_plusMinusLabel)?.let {
-                binding.viewPlusMinusLabelText.text = it
+                binding.plusMinusLabelText.text = it
             }
             // Error text
             getString(R.styleable.PlusMinusView_plusMinusErrorText)?.let {
-                binding.viewPlusMinusErrorTextView.text = it
+                binding.plusMinusErrorTextView.text = it
             }
             // Label drawable padding
             getDimensionPixelSize(R.styleable.PlusMinusView_plusMinusDrawablePadding, 2).let {
-                binding.viewPlusMinusLabelText.compoundDrawablePadding = it
+                binding.plusMinusLabelText.compoundDrawablePadding = it
             }
             // EditText width
             getDimensionPixelSize(R.styleable.PlusMinusView_plusMinusEditTextWidth, 0).takeIf { it != 0 }?.let { editTextWidth ->
-                val layoutParams = binding.viewPlusMinusValueEditText.layoutParams
+                val layoutParams = binding.plusMinusValueEditText.layoutParams
                 layoutParams.width = editTextWidth
-                binding.viewPlusMinusValueEditText.layoutParams = layoutParams
+                binding.plusMinusValueEditText.layoutParams = layoutParams
             }
             // EditText imeOptions
             val imeOptions = getInt(R.styleable.PlusMinusView_plusMinusImeOptions, 0)
             if (imeOptions == 1) {
-                binding.viewPlusMinusValueEditText.imeOptions = EditorInfo.IME_ACTION_DONE
-                binding.viewPlusMinusValueEditText.setOnEditorActionListener { _, actionId, _ ->
+                binding.plusMinusValueEditText.imeOptions = EditorInfo.IME_ACTION_DONE
+                binding.plusMinusValueEditText.setOnEditorActionListener { _, actionId, _ ->
                     // Clears focus and hides keyboard when done button is clicked
                     if (actionId == EditorInfo.IME_ACTION_DONE) {
-                        binding.viewPlusMinusValueEditText.clearFocus()
-                        hideKeyboard(binding.viewPlusMinusValueEditText)
+                        binding.plusMinusValueEditText.clearFocus()
+                        hideKeyboard(binding.plusMinusValueEditText)
                         true
                     } else {
                         false
@@ -84,17 +84,17 @@ class PlusMinusView @JvmOverloads constructor(
         }
 
         // Sets and displays initial value
-        binding.viewPlusMinusValueEditText.text = SpannableStringBuilder(count.toString())
+        binding.plusMinusValueEditText.text = SpannableStringBuilder(count.toString())
 
         // Disables decrement button by default
-        binding.viewPlusMinusDecrementButton.isEnabled = false
-        binding.viewPlusMinusDecrementButton.alpha = 0.5f
+        binding.plusMinusDecrementButton.isEnabled = false
+        binding.plusMinusDecrementButton.alpha = 0.5f
 
         // Disables decrement button when value is 0 and updates value when EditText text changes
-        binding.viewPlusMinusValueEditText.doAfterTextChanged { editable ->
+        binding.plusMinusValueEditText.doAfterTextChanged { editable ->
             val editTextValue = editable?.toString()?.toBigDecimalOrNull() ?: BigDecimal.ZERO
-            binding.viewPlusMinusDecrementButton.isEnabled = editTextValue != BigDecimal.ZERO
-            binding.viewPlusMinusDecrementButton.alpha = if (editTextValue == BigDecimal.ZERO) 0.5f else 1f
+            binding.plusMinusDecrementButton.isEnabled = editTextValue != BigDecimal.ZERO
+            binding.plusMinusDecrementButton.alpha = if (editTextValue == BigDecimal.ZERO) 0.5f else 1f
 
             if (editTextValue != count) {
                 count = editTextValue
@@ -102,25 +102,25 @@ class PlusMinusView @JvmOverloads constructor(
         }
 
         // Decrements value when decrement button is clicked
-        binding.viewPlusMinusDecrementButton.setOnClickListener {
+        binding.plusMinusDecrementButton.setOnClickListener {
             // Updates value
             count = count.minus(BigDecimal.ONE)
 
             // Displays new value
-            binding.viewPlusMinusValueEditText.text = SpannableStringBuilder(count.toString())
+            binding.plusMinusValueEditText.text = SpannableStringBuilder(count.toString())
         }
 
         // Increments value when increment button is clicked
-        binding.viewPlusMinusIncrementButton.setOnClickListener {
+        binding.plusMinusIncrementButton.setOnClickListener {
             // Updates value
             count = count.plus(BigDecimal.ONE)
 
             // Displays new value
-            binding.viewPlusMinusValueEditText.text = SpannableStringBuilder(count.toString())
+            binding.plusMinusValueEditText.text = SpannableStringBuilder(count.toString())
         }
 
         // Selects all text when EditText gains focus
-        binding.viewPlusMinusValueEditText.setOnFocusChangeListener { _, hasFocus ->
+        binding.plusMinusValueEditText.setOnFocusChangeListener { _, hasFocus ->
             if (hasFocus) {
                 // Detects when layout is ready to be drawn
                 binding.root.viewTreeObserver.addOnPreDrawListener(object : ViewTreeObserver.OnPreDrawListener {
@@ -128,13 +128,13 @@ class PlusMinusView @JvmOverloads constructor(
                         // Removes listener to prevent repeated calls
                         binding.root.viewTreeObserver.removeOnPreDrawListener(this)
                         // Selects all text
-                        binding.viewPlusMinusValueEditText.selectAll()
+                        binding.plusMinusValueEditText.selectAll()
                         return true
                     }
                 })
             } else {
-                if (binding.viewPlusMinusValueEditText.text.toString().isEmpty()) {
-                    binding.viewPlusMinusValueEditText.text = SpannableStringBuilder(count.toString())
+                if (binding.plusMinusValueEditText.text.toString().isEmpty()) {
+                    binding.plusMinusValueEditText.text = SpannableStringBuilder(count.toString())
                 }
             }
         }
@@ -172,8 +172,8 @@ class PlusMinusView @JvmOverloads constructor(
     }
 
     private fun setDrawableStart(drawable: Drawable) {
-        val compoundDrawables = binding.viewPlusMinusLabelText.compoundDrawables
-        binding.viewPlusMinusLabelText.setCompoundDrawablesWithIntrinsicBounds(
+        val compoundDrawables = binding.plusMinusLabelText.compoundDrawables
+        binding.plusMinusLabelText.setCompoundDrawablesWithIntrinsicBounds(
             drawable,
             compoundDrawables[1],
             compoundDrawables[2],
@@ -188,12 +188,12 @@ class PlusMinusView @JvmOverloads constructor(
     }
 
     fun setLabel(label: String) {
-        binding.viewPlusMinusLabelText.text = label
+        binding.plusMinusLabelText.text = label
     }
 
     fun setInitialValue(value: BigDecimal) {
         count = value
-        binding.viewPlusMinusValueEditText.text = SpannableStringBuilder(count.toString())
+        binding.plusMinusValueEditText.text = SpannableStringBuilder(count.toString())
     }
 
     fun addOnValueChangedListener(listener: (BigDecimal) -> Unit) {
@@ -205,7 +205,7 @@ class PlusMinusView @JvmOverloads constructor(
     }
 
     fun isErrorVisible(isErrorVisible: Boolean) {
-        binding.viewPlusMinusErrorTextView.isVisible = isErrorVisible
+        binding.plusMinusErrorTextView.isVisible = isErrorVisible
     }
 
     internal class SavedState : BaseSavedState {
