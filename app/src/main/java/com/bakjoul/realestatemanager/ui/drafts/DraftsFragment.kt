@@ -3,7 +3,6 @@ package com.bakjoul.realestatemanager.ui.drafts
 import android.app.Dialog
 import android.content.DialogInterface
 import android.os.Bundle
-import android.view.MotionEvent
 import android.view.View
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
@@ -11,7 +10,6 @@ import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.databinding.FragmentDraftsBinding
 import com.bakjoul.realestatemanager.ui.utils.CustomThemeDialog
 import com.bakjoul.realestatemanager.ui.utils.Event.Companion.observeEvent
-import com.bakjoul.realestatemanager.ui.utils.hideKeyboard
 import com.bakjoul.realestatemanager.ui.utils.viewBinding
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -27,15 +25,7 @@ class DraftsFragment : DialogFragment(R.layout.fragment_drafts) {
     private val viewModel by viewModels<DraftsViewModel>()
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        return object : CustomThemeDialog(requireContext(), R.style.FullScreenDialog) {
-            override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
-                if (currentFocus != null && !currentFocus!!.hasFocus()) {
-                    hideKeyboard()
-                    currentFocus!!.clearFocus()
-                }
-                return super.dispatchTouchEvent(ev)
-            }
-        }
+        return CustomThemeDialog(requireContext(), R.style.FullScreenDialog)
     }
 
     override fun onStart() {

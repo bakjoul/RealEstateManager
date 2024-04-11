@@ -4,6 +4,7 @@ import android.app.Dialog
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.text.Editable
@@ -56,9 +57,15 @@ class LoanSimulatorFragment : DialogFragment(R.layout.fragment_loan_simulator) {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return object : CustomThemeDialog(requireContext(), R.style.FloatingDialog) {
             override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
-                if (currentFocus != null && !currentFocus!!.hasFocus()) {
-                    hideKeyboard()
-                    currentFocus!!.clearFocus()
+                if (currentFocus != null) {
+                    val focusedViewRect = Rect()
+                    currentFocus!!.getGlobalVisibleRect(focusedViewRect)
+                    val x = ev.x.toInt()
+                    val y = ev.y.toInt()
+                    if (!focusedViewRect.contains(x, y)) {
+                        hideKeyboard()
+                        currentFocus!!.clearFocus()
+                    }
                 }
                 return super.dispatchTouchEvent(ev)
             }

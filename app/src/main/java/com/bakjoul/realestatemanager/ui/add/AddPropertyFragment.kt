@@ -5,6 +5,7 @@ import android.app.Dialog
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Rect
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
@@ -100,9 +101,15 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = object : CustomThemeDialog(requireContext(), R.style.FullScreenDialog) {
             override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
-                if (currentFocus != null && !currentFocus!!.hasFocus()) {
-                    hideKeyboard()
-                    currentFocus!!.clearFocus()
+                if (currentFocus != null) {
+                    val focusedViewRect = Rect()
+                    currentFocus!!.getGlobalVisibleRect(focusedViewRect)
+                    val x = ev.x.toInt()
+                    val y = ev.y.toInt()
+                    if (!focusedViewRect.contains(x, y)) {
+                        hideKeyboard()
+                        currentFocus!!.clearFocus()
+                    }
                 }
                 return super.dispatchTouchEvent(ev)
             }
@@ -141,7 +148,7 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
         val suggestionsAdapter = AddPropertySuggestionAdapter()
         binding.addPropertyAddressSuggestionsRecyclerView.adapter = suggestionsAdapter
         val suggestionsDivider = DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
-        suggestionsDivider.setDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.suggestions_divider)!!)
+        suggestionsDivider.setDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.horizontal_divider)!!)
         binding.addPropertyAddressSuggestionsRecyclerView.addItemDecoration(suggestionsDivider)
 
         val photosDivider = DividerItemDecoration(requireContext(), DividerItemDecoration.HORIZONTAL)
