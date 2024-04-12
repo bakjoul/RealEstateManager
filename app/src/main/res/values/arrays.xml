@@ -12,4 +12,8 @@
         <item>years</item>
         <item>months</item>
     </string-array>
+    <array name="range_slider_initial_values">
+        <item>0</item>
+        <item>100</item>
+    </array>
 </resources>

@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/range_slider_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:ellipsize="end"
+        android:lines="1"
+        android:textSize="15sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Price (€)" />
+
+    <com.google.android.material.slider.RangeSlider
+        android:id="@+id/range_slider"
+        style="@style/CustomRangeSlider"
+        app:layout_constraintEnd_toEndOf="@id/range_slider_title"
+        app:layout_constraintStart_toStartOf="@id/range_slider_title"
+        app:layout_constraintTop_toBottomOf="@id/range_slider_title"
+        tools:valueFrom="0"
+        tools:valueTo="100"
+        tools:values="@array/range_slider_initial_values" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/range_slider_min_value_TextInputLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="@string/range_slider_min_value_hint"
+        app:helperTextTextAppearance="@style/RangeSliderHelperTextTextAppearance"
+        app:layout_constraintEnd_toStartOf="@id/range_slider_divider"
+        app:layout_constraintHorizontal_weight="0.5"
+        app:layout_constraintStart_toStartOf="@id/range_slider"
+        app:layout_constraintTop_toBottomOf="@id/range_slider"
+        tools:helperText="Min.: 100000">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/range_slider_min_value_TextInputEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:inputType="number"
+            android:lines="1"
+            android:textSize="15sp"
+            tools:text="100000" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <View
+        android:id="@+id/range_slider_divider"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintEnd_toStartOf="@id/range_slider_max_value_TextInputLayout"
+        app:layout_constraintHorizontal_weight="0.7"
+        app:layout_constraintStart_toEndOf="@id/range_slider_min_value_TextInputLayout"
+        app:layout_constraintTop_toTopOf="@id/range_slider_min_value_TextInputLayout" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/range_slider_max_value_TextInputLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="@string/range_slider_max_value_hint"
+        app:helperTextTextAppearance="@style/RangeSliderHelperTextTextAppearance"
+        app:layout_constraintEnd_toEndOf="@id/range_slider"
+        app:layout_constraintHorizontal_weight="0.5"
+        app:layout_constraintStart_toEndOf="@id/range_slider_divider"
+        app:layout_constraintTop_toBottomOf="@id/range_slider"
+        tools:helperText="Max.: 500000">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/range_slider_max_value_TextInputEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:inputType="number"
+            android:lines="1"
+            android:textSize="15sp"
+            tools:text="500000" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/horizontal_divider"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/range_slider_min_value_TextInputLayout" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

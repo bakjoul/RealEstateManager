@@ -1,6 +1,5 @@
 package com.bakjoul.realestatemanager.designsystem.atome
 
-import android.app.Activity
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.os.Build
@@ -10,16 +9,15 @@ import android.text.SpannableStringBuilder
 import android.util.AttributeSet
 import android.util.SparseArray
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewTreeObserver
 import android.view.inputmethod.EditorInfo
-import android.view.inputmethod.InputMethodManager
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.withStyledAttributes
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.databinding.ViewPlusMinusBinding
+import com.bakjoul.realestatemanager.designsystem.utils.CustomViewUtils.hideKeyboard
 import com.bakjoul.realestatemanager.ui.utils.restoreChildViewStates
 import com.bakjoul.realestatemanager.ui.utils.saveChildViewStates
 import java.math.BigDecimal
@@ -119,15 +117,15 @@ class PlusMinusView @JvmOverloads constructor(
             binding.plusMinusValueEditText.text = SpannableStringBuilder(count.toString())
         }
 
-        // Selects all text when EditText gains focus
+        // Selects all text in EditText when it gains focus
         binding.plusMinusValueEditText.setOnFocusChangeListener { _, hasFocus ->
             if (hasFocus) {
-                // Detects when layout is ready to be drawn
+                // Detects when the view is ready to be drawn
                 binding.root.viewTreeObserver.addOnPreDrawListener(object : ViewTreeObserver.OnPreDrawListener {
                     override fun onPreDraw(): Boolean {
-                        // Removes listener to prevent repeated calls
+                        // Removes the listener to avoid multiple calls
                         binding.root.viewTreeObserver.removeOnPreDrawListener(this)
-                        // Selects all text
+                        // Selects all text in the EditText
                         binding.plusMinusValueEditText.selectAll()
                         return true
                     }
@@ -179,12 +177,6 @@ class PlusMinusView @JvmOverloads constructor(
             compoundDrawables[2],
             compoundDrawables[3]
         )
-    }
-
-    private fun hideKeyboard(view: View) {
-        val context = view.context
-        val inputMethodManager = context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-        inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
     }
 
     fun setLabel(label: String) {

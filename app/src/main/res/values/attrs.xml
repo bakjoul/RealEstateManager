@@ -24,4 +24,14 @@
             <enum name="actionDone" value="1" />
         </attr>
     </declare-styleable>
+
+    <declare-styleable name="RangeSliderView">
+        <attr name="rangeSliderTitle" format="string" />
+        <attr name="rangeSliderMinValueHint" format="string" />
+        <attr name="rangeSliderMaxValueHint" format="string" />
+        <attr name="rangeSliderMaxValueTextImeOptions" format="enum">
+            <enum name="actionNext" value="0" />
+            <enum name="actionDone" value="1" />
+        </attr>
+    </declare-styleable>
 </resources>

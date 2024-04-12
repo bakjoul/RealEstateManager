@@ -57,7 +57,7 @@
         android:layout_width="match_parent"
         android:layout_height="2dp"
         android:layout_marginTop="12dp"
-        android:background="@drawable/suggestions_divider"
+        android:background="@drawable/horizontal_divider"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/settings_spinner_desc" />
 

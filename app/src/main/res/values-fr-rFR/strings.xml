@@ -184,4 +184,11 @@
     <string name="confirm">Confirmer</string>
     <string name="delete_draft_dialog_title">Suppression du brouillon</string>
     <string name="delete_draft_dialog_message">Êtes-vous sûr de vouloir supprimer ce brouillon ?</string>
+    <string name="filter_button_text">Filtrer</string>
+    <string name="clear_filters_button_text">Effacer les filtres</string>
+    <string name="range_slider_min_value_hint">Valeur min.</string>
+    <string name="range_slider_max_value_hint">Valeur max.</string>
+    <string name="invalid_value">Valeur invalide</string>
+    <string name="property_sold">Vendu</string>
+    <string name="type_label">Type</string>
 </resources>

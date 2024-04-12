@@ -200,4 +200,11 @@
     <string name="confirm">Confirm</string>
     <string name="delete_draft_dialog_title">Deleting draft</string>
     <string name="delete_draft_dialog_message">Are you sure want to delete this draft?</string>
+    <string name="filter_button_text">Filter</string>
+    <string name="clear_filters_button_text">Clear filters</string>
+    <string name="range_slider_min_value_hint">Min. value</string>
+    <string name="range_slider_max_value_hint">Max. value</string>
+    <string name="invalid_value">Invalid value</string>
+    <string name="property_sold">Sold</string>
+    <string name="type_label">Type</string>
 </resources>
