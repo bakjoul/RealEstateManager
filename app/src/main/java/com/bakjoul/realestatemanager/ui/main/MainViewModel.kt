@@ -151,6 +151,11 @@ class MainViewModel @Inject constructor(
                 } else {
                     MainViewAction.ShowLoanSimulatorAndDetailsPortraitIfNeeded
                 }
+                is To.FilterDialog -> if (isTablet) {
+                    MainViewAction.ShowFilterDialogAndHideDetailsPortraitIfNeeded
+                } else {
+                    MainViewAction.ShowFilterDialogAndDetailsPortraitIfNeeded
+                }
                 else -> null
             }
             viewAction?.let {

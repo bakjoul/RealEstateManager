@@ -95,8 +95,8 @@ class LoanSimulatorFragment : DialogFragment(R.layout.fragment_loan_simulator) {
         binding.loanSimulatorDurationUnitAutoCompleteTextView.setText(getString(DurationUnit.YEARS.unitName), false)
         val adapter = ArrayAdapter(
             requireContext(),
-            R.layout.fragment_loan_simulator_duration_unit_spinner_item,
-            resources.getStringArray(R.array.duration_unit_options)
+            R.layout.view_spinner_item,
+            resources.getStringArray(R.array.loan_duration_unit_options)
         )
         binding.loanSimulatorDurationUnitAutoCompleteTextView.setAdapter(adapter)
         // Workaround to show all items in the dropdown list after a rotation

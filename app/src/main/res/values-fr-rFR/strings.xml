@@ -41,7 +41,7 @@
     <string name="property_poi_airport">Aéroport</string>
     <string name="property_poi_hospital">Hôpital</string>
     <string name="back_button_desc">Bouton de retour</string>
-    <string name="property_sold">VENDU</string>
+    <string name="property_sold_banner">VENDU</string>
     <string name="settings">Paramètres</string>
     <string name="settings_currency_label">Devise</string>
     <string name="settings_currency_desc">Modifie la devise utilisée dans l\'application</string>
@@ -131,8 +131,8 @@
     <string name="loan_simulator_amount_hint">Montant</string>
     <string name="loan_simulator_down_payment_hint">Apport (facultatif)</string>
     <string name="loan_simulator_interest_hint">Taux d\'intérêt</string>
-    <string name="loan_simulator_duration_hint">Durée</string>
-    <string name="loan_simulator_reset_button_text">Réinit.</string>
+    <string name="duration">Durée</string>
+    <string name="reset">Réinit.</string>
     <string name="loan_simulator_calculate_button_text">Calculer</string>
     <string name="loan_simulator_appbar_title">Simulateur de prêt</string>
     <string name="loan_simulator_error_amount">Montant requis</string>
@@ -191,4 +191,10 @@
     <string name="invalid_value">Valeur invalide</string>
     <string name="property_sold">Vendu</string>
     <string name="type_label">Type</string>
+    <string name="search_status_label">Statut</string>
+    <string name="search_date_label">Date d\'enregistrement / de vente à partir d\'aujourd\'hui</string>
+    <string name="weeks">semaines</string>
+    <string name="search_region_city_label">Région / ville</string>
+    <string name="search_rooms_label">Nombre de pièces / salles de bain / chambres</string>
+    <string name="apply">Appliquer</string>
 </resources>

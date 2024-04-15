@@ -202,7 +202,7 @@
                     android:checked="false"
                     android:textColor="@color/white"
                     android:textOff="@string/property_for_sale"
-                    android:textOn="@string/property_sold"
+                    android:textOn="@string/property_sold_banner"
                     android:textStyle="bold"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@id/add_property_for_sale_since_TextInputLayout" />

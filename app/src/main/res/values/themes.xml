@@ -100,8 +100,8 @@
 
     <style name="PositiveButton" parent="Widget.Material3.Button.OutlinedButton">
         <item name="cornerRadius">7dp</item>
-        <item name="backgroundTint">@color/blue_toolbar</item>
         <item name="android:textColor">@color/white</item>
+        <item name="backgroundTint">@color/blue</item>
     </style>
 
     <style name="AutoCompleteTextViewLayout" parent="Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
@@ -122,9 +122,9 @@
     <style name="CustomRangeSlider" parent="Widget.Material3.Slider">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="trackColorActive">#FF3944BC</item>
-        <item name="trackColorInactive">#503944BC</item>
-        <item name="thumbColor">#FF3944BC</item>
+        <item name="trackColorActive">@color/blue</item>
+        <item name="trackColorInactive">@color/blue_toolbar</item>
+        <item name="thumbColor">@color/blue</item>
         <item name="tickVisible">false</item>
     </style>
 

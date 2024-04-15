@@ -30,4 +30,6 @@ sealed class MainViewAction {
     object ShowLoanSimulatorAndHideDetailsPortraitIfNeeded : MainViewAction()
     data class ShowEditPropertyErrorToastAndDetailsTabletIfNeeded(val message: NativeText, val showToast: Boolean): MainViewAction()
     data class ShowEditPropertyErrorToastAndDetailsPortraitIfNeeded(val message: NativeText, val showToast: Boolean): MainViewAction()
+    object ShowFilterDialogAndHideDetailsPortraitIfNeeded: MainViewAction()
+    object ShowFilterDialogAndDetailsPortraitIfNeeded: MainViewAction()
 }

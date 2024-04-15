@@ -8,7 +8,7 @@
         <item>Feet (sq ft)</item>
         <item>Meters (sq m)</item>
     </string-array>
-    <string-array name="duration_unit_options">
+    <string-array name="loan_duration_unit_options">
         <item>years</item>
         <item>months</item>
     </string-array>
@@ -16,4 +16,9 @@
         <item>0</item>
         <item>100</item>
     </array>
+    <string-array name="search_date_duration_unit_options">
+        <item>weeks</item>
+        <item>months</item>
+        <item>years</item>
+    </string-array>
 </resources>

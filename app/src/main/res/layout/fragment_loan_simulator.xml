@@ -38,8 +38,7 @@
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:layout_gravity="center_vertical"
-                android:layout_marginEnd="8dp"
-                android:background="@null"
+                android:background="?selectableItemBackground"
                 android:contentDescription="@string/close_button_desc"
                 android:src="@drawable/baseline_close_24_white" />
         </LinearLayout>
@@ -126,7 +125,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:hint="@string/loan_simulator_duration_hint"
+            android:hint="@string/duration"
             app:layout_constraintEnd_toStartOf="@id/loan_simulator_duration_unit_TextInputLayout"
             app:layout_constraintHorizontal_weight="0.6"
             app:layout_constraintStart_toStartOf="@id/loan_simulator_interest_TextInputLayout"
@@ -166,7 +165,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="@string/loan_simulator_reset_button_text"
+            android:text="@string/reset"
             app:layout_constraintEnd_toStartOf="@id/loan_simulator_calculate_button"
             app:layout_constraintHorizontal_weight="0.3"
             app:layout_constraintStart_toStartOf="@id/loan_simulator_duration_TextInputLayout"

@@ -18,13 +18,14 @@ class PropertyListFragment : Fragment(R.layout.fragment_list) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.listFilterButton.setOnClickListener { viewModel.onFilterButtonClicked() }
+        binding.listAddPropertyFab.setOnClickListener { viewModel.onAddPropertyButtonClicked() }
+
         val adapter = PropertyAdapter()
         binding.listRecyclerView.adapter = adapter
 
         viewModel.propertiesLiveData.observe(viewLifecycleOwner) {
             adapter.submitList(it)
         }
-
-        binding.listAddPropertyFab.setOnClickListener { viewModel.onAddPropertyClicked() }
     }
 }

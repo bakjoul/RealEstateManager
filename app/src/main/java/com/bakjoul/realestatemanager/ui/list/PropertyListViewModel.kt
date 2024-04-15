@@ -184,7 +184,11 @@ class PropertyListViewModel @Inject constructor(
         return date?.let { outputFormat.format(it) }
     }
 
-    fun onAddPropertyClicked() {
+    fun onFilterButtonClicked() {
+        navigateUseCase.invoke(To.FilterDialog)
+    }
+
+    fun onAddPropertyButtonClicked() {
         viewModelScope.launch {
             val propertyDraftIds = getPropertyDraftIdsUseCase.invoke()
             if (propertyDraftIds.isNotEmpty()) {

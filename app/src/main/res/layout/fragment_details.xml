@@ -138,7 +138,7 @@
                         android:gravity="center_vertical"
                         android:paddingStart="24dp"
                         android:paddingEnd="0dp"
-                        android:text="@string/property_sold"
+                        android:text="@string/property_sold_banner"
                         android:textColor="@color/white"
                         android:textSize="17sp"
                         android:textStyle="bold"

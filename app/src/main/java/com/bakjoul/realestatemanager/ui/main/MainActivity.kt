@@ -24,6 +24,7 @@ import com.bakjoul.realestatemanager.ui.drafts.DraftsFragment
 import com.bakjoul.realestatemanager.ui.list.PropertyListFragment
 import com.bakjoul.realestatemanager.ui.loan_simulator.LoanSimulatorFragment
 import com.bakjoul.realestatemanager.ui.photos.PhotosFragment
+import com.bakjoul.realestatemanager.ui.search.SearchFragment
 import com.bakjoul.realestatemanager.ui.settings.SettingsFragment
 import com.bakjoul.realestatemanager.ui.utils.Event.Companion.observeEvent
 import com.bakjoul.realestatemanager.ui.utils.showAsToast
@@ -44,6 +45,7 @@ class MainActivity : AppCompatActivity() {
         private const val ADD_PROPERTY_DIALOG_TAG = "AddPropertyDialogFragment"
         private const val SETTINGS_DIALOG_TAG = "SettingsDialogFragment"
         private const val LOAN_SIMULATOR_DIALOG_TAG = "LoanSimulatorDialogFragment"
+        private const val FILTER_DIALOG_TAG = "FilterDialogFragment"
         // endregion Tags
     }
 
@@ -338,6 +340,24 @@ class MainActivity : AppCompatActivity() {
                         viewModel.onEditErrorToastShown()
                     }
                     showDetailsPortraitIfNeeded(containerMainId)
+                }
+
+                // TODO refactor
+                MainViewAction.ShowFilterDialogAndDetailsPortraitIfNeeded -> {
+                    //showDetailsPortraitIfNeeded(containerMainId)
+                    val existingFragment = supportFragmentManager.findFragmentByTag(FILTER_DIALOG_TAG)
+                    if (existingFragment == null) {
+                        SearchFragment.newInstance().show(supportFragmentManager, FILTER_DIALOG_TAG)
+                    }
+                }
+
+                MainViewAction.ShowFilterDialogAndHideDetailsPortraitIfNeeded -> {
+                    val detailsPortraitFragment = hideDetailsPortrait()
+                    showDetailsTabletIfNeeded(containerDetailsId, detailsPortraitFragment)
+                    val existingFragment = supportFragmentManager.findFragmentByTag(FILTER_DIALOG_TAG)
+                    if (existingFragment == null) {
+                        SearchFragment.newInstance().show(supportFragmentManager, FILTER_DIALOG_TAG)
+                    }
                 }
             }
         }

@@ -1,0 +1,462 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:hint="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.google.android.material.bottomsheet.BottomSheetDragHandleView
+        android:id="@+id/search_drag_handle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageButton
+        android:id="@+id/search_close_button"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:background="?selectableItemBackground"
+        android:contentDescription="@string/close_button_desc"
+        android:src="@drawable/baseline_close_24_grey"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/search_nestedScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp"
+        app:layout_constrainedHeight="true"
+        app:layout_constraintBottom_toTopOf="@id/search_bottom_LinearLayout"
+        app:layout_constraintTop_toBottomOf="@id/search_drag_handle">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/search_status_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="8dp"
+                android:text="@string/search_status_label"
+                android:textSize="15sp"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/search_status_ChipGroup"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                app:chipSpacingVertical="8dp"
+                app:layout_constraintEnd_toEndOf="@+id/search_status_label"
+                app:layout_constraintStart_toStartOf="@+id/search_status_label"
+                app:layout_constraintTop_toBottomOf="@id/search_status_label">
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/search_status_for_sale_Chip"
+                    style="@style/Chip"
+                    android:text="@string/property_for_sale" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/search_status_sold_Chip"
+                    style="@style/Chip"
+                    android:text="@string/property_sold" />
+            </com.google.android.material.chip.ChipGroup>
+
+            <View
+                android:id="@+id/search_status_divider"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/horizontal_divider"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/search_status_ChipGroup" />
+
+            <TextView
+                android:id="@+id/search_date_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:text="@string/search_date_label"
+                android:textSize="15sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/search_status_divider" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/search_date_duration_TextInputLayout"
+                android:layout_width="72dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:hint="@string/duration"
+                app:layout_constraintEnd_toStartOf="@id/search_date_unit_TextInputLayout"
+                app:layout_constraintStart_toStartOf="@id/search_date_label"
+                app:layout_constraintTop_toBottomOf="@id/search_date_label">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/search_date_duration_TextInputEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:drawableStart="@drawable/less_than"
+                    android:drawablePadding="-8dp"
+                    android:gravity="center"
+                    android:imeOptions="actionDone"
+                    android:inputType="numberPassword"
+                    android:lines="1"
+                    android:maxLength="3"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:text="@string/zero" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/search_date_unit_TextInputLayout"
+                style="@style/AutoCompleteTextViewLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                app:layout_constraintStart_toEndOf="@id/search_date_duration_TextInputLayout"
+                app:layout_constraintTop_toTopOf="@id/search_date_duration_TextInputLayout">
+
+                <AutoCompleteTextView
+                    android:id="@+id/search_date_unit_AutoCompleteTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:inputType="none"
+                    android:paddingVertical="2dp"
+                    android:text="@string/weeks"
+                    hint:ignore="LabelFor" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <View
+                android:id="@+id/search_date_divider"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/horizontal_divider"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/search_date_duration_TextInputLayout" />
+
+            <TextView
+                android:id="@+id/search_location_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:text="@string/search_region_city_label"
+                android:textSize="15sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/search_date_divider" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/search_location_TextInputLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:hint="@string/search_region_city_label"
+                app:endIconDrawable="@drawable/backspace_24"
+                app:endIconMode="custom"
+                app:layout_constraintEnd_toEndOf="@id/search_location_label"
+                app:layout_constraintStart_toStartOf="@id/search_location_label"
+                app:layout_constraintTop_toBottomOf="@id/search_location_label">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/search_location_TextInputEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:imeOptions="actionDone"
+                    android:inputType="textNoSuggestions"
+                    android:lines="1" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <View
+                android:id="@+id/search_location_divider"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/horizontal_divider"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/search_location_TextInputLayout" />
+
+            <TextView
+                android:id="@+id/search_type_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:text="@string/type_label"
+                android:textSize="15sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/search_location_divider" />
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/search_type_ChipGroup"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                app:chipSpacingVertical="8dp"
+                app:layout_constraintEnd_toEndOf="@+id/search_type_label"
+                app:layout_constraintStart_toStartOf="@+id/search_type_label"
+                app:layout_constraintTop_toBottomOf="@id/search_type_label">
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/search_type_flat_Chip"
+                    style="@style/Chip"
+                    android:text="@string/property_type_flat" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/search_type_house_Chip"
+                    style="@style/Chip"
+                    android:text="@string/property_type_house" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/search_type_duplex_Chip"
+                    style="@style/Chip"
+                    android:text="@string/property_type_duplex" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/search_type_penthouse_Chip"
+                    style="@style/Chip"
+                    android:text="@string/property_type_penthouse" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/search_type_loft_Chip"
+                    style="@style/Chip"
+                    android:text="@string/property_type_loft" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/search_type_other_Chip"
+                    style="@style/Chip"
+                    android:text="@string/property_type_other" />
+            </com.google.android.material.chip.ChipGroup>
+
+            <View
+                android:id="@+id/search_type_divider"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/horizontal_divider"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/search_type_ChipGroup" />
+
+            <com.bakjoul.realestatemanager.designsystem.atome.RangeSliderView
+                android:id="@+id/search_price_rangeSliderView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/search_type_divider"
+                app:rangeSliderMaxValueHint="Max. price"
+                app:rangeSliderMaxValueTextImeOptions="actionDone"
+                app:rangeSliderMinValueHint="Min. price"
+                app:rangeSliderTitle="Price (€)" />
+
+            <com.bakjoul.realestatemanager.designsystem.atome.RangeSliderView
+                android:id="@+id/search_surface_rangeSliderView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/search_price_rangeSliderView"
+                app:rangeSliderMaxValueHint="Max. surface"
+                app:rangeSliderMaxValueTextImeOptions="actionDone"
+                app:rangeSliderMinValueHint="Min. surface"
+                app:rangeSliderTitle="Surface (sq m)" />
+
+            <TextView
+                android:id="@+id/search_rooms_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:text="@string/search_rooms_label"
+                android:textSize="15sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/search_surface_rangeSliderView" />
+
+            <com.google.android.flexbox.FlexboxLayout
+                android:id="@+id/search_rooms_FlexboxLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                app:alignItems="flex_start"
+                app:flexWrap="wrap"
+                app:layout_constraintEnd_toEndOf="@id/search_rooms_label"
+                app:layout_constraintStart_toStartOf="@id/search_rooms_label"
+                app:layout_constraintTop_toBottomOf="@id/search_rooms_label">
+
+                <com.bakjoul.realestatemanager.designsystem.atome.PlusMinusView
+                    android:id="@+id/search_rooms_PlusMinusView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="4dp"
+                    app:layout_flexGrow="1"
+                    app:plusMinusDrawablePadding="2dp"
+                    app:plusMinusImageSrc="@drawable/baseline_home_16"
+                    app:plusMinusLabel="@string/add_property_label_rooms" />
+
+                <com.bakjoul.realestatemanager.designsystem.atome.PlusMinusView
+                    android:id="@+id/search_bathrooms_PlusMinusView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="4dp"
+                    app:layout_flexGrow="1"
+                    app:plusMinusDrawablePadding="3.5dp"
+                    app:plusMinusImageSrc="@drawable/hot_tub_black_16dp"
+                    app:plusMinusLabel="@string/add_property_label_bathrooms" />
+
+                <com.bakjoul.realestatemanager.designsystem.atome.PlusMinusView
+                    android:id="@+id/search_bedrooms_PlusMinusView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="4dp"
+                    app:layout_flexGrow="1"
+                    app:plusMinusDrawablePadding="3.5dp"
+                    app:plusMinusImageSrc="@drawable/hotel_black_16dp"
+                    app:plusMinusImeOptions="actionDone"
+                    app:plusMinusLabel="@string/add_property_label_bedrooms" />
+            </com.google.android.flexbox.FlexboxLayout>
+
+            <View
+                android:id="@+id/search_rooms_divider"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/horizontal_divider"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/search_rooms_FlexboxLayout" />
+
+            <TextView
+                android:id="@+id/search_amenities_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:text="@string/property_label_amenities"
+                android:textSize="15sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/search_rooms_divider" />
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/search_amenities_ChipGroup"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                app:chipSpacingVertical="8dp"
+                app:layout_constraintEnd_toEndOf="@+id/search_amenities_label"
+                app:layout_constraintStart_toStartOf="@+id/search_amenities_label"
+                app:layout_constraintTop_toBottomOf="@id/search_amenities_label">
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/add_property_amenities_school_Chip"
+                    style="@style/Chip"
+                    android:text="@string/property_poi_school" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/add_property_amenities_store_Chip"
+                    style="@style/Chip"
+                    android:text="@string/property_poi_store" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/add_property_amenities_park_Chip"
+                    style="@style/Chip"
+                    android:text="@string/property_poi_park" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/add_property_amenities_restaurant_Chip"
+                    style="@style/Chip"
+                    android:text="@string/property_poi_restaurant" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/add_property_amenities_hospital_Chip"
+                    style="@style/Chip"
+                    android:text="@string/property_poi_hospital" />
+            </com.google.android.material.chip.ChipGroup>
+
+            <View
+                android:id="@+id/search_amenities_divider"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/horizontal_divider"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/search_amenities_ChipGroup" />
+
+            <TextView
+                android:id="@+id/search_transportation_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:text="@string/property_label_transportation"
+                android:textSize="15sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/search_amenities_divider" />
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/search_transportation_ChipGroup"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:paddingVertical="8dp"
+                app:chipSpacingVertical="8dp"
+                app:layout_constraintEnd_toEndOf="@+id/search_transportation_label"
+                app:layout_constraintStart_toStartOf="@+id/search_transportation_label"
+                app:layout_constraintTop_toBottomOf="@id/search_transportation_label">
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/search_transportation_bus_Chip"
+                    style="@style/Chip"
+                    android:text="@string/property_poi_bus" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/search_transportation_subway_Chip"
+                    style="@style/Chip"
+                    android:text="@string/property_poi_subway" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/search_transportation_tramway_Chip"
+                    style="@style/Chip"
+                    android:text="@string/property_poi_tramway" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/search_transportation_train_Chip"
+                    style="@style/Chip"
+                    android:text="@string/property_poi_train" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/search_transportation_airport_Chip"
+                    style="@style/Chip"
+                    android:text="@string/property_poi_airport" />
+            </com.google.android.material.chip.ChipGroup>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <LinearLayout
+        android:id="@+id/search_bottom_LinearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:colorBackground"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/search_nestedScrollView">
+
+        <Button
+            android:id="@+id/search_reset_Button"
+            style="@style/NegativeButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="4dp"
+            android:layout_weight="0.3"
+            android:text="@string/reset" />
+
+        <Button
+            android:id="@+id/search_apply_Button"
+            style="@style/PositiveButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="2dp"
+            android:layout_weight="0.7"
+            android:text="@string/apply" />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -37,5 +37,6 @@ sealed class To {
     data class Toast(val message: NativeText) : To()
     object LoanSimulator : To()
     object CloseLoanSimulator : To()
+    object FilterDialog : To()
     object DoNothing : To()
 }
