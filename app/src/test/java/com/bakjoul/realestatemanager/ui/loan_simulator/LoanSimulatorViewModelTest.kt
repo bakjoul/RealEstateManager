@@ -5,7 +5,7 @@ import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNotEqualTo
 import com.bakjoul.realestatemanager.R
-import com.bakjoul.realestatemanager.data.loan_simulator.model.DurationUnit
+import com.bakjoul.realestatemanager.data.loan_simulator.model.LoanDurationUnit
 import com.bakjoul.realestatemanager.data.settings.model.AppCurrency
 import com.bakjoul.realestatemanager.domain.loan_simulator.GetLoanSimulatorResultsUseCase
 import com.bakjoul.realestatemanager.domain.loan_simulator.model.LoanSimulatorResultsEntity
@@ -100,7 +100,7 @@ class LoanSimulatorViewModelTest {
                 BigDecimal(20000),
                 BigDecimal(3.5),
                 BigDecimal(10),
-                DurationUnit.YEARS
+                LoanDurationUnit.YEARS
             )
         } returns LoanSimulatorResultsEntity(
             monthlyPayment = BigDecimal(791.09),
@@ -118,7 +118,7 @@ class LoanSimulatorViewModelTest {
         viewModel.onDurationChanged(duration)
         viewModel.onDurationChanged("") // For coverage
         viewModel.onDurationChanged(duration) // We suppose that the user cleared the input
-        viewModel.onDurationUnitChanged(DurationUnit.YEARS)
+        viewModel.onDurationUnitChanged(LoanDurationUnit.YEARS)
         viewModel.onCalculateButtonClicked()
 
         // Then
@@ -148,7 +148,7 @@ class LoanSimulatorViewModelTest {
                 BigDecimal(20000),
                 BigDecimal(3.5),
                 BigDecimal(10),
-                DurationUnit.YEARS
+                LoanDurationUnit.YEARS
             )
         }
         confirmVerified(
@@ -170,7 +170,7 @@ class LoanSimulatorViewModelTest {
                 null,
                 BigDecimal(4),
                 BigDecimal(15),
-                DurationUnit.MONTHS
+                LoanDurationUnit.MONTHS
             )
         } returns LoanSimulatorResultsEntity(
             monthlyPayment = BigDecimal(1841.65),
@@ -182,7 +182,7 @@ class LoanSimulatorViewModelTest {
         // When
         viewModel.onAmountChanged(amount)
         viewModel.onInterestRateChanged(interestRate)
-        viewModel.onDurationUnitChanged(DurationUnit.MONTHS)
+        viewModel.onDurationUnitChanged(LoanDurationUnit.MONTHS)
         viewModel.onDurationChanged(duration)
         viewModel.onCalculateButtonClicked()
 
@@ -192,7 +192,7 @@ class LoanSimulatorViewModelTest {
                 getDefaultViewState().copy(
                     currencyIcon = R.drawable.euro_24,
                     currencyFormat = getCurrencyFormat(AppCurrency.EUR),
-                    durationUnit = DurationUnit.MONTHS,
+                    loanDurationUnit = LoanDurationUnit.MONTHS,
                     monthlyPayment = "1 841,65€",
                     yearlyPayment = "22 099,80€",
                     totalInterest = "10 499,00€",
@@ -208,7 +208,7 @@ class LoanSimulatorViewModelTest {
                 null,
                 BigDecimal(4),
                 BigDecimal(15),
-                DurationUnit.MONTHS
+                LoanDurationUnit.MONTHS
             )
         }
         confirmVerified(
@@ -375,7 +375,7 @@ class LoanSimulatorViewModelTest {
     private fun getDefaultViewState(): LoanSimulatorViewState = LoanSimulatorViewState(
         currencyIcon = R.drawable.dollar_24,
         currencyFormat = getCurrencyFormat(AppCurrency.USD),
-        durationUnit = DurationUnit.YEARS,
+        loanDurationUnit = LoanDurationUnit.YEARS,
         monthlyPayment = "",
         yearlyPayment = "",
         totalInterest = "",

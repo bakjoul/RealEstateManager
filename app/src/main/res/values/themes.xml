@@ -139,4 +139,9 @@
     <style name="RangeSliderHelperTextTextAppearance" parent="TextAppearance.MaterialComponents.Caption">
         <item name="android:textSize">10sp</item>
     </style>
+
+    <style name="ButtonToggleGroupButton" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="backgroundTint">@color/button_toggle_group_background_tint</item>
+        <item name="android:textColor">@color/button_toggle_group_text_color</item>
+    </style>
 </resources>

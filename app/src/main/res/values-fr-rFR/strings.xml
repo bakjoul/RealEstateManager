@@ -193,8 +193,10 @@
     <string name="type_label">Type</string>
     <string name="search_status_label">Statut</string>
     <string name="search_date_label">Date d\'enregistrement / de vente à partir d\'aujourd\'hui</string>
-    <string name="weeks">semaines</string>
+    <string name="duration_unit_weeks">semaines</string>
     <string name="search_region_city_label">Région / ville</string>
     <string name="search_rooms_label">Nombre de pièces / salles de bain / chambres</string>
     <string name="apply">Appliquer</string>
+    <string name="search_status_all">Tout</string>
+    <string name="search_duration_unit_hint">Unité de durée</string>
 </resources>

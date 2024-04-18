@@ -25,7 +25,7 @@ import androidx.transition.AutoTransition
 import androidx.transition.Transition
 import androidx.transition.TransitionManager
 import com.bakjoul.realestatemanager.R
-import com.bakjoul.realestatemanager.data.loan_simulator.model.DurationUnit
+import com.bakjoul.realestatemanager.data.loan_simulator.model.LoanDurationUnit
 import com.bakjoul.realestatemanager.databinding.FragmentLoanSimulatorBinding
 import com.bakjoul.realestatemanager.ui.utils.CustomThemeDialog
 import com.bakjoul.realestatemanager.ui.utils.Event.Companion.observeEvent
@@ -92,7 +92,7 @@ class LoanSimulatorFragment : DialogFragment(R.layout.fragment_loan_simulator) {
             viewModel.onCloseButtonClicked()
         }
 
-        binding.loanSimulatorDurationUnitAutoCompleteTextView.setText(getString(DurationUnit.YEARS.unitName), false)
+        binding.loanSimulatorDurationUnitAutoCompleteTextView.setText(getString(LoanDurationUnit.YEARS.unitName), false)
         val adapter = ArrayAdapter(
             requireContext(),
             R.layout.view_spinner_item,
@@ -123,7 +123,7 @@ class LoanSimulatorFragment : DialogFragment(R.layout.fragment_loan_simulator) {
             viewModel.onDurationChanged(duration)
         }
         binding.loanSimulatorDurationUnitAutoCompleteTextView.setOnItemClickListener { _, _, position, _ ->
-            viewModel.onDurationUnitChanged(DurationUnit.values()[position])
+            viewModel.onDurationUnitChanged(LoanDurationUnit.values()[position])
         }
 
         selectAllTextOnFocus(binding.loanSimulatorAmountTextInputEditText)

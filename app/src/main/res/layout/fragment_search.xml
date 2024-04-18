@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:hint="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -43,26 +42,38 @@
                 android:textSize="15sp"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <com.google.android.material.chip.ChipGroup
-                android:id="@+id/search_status_ChipGroup"
-                android:layout_width="0dp"
+            <com.google.android.material.button.MaterialButtonToggleGroup
+                android:id="@+id/search_status_ButtonToggleGroup"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                app:chipSpacingVertical="8dp"
-                app:layout_constraintEnd_toEndOf="@+id/search_status_label"
+                app:checkedButton="@+id/search_status_all_Button"
                 app:layout_constraintStart_toStartOf="@+id/search_status_label"
-                app:layout_constraintTop_toBottomOf="@id/search_status_label">
+                app:layout_constraintTop_toBottomOf="@id/search_status_label"
+                app:singleSelection="true">
 
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/search_status_for_sale_Chip"
-                    style="@style/Chip"
+                <Button
+                    android:id="@+id/search_status_for_sale_Button"
+                    style="@style/ButtonToggleGroupButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:text="@string/property_for_sale" />
 
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/search_status_sold_Chip"
-                    style="@style/Chip"
+                <Button
+                    android:id="@+id/search_status_sold_Button"
+                    style="@style/ButtonToggleGroupButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:text="@string/property_sold" />
-            </com.google.android.material.chip.ChipGroup>
+
+                <Button
+                    android:id="@+id/search_status_all_Button"
+                    style="@style/ButtonToggleGroupButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:clickable="false"
+                    android:text="@string/search_status_all" />
+            </com.google.android.material.button.MaterialButtonToggleGroup>
 
             <View
                 android:id="@+id/search_status_divider"
@@ -71,7 +82,7 @@
                 android:layout_marginTop="8dp"
                 android:background="@drawable/horizontal_divider"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/search_status_ChipGroup" />
+                app:layout_constraintTop_toBottomOf="@id/search_status_ButtonToggleGroup" />
 
             <TextView
                 android:id="@+id/search_date_label"
@@ -85,7 +96,7 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/search_date_duration_TextInputLayout"
-                android:layout_width="72dp"
+                android:layout_width="96dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:hint="@string/duration"
@@ -98,15 +109,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:drawableStart="@drawable/less_than"
-                    android:drawablePadding="-8dp"
-                    android:gravity="center"
+                    android:drawablePadding="4dp"
                     android:imeOptions="actionDone"
                     android:inputType="numberPassword"
                     android:lines="1"
-                    android:maxLength="3"
-                    android:paddingStart="10dp"
-                    android:paddingEnd="10dp"
-                    android:text="@string/zero" />
+                    android:maxLength="3" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -122,11 +129,9 @@
                     android:id="@+id/search_date_unit_AutoCompleteTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:gravity="center"
+                    android:hint="@string/search_duration_unit_hint"
                     android:inputType="none"
-                    android:paddingVertical="2dp"
-                    android:text="@string/weeks"
-                    hint:ignore="LabelFor" />
+                    android:paddingVertical="2dp" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <View

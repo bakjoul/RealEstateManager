@@ -8,6 +8,8 @@ import android.view.MotionEvent
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.FrameLayout
+import androidx.core.view.children
+import androidx.fragment.app.viewModels
 import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.databinding.FragmentSearchBinding
 import com.bakjoul.realestatemanager.ui.utils.CustomBottomSheetDialog
@@ -16,7 +18,10 @@ import com.bakjoul.realestatemanager.ui.utils.viewBinding
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.google.android.material.button.MaterialButton
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class SearchFragment : BottomSheetDialogFragment(R.layout.fragment_search) {
 
     companion object {
@@ -24,12 +29,12 @@ class SearchFragment : BottomSheetDialogFragment(R.layout.fragment_search) {
     }
 
     private val binding by viewBinding { FragmentSearchBinding.bind(it) }
+    private val viewModel by viewModels<SearchViewModel>()
 
     override fun onStart() {
         super.onStart()
 
         val behavior = (dialog as BottomSheetDialog).behavior
-        behavior.state = BottomSheetBehavior.STATE_HALF_EXPANDED
         setPinnedBottomView(behavior)
     }
 
@@ -82,6 +87,20 @@ class SearchFragment : BottomSheetDialogFragment(R.layout.fragment_search) {
         binding.searchDateUnitAutoCompleteTextView.setAdapter(adapter)
         binding.searchDateUnitAutoCompleteTextView.threshold = (Integer.MAX_VALUE)
         binding.searchDateDurationTextInputEditText.transformationMethod = null
+
+        // Status button toggle group
+        binding.searchStatusButtonToggleGroup.addOnButtonCheckedListener { buttonGroup, buttonId, isChecked ->
+            if (isChecked) {
+                viewModel.onStatusChanged(buttonId)
+                binding.root.findViewById<MaterialButton>(buttonGroup.checkedButtonId).isClickable = false
+            } else {
+                buttonGroup.children.forEach {
+                    if (it.id != buttonGroup.checkedButtonId) {
+                        it.isClickable = true
+                    }
+                }
+            }
+        }
     }
 
     private fun setPinnedBottomView(behavior: BottomSheetBehavior<FrameLayout>) {

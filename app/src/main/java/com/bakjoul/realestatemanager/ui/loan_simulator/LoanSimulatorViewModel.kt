@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import com.bakjoul.realestatemanager.R
-import com.bakjoul.realestatemanager.data.loan_simulator.model.DurationUnit
+import com.bakjoul.realestatemanager.data.loan_simulator.model.LoanDurationUnit
 import com.bakjoul.realestatemanager.data.settings.model.AppCurrency
 import com.bakjoul.realestatemanager.domain.loan_simulator.GetLoanSimulatorResultsUseCase
 import com.bakjoul.realestatemanager.domain.loan_simulator.model.LoanSimulatorFormEntity
@@ -50,7 +50,7 @@ class LoanSimulatorViewModel @Inject constructor(
                 LoanSimulatorViewState(
                     currencyIcon = getCurrencyIcon(currency),
                     currencyFormat = getCurrencyFormat(currency),
-                    durationUnit = form.durationUnit,
+                    loanDurationUnit = form.loanDurationUnit,
                     monthlyPayment = formatPrice(results.monthlyPayment, currency),
                     monthlyInterest = formatPrice(results.monthlyInterest, currency),
                     monthlyInsurance = formatPrice(results.monthlyInsurance, currency),
@@ -207,12 +207,12 @@ class LoanSimulatorViewModel @Inject constructor(
         }
     }
 
-    fun onDurationUnitChanged(durationUnit: DurationUnit) {
+    fun onDurationUnitChanged(loanDurationUnit: LoanDurationUnit) {
         loanSimulatorFormMutableStateFlow.update {
             it.copy(
-                durationUnit = when (durationUnit) {
-                    DurationUnit.YEARS -> DurationUnit.YEARS
-                    DurationUnit.MONTHS -> DurationUnit.MONTHS
+                loanDurationUnit = when (loanDurationUnit) {
+                    LoanDurationUnit.YEARS -> LoanDurationUnit.YEARS
+                    LoanDurationUnit.MONTHS -> LoanDurationUnit.MONTHS
                 }
             )
         }
@@ -295,7 +295,7 @@ class LoanSimulatorViewModel @Inject constructor(
                 loanSimulatorFormMutableStateFlow.value.interestRate!!,
                 loanSimulatorFormMutableStateFlow.value.insuranceRate,
                 loanSimulatorFormMutableStateFlow.value.duration!!,
-                loanSimulatorFormMutableStateFlow.value.durationUnit
+                loanSimulatorFormMutableStateFlow.value.loanDurationUnit
             )
 
             resultsMutableStateFlow.update {

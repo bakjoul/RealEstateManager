@@ -1,6 +1,6 @@
 package com.bakjoul.realestatemanager.domain.loan_simulator
 
-import com.bakjoul.realestatemanager.data.loan_simulator.model.DurationUnit
+import com.bakjoul.realestatemanager.data.loan_simulator.model.LoanDurationUnit
 import com.bakjoul.realestatemanager.domain.loan_simulator.model.LoanSimulatorResultsEntity
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -13,11 +13,11 @@ class GetLoanSimulatorResultsUseCase @Inject constructor() {
         interestRate: BigDecimal,
         insuranceRate: BigDecimal?,
         duration: BigDecimal,
-        durationUnit: DurationUnit
+        loanDurationUnit: LoanDurationUnit
     ): LoanSimulatorResultsEntity {
 
         val amountAfterDownPayment = downPayment?.let { amount.subtract(it) } ?: amount
-        val durationInMonths = if (durationUnit == DurationUnit.YEARS) {
+        val durationInMonths = if (loanDurationUnit == LoanDurationUnit.YEARS) {
             duration.multiply(BigDecimal(12))
         } else {
             duration
