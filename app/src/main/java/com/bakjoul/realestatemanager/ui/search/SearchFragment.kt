@@ -6,11 +6,14 @@ import android.os.Bundle
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
+import android.view.ViewTreeObserver
 import android.widget.ArrayAdapter
 import android.widget.FrameLayout
 import androidx.core.view.children
+import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.viewModels
 import com.bakjoul.realestatemanager.R
+import com.bakjoul.realestatemanager.data.search.model.SearchDurationUnit
 import com.bakjoul.realestatemanager.databinding.FragmentSearchBinding
 import com.bakjoul.realestatemanager.ui.utils.CustomBottomSheetDialog
 import com.bakjoul.realestatemanager.ui.utils.hideKeyboard
@@ -100,6 +103,37 @@ class SearchFragment : BottomSheetDialogFragment(R.layout.fragment_search) {
                     }
                 }
             }
+        }
+
+        // Duration text input
+        binding.searchDateDurationTextInputLayout.isEndIconVisible = false
+        binding.searchDateDurationTextInputEditText.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) {
+                // Detects when the view is ready to be drawn
+                binding.root.viewTreeObserver.addOnPreDrawListener(object : ViewTreeObserver.OnPreDrawListener {
+                    override fun onPreDraw(): Boolean {
+                        // Removes the listener to avoid multiple calls
+                        binding.root.viewTreeObserver.removeOnPreDrawListener(this)
+                        // Selects all text in the EditText
+                        binding.searchDateDurationTextInputEditText.selectAll()
+                        return true
+                    }
+                })
+            }
+        }
+        binding.searchDateDurationTextInputEditText.doAfterTextChanged {
+            val duration = it.toString().toIntOrNull()
+
+            binding.searchDateDurationTextInputLayout.isEndIconVisible = duration != null
+            viewModel.onDurationChanged(duration)
+        }
+        binding.searchDateDurationTextInputLayout.setEndIconOnClickListener {
+            binding.searchDateDurationTextInputEditText.text = null
+        }
+
+        // Duration unit
+        binding.searchDateUnitAutoCompleteTextView.setOnItemClickListener { _, _, position, _ ->
+            viewModel.onDurationUnitChanged(SearchDurationUnit.values()[position])
         }
     }
 
