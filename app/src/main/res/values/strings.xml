@@ -215,4 +215,5 @@
     <string name="apply">Apply</string>
     <string name="search_status_all">All</string>
     <string name="search_duration_unit_hint">Duration unit</string>
+    <string name="search_uncheck_all">Uncheck all</string>
 </resources>

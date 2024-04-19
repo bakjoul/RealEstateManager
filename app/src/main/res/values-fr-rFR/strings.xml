@@ -199,4 +199,5 @@
     <string name="apply">Appliquer</string>
     <string name="search_status_all">Tout</string>
     <string name="search_duration_unit_hint">Unité de durée</string>
+    <string name="search_uncheck_all">Décocher tout</string>
 </resources>
