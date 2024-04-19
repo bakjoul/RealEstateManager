@@ -8,6 +8,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewTreeObserver
 import android.widget.ArrayAdapter
+import android.widget.Button
 import android.widget.FrameLayout
 import androidx.core.view.children
 import androidx.core.widget.doAfterTextChanged
@@ -23,6 +24,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.chip.Chip
+import com.google.android.material.chip.ChipGroup
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -138,11 +140,25 @@ class SearchFragment : BottomSheetDialogFragment(R.layout.fragment_search) {
         }
 
         // Type
-        binding.searchTypeChipGroup.children.forEach { it as Chip
-            it.setOnCheckedChangeListener { chip, isChecked ->
-                viewModel.onTypeChipCheckedChanged(chip.id, isChecked)
-            }
-        }
+        setChipGroupListeners(
+            binding.searchTypeChipGroup,
+            binding.searchTypeResetButton,
+            viewModel::onTypeChipCheckedChanged
+        )
+
+        // Amenities
+        setChipGroupListeners(
+            binding.searchAmenitiesChipGroup,
+            binding.searchAmenitiesResetButton,
+            viewModel::onPoiChipCheckedChanged
+        )
+
+        // Transportation
+        setChipGroupListeners(
+            binding.searchTransportationChipGroup,
+            binding.searchTransportationResetButton,
+            viewModel::onPoiChipCheckedChanged
+        )
     }
 
     private fun setPinnedBottomView(behavior: BottomSheetBehavior<FrameLayout>) {
@@ -158,5 +174,28 @@ class SearchFragment : BottomSheetDialogFragment(R.layout.fragment_search) {
                 onSlide(binding.root.parent as View, 0f)
             }
         })
+    }
+
+    private fun setChipGroupListeners(
+        chipGroup: ChipGroup,
+        resetButton: Button,
+        updateValues: (Int, Boolean) -> Unit
+    ) {
+        chipGroup.children.forEach { it as Chip
+            it.setOnCheckedChangeListener { chip, isChecked ->
+                updateValues(chip.id, isChecked)
+            }
+        }
+        resetButton.setOnClickListener {
+            chipGroup.clearCheck()
+            resetButton.visibility = View.GONE
+        }
+        chipGroup.setOnCheckedStateChangeListener { group, _ ->
+            if (group.checkedChipIds.size > 0) {
+                resetButton.visibility = View.VISIBLE
+            } else {
+                resetButton.visibility = View.GONE
+            }
+        }
     }
 }

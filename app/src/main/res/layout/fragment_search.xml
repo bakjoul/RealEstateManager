@@ -375,27 +375,27 @@
                 app:layout_constraintTop_toBottomOf="@id/search_amenities_label">
 
                 <com.google.android.material.chip.Chip
-                    android:id="@+id/add_property_amenities_school_Chip"
+                    android:id="@+id/search_amenities_school_Chip"
                     style="@style/Chip"
                     android:text="@string/property_poi_school" />
 
                 <com.google.android.material.chip.Chip
-                    android:id="@+id/add_property_amenities_store_Chip"
+                    android:id="@+id/search_amenities_store_Chip"
                     style="@style/Chip"
                     android:text="@string/property_poi_store" />
 
                 <com.google.android.material.chip.Chip
-                    android:id="@+id/add_property_amenities_park_Chip"
+                    android:id="@+id/search_amenities_park_Chip"
                     style="@style/Chip"
                     android:text="@string/property_poi_park" />
 
                 <com.google.android.material.chip.Chip
-                    android:id="@+id/add_property_amenities_restaurant_Chip"
+                    android:id="@+id/search_amenities_restaurant_Chip"
                     style="@style/Chip"
                     android:text="@string/property_poi_restaurant" />
 
                 <com.google.android.material.chip.Chip
-                    android:id="@+id/add_property_amenities_hospital_Chip"
+                    android:id="@+id/search_amenities_hospital_Chip"
                     style="@style/Chip"
                     android:text="@string/property_poi_hospital" />
             </com.google.android.material.chip.ChipGroup>
