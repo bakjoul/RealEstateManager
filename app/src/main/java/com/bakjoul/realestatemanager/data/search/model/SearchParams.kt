@@ -1,7 +1,6 @@
 package com.bakjoul.realestatemanager.data.search.model
 
 import com.bakjoul.realestatemanager.domain.property.model.PropertyPoiEntity
-import com.bakjoul.realestatemanager.domain.property.model.PropertyTypeEntity
 import com.bakjoul.realestatemanager.domain.property_form.model.PropertyFormAddress
 import java.math.BigDecimal
 
@@ -11,7 +10,7 @@ data class SearchParams(
     val durationFromEntryOrSaleDateUnit: SearchDurationUnit? = null,
     val autoCompleteAddress: PropertyFormAddress? = null,
     val regionCity: PropertyFormAddress? = null,
-    val type: PropertyTypeEntity? = null,
+    val types: List<SearchType>? = null,
     val minPrice: BigDecimal? = null,
     val maxPrice: BigDecimal? = null,
     val minSurface: BigDecimal? = null,

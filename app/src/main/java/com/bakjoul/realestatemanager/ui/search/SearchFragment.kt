@@ -22,6 +22,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.chip.Chip
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -134,6 +135,13 @@ class SearchFragment : BottomSheetDialogFragment(R.layout.fragment_search) {
         // Duration unit
         binding.searchDateUnitAutoCompleteTextView.setOnItemClickListener { _, _, position, _ ->
             viewModel.onDurationUnitChanged(SearchDurationUnit.values()[position])
+        }
+
+        // Type
+        binding.searchTypeChipGroup.children.forEach { it as Chip
+            it.setOnCheckedChangeListener { chip, isChecked ->
+                viewModel.onTypeChipCheckedChanged(chip.id, isChecked)
+            }
         }
     }
 

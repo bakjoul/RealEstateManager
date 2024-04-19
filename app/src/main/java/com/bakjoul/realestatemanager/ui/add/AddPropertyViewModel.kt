@@ -670,20 +670,18 @@ class AddPropertyViewModel @Inject constructor(
     }
 
     fun onChipCheckedChanged(chipId: Int, isChecked: Boolean) {
-        Log.d("test", "onChipCheckedChanged: $chipId")
-        val poiEntity = PropertyPoiEntity.values().find { it.poiResId == chipId }
+        Log.d("test", "onChipCheckedChanged: $chipId, $isChecked")
+        val poiEntity = PropertyPoiEntity.values().find { it.poiResId == chipId } ?: return
 
-        if (poiEntity != null) {
-            propertyFormMutableSharedFlow.tryEmit(
-                propertyFormMutableSharedFlow.replayCache.first().copy(
-                    pointsOfInterest = if (isChecked) {
-                        propertyFormMutableSharedFlow.replayCache.first().pointsOfInterest?.plus(poiEntity)
-                    } else {
-                        propertyFormMutableSharedFlow.replayCache.first().pointsOfInterest?.minus(poiEntity)
-                    }
-                )
+        propertyFormMutableSharedFlow.tryEmit(
+            propertyFormMutableSharedFlow.replayCache.first().copy(
+                pointsOfInterest = if (isChecked) {
+                    propertyFormMutableSharedFlow.replayCache.first().pointsOfInterest?.plus(poiEntity)
+                } else {
+                    propertyFormMutableSharedFlow.replayCache.first().pointsOfInterest?.minus(poiEntity)
+                }
             )
-        }
+        )
     }
 
     fun onAddressChanged(address: String) {

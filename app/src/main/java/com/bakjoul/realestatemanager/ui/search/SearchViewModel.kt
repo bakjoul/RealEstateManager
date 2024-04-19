@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.data.search.model.SearchDurationUnit
 import com.bakjoul.realestatemanager.data.search.model.SearchParams
+import com.bakjoul.realestatemanager.data.search.model.SearchType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
@@ -46,5 +47,21 @@ class SearchViewModel @Inject constructor(
                 }
             )
         }
+    }
+
+    fun onTypeChipCheckedChanged(chipId: Int, isChecked: Boolean) {
+        Log.d("test", "onTypeChipCheckedChanged: $chipId, $isChecked")
+        val type = SearchType.values().find { it.chipId == chipId } ?: return
+        val currentList = searchParamsMutableStateFlow.value.types ?: emptyList()
+        if (isChecked) {
+            searchParamsMutableStateFlow.update {
+                it.copy(types = currentList.plus(type))
+            }
+        } else {
+            searchParamsMutableStateFlow.update {
+                it.copy(types = currentList.minus(type))
+            }
+        }
+        Log.d("test", "onTypeChipCheckedChanged: ${searchParamsMutableStateFlow.value.types}")
     }
 }

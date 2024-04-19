@@ -19,6 +19,7 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.children
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
@@ -36,6 +37,7 @@ import com.bakjoul.realestatemanager.ui.utils.Event.Companion.observeEvent
 import com.bakjoul.realestatemanager.ui.utils.hideKeyboard
 import com.bakjoul.realestatemanager.ui.utils.showAsToast
 import com.bakjoul.realestatemanager.ui.utils.viewBinding
+import com.google.android.material.chip.Chip
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
@@ -222,18 +224,7 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
         }
 
         // Chip listeners
-        listOf(
-            binding.addPropertyAmenitiesSchoolChip,
-            binding.addPropertyAmenitiesStoreChip,
-            binding.addPropertyAmenitiesParkChip,
-            binding.addPropertyAmenitiesRestaurantChip,
-            binding.addPropertyAmenitiesHospitalChip,
-            binding.addPropertyTransportationBusChip,
-            binding.addPropertyTransportationSubwayChip,
-            binding.addPropertyTransportationTramwayChip,
-            binding.addPropertyTransportationTrainChip,
-            binding.addPropertyTransportationAirportChip
-        ).forEach {
+        binding.addPropertyAmenitiesChipGroup.children.forEach { it as Chip
             it.setOnCheckedChangeListener { chip, isChecked ->
                 if (isExistingDraftLoaded) {
                     viewModel.onChipCheckedChanged(chip.id, isChecked)
