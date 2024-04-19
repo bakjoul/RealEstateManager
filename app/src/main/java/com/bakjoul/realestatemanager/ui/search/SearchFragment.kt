@@ -146,6 +146,16 @@ class SearchFragment : BottomSheetDialogFragment(R.layout.fragment_search) {
             viewModel::onTypeChipCheckedChanged
         )
 
+        // Price
+        binding.searchPriceRangeSliderView.addOnRangeChangedListener {
+            viewModel.onPriceRangeChanged(it)
+        }
+
+        // Surface
+        binding.searchSurfaceRangeSliderView.addOnRangeChangedListener {
+            viewModel.onSurfaceRangeChanged(it)
+        }
+
         // Amenities
         setChipGroupListeners(
             binding.searchAmenitiesChipGroup,

@@ -2,22 +2,34 @@ package com.bakjoul.realestatemanager.ui.search
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.data.search.model.SearchDurationUnit
 import com.bakjoul.realestatemanager.data.search.model.SearchParams
 import com.bakjoul.realestatemanager.data.search.model.SearchPoi
 import com.bakjoul.realestatemanager.data.search.model.SearchType
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import java.math.BigDecimal
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.milliseconds
 
 @HiltViewModel
 class SearchViewModel @Inject constructor(
 
 ) : ViewModel() {
 
+    private companion object {
+        private val RANGE_UPDATE_DELAY = 300.milliseconds
+    }
+
     private val searchParamsMutableStateFlow: MutableStateFlow<SearchParams> = MutableStateFlow(SearchParams())
+    private var priceRangeUpdateJob: Job? = null
+    private var surfaceRangeUpdateJob: Job? = null
 
     fun onStatusChanged(buttonId: Int) {
         Log.d("test", "onStatusChanged: $buttonId")
@@ -64,6 +76,28 @@ class SearchViewModel @Inject constructor(
             }
         }
         Log.d("test", "onTypeChipCheckedChanged: ${searchParamsMutableStateFlow.value.types}")
+    }
+
+    fun onPriceRangeChanged(priceRange: Pair<BigDecimal, BigDecimal>) {
+        priceRangeUpdateJob?.cancel()
+        priceRangeUpdateJob = viewModelScope.launch {
+            delay(RANGE_UPDATE_DELAY)
+            searchParamsMutableStateFlow.update {
+                it.copy(minPrice = priceRange.first, maxPrice = priceRange.second)
+            }
+            Log.d("test", "onPriceRangeChanged: ${searchParamsMutableStateFlow.value.minPrice}, ${searchParamsMutableStateFlow.value.maxPrice}")
+        }
+    }
+
+    fun onSurfaceRangeChanged(surfaceRange: Pair<BigDecimal, BigDecimal>) {
+        surfaceRangeUpdateJob?.cancel()
+        surfaceRangeUpdateJob = viewModelScope.launch {
+            delay(RANGE_UPDATE_DELAY)
+            searchParamsMutableStateFlow.update {
+                it.copy(minSurface = surfaceRange.first, maxSurface = surfaceRange.second)
+            }
+            Log.d("test", "onSurfaceRangeChanged: ${searchParamsMutableStateFlow.value.minSurface}, ${searchParamsMutableStateFlow.value.maxSurface}")
+        }
     }
 
     fun onPoiChipCheckedChanged(chipId: Int, isChecked: Boolean) {

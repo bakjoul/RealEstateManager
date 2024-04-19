@@ -6,7 +6,6 @@ import android.os.Parcel
 import android.os.Parcelable
 import android.text.SpannableStringBuilder
 import android.util.AttributeSet
-import android.util.Log
 import android.util.SparseArray
 import android.view.LayoutInflater
 import android.view.ViewTreeObserver
@@ -92,7 +91,6 @@ class RangeSliderView @JvmOverloads constructor(
                     BigDecimal(rangeSlider.values[0].toDouble()),
                     BigDecimal(rangeSlider.values[1].toDouble())
                 )
-                Log.d("test", "range updated: $range")
 
                 val minValue = BigDecimal.valueOf(rangeSlider.values[0].toDouble())
                 val maxValue = BigDecimal.valueOf(rangeSlider.values[1].toDouble())
