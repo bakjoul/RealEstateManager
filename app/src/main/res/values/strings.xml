@@ -216,4 +216,11 @@
     <string name="search_status_all">All</string>
     <string name="search_duration_unit_hint">Duration unit</string>
     <string name="search_uncheck_all">Uncheck all</string>
+    <string name="search_error_duration_unit">Please select a duration unit</string>
+    <string name="search_min">"Min.: %s"</string>
+    <string name="search_max">"Max.: %s"</string>
+    <string name="search_price_range_label_formatter_euro" translatable="false">" €"</string>
+    <string name="search_price_range_label_formatter_dollar" translatable="false">"$"</string>
+    <string name="search_surface_range_label_formatter_feet">" sq ft"</string>
+    <string name="search_surface_range_label_formatter_meters">" sq m"</string>
 </resources>

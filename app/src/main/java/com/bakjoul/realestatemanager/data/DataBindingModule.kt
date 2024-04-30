@@ -14,6 +14,7 @@ import com.bakjoul.realestatemanager.data.photos.PhotoRepositoryRoom
 import com.bakjoul.realestatemanager.data.photos.edit.TemporaryTemporaryPhotoRepositoryRoom
 import com.bakjoul.realestatemanager.data.property.PropertyRepositoryRoom
 import com.bakjoul.realestatemanager.data.resources.ResourcesRepositoryImplementation
+import com.bakjoul.realestatemanager.data.search.SearchRepositoryInMemory
 import com.bakjoul.realestatemanager.data.settings.SettingsRepositoryImplementation
 import com.bakjoul.realestatemanager.domain.agent.AgentRepository
 import com.bakjoul.realestatemanager.domain.auth.AuthRepository
@@ -29,6 +30,7 @@ import com.bakjoul.realestatemanager.domain.photos.content_resolver.PhotoFileRep
 import com.bakjoul.realestatemanager.domain.photos.edit.TemporaryPhotoRepository
 import com.bakjoul.realestatemanager.domain.property.PropertyRepository
 import com.bakjoul.realestatemanager.domain.resources.ResourcesRepository
+import com.bakjoul.realestatemanager.domain.search.SearchRepository
 import com.bakjoul.realestatemanager.domain.settings.SettingsRepository
 import dagger.Binds
 import dagger.Module
@@ -99,4 +101,8 @@ abstract class DataBindingModule {
     @Singleton
     @Binds
     abstract fun bindTemporaryPhotoRepository(temporaryPhotoRepositoryRoom: TemporaryTemporaryPhotoRepositoryRoom): TemporaryPhotoRepository
+
+    @Singleton
+    @Binds
+    abstract fun bindSearchRepository(searchRepositoryInMemory: SearchRepositoryInMemory): SearchRepository
 }

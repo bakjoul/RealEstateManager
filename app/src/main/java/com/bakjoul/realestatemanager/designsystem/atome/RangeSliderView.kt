@@ -47,8 +47,6 @@ class RangeSliderView @JvmOverloads constructor(
             getString(R.styleable.RangeSliderView_rangeSliderTitle)?.let {
                 binding.rangeSliderTitle.text = it
             }
-            // Initial values
-            binding.rangeSlider.values = listOf(0f, 100f)
 
             // Minimum value TextInputLayout hint
             getString(R.styleable.RangeSliderView_rangeSliderMinValueHint)?.let {
@@ -227,6 +225,10 @@ class RangeSliderView @JvmOverloads constructor(
         listeners.forEach { listener ->
             listener.invoke(newValue)
         }
+    }
+
+    fun setTitle(title: String) {
+        binding.rangeSliderTitle.text = title
     }
 
     fun setValues(valueFrom: Float, valueTo: Float) {

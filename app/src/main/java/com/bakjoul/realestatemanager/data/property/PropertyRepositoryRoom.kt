@@ -10,6 +10,7 @@ import com.bakjoul.realestatemanager.data.property.model.PropertyWithPhotosDto
 import com.bakjoul.realestatemanager.domain.CoroutineDispatcherProvider
 import com.bakjoul.realestatemanager.domain.photos.model.PhotoEntity
 import com.bakjoul.realestatemanager.domain.property.PropertyRepository
+import com.bakjoul.realestatemanager.domain.property.model.PriceAndSurfaceRangesEntity
 import com.bakjoul.realestatemanager.domain.property.model.PropertyAddressEntity
 import com.bakjoul.realestatemanager.domain.property.model.PropertyEntity
 import com.bakjoul.realestatemanager.domain.property.model.PropertyPoiEntity
@@ -110,7 +111,11 @@ class PropertyRepositoryRoom @Inject constructor(
             null
         }
     }
-    
+
+    override suspend fun getPriceAndSurfaceRanges(): PriceAndSurfaceRangesEntity = withContext(coroutineDispatcherProvider.io) {
+        propertyDao.getPriceAndSurfaceRanges()
+    }
+
     private suspend fun isPropertyIdExisting(propertyId: Long): Boolean {
         return propertyDao.getPropertyIdCount(propertyId) > 0
     }

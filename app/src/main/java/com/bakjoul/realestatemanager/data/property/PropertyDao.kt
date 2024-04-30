@@ -7,6 +7,7 @@ import androidx.room.Transaction
 import androidx.room.Update
 import com.bakjoul.realestatemanager.data.property.model.PropertyDto
 import com.bakjoul.realestatemanager.data.property.model.PropertyWithPhotosDto
+import com.bakjoul.realestatemanager.domain.property.model.PriceAndSurfaceRangesEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -31,4 +32,13 @@ interface PropertyDao {
 
     @Query("DELETE FROM properties WHERE id = :propertyId")
     suspend fun delete(propertyId: Long): Int
+
+    @Query(
+        "SELECT MIN(price) AS lowestPrice, " +
+                "MAX(price) AS highestPrice, " +
+                "MIN(surface) AS smallestSurface, " +
+                "MAX(surface) AS largestSurface " +
+                "FROM properties"
+    )
+    suspend fun getPriceAndSurfaceRanges(): PriceAndSurfaceRangesEntity
 }

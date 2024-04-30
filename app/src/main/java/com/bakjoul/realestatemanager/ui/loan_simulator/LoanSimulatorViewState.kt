@@ -5,7 +5,7 @@ import com.bakjoul.realestatemanager.data.loan_simulator.model.LoanDurationUnit
 import com.bakjoul.realestatemanager.ui.utils.NativeText
 import java.text.DecimalFormat
 
-data class LoanSimulatorViewState (
+data class LoanSimulatorViewState(
     @DrawableRes val currencyIcon: Int,
     val currencyFormat: DecimalFormat,
     val loanDurationUnit: LoanDurationUnit,

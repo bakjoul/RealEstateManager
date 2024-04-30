@@ -200,4 +200,9 @@
     <string name="search_status_all">Tout</string>
     <string name="search_duration_unit_hint">Unité de durée</string>
     <string name="search_uncheck_all">Décocher tout</string>
+    <string name="search_error_duration_unit">Veuillez sélectionner une unité de durée</string>
+    <string name="search_min">Min.: %s</string>
+    <string name="search_max">Max.: %s</string>
+    <string name="search_surface_range_label_formatter_feet">pi²</string>
+    <string name="search_surface_range_label_formatter_meters">m²</string>
 </resources>

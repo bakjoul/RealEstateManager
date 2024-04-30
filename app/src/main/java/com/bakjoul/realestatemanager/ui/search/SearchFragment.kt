@@ -14,8 +14,9 @@ import androidx.core.view.children
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.viewModels
 import com.bakjoul.realestatemanager.R
-import com.bakjoul.realestatemanager.data.search.model.SearchDurationUnit
+import com.bakjoul.realestatemanager.data.settings.model.AppCurrency
 import com.bakjoul.realestatemanager.databinding.FragmentSearchBinding
+import com.bakjoul.realestatemanager.domain.search.model.SearchDurationUnit
 import com.bakjoul.realestatemanager.ui.utils.CustomBottomSheetDialog
 import com.bakjoul.realestatemanager.ui.utils.hideKeyboard
 import com.bakjoul.realestatemanager.ui.utils.viewBinding
@@ -66,7 +67,7 @@ class SearchFragment : BottomSheetDialogFragment(R.layout.fragment_search) {
         super.onViewCreated(view, savedInstanceState)
 
         binding.searchCloseButton.setOnClickListener { dismiss() }  // TODO refactor later
-        binding.searchApplyButton.setOnClickListener { Log.d("test", "apply button clicked") }
+        binding.searchApplyButton.setOnClickListener { viewModel.onApplyButtonClicked() }
         binding.searchResetButton.setOnClickListener { Log.d("test", "reset button clicked") }
 
         binding.searchLocationTextInputEditText.setOnFocusChangeListener { _, hasFocus ->
@@ -74,16 +75,6 @@ class SearchFragment : BottomSheetDialogFragment(R.layout.fragment_search) {
                 (dialog as BottomSheetDialog).behavior.state = BottomSheetBehavior.STATE_EXPANDED
             }
         }
-
-        binding.searchPriceRangeSliderView.setValues(100000f, 500000f)
-        binding.searchPriceRangeSliderView.setLabelFormatter { "${it.toInt()} €" }
-        binding.searchPriceRangeSliderView.setMinValueHelperText("Min.: 1000000")
-        binding.searchPriceRangeSliderView.setMaxValueHelperText("Max.: 5000000")
-
-        binding.searchSurfaceRangeSliderView.setValues(50f, 200f)
-        binding.searchSurfaceRangeSliderView.setLabelFormatter { "${it.toInt()} sq m" }
-        binding.searchSurfaceRangeSliderView.setMinValueHelperText("Min.: 50")
-        binding.searchSurfaceRangeSliderView.setMaxValueHelperText("Max.: 200")
 
         val adapter = ArrayAdapter(
             requireContext(),
@@ -156,6 +147,21 @@ class SearchFragment : BottomSheetDialogFragment(R.layout.fragment_search) {
             viewModel.onSurfaceRangeChanged(it)
         }
 
+        // Rooms
+        binding.searchRoomsPlusMinusView.addOnValueChangedListener { newValue ->
+            viewModel.onRoomsCountChanged(newValue)
+        }
+
+        // Bathrooms
+        binding.searchBathroomsPlusMinusView.addOnValueChangedListener { newValue ->
+            viewModel.onBathroomsCountChanged(newValue)
+        }
+
+        // Bedrooms
+        binding.searchBedroomsPlusMinusView.addOnValueChangedListener { newValue ->
+            viewModel.onBedroomsCountChanged(newValue)
+        }
+
         // Amenities
         setChipGroupListeners(
             binding.searchAmenitiesChipGroup,
@@ -169,6 +175,30 @@ class SearchFragment : BottomSheetDialogFragment(R.layout.fragment_search) {
             binding.searchTransportationResetButton,
             viewModel::onPoiChipCheckedChanged
         )
+
+        viewModel.viewStateLiveData.observe(viewLifecycleOwner) { viewState ->
+            // Price range slider
+            binding.searchPriceRangeSliderView.setTitle(viewState.priceLabel.toCharSequence(requireContext()).toString())
+            binding.searchPriceRangeSliderView.setValues(viewState.minPrice, viewState.maxPrice)
+            binding.searchPriceRangeSliderView.setLabelFormatter {
+                if (viewState.currency == AppCurrency.EUR) {
+                    "${it.toInt()}${viewState.priceLabelFormatter.toCharSequence(requireContext())}"
+                } else {
+                    "${viewState.priceLabelFormatter.toCharSequence(requireContext())}${it.toInt()}"
+                }
+            }
+            binding.searchPriceRangeSliderView.setMinValueHelperText(viewState.minPriceHelperText.toCharSequence(requireContext()).toString())
+            binding.searchPriceRangeSliderView.setMaxValueHelperText(viewState.maxPriceHelperText.toCharSequence(requireContext()).toString())
+
+            // Surface range slider
+            binding.searchSurfaceRangeSliderView.setTitle(viewState.surfaceLabel.toCharSequence(requireContext()).toString())
+            binding.searchSurfaceRangeSliderView.setValues(viewState.minSurface, viewState.maxSurface)
+            binding.searchSurfaceRangeSliderView.setLabelFormatter {
+                "${it.toInt()}${viewState.surfaceLabelFormatter.toCharSequence(requireContext())}"
+            }
+            binding.searchSurfaceRangeSliderView.setMinValueHelperText(viewState.minSurfaceHelperText.toCharSequence(requireContext()).toString())
+            binding.searchSurfaceRangeSliderView.setMaxValueHelperText(viewState.maxSurfaceHelperText.toCharSequence(requireContext()).toString())
+        }
     }
 
     private fun setPinnedBottomView(behavior: BottomSheetBehavior<FrameLayout>) {

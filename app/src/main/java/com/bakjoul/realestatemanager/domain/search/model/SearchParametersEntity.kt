@@ -1,9 +1,9 @@
-package com.bakjoul.realestatemanager.data.search.model
+package com.bakjoul.realestatemanager.domain.search.model
 
 import com.bakjoul.realestatemanager.domain.property_form.model.PropertyFormAddress
 import java.math.BigDecimal
 
-data class SearchParams(
+data class SearchParametersEntity(
     val isSold: Boolean? = null,
     val durationFromEntryOrSaleDate: Int? = null,
     val durationFromEntryOrSaleDateUnit: SearchDurationUnit? = null,
@@ -14,8 +14,8 @@ data class SearchParams(
     val maxPrice: BigDecimal? = null,
     val minSurface: BigDecimal? = null,
     val maxSurface: BigDecimal? = null,
-    val rooms: BigDecimal? = null,
-    val bathrooms: BigDecimal? = null,
-    val bedrooms: BigDecimal? = null,
+    val numberOfRooms: BigDecimal? = null,
+    val numberOfBathrooms: BigDecimal? = null,
+    val numberOfBedrooms: BigDecimal? = null,
     val pointsOfInterest: List<SearchPoi>? = null,
 )

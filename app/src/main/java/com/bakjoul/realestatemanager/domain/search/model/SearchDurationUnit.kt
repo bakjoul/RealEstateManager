@@ -1,4 +1,4 @@
-package com.bakjoul.realestatemanager.data.search.model
+package com.bakjoul.realestatemanager.domain.search.model
 
 import androidx.annotation.StringRes
 import com.bakjoul.realestatemanager.R

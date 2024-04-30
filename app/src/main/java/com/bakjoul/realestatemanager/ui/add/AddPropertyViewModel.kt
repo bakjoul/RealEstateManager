@@ -47,6 +47,8 @@ import com.bakjoul.realestatemanager.domain.settings.surface_unit.GetCurrentSurf
 import com.bakjoul.realestatemanager.ui.utils.EquatableCallback
 import com.bakjoul.realestatemanager.ui.utils.Event
 import com.bakjoul.realestatemanager.ui.utils.NativeText
+import com.bakjoul.realestatemanager.ui.utils.ViewModelUtils.Companion.formatPriceHint
+import com.bakjoul.realestatemanager.ui.utils.ViewModelUtils.Companion.formatSurfaceLabel
 import com.bakjoul.realestatemanager.ui.utils.ViewModelUtils.Companion.getCurrencyFormat
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -215,7 +217,7 @@ class AddPropertyViewModel @Inject constructor(
             addressPredictionsFlow,
             photosFlow,
             errorsMutableStateFlow
-        ) { (propertyForm, currency, euroRate, surfaceUnit), addressPredictions, photos, errors ->
+        ) { (propertyForm, currency, euroRateWrapper, surfaceUnit), addressPredictions, photos, errors ->
             updatePhotos(photos, propertyForm)
 
             AddPropertyViewState(
@@ -227,7 +229,7 @@ class AddPropertyViewModel @Inject constructor(
                     propertyForm.referencePrice,
                     propertyForm.priceFromUser,
                     currency,
-                    euroRate.currencyRateEntity.rate
+                    euroRateWrapper.currencyRateEntity.rate
                 ),
                 priceHint = formatPriceHint(currency),
                 currencyFormat = getCurrencyFormat(currency),
@@ -402,13 +404,6 @@ class AddPropertyViewModel @Inject constructor(
         NativeText.Date(R.string.date_format, it)
     }
 
-    private fun formatPriceHint(currency: AppCurrency): NativeText {
-        return NativeText.Argument(
-            R.string.add_property_price_hint,
-            NativeText.Resource(currency.currencySymbol)
-        )
-    }
-
     private fun formatSavedPrice(
         referencePrice: BigDecimal?,
         priceFromUser: BigDecimal?,
@@ -421,29 +416,6 @@ class AddPropertyViewModel @Inject constructor(
         }
 
         return convertedPrice?.toString()
-    }
-
-    private fun formatSurfaceLabel(surfaceUnit: SurfaceUnit): NativeText {
-        return when (surfaceUnit) {
-            SurfaceUnit.FEET -> {
-                NativeText.Multi(
-                    listOf(
-                        NativeText.Argument(
-                            R.string.add_property_label_surface,
-                            NativeText.Resource(surfaceUnit.unitSymbol)
-                        ),
-                        NativeText.Simple("*")
-                    )
-                )
-            }
-
-            else -> {
-                NativeText.Argument(
-                    R.string.add_property_label_surface,
-                    NativeText.Resource(surfaceUnit.unitSymbol)
-                )
-            }
-        }
     }
 
     private fun formatSurfaceValue(referenceSurface: BigDecimal?, surfaceFromUser: BigDecimal?, surfaceUnit: SurfaceUnit): BigDecimal =

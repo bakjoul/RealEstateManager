@@ -1,5 +1,6 @@
 package com.bakjoul.realestatemanager.domain.property
 
+import com.bakjoul.realestatemanager.domain.property.model.PriceAndSurfaceRangesEntity
 import com.bakjoul.realestatemanager.domain.property.model.PropertyEntity
 import com.bakjoul.realestatemanager.domain.property_form.model.PropertyFormEntity
 import kotlinx.coroutines.flow.Flow
@@ -31,4 +32,6 @@ interface PropertyRepository {
     suspend fun getPropertyDraftById(id: Long): PropertyFormEntity?
 
     suspend fun deletePropertyDraft(id: Long): Int?
+
+    suspend fun getPriceAndSurfaceRanges(): PriceAndSurfaceRangesEntity
 }
