@@ -211,7 +211,7 @@
     <string name="search_date_label">Entry date / date of sale from today</string>
     <string name="duration_unit_weeks">weeks</string>
     <string name="search_region_city_label">Region / city</string>
-    <string name="search_rooms_label">Number of rooms / bathrooms / bedrooms</string>
+    <string name="search_rooms_label">Number of rooms</string>
     <string name="apply">Apply</string>
     <string name="search_status_all">All</string>
     <string name="search_duration_unit_hint">Duration unit</string>

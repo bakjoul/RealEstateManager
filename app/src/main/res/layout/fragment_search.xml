@@ -25,7 +25,6 @@
         android:id="@+id/search_nestedScrollView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="4dp"
         app:layout_constrainedHeight="true"
         app:layout_constraintBottom_toTopOf="@id/search_bottom_LinearLayout"
         app:layout_constraintTop_toBottomOf="@id/search_drag_handle">
@@ -473,31 +472,43 @@
         android:id="@+id/search_bottom_LinearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?android:colorBackground"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/search_nestedScrollView">
 
-        <Button
-            android:id="@+id/search_reset_Button"
-            style="@style/NegativeButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="4dp"
-            android:layout_weight="0.3"
-            android:text="@string/reset" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@drawable/horizontal_divider"
+            android:backgroundTint="@color/blue_toolbar" />
 
-        <Button
-            android:id="@+id/search_apply_Button"
-            style="@style/PositiveButton"
-            android:layout_width="0dp"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="2dp"
-            android:layout_weight="0.7"
-            android:text="@string/apply" />
+            android:orientation="horizontal"
+            android:paddingTop="2dp">
+
+            <Button
+                android:id="@+id/search_reset_Button"
+                style="@style/NegativeButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="4dp"
+                android:layout_weight="0.3"
+                android:text="@string/reset" />
+
+            <Button
+                android:id="@+id/search_apply_Button"
+                style="@style/PositiveButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="2dp"
+                android:layout_weight="0.7"
+                android:text="@string/apply" />
+        </LinearLayout>
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

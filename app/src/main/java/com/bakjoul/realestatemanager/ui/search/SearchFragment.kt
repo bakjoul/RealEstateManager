@@ -4,6 +4,7 @@ import android.app.Dialog
 import android.graphics.Rect
 import android.os.Bundle
 import android.util.Log
+import android.util.TypedValue
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewTreeObserver
@@ -202,6 +203,10 @@ class SearchFragment : BottomSheetDialogFragment(R.layout.fragment_search) {
     }
 
     private fun setPinnedBottomView(behavior: BottomSheetBehavior<FrameLayout>) {
+        val typedValue = TypedValue()
+        requireContext().theme.resolveAttribute(android.R.attr.colorBackground, typedValue, true)
+        binding.searchBottomLinearLayout.setBackgroundResource(typedValue.resourceId)
+
         behavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
             override fun onStateChanged(bottomSheet: View, newState: Int) {}
 
