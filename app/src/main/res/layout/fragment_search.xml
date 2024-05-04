@@ -47,7 +47,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                app:checkedButton="@+id/search_status_all_Button"
                 app:layout_constraintStart_toStartOf="@+id/search_status_label"
                 app:layout_constraintTop_toBottomOf="@id/search_status_label"
                 app:singleSelection="true">

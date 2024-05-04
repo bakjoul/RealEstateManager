@@ -9,13 +9,11 @@ import javax.inject.Inject
 
 class SearchRepositoryInMemory @Inject constructor() : SearchRepository {
 
-    private val searchParametersEntityMutableStateFlow: MutableStateFlow<SearchParametersEntity> = MutableStateFlow(
-        SearchParametersEntity()
-    )
+    private val searchParametersEntityMutableStateFlow: MutableStateFlow<SearchParametersEntity> = MutableStateFlow(SearchParametersEntity())
 
     override fun getSearchParametersFlow(): Flow<SearchParametersEntity> = searchParametersEntityMutableStateFlow.asStateFlow()
 
     override fun setSearchParameters(searchParametersEntity: SearchParametersEntity) {
-        searchParametersEntityMutableStateFlow.value = searchParametersEntity
+        searchParametersEntityMutableStateFlow.tryEmit(searchParametersEntity)
     }
 }

@@ -12,6 +12,7 @@ import com.bakjoul.realestatemanager.domain.currency_rate.GetEuroRateUseCase
 import com.bakjoul.realestatemanager.domain.property.model.PriceAndSurfaceRangesEntity
 import com.bakjoul.realestatemanager.domain.property.search.GetPriceAndSurfaceRangesForSearchUseCase
 import com.bakjoul.realestatemanager.domain.search.GetSearchParametersFlowUseCase
+import com.bakjoul.realestatemanager.domain.search.SetSearchParametersUseCase
 import com.bakjoul.realestatemanager.domain.search.model.SearchDurationUnit
 import com.bakjoul.realestatemanager.domain.search.model.SearchParametersEntity
 import com.bakjoul.realestatemanager.domain.search.model.SearchPoi
@@ -41,7 +42,8 @@ class SearchViewModel @Inject constructor(
     private val getCurrentSurfaceUnitUseCase: GetCurrentSurfaceUnitUseCase,
     private val getEuroRateUseCase: GetEuroRateUseCase,
     private val getPriceAndSurfaceRangesForSearchUseCase: GetPriceAndSurfaceRangesForSearchUseCase,
-    private val getSearchParametersFlowUseCase: GetSearchParametersFlowUseCase
+    private val getSearchParametersFlowUseCase: GetSearchParametersFlowUseCase,
+    private val setSearchParametersUseCase: SetSearchParametersUseCase
 ) : ViewModel() {
 
     private companion object {
@@ -65,21 +67,24 @@ class SearchViewModel @Inject constructor(
             errorsMutableStateFlow
         ) { currency, euroRate, surfaceUnit, searchParams, errors ->
             if (isInitializing) {
+                currentParametersMutableStateFlow.update { searchParams }
                 priceAndSurfaceRanges = getPriceAndSurfaceRangesForSearchUseCase.invoke(currency, euroRate, surfaceUnit)
                 isInitializing = false
             }
 
             emit(
                 SearchViewState(
-                    isSold = searchParams.isSold,
+                    statusButtonResId = getStatusButtonResId(searchParams),
                     durationFromEntryOrSaleDate = searchParams.durationFromEntryOrSaleDate,
                     durationFromEntryOrSaleDateUnit = searchParams.durationFromEntryOrSaleDateUnit,
                     address = "",
                     types = searchParams.types ?: emptyList(),
                     currency = currency,
                     priceLabel = formatPriceHint(currency),
-                    minPrice = priceAndSurfaceRanges.lowestPrice.toFloat(),
-                    maxPrice = priceAndSurfaceRanges.highestPrice.toFloat(),
+                    priceFrom =  priceAndSurfaceRanges.lowestPrice.toFloat(),
+                    priceTo = priceAndSurfaceRanges.highestPrice.toFloat(),
+                    minPrice = searchParams.minPrice?.toFloat(),
+                    maxPrice = searchParams.maxPrice?.toFloat(),
                     priceLabelFormatter = if (currency == AppCurrency.EUR) {
                         NativeText.Resource(R.string.search_price_range_label_formatter_euro)
                     } else {
@@ -88,8 +93,10 @@ class SearchViewModel @Inject constructor(
                     minPriceHelperText = NativeText.Argument(R.string.search_min, priceAndSurfaceRanges.lowestPrice),
                     maxPriceHelperText = NativeText.Argument(R.string.search_max, priceAndSurfaceRanges.highestPrice),
                     surfaceLabel = formatSurfaceLabel(surfaceUnit),
-                    minSurface = priceAndSurfaceRanges.smallestSurface.toFloat(),
-                    maxSurface = priceAndSurfaceRanges.largestSurface.toFloat(),
+                    surfaceFrom = priceAndSurfaceRanges.smallestSurface.toFloat(),
+                    surfaceTo = priceAndSurfaceRanges.largestSurface.toFloat(),
+                    minSurface = searchParams.minSurface?.toFloat(),
+                    maxSurface = searchParams.maxSurface?.toFloat(),
                     surfaceLabelFormatter = if (surfaceUnit == SurfaceUnit.FEET) {
                         NativeText.Resource(R.string.search_surface_range_label_formatter_feet)
                     } else {
@@ -106,6 +113,13 @@ class SearchViewModel @Inject constructor(
             )
         }.collect()
     }
+
+    private fun getStatusButtonResId(searchParams: SearchParametersEntity) =
+        when (searchParams.isSold) {
+            false -> R.id.search_status_for_sale_Button
+            true -> R.id.search_status_sold_Button
+            null -> R.id.search_status_all_Button
+        }
 
     fun onStatusChanged(buttonId: Int) {
         Log.d("test", "onStatusChanged: $buttonId")
@@ -214,7 +228,11 @@ class SearchViewModel @Inject constructor(
     }
 
     fun onApplyButtonClicked() {
-
+        if (isFormValid()) {
+            viewModelScope.launch {
+                setSearchParametersUseCase.invoke(currentParametersMutableStateFlow.value)
+            }
+        }
     }
 
     private fun isFormValid() : Boolean {

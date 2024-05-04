@@ -39,6 +39,8 @@ class SearchFragment : BottomSheetDialogFragment(R.layout.fragment_search) {
     private val binding by viewBinding { FragmentSearchBinding.bind(it) }
     private val viewModel by viewModels<SearchViewModel>()
 
+    private var isInitializing = true
+
     override fun onStart() {
         super.onStart()
 
@@ -88,6 +90,10 @@ class SearchFragment : BottomSheetDialogFragment(R.layout.fragment_search) {
 
         // Status button toggle group
         binding.searchStatusButtonToggleGroup.addOnButtonCheckedListener { buttonGroup, buttonId, isChecked ->
+            if (isInitializing) {
+                return@addOnButtonCheckedListener
+            }
+
             if (isChecked) {
                 viewModel.onStatusChanged(buttonId)
                 binding.root.findViewById<MaterialButton>(buttonGroup.checkedButtonId).isClickable = false
@@ -140,11 +146,17 @@ class SearchFragment : BottomSheetDialogFragment(R.layout.fragment_search) {
 
         // Price
         binding.searchPriceRangeSliderView.addOnRangeChangedListener {
+            if (isInitializing) {
+                return@addOnRangeChangedListener
+            }
             viewModel.onPriceRangeChanged(it)
         }
 
         // Surface
         binding.searchSurfaceRangeSliderView.addOnRangeChangedListener {
+            if (isInitializing) {
+                return@addOnRangeChangedListener
+            }
             viewModel.onSurfaceRangeChanged(it)
         }
 
@@ -178,27 +190,37 @@ class SearchFragment : BottomSheetDialogFragment(R.layout.fragment_search) {
         )
 
         viewModel.viewStateLiveData.observe(viewLifecycleOwner) { viewState ->
-            // Price range slider
-            binding.searchPriceRangeSliderView.setTitle(viewState.priceLabel.toCharSequence(requireContext()).toString())
-            binding.searchPriceRangeSliderView.setValues(viewState.minPrice, viewState.maxPrice)
-            binding.searchPriceRangeSliderView.setLabelFormatter {
-                if (viewState.currency == AppCurrency.EUR) {
-                    "${it.toInt()}${viewState.priceLabelFormatter.toCharSequence(requireContext())}"
-                } else {
-                    "${viewState.priceLabelFormatter.toCharSequence(requireContext())}${it.toInt()}"
-                }
-            }
-            binding.searchPriceRangeSliderView.setMinValueHelperText(viewState.minPriceHelperText.toCharSequence(requireContext()).toString())
-            binding.searchPriceRangeSliderView.setMaxValueHelperText(viewState.maxPriceHelperText.toCharSequence(requireContext()).toString())
+            if (isInitializing) {
+                // Status
+                binding.searchStatusButtonToggleGroup.check(viewState.statusButtonResId)
 
-            // Surface range slider
-            binding.searchSurfaceRangeSliderView.setTitle(viewState.surfaceLabel.toCharSequence(requireContext()).toString())
-            binding.searchSurfaceRangeSliderView.setValues(viewState.minSurface, viewState.maxSurface)
-            binding.searchSurfaceRangeSliderView.setLabelFormatter {
-                "${it.toInt()}${viewState.surfaceLabelFormatter.toCharSequence(requireContext())}"
+                // Price range slider
+                binding.searchPriceRangeSliderView.setTitle(viewState.priceLabel.toCharSequence(requireContext()).toString())
+                binding.searchPriceRangeSliderView.setRangeValues(viewState.priceFrom, viewState.priceTo, viewState.minPrice, viewState.maxPrice)
+                binding.searchPriceRangeSliderView.setLabelFormatter {
+                    if (viewState.currency == AppCurrency.EUR) {
+                        "${it.toInt()}${viewState.priceLabelFormatter.toCharSequence(requireContext())}"
+                    } else {
+                        "${viewState.priceLabelFormatter.toCharSequence(requireContext())}${it.toInt()}"
+                    }
+                }
+                binding.searchPriceRangeSliderView.setMinValueHelperText(viewState.minPriceHelperText.toCharSequence(requireContext()).toString())
+                binding.searchPriceRangeSliderView.setMaxValueHelperText(viewState.maxPriceHelperText.toCharSequence(requireContext()).toString())
+
+                // Surface range slider
+                binding.searchSurfaceRangeSliderView.setTitle(viewState.surfaceLabel.toCharSequence(requireContext()).toString())
+                binding.searchSurfaceRangeSliderView.setRangeValues(viewState.surfaceFrom, viewState.surfaceTo, viewState.minSurface, viewState.maxSurface)
+                binding.searchSurfaceRangeSliderView.setLabelFormatter {
+                    "${it.toInt()}${viewState.surfaceLabelFormatter.toCharSequence(requireContext())}"
+                }
+                binding.searchSurfaceRangeSliderView.setMinValueHelperText(viewState.minSurfaceHelperText.toCharSequence(requireContext()).toString())
+                binding.searchSurfaceRangeSliderView.setMaxValueHelperText(viewState.maxSurfaceHelperText.toCharSequence(requireContext()).toString())
+
+                isInitializing = false
             }
-            binding.searchSurfaceRangeSliderView.setMinValueHelperText(viewState.minSurfaceHelperText.toCharSequence(requireContext()).toString())
-            binding.searchSurfaceRangeSliderView.setMaxValueHelperText(viewState.maxSurfaceHelperText.toCharSequence(requireContext()).toString())
+
+            // Duration unit error
+            binding.searchDateUnitTextInputLayout.error = viewState.durationUnitError?.toCharSequence(requireContext())
         }
     }
 

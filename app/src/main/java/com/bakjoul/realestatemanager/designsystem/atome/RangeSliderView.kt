@@ -231,10 +231,14 @@ class RangeSliderView @JvmOverloads constructor(
         binding.rangeSliderTitle.text = title
     }
 
-    fun setValues(valueFrom: Float, valueTo: Float) {
+    fun setRangeValues(valueFrom: Float, valueTo: Float, minValue: Float?, maxValue: Float?) {
         binding.rangeSlider.valueFrom = valueFrom
         binding.rangeSlider.valueTo = valueTo
-        binding.rangeSlider.values = listOf(valueFrom, valueTo)
+        if (minValue != null && maxValue != null) {
+            binding.rangeSlider.values = listOf(minValue, maxValue)
+        } else {
+            binding.rangeSlider.values = listOf(valueFrom, valueTo)
+        }
         isInitializingValues = false
     }
 
