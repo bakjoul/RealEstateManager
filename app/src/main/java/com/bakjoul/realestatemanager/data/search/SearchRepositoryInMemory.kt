@@ -1,5 +1,6 @@
 package com.bakjoul.realestatemanager.data.search
 
+import android.util.Log
 import com.bakjoul.realestatemanager.domain.search.SearchRepository
 import com.bakjoul.realestatemanager.domain.search.model.SearchParametersEntity
 import kotlinx.coroutines.flow.Flow
@@ -15,5 +16,6 @@ class SearchRepositoryInMemory @Inject constructor() : SearchRepository {
 
     override fun setSearchParameters(searchParametersEntity: SearchParametersEntity) {
         searchParametersEntityMutableStateFlow.tryEmit(searchParametersEntity)
+        Log.d("test", "setSearchParameters: ${searchParametersEntityMutableStateFlow.value}")
     }
 }

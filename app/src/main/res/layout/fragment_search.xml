@@ -142,7 +142,7 @@
                 android:layout_marginTop="8dp"
                 android:background="@drawable/horizontal_divider"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/search_date_duration_TextInputLayout" />
+                app:layout_constraintTop_toBottomOf="@id/search_date_unit_TextInputLayout" />
 
             <TextView
                 android:id="@+id/search_location_label"

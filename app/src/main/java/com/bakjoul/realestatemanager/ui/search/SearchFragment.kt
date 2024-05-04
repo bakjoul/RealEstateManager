@@ -194,6 +194,14 @@ class SearchFragment : BottomSheetDialogFragment(R.layout.fragment_search) {
                 // Status
                 binding.searchStatusButtonToggleGroup.check(viewState.statusButtonResId)
 
+                // Duration since entry/sale date
+                binding.searchDateDurationTextInputEditText.setText(viewState.durationFromEntryOrSaleDate?.toString())
+
+                // Duration unit
+                binding.searchDateUnitAutoCompleteTextView.setText(
+                    viewState.durationFromEntryOrSaleDateUnit?.ordinal?.let { adapter.getItem(it) }, false
+                )
+
                 // Price range slider
                 binding.searchPriceRangeSliderView.setTitle(viewState.priceLabel.toCharSequence(requireContext()).toString())
                 binding.searchPriceRangeSliderView.setRangeValues(viewState.priceFrom, viewState.priceTo, viewState.minPrice, viewState.maxPrice)
