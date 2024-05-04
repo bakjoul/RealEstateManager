@@ -123,8 +123,11 @@ class SearchFragment : BottomSheetDialogFragment(R.layout.fragment_search) {
             }
         }
         binding.searchDateDurationTextInputEditText.doAfterTextChanged {
-            val duration = it.toString().toIntOrNull()
+            if (isInitializing) {
+                return@doAfterTextChanged
+            }
 
+            val duration = it.toString().toIntOrNull()
             binding.searchDateDurationTextInputLayout.isEndIconVisible = duration != null
             viewModel.onDurationChanged(duration)
         }
@@ -202,6 +205,11 @@ class SearchFragment : BottomSheetDialogFragment(R.layout.fragment_search) {
                     viewState.durationFromEntryOrSaleDateUnit?.ordinal?.let { adapter.getItem(it) }, false
                 )
 
+                // Type
+                viewState.types.forEach {
+                    binding.searchTypeChipGroup.check(it.chipId)
+                }
+
                 // Price range slider
                 binding.searchPriceRangeSliderView.setTitle(viewState.priceLabel.toCharSequence(requireContext()).toString())
                 binding.searchPriceRangeSliderView.setRangeValues(viewState.priceFrom, viewState.priceTo, viewState.minPrice, viewState.maxPrice)
@@ -258,7 +266,9 @@ class SearchFragment : BottomSheetDialogFragment(R.layout.fragment_search) {
     ) {
         chipGroup.children.forEach { it as Chip
             it.setOnCheckedChangeListener { chip, isChecked ->
-                updateValues(chip.id, isChecked)
+                if (!isInitializing) {
+                    updateValues(chip.id, isChecked)
+                }
             }
         }
         resetButton.setOnClickListener {

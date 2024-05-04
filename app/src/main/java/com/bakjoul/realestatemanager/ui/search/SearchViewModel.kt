@@ -153,7 +153,6 @@ class SearchViewModel @Inject constructor(
     }
 
     fun onTypeChipCheckedChanged(chipId: Int, isChecked: Boolean) {
-        Log.d("test", "onTypeChipCheckedChanged: $chipId, $isChecked")
         val type = SearchType.values().find { it.chipId == chipId } ?: return
         val currentList = currentParametersMutableStateFlow.value.types ?: emptyList()
         if (isChecked) {
