@@ -960,7 +960,7 @@ class AddPropertyViewModelTest {
         viewModel.viewStateLiveData.observeForTesting(this) {}
 
         // When
-        viewModel.onChipCheckedChanged(PropertyPoiEntity.PARK.poiResId, true)
+        viewModel.onChipCheckedChanged(PropertyPoiEntity.PARK.chipResId, true)
         viewModel.closeDialog()
 
         // Then

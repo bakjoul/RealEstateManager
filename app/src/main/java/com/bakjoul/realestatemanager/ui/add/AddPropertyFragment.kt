@@ -27,7 +27,6 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.data.settings.model.SurfaceUnit
 import com.bakjoul.realestatemanager.databinding.FragmentAddPropertyBinding
-import com.bakjoul.realestatemanager.domain.property.model.PropertyPoiEntity
 import com.bakjoul.realestatemanager.ui.camera.activity.CameraActivity
 import com.bakjoul.realestatemanager.ui.edit_description.EditPhotoDescriptionFragment
 import com.bakjoul.realestatemanager.ui.photo_preview.activity.PhotoPreviewActivity
@@ -232,6 +231,14 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
             }
         }
 
+        binding.addPropertyTransportationChipGroup.children.forEach { it as Chip
+            it.setOnCheckedChangeListener { chip, isChecked ->
+                if (isExistingDraftLoaded) {
+                    viewModel.onChipCheckedChanged(chip.id, isChecked)
+                }
+            }
+        }
+
         // Address text input
         binding.addPropertyAddressTextInputLayout.isEndIconVisible = false
         binding.addPropertyAddressTextInputEditText.doAfterTextChanged { editable ->
@@ -401,16 +408,10 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
                 binding.addPropertyBathroomsPlusMinusView.setInitialValue(viewState.numberOfBathrooms)
                 binding.addPropertyBedroomsPlusMinusView.setInitialValue(viewState.numberOfBedrooms)
                 // Amenities
-                binding.addPropertyAmenitiesSchoolChip.isChecked = viewState.amenities.contains(PropertyPoiEntity.SCHOOL)
-                binding.addPropertyAmenitiesStoreChip.isChecked = viewState.amenities.contains(PropertyPoiEntity.STORE)
-                binding.addPropertyAmenitiesParkChip.isChecked = viewState.amenities.contains(PropertyPoiEntity.PARK)
-                binding.addPropertyAmenitiesRestaurantChip.isChecked = viewState.amenities.contains(PropertyPoiEntity.RESTAURANT)
-                binding.addPropertyAmenitiesHospitalChip.isChecked = viewState.amenities.contains(PropertyPoiEntity.HOSPITAL)
-                binding.addPropertyTransportationBusChip.isChecked = viewState.amenities.contains(PropertyPoiEntity.BUS)
-                binding.addPropertyTransportationSubwayChip.isChecked = viewState.amenities.contains(PropertyPoiEntity.SUBWAY)
-                binding.addPropertyTransportationTramwayChip.isChecked = viewState.amenities.contains(PropertyPoiEntity.TRAMWAY)
-                binding.addPropertyTransportationTrainChip.isChecked = viewState.amenities.contains(PropertyPoiEntity.TRAIN)
-                binding.addPropertyTransportationAirportChip.isChecked = viewState.amenities.contains(PropertyPoiEntity.AIRPORT)
+                viewState.amenities.forEach {
+                    binding.addPropertyAmenitiesChipGroup.check(it.chipResId)
+                    binding.addPropertyTransportationChipGroup.check(it.chipResId)
+                }
                 // Address fields
                 binding.addPropertyComplementaryAddressTextInputEditText.setText(viewState.complementaryAddress)
                 binding.addPropertyCityTextInputEditText.setText(viewState.city)

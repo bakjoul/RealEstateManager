@@ -207,7 +207,7 @@ class SearchFragment : BottomSheetDialogFragment(R.layout.fragment_search) {
 
                 // Type
                 viewState.types.forEach {
-                    binding.searchTypeChipGroup.check(it.chipId)
+                    binding.searchTypeChipGroup.check(it.chipResId)
                 }
 
                 // Price range slider

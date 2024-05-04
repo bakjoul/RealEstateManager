@@ -4,7 +4,7 @@ import androidx.annotation.IdRes
 import androidx.annotation.StringRes
 import com.bakjoul.realestatemanager.R
 
-enum class PropertyPoiEntity(@StringRes val poiName: Int, @IdRes val poiResId: Int) {
+enum class PropertyPoiEntity(@StringRes val poiName: Int, @IdRes val chipResId: Int) {
     AIRPORT(R.string.property_poi_airport, R.id.add_property_transportation_airport_Chip),
     BUS(R.string.property_poi_bus, R.id.add_property_transportation_bus_Chip),
     HOSPITAL(R.string.property_poi_hospital, R.id.add_property_amenities_hospital_Chip),
