@@ -212,7 +212,7 @@ class SearchViewModel @Inject constructor(
 
     fun onPoiChipCheckedChanged(chipId: Int, isChecked: Boolean) {
         Log.d("test", "onPoiChipCheckedChanged: $chipId, $isChecked")
-        val poi = SearchPoi.values().find { it.poiResId == chipId } ?: return
+        val poi = SearchPoi.values().find { it.chipResId == chipId } ?: return
         val currentList = currentParametersMutableStateFlow.value.pointsOfInterest ?: emptyList()
         if (isChecked) {
             currentParametersMutableStateFlow.update {

@@ -157,25 +157,30 @@ class SearchFragment : BottomSheetDialogFragment(R.layout.fragment_search) {
 
         // Surface
         binding.searchSurfaceRangeSliderView.addOnRangeChangedListener {
-            if (isInitializing) {
-                return@addOnRangeChangedListener
+            if (!isInitializing) {
+                viewModel.onSurfaceRangeChanged(it)
             }
-            viewModel.onSurfaceRangeChanged(it)
         }
 
         // Rooms
         binding.searchRoomsPlusMinusView.addOnValueChangedListener { newValue ->
-            viewModel.onRoomsCountChanged(newValue)
+            if (!isInitializing) {
+                viewModel.onRoomsCountChanged(newValue)
+            }
         }
 
         // Bathrooms
         binding.searchBathroomsPlusMinusView.addOnValueChangedListener { newValue ->
-            viewModel.onBathroomsCountChanged(newValue)
+            if (!isInitializing) {
+                viewModel.onBathroomsCountChanged(newValue)
+            }
         }
 
         // Bedrooms
         binding.searchBedroomsPlusMinusView.addOnValueChangedListener { newValue ->
-            viewModel.onBedroomsCountChanged(newValue)
+            if (!isInitializing) {
+                viewModel.onBedroomsCountChanged(newValue)
+            }
         }
 
         // Amenities
@@ -231,6 +236,21 @@ class SearchFragment : BottomSheetDialogFragment(R.layout.fragment_search) {
                 }
                 binding.searchSurfaceRangeSliderView.setMinValueHelperText(viewState.minSurfaceHelperText.toCharSequence(requireContext()).toString())
                 binding.searchSurfaceRangeSliderView.setMaxValueHelperText(viewState.maxSurfaceHelperText.toCharSequence(requireContext()).toString())
+
+                // Rooms, bathrooms, bedrooms
+                binding.searchRoomsPlusMinusView.setInitialValue(viewState.numberOfRooms)
+                binding.searchBathroomsPlusMinusView.setInitialValue(viewState.numberOfBathrooms)
+                binding.searchBedroomsPlusMinusView.setInitialValue(viewState.numberOfBedrooms)
+
+                // Amenities
+                viewState.amenities.forEach {
+                    binding.searchAmenitiesChipGroup.check(it.chipResId)
+                }
+
+                // Transportation
+                viewState.amenities.forEach {
+                    binding.searchTransportationChipGroup.check(it.chipResId)
+                }
 
                 isInitializing = false
             }

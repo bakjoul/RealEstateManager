@@ -4,7 +4,7 @@ import androidx.annotation.IdRes
 import androidx.annotation.StringRes
 import com.bakjoul.realestatemanager.R
 
-enum class SearchPoi(@StringRes val poiName: Int, @IdRes val poiResId: Int) {
+enum class SearchPoi(@StringRes val poiName: Int, @IdRes val chipResId: Int) {
     AIRPORT(R.string.property_poi_airport, R.id.search_transportation_airport_Chip),
     BUS(R.string.property_poi_bus, R.id.search_transportation_bus_Chip),
     HOSPITAL(R.string.property_poi_hospital, R.id.search_amenities_hospital_Chip),
