@@ -12,6 +12,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.data.settings.model.AppCurrency
+import com.bakjoul.realestatemanager.data.settings.model.DistanceUnit
 import com.bakjoul.realestatemanager.data.settings.model.SurfaceUnit
 import com.bakjoul.realestatemanager.databinding.FragmentSettingsBinding
 import com.bakjoul.realestatemanager.ui.utils.Event.Companion.observeEvent
@@ -77,8 +78,8 @@ class SettingsFragment : DialogFragment(R.layout.fragment_settings) {
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
 
-        val surfaceUnitSpinner = binding.settingsUnitSpinner.getSpinner()
-        val surfaceUnitOptions = binding.settingsUnitSpinner.getEntries()
+        val surfaceUnitSpinner = binding.settingsSurfaceUnitSpinner.getSpinner()
+        val surfaceUnitOptions = binding.settingsSurfaceUnitSpinner.getEntries()
         var isSurfaceUnitFirstSelection = true
 
         surfaceUnitSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -94,12 +95,32 @@ class SettingsFragment : DialogFragment(R.layout.fragment_settings) {
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
 
+        val distanceUnitSpinner = binding.settingsDistanceUnitSpinner.getSpinner()
+        val distanceUnitOptions = binding.settingsDistanceUnitSpinner.getEntries()
+        var isDistanceUnitFirstSelection = true
+
+        distanceUnitSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                if (isDistanceUnitFirstSelection) {
+                    isDistanceUnitFirstSelection = false
+                    return
+                }
+
+                viewModel.onDistanceUnitSelected(DistanceUnit.values()[position])
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
+        }
+
         viewModel.viewStateLiveData.observe(viewLifecycleOwner) {
             val currencyEntryName = "${getString(it.currency.currencyName)} (${getString(it.currency.currencySymbol)})"
             currencySpinner.setSelection(currencyOptions.indexOf(currencyEntryName))
 
             val surfaceEntryName = "${getString(it.surfaceUnit.unitName)} (${getString(it.surfaceUnit.unitSymbol)})"
             surfaceUnitSpinner.setSelection(surfaceUnitOptions.indexOf(surfaceEntryName))
+
+            val distanceEntryName = "${getString(it.distanceUnit.unitName)} (${getString(it.distanceUnit.unitSymbol)})"
+            distanceUnitSpinner.setSelection(distanceUnitOptions.indexOf(distanceEntryName))
         }
 
         viewModel.viewActionLiveData.observeEvent(viewLifecycleOwner) {

@@ -6,7 +6,8 @@ data class PropertyAddressEntity (
     val complementaryAddress: String?,
     val zipcode: String,
     val city: String,
-    val state: String,
+    val administrativeAreaLevel1: String,
+    val administrativeAreaLevel2: String?,
     val country: String,
     val latitude: Double,
     val longitude: Double

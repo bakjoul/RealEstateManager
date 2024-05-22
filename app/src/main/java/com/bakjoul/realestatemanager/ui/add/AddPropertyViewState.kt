@@ -4,6 +4,7 @@ import com.bakjoul.realestatemanager.data.settings.model.SurfaceUnit
 import com.bakjoul.realestatemanager.designsystem.molecule.photo_list.PhotoListItemViewState
 import com.bakjoul.realestatemanager.domain.property.model.PropertyPoiEntity
 import com.bakjoul.realestatemanager.domain.property.model.PropertyTypeEntity
+import com.bakjoul.realestatemanager.ui.common.SuggestionItemViewState
 import com.bakjoul.realestatemanager.ui.utils.NativeText
 import java.math.BigDecimal
 import java.text.DecimalFormat
@@ -23,7 +24,7 @@ data class AddPropertyViewState(
     val numberOfBathrooms: BigDecimal,
     val numberOfBedrooms: BigDecimal,
     val amenities: List<PropertyPoiEntity>,
-    val addressPredictions: List<AddPropertySuggestionItemViewState>,
+    val addressPredictions: List<SuggestionItemViewState>,
     val address: String?,
     val complementaryAddress: String?,
     val city: String?,

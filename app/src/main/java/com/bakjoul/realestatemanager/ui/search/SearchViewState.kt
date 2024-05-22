@@ -4,6 +4,7 @@ import com.bakjoul.realestatemanager.data.settings.model.AppCurrency
 import com.bakjoul.realestatemanager.domain.search.model.SearchDurationUnit
 import com.bakjoul.realestatemanager.domain.search.model.SearchPoi
 import com.bakjoul.realestatemanager.domain.search.model.SearchType
+import com.bakjoul.realestatemanager.ui.common.SuggestionItemViewState
 import com.bakjoul.realestatemanager.ui.utils.NativeText
 import java.math.BigDecimal
 
@@ -11,7 +12,10 @@ data class SearchViewState(
     val statusButtonResId: Int,
     val durationFromEntryOrSaleDate: Int?,
     val durationFromEntryOrSaleDateUnit: SearchDurationUnit?,
-    val address: String?,
+    val location: String?,
+    val locationPredictions: List<SuggestionItemViewState>,
+    val locationRadiusLabel: NativeText,
+    val locationRadius: Float?,
     val types: List<SearchType>,
     val currency: AppCurrency,
     val priceLabel: NativeText,
@@ -34,5 +38,6 @@ data class SearchViewState(
     val numberOfBathrooms: BigDecimal,
     val numberOfBedrooms: BigDecimal,
     val amenities: List<SearchPoi>,
-    val durationUnitError: NativeText?
+    val durationUnitError: NativeText?,
+    val locationError: NativeText?
 )

@@ -48,6 +48,10 @@
     <string name="settings">Settings</string>
     <string name="settings_currency_label">Currency</string>
     <string name="settings_currency_desc">Changes the currency used throughout the app</string>
+    <string name="settings_surface_unit_label">Surface unit</string>
+    <string name="settings_surface_unit_desc">Changes the surface unit used throughout the app</string>
+    <string name="settings_distance_unit_label">Distance unit</string>
+    <string name="settings_distance_unit_desc">Changes the distance unit used throughout the app</string>
     <string name="info_icon_desc">Information icon</string>
     <string name="info_icon" translatable="false">i</string>
     <string name="property_sold_on">Sold on %s</string>
@@ -124,7 +128,6 @@
     <string name="currency_euro_symbol" translatable="false">€</string>
     <string name="currency_dollar_name" translatable="false">Dollar</string>
     <string name="currency_dollar_symbol" translatable="false">$</string>
-    <string name="settings_surface_unit_desc">Changes the surface unit used throughout the app</string>
     <string name="draft_overview" translatable="false">%s - %s - %s - %s - %s</string>
     <string name="draft_overview_field" translatable="false">%s %s</string>
     <string name="add_property_label_surface" translatable="false">Surface (%s)</string>
@@ -210,7 +213,7 @@
     <string name="search_status_label">Status</string>
     <string name="search_date_label">Entry date / date of sale from today</string>
     <string name="duration_unit_weeks">weeks</string>
-    <string name="search_region_city_label">Region / city</string>
+    <string name="search_location_label">City</string>
     <string name="search_rooms_label">Number of rooms</string>
     <string name="apply">Apply</string>
     <string name="search_status_all">All</string>
@@ -223,4 +226,9 @@
     <string name="search_price_range_label_formatter_dollar" translatable="false">"$"</string>
     <string name="search_surface_range_label_formatter_feet">" sq ft"</string>
     <string name="search_surface_range_label_formatter_meters">" sq m"</string>
+    <string name="distance_kilometers_name">Kilometers</string>
+    <string name="distance_kilometers_unit" translatable="false">km</string>
+    <string name="distance_miles_name" translatable="false">Miles</string>
+    <string name="distance_miles_unit" translatable="false">mi</string>
+    <string name="search_radius_label">Radius around location (%s)</string>
 </resources>

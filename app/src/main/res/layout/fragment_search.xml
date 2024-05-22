@@ -149,7 +149,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
-                android:text="@string/search_region_city_label"
+                android:text="@string/search_location_label"
                 android:textSize="15sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/search_date_divider" />
@@ -159,7 +159,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:hint="@string/search_region_city_label"
+                android:hint="@string/search_location_label"
                 app:endIconDrawable="@drawable/backspace_24"
                 app:endIconMode="custom"
                 app:layout_constraintEnd_toEndOf="@id/search_location_label"
@@ -175,6 +175,35 @@
                     android:lines="1" />
             </com.google.android.material.textfield.TextInputLayout>
 
+            <TextView
+                android:id="@+id/search_location_radius_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:text="Radius around city"
+                android:textSize="15sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/search_location_TextInputLayout" />
+
+            <com.google.android.material.slider.Slider
+                android:id="@+id/search_location_radius_slider"
+                style="@style/CustomDiscreteSlider"
+                android:visibility="gone"
+                tools:visibility="visible"
+                app:layout_constraintEnd_toEndOf="@id/search_location_TextInputLayout"
+                app:layout_constraintStart_toStartOf="@id/search_location_TextInputLayout"
+                app:layout_constraintTop_toBottomOf="@id/search_location_radius_label" />
+
+            <ImageButton
+                android:id="@+id/search_location_radius_expand_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="?selectableItemBackgroundBorderless"
+                android:contentDescription="Show location radius slider"
+                android:src="@drawable/baseline_expand_more_24"
+                app:layout_constraintEnd_toEndOf="@id/search_location_radius_label"
+                app:layout_constraintTop_toTopOf="@id/search_location_radius_label" />
+
             <View
                 android:id="@+id/search_location_divider"
                 android:layout_width="match_parent"
@@ -182,7 +211,7 @@
                 android:layout_marginTop="8dp"
                 android:background="@drawable/horizontal_divider"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/search_location_TextInputLayout" />
+                app:layout_constraintTop_toBottomOf="@id/search_location_radius_slider" />
 
             <TextView
                 android:id="@+id/search_type_label"
@@ -463,6 +492,43 @@
                     style="@style/Chip"
                     android:text="@string/property_poi_airport" />
             </com.google.android.material.chip.ChipGroup>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/search_location_suggestions_container"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:background="@drawable/suggestions_bkg"
+                android:paddingHorizontal="2dp"
+                android:paddingVertical="1dp"
+                app:layout_constraintBottom_toTopOf="@id/search_location_TextInputLayout"
+                app:layout_constraintEnd_toEndOf="@id/search_location_TextInputLayout"
+                app:layout_constraintStart_toStartOf="@id/search_location_TextInputLayout"
+                tools:visibility="gone">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/search_location_suggestions_RecyclerView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:itemCount="3"
+                    tools:listitem="@layout/view_suggestion_item" />
+
+                <ImageButton
+                    android:id="@+id/add_property_address_suggestions_close_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="12dp"
+                    android:layout_marginVertical="8dp"
+                    android:background="@null"
+                    android:contentDescription="@string/add_property_close_button_desc"
+                    android:padding="0dp"
+                    android:src="@drawable/baseline_close_24_grey"
+                    app:layout_constraintBottom_toBottomOf="@id/search_location_suggestions_RecyclerView"
+                    app:layout_constraintEnd_toEndOf="@id/search_location_suggestions_RecyclerView" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>

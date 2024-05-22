@@ -8,6 +8,10 @@
         <item>Feet (sq ft)</item>
         <item>Meters (sq m)</item>
     </string-array>
+    <string-array name="distance_unit_options">
+        <item>Kilometers (km)</item>
+        <item>Miles (mi)</item>
+    </string-array>
     <string-array name="loan_duration_unit_options">
         <item>years</item>
         <item>months</item>

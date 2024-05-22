@@ -36,7 +36,7 @@
         app:spinnerLabel="@string/settings_currency_label" />
 
     <com.bakjoul.realestatemanager.designsystem.atome.SettingsSpinnerView
-        android:id="@+id/settings_unit_spinner"
+        android:id="@+id/settings_surface_unit_spinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
@@ -45,6 +45,18 @@
         app:spinnerDescription="@string/settings_surface_unit_desc"
         app:spinnerEntries="@array/surface_unit_options"
         app:spinnerImageSrc="@drawable/meter_to_feet_128"
-        app:spinnerLabel="Surface unit" />
+        app:spinnerLabel="@string/settings_surface_unit_label" />
+
+    <com.bakjoul.realestatemanager.designsystem.atome.SettingsSpinnerView
+        android:id="@+id/settings_distance_unit_spinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/settings_surface_unit_spinner"
+        app:spinnerDescription="@string/settings_distance_unit_desc"
+        app:spinnerEntries="@array/distance_unit_options"
+        app:spinnerImageSrc="@drawable/meter_to_feet_128"
+        app:spinnerLabel="@string/settings_distance_unit_label" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

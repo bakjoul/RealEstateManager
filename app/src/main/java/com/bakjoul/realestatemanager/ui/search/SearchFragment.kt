@@ -11,15 +11,22 @@ import android.view.ViewTreeObserver
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.FrameLayout
+import androidx.core.content.ContextCompat
 import androidx.core.view.children
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.transition.AutoTransition
+import androidx.transition.TransitionManager
 import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.data.settings.model.AppCurrency
 import com.bakjoul.realestatemanager.databinding.FragmentSearchBinding
 import com.bakjoul.realestatemanager.domain.search.model.SearchDurationUnit
+import com.bakjoul.realestatemanager.ui.common.SuggestionAdapter
 import com.bakjoul.realestatemanager.ui.utils.CustomBottomSheetDialog
+import com.bakjoul.realestatemanager.ui.utils.Event.Companion.observeEvent
 import com.bakjoul.realestatemanager.ui.utils.hideKeyboard
+import com.bakjoul.realestatemanager.ui.utils.showAsToast
 import com.bakjoul.realestatemanager.ui.utils.viewBinding
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -27,6 +34,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
+import com.google.android.material.slider.LabelFormatter
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -40,11 +48,18 @@ class SearchFragment : BottomSheetDialogFragment(R.layout.fragment_search) {
     private val viewModel by viewModels<SearchViewModel>()
 
     private var isInitializing = true
+    private var isSearchLocationRadiusExpanded = false
 
     override fun onStart() {
         super.onStart()
 
         val behavior = (dialog as BottomSheetDialog).behavior
+        if (resources.getBoolean(R.bool.isTablet)) {
+            behavior.state = BottomSheetBehavior.STATE_EXPANDED
+        } else {
+            behavior.state = BottomSheetBehavior.STATE_COLLAPSED
+        }
+
         setPinnedBottomView(behavior)
     }
 
@@ -68,6 +83,12 @@ class SearchFragment : BottomSheetDialogFragment(R.layout.fragment_search) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val suggestionsAdapter = SuggestionAdapter()
+        binding.searchLocationSuggestionsRecyclerView.adapter = suggestionsAdapter
+        val suggestionsDivider = DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
+        suggestionsDivider.setDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.horizontal_divider)!!)
+        binding.searchLocationSuggestionsRecyclerView.addItemDecoration(suggestionsDivider)
 
         binding.searchCloseButton.setOnClickListener { dismiss() }  // TODO refactor later
         binding.searchApplyButton.setOnClickListener { viewModel.onApplyButtonClicked() }
@@ -140,6 +161,55 @@ class SearchFragment : BottomSheetDialogFragment(R.layout.fragment_search) {
             viewModel.onDurationUnitChanged(SearchDurationUnit.values()[position])
         }
 
+        // Location
+        binding.searchLocationTextInputLayout.isEndIconVisible = false
+        binding.searchLocationTextInputEditText.doAfterTextChanged {
+            val location = it?.toString() ?: ""
+
+            binding.searchLocationTextInputLayout.isEndIconVisible = location.isNotEmpty()
+            if (!isInitializing) {
+                viewModel.onLocationChanged(location)
+            }
+        }
+
+        binding.searchLocationTextInputLayout.setEndIconOnClickListener {
+            viewModel.onLocationTextCleared()
+            binding.searchLocationTextInputEditText.setText("")
+        }
+
+        // Location radius
+        binding.searchLocationRadiusExpandButton.setOnClickListener {
+            TransitionManager.beginDelayedTransition(binding.root, AutoTransition())
+            if (binding.searchLocationRadiusSlider.visibility == View.GONE) {
+                isSearchLocationRadiusExpanded = true
+                binding.searchLocationRadiusExpandButton.setImageResource(R.drawable.baseline_expand_less_24)
+                binding.searchLocationRadiusSlider.labelBehavior = LabelFormatter.LABEL_VISIBLE
+                binding.searchLocationRadiusSlider.visibility = View.VISIBLE
+            } else {
+                binding.searchLocationRadiusExpandButton.setImageResource(R.drawable.baseline_expand_more_24)
+                binding.searchLocationRadiusSlider.visibility = View.GONE
+                binding.searchLocationRadiusSlider.labelBehavior = LabelFormatter.LABEL_WITHIN_BOUNDS
+                isSearchLocationRadiusExpanded = false
+            }
+        }
+
+        // Label behavior known bug workaround
+        requireDialog().findViewById<View>(com.google.android.material.R.id.design_bottom_sheet).apply {
+            BottomSheetBehavior.from(this).addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+                override fun onStateChanged(bottomSheet: View, newState: Int) {}
+
+                override fun onSlide(bottomSheet: View, slideOffset: Float) {
+                    binding.searchLocationRadiusSlider.invalidate()
+                }
+            })
+        }
+
+        binding.searchLocationRadiusSlider.addOnChangeListener { _, radius, _ ->
+            if (!isInitializing) {
+                viewModel.onLocationRadiusChanged(radius)
+            }
+        }
+
         // Type
         setChipGroupListeners(
             binding.searchTypeChipGroup,
@@ -210,6 +280,12 @@ class SearchFragment : BottomSheetDialogFragment(R.layout.fragment_search) {
                     viewState.durationFromEntryOrSaleDateUnit?.ordinal?.let { adapter.getItem(it) }, false
                 )
 
+                // Location radius label
+                binding.searchLocationRadiusLabel.text = viewState.locationRadiusLabel.toCharSequence(requireContext())
+
+                // Location radius slider
+                binding.searchLocationRadiusSlider.value = viewState.locationRadius ?: 0f
+
                 // Type
                 viewState.types.forEach {
                     binding.searchTypeChipGroup.check(it.chipResId)
@@ -255,8 +331,57 @@ class SearchFragment : BottomSheetDialogFragment(R.layout.fragment_search) {
                 isInitializing = false
             }
 
+            // Location text input
+            if (viewState.location != null && viewState.location != binding.searchLocationTextInputEditText.text.toString()) {
+                binding.searchLocationTextInputEditText.setText(viewState.location)
+            }
+
+            // City suggestions
+            if (viewState.locationPredictions.isEmpty() ||
+                (viewState.location != null) && viewState.location == binding.searchLocationTextInputEditText.text.toString())
+            {
+                binding.searchLocationSuggestionsContainer.visibility = View.GONE
+            } else {
+                suggestionsAdapter.submitList(viewState.locationPredictions)
+                binding.searchLocationSuggestionsContainer.visibility = View.VISIBLE
+            }
+
             // Duration unit error
             binding.searchDateUnitTextInputLayout.error = viewState.durationUnitError?.toCharSequence(requireContext())
+        }
+
+        viewModel.viewActionLiveData.observeEvent(viewLifecycleOwner) {
+            when (it) {
+                SearchViewAction.HideSuggestions -> {
+                    binding.searchLocationSuggestionsContainer.visibility = View.GONE
+                    binding.searchLocationTextInputEditText.clearFocus()
+                    hideKeyboard()
+                }
+
+                is SearchViewAction.ShowToast -> it.message.showAsToast(requireContext())
+            }
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+
+        outState.putBoolean("isSearchLocationRadiusExpanded", isSearchLocationRadiusExpanded)
+    }
+
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+
+        isSearchLocationRadiusExpanded = savedInstanceState?.getBoolean("isSearchLocationRadiusExpanded") ?: false
+
+        if (isSearchLocationRadiusExpanded) {
+            binding.searchLocationRadiusExpandButton.setImageResource(R.drawable.baseline_expand_less_24)
+            binding.searchLocationRadiusSlider.labelBehavior = LabelFormatter.LABEL_VISIBLE
+            binding.searchLocationRadiusSlider.visibility = View.VISIBLE
+        } else {
+            binding.searchLocationRadiusExpandButton.setImageResource(R.drawable.baseline_expand_more_24)
+            binding.searchLocationRadiusSlider.visibility = View.GONE
+            binding.searchLocationRadiusSlider.labelBehavior = LabelFormatter.LABEL_WITHIN_BOUNDS
         }
     }
 

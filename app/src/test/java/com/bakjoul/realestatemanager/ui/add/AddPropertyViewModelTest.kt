@@ -32,6 +32,7 @@ import com.bakjoul.realestatemanager.domain.property_form.model.PropertyFormAddr
 import com.bakjoul.realestatemanager.domain.property_form.model.PropertyFormEntity
 import com.bakjoul.realestatemanager.domain.settings.currency.GetCurrentCurrencyUseCase
 import com.bakjoul.realestatemanager.domain.settings.surface_unit.GetCurrentSurfaceUnitUseCase
+import com.bakjoul.realestatemanager.ui.common.SuggestionItemViewState
 import com.bakjoul.realestatemanager.ui.utils.EquatableCallback
 import com.bakjoul.realestatemanager.ui.utils.Event
 import com.bakjoul.realestatemanager.ui.utils.NativeText
@@ -321,7 +322,7 @@ class AddPropertyViewModelTest {
         coEvery { getAddressPredictionsUseCase.invoke("testing") } returns AutocompleteWrapper.Success(
             listOf(
                 PredictionEntity(
-                    address = "test address",
+                    description = "test address",
                     placeId = "test placeId",
                 )
             )
@@ -338,9 +339,9 @@ class AddPropertyViewModelTest {
             // Then
             assertThat(it.value?.addressPredictions).isEqualTo(
                 listOf(
-                    AddPropertySuggestionItemViewState(
+                    SuggestionItemViewState(
                         id = "test placeId",
-                        address = "test address",
+                        description = "test address",
                         onSuggestionClicked = EquatableCallback {}
                     )
                 )

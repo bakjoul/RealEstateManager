@@ -4,5 +4,5 @@ import com.bakjoul.realestatemanager.domain.geocoding.model.GeocodingWrapper
 
 interface GeocodingRepository {
 
-    suspend fun getAddressDetails(placeId: String): GeocodingWrapper
+    suspend fun getAddressDetails(placeId: String, forCitiesOnly: Boolean): GeocodingWrapper
 }

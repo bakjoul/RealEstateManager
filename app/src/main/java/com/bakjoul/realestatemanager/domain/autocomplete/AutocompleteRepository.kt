@@ -4,5 +4,5 @@ import com.bakjoul.realestatemanager.domain.autocomplete.model.AutocompleteWrapp
 
 interface AutocompleteRepository {
 
-    suspend fun getAddressPredictions(input: String): AutocompleteWrapper
+    suspend fun getAddressPredictions(input: String, type: String): AutocompleteWrapper
 }

@@ -44,6 +44,7 @@ import com.bakjoul.realestatemanager.domain.property_form.model.PropertyFormAddr
 import com.bakjoul.realestatemanager.domain.property_form.model.PropertyFormEntity
 import com.bakjoul.realestatemanager.domain.settings.currency.GetCurrentCurrencyUseCase
 import com.bakjoul.realestatemanager.domain.settings.surface_unit.GetCurrentSurfaceUnitUseCase
+import com.bakjoul.realestatemanager.ui.common.SuggestionItemViewState
 import com.bakjoul.realestatemanager.ui.utils.EquatableCallback
 import com.bakjoul.realestatemanager.ui.utils.Event
 import com.bakjoul.realestatemanager.ui.utils.NativeText
@@ -104,6 +105,7 @@ class AddPropertyViewModel @Inject constructor(
 
     private companion object {
         private const val TAG = "AddPropertyViewModel"
+        private const val REQUEST_TYPE = "geocode"
         private val ADDRESS_INPUT_DELAY = 300.milliseconds
         private val SAVE_DELAY = 3.seconds
     }
@@ -123,7 +125,7 @@ class AddPropertyViewModel @Inject constructor(
                         emit(null)
                     } else {
                         delay(ADDRESS_INPUT_DELAY)
-                        emit(getAddressPredictionsUseCase.invoke(input))
+                        emit(getAddressPredictionsUseCase.invoke(input, REQUEST_TYPE))
                     }
                 }
             }
@@ -244,7 +246,7 @@ class AddPropertyViewModel @Inject constructor(
                 address = formatAddress(propertyForm.autoCompleteAddress),
                 complementaryAddress = propertyForm.address?.complementaryAddress,
                 city = propertyForm.address?.city,
-                state = propertyForm.address?.state,
+                state = propertyForm.address?.administrativeAreaLevel1,
                 zipcode = propertyForm.address?.zipcode,
                 description = propertyForm.description,
                 photos = PhotoListMapper().map(
@@ -429,21 +431,21 @@ class AddPropertyViewModel @Inject constructor(
             BigDecimal.ZERO
         }
 
-    private fun formatAddress(address: PropertyFormAddress?): String? = if (address?.streetNumber != null && address.route != null) {
-        "${address.streetNumber} ${address.route}"
-    } else {
-        null
+    private fun formatAddress(address: PropertyFormAddress?): String? {
+        return if (address?.streetNumber != null && address.route != null) {
+            "${address.streetNumber} ${address.route}"
+        } else {
+            null
+        }
     }
 
-    private fun mapAddressPredictions(wrapper: AutocompleteWrapper?): List<AddPropertySuggestionItemViewState> =
+    private fun mapAddressPredictions(wrapper: AutocompleteWrapper?): List<SuggestionItemViewState> =
         (wrapper as? AutocompleteWrapper.Success)?.let {
             wrapper.predictions.map { predictionEntity ->
-                AddPropertySuggestionItemViewState(
+                SuggestionItemViewState(
                     id = predictionEntity.placeId,
-                    address = predictionEntity.address,
+                    description = predictionEntity.description,
                     onSuggestionClicked = EquatableCallback {
-                        navigateUseCase.invoke(To.HideAddressSuggestions)
-
                         viewModelScope.launch {
                             when (val geocodingResult = getAddressDetailsUseCase.invoke(predictionEntity.placeId)) {
                                 is GeocodingWrapper.Error -> {
@@ -460,7 +462,9 @@ class AddPropertyViewModel @Inject constructor(
                                     navigateUseCase.invoke(To.Toast(NativeText.Resource(R.string.toast_selected_address_no_results)))
                                 }
 
-                                is GeocodingWrapper.Success -> {
+                                is GeocodingWrapper.PropertyAddressSuccess -> {
+                                    navigateUseCase.invoke(To.HideAddressSuggestions)
+
                                     currentAddressInputMutableStateFlow.update {
                                         it?.copy(
                                             first = "${geocodingResult.result.streetNumber} ${geocodingResult.result.route}",
@@ -475,7 +479,7 @@ class AddPropertyViewModel @Inject constructor(
                                         complementaryAddress = propertyFormReplayCache.address?.complementaryAddress,
                                         zipcode = geocodingResult.result.zipcode,
                                         city = geocodingResult.result.city,
-                                        state = geocodingResult.result.state,
+                                        administrativeAreaLevel1 = geocodingResult.result.administrativeAreaLevel1,
                                         country = geocodingResult.result.country,
                                         latitude = geocodingResult.result.latitude,
                                         longitude = geocodingResult.result.longitude
@@ -487,6 +491,8 @@ class AddPropertyViewModel @Inject constructor(
                                         )
                                     )
                                 }
+
+                                else -> Unit
                             }
                         }
                     }
@@ -678,8 +684,8 @@ class AddPropertyViewModel @Inject constructor(
 
         // Reset address fields if current address input different from address selected from suggestions
         val propertyFormReplayCache = propertyFormMutableSharedFlow.replayCache.first()
-        if (propertyFormReplayCache.autoCompleteAddress != PropertyFormAddress()
-            && formatAddress(propertyFormReplayCache.address) != address
+        if (propertyFormReplayCache.autoCompleteAddress != PropertyFormAddress() &&
+            formatAddress(propertyFormReplayCache.address) != address
         ) {
             resetAddressFields()
         }
@@ -688,7 +694,6 @@ class AddPropertyViewModel @Inject constructor(
     fun onAddressTextCleared() {
         isAddressTextCleared = true
         currentAddressInputMutableStateFlow.value = null
-
     }
 
     fun onComplementaryAddressChanged(complementaryAddress: String) {
@@ -926,7 +931,8 @@ class AddPropertyViewModel @Inject constructor(
             complementaryAddress = propertyForm.autoCompleteAddress.complementaryAddress,
             zipcode = propertyForm.autoCompleteAddress.zipcode!!,
             city = propertyForm.autoCompleteAddress.city!!,
-            state = propertyForm.autoCompleteAddress.state!!,
+            administrativeAreaLevel1 = propertyForm.autoCompleteAddress.administrativeAreaLevel1!!,
+            administrativeAreaLevel2 = propertyForm.autoCompleteAddress.administrativeAreaLevel2,
             country = propertyForm.autoCompleteAddress.country!!,
             latitude = propertyForm.autoCompleteAddress.latitude!!,
             longitude = propertyForm.autoCompleteAddress.longitude!!

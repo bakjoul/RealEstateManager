@@ -6,12 +6,15 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
 import com.bakjoul.realestatemanager.data.settings.model.AppCurrency
+import com.bakjoul.realestatemanager.data.settings.model.DistanceUnit
 import com.bakjoul.realestatemanager.data.settings.model.SurfaceUnit
 import com.bakjoul.realestatemanager.domain.navigation.GetCurrentNavigationUseCase
 import com.bakjoul.realestatemanager.domain.navigation.NavigateUseCase
 import com.bakjoul.realestatemanager.domain.navigation.model.To
 import com.bakjoul.realestatemanager.domain.settings.currency.GetCurrentCurrencyUseCase
 import com.bakjoul.realestatemanager.domain.settings.currency.SetCurrencyUseCase
+import com.bakjoul.realestatemanager.domain.settings.distance_unit.GetCurrentDistanceUnitUseCase
+import com.bakjoul.realestatemanager.domain.settings.distance_unit.SetDistanceUnitUseCase
 import com.bakjoul.realestatemanager.domain.settings.surface_unit.GetCurrentSurfaceUnitUseCase
 import com.bakjoul.realestatemanager.domain.settings.surface_unit.SetSurfaceUnitUseCase
 import com.bakjoul.realestatemanager.ui.utils.Event
@@ -28,17 +31,21 @@ class SettingsViewModel @Inject constructor(
     private val setCurrencyUseCase: SetCurrencyUseCase,
     private val getCurrentSurfaceUnitUseCase: GetCurrentSurfaceUnitUseCase,
     private val setSurfaceUnitUseCase: SetSurfaceUnitUseCase,
+    private val getCurrentDistanceUnitUseCase: GetCurrentDistanceUnitUseCase,
+    private val setDistanceUnitUseCase: SetDistanceUnitUseCase,
     private val navigateUseCase: NavigateUseCase
 ) : ViewModel() {
 
     val viewStateLiveData: LiveData<SettingsViewState> = liveData {
         combine(
             getCurrentCurrencyUseCase.invoke(),
-            getCurrentSurfaceUnitUseCase.invoke()
-        ) { currency, surfaceUnit ->
+            getCurrentSurfaceUnitUseCase.invoke(),
+            getCurrentDistanceUnitUseCase.invoke()
+        ) { currency, surfaceUnit, distanceUnit ->
             SettingsViewState(
                 currency = currency,
-                surfaceUnit = surfaceUnit
+                surfaceUnit = surfaceUnit,
+                distanceUnit = distanceUnit
             )
         }.collect {
             emit(it)
@@ -63,6 +70,12 @@ class SettingsViewModel @Inject constructor(
     fun onSurfaceUnitSelected(surfaceUnit: SurfaceUnit) {
         viewModelScope.launch {
             setSurfaceUnitUseCase.invoke(surfaceUnit)
+        }
+    }
+
+    fun onDistanceUnitSelected(distanceUnit: DistanceUnit) {
+        viewModelScope.launch {
+            setDistanceUnitUseCase.invoke(distanceUnit)
         }
     }
 

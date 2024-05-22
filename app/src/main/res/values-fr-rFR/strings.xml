@@ -110,6 +110,11 @@
     <string name="surface_meters_unit">m²</string>
     <string name="surface_feet_name">Pieds</string>
     <string name="surface_meters_name">Mètres</string>
+    <string name="distance_kilometers_name">Kilomètres</string>
+    <string name="search_radius_label">Rayon autour de la ville (%s)</string>
+    <string name="settings_surface_unit_label">Unité de surface</string>
+    <string name="settings_distance_unit_label">Unité de distance</string>
+    <string name="settings_distance_unit_desc">Modifie l\'unité de distance utilisée dans l\'application</string>
     <string name="settings_surface_unit_desc">Modifie l\'unité de surface utilisée dans l\'application</string>
     <string name="add_property_label_rooms">Pièces</string>
     <string name="add_property_label_bathrooms">Salles de bain</string>
@@ -194,7 +199,7 @@
     <string name="search_status_label">Statut</string>
     <string name="search_date_label">Date d\'enregistrement / de vente à partir d\'aujourd\'hui</string>
     <string name="duration_unit_weeks">semaines</string>
-    <string name="search_region_city_label">Région / ville</string>
+    <string name="search_location_label">Ville</string>
     <string name="search_rooms_label">Nombre de pièces</string>
     <string name="apply">Appliquer</string>
     <string name="search_status_all">Tout</string>

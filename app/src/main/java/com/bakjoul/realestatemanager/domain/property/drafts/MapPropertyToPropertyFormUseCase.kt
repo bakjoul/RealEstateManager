@@ -25,7 +25,7 @@ class MapPropertyToPropertyFormUseCase @Inject constructor() {
                 route = property.address.route,
                 zipcode = property.address.zipcode,
                 city = property.address.city,
-                state = property.address.state,
+                administrativeAreaLevel1 = property.address.administrativeAreaLevel1,
                 country = property.address.country,
                 latitude = property.address.latitude,
                 longitude = property.address.longitude
@@ -36,7 +36,7 @@ class MapPropertyToPropertyFormUseCase @Inject constructor() {
                 complementaryAddress = property.address.complementaryAddress,
                 zipcode = property.address.zipcode,
                 city = property.address.city,
-                state = property.address.state,
+                administrativeAreaLevel1 = property.address.administrativeAreaLevel1,
                 country = property.address.country,
                 latitude = property.address.latitude,
                 longitude = property.address.longitude

@@ -1,11 +1,11 @@
-package com.bakjoul.realestatemanager.ui.settings
+package com.bakjoul.realestatemanager.domain.settings.model
 
 import com.bakjoul.realestatemanager.data.settings.model.AppCurrency
 import com.bakjoul.realestatemanager.data.settings.model.DistanceUnit
 import com.bakjoul.realestatemanager.data.settings.model.SurfaceUnit
 
-data class SettingsViewState (
+data class AppSettings(
     val currency: AppCurrency,
     val surfaceUnit: SurfaceUnit,
-    val distanceUnit: DistanceUnit
+    val distanceUnit: DistanceUnit,
 )

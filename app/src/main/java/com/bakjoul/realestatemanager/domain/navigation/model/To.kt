@@ -38,5 +38,6 @@ sealed class To {
     object LoanSimulator : To()
     object CloseLoanSimulator : To()
     object FilterDialog : To()
+    object HideLocationSuggestions : To()
     object DoNothing : To()
 }

@@ -28,6 +28,7 @@ import com.bakjoul.realestatemanager.R
 import com.bakjoul.realestatemanager.data.settings.model.SurfaceUnit
 import com.bakjoul.realestatemanager.databinding.FragmentAddPropertyBinding
 import com.bakjoul.realestatemanager.ui.camera.activity.CameraActivity
+import com.bakjoul.realestatemanager.ui.common.SuggestionAdapter
 import com.bakjoul.realestatemanager.ui.edit_description.EditPhotoDescriptionFragment
 import com.bakjoul.realestatemanager.ui.photo_preview.activity.PhotoPreviewActivity
 import com.bakjoul.realestatemanager.ui.photos.PhotosFragment
@@ -146,7 +147,7 @@ class AddPropertyFragment : DialogFragment(R.layout.fragment_add_property) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val suggestionsAdapter = AddPropertySuggestionAdapter()
+        val suggestionsAdapter = SuggestionAdapter()
         binding.addPropertyAddressSuggestionsRecyclerView.adapter = suggestionsAdapter
         val suggestionsDivider = DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
         suggestionsDivider.setDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.horizontal_divider)!!)

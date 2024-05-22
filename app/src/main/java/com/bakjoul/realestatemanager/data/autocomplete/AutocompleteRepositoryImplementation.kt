@@ -15,17 +15,13 @@ import javax.inject.Singleton
 @Singleton
 class AutocompleteRepositoryImplementation @Inject constructor(private val googleApi: GoogleApi) : AutocompleteRepository {
 
-    private companion object {
-        private const val TYPE = "geocode"
-    }
-
     private val lruCache: LruCache<String, AutocompleteWrapper> = LruCache(500)
 
-    override suspend fun getAddressPredictions(input: String): AutocompleteWrapper = withContext(Dispatchers.IO) {
+    override suspend fun getAddressPredictions(input: String, type: String): AutocompleteWrapper = withContext(Dispatchers.IO) {
         lruCache.get(input) ?: try {
             val response = googleApi.getAddressPredictions(
                 input = input,
-                type = TYPE
+                type = type
             )
 
             when (response.status) {
@@ -53,7 +49,7 @@ class AutocompleteRepositoryImplementation @Inject constructor(private val googl
                 return@mapNotNull null
             } else {
                 PredictionEntity(
-                    address = predictionResponse.description,
+                    description = predictionResponse.description,
                     placeId = predictionResponse.placeId,
                 )
             }

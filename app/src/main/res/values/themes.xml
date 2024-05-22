@@ -128,6 +128,18 @@
         <item name="tickVisible">false</item>
     </style>
 
+    <style name="CustomDiscreteSlider" parent="Widget.Material3.Slider">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="trackColorActive">@color/blue</item>
+        <item name="trackColorInactive">@color/blue_toolbar</item>
+        <item name="thumbColor">@color/blue</item>
+        <item name="android:stepSize">10</item>
+        <item name="android:valueFrom">0</item>
+        <item name="android:valueTo">100</item>
+        <item name="labelBehavior">visible</item>
+    </style>
+
     <style name="FilterButton" parent="Widget.Material3.Button.IconButton.Filled.Tonal">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
